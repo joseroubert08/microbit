@@ -37,5 +37,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+          <activity android:name=".DeviceScanActivity" android:label="@string/search_BLE_activity" />
     </application>
 </manifest>
