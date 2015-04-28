@@ -1,7 +1,15 @@
 package com.samsung.microbit;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Scanner;
+import java.lang.Integer;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
@@ -24,7 +32,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 public class FlashSectionFragment extends Fragment implements OnClickListener, OnItemClickListener{ 
+	
+	private static final int SUCCESS = 0;
+	private static final int FILE_NOT_FOUND = -1;
+	private static final int FILE_IO_ERROR = -2;
+	private static final int FAILED = -3;
 	
 	private Button flashSearchButton = null ;
 	private TextView deviceConnectedText = null ;
@@ -65,7 +79,7 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 
     private void findProgramsAndPopulate() {
 		File sdcardDownloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        Log.d("Micro", "Searching files in "+ sdcardDownloads.getAbsolutePath());
+        Log.d("MicroBit", "Searching files in "+ sdcardDownloads.getAbsolutePath());
         int iTotalPrograms = 0 ;
 		if (sdcardDownloads.exists()){
 			File files[] = sdcardDownloads.listFiles();
@@ -125,6 +139,82 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 	@Override
 	public void onItemClick(AdapterView<?> adapter, View v, int position, long arg3) {
 		String value = (String)adapter.getItemAtPosition(position);
-		Toast.makeText(getActivity(), value, Toast.LENGTH_SHORT).show();
+		Toast.makeText(getActivity(), "Preparing " + value + " ..." , Toast.LENGTH_LONG).show();
+		int retValue = PrepareFile(value);
+		switch (retValue){
+			case SUCCESS:
+				Toast.makeText(getActivity(), "Binary file ready for flashing" , Toast.LENGTH_LONG).show();
+				break;
+			case FILE_NOT_FOUND:
+			case FILE_IO_ERROR:
+			case FAILED:
+				Toast.makeText(getActivity(), "Failed to create binary file" , Toast.LENGTH_LONG).show();
+				break;
+		}
 	}
+
+	// Creates binary buffer from ONLY the data specified by hex, spec here:
+	// http://en.wikipedia.org/wiki/Intel_HEX
+	private int PrepareFile(String fileName) {
+    Log.d("MicroBit", "PrepareFile [+]");
+	FileInputStream is = null;
+	BufferedReader reader = null;
+	byte [] buffer = null;
+	File sdcardDownloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) ;
+	if (sdcardDownloads.exists()){
+		File hexFile = new File(sdcardDownloads, fileName);
+		if (hexFile.exists()){
+		    Log.d("MicroBit", "Found the Hex file");
+			try {
+				is = new FileInputStream(hexFile);
+				reader = new BufferedReader(new InputStreamReader(is));
+				String line = null;
+				try {
+					int byteCount = 0 ;
+					while ((line = reader.readLine())!= null){
+						//Calculate size of output file
+			            if (line.substring(7, 9).equals("00")) { // type == data
+			            	byteCount += Integer.parseInt(line.substring(1, 3), 16);
+			            }
+					}
+				    Log.d("MicroBit", "Size of outputfile = " + byteCount);
+
+				    // "reset" to beginning of file (discard old buffered reader)
+				    is.getChannel().position(1);
+				    reader = new BufferedReader(new InputStreamReader(is));
+				    
+					int pointer = 0 ;
+					buffer = new byte [byteCount];
+					while ((line = reader.readLine())!= null){
+						 if (line.substring(7, 9).equals("00")) { // type == data
+				                int length = Integer.parseInt(line.substring(1, 3), 16);
+				                String data = line.substring(9, 9 + length * 2);
+				                for (int i = 0; i < length * 2; i += 2) {
+				                	buffer[pointer] = (byte) Integer.parseInt(data.substring(i, i+2), 16);
+				                    pointer++;
+				                }
+				            }
+				    }
+					if (reader != null) reader.close();
+					//Write file
+				    Log.d("MicroBit", "Writing output file");
+					FileOutputStream f = new FileOutputStream(new File("/sdcard/output.bin"));
+					f.write(buffer);
+					f.flush();
+					f.close();					
+					return SUCCESS;
+				} catch (IOException e) {
+					Log.d("MicroBit", "Cannot read the file");
+					e.printStackTrace();
+					return FILE_IO_ERROR;
+				}
+			} catch (FileNotFoundException e) {
+				Log.d("MicroBit", "Cannot find the file");
+				return FILE_NOT_FOUND;
+			} 
+		}
+	}
+	Log.d("MicroBit", "Failed conversion");
+	return FAILED;
 }
+} 
