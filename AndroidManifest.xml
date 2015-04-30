@@ -39,5 +39,7 @@
         </activity>
         
           <activity android:name=".DeviceScanActivity" android:label="@string/search_BLE_activity" />
+          <activity android:name=".DeviceControlActivity" android:label="@string/device_details" />
+          <service android:name=".BluetoothLeService" android:enabled="true"/>
     </application>
 </manifest>

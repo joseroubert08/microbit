@@ -18,6 +18,7 @@
     <string name="app_name">My Programing companion</string>
 
     <string name="search_BLE_activity">Search Microbit</string>
+    <string name="device_details">Device_details</string>
     <string name="dummy_section_text">Section %1d is just a dummy section.</string>
     <string name="ble_not_supported">BLE is not supported</string>
     <string name="label_data">Data:</string>
