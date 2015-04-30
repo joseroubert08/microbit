@@ -24,6 +24,10 @@ import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +44,9 @@ public class DeviceControlActivity extends Activity {
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
 
+    private static final String DEFAULT_DEVICE_NAME = "DefaultApp";
+    private static final String DFU_DEVICE_NAME = "DfuTarg";
+    
     private TextView mConnectionState;
     private TextView mDataField;
     private String mDeviceName;
@@ -73,6 +80,8 @@ public class DeviceControlActivity extends Activity {
             mBluetoothLeService = null;
         }
     };
+
+	protected int mimageSizeInBytes;
 
     // Handles various events fired by the Service.
     // ACTION_GATT_CONNECTED: connected to a GATT server.
@@ -110,7 +119,14 @@ public class DeviceControlActivity extends Activity {
                 }
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
+            } else if (BluetoothLeService.ACTION_ON_CHARACTERISTIC_WRITE.equals(action)) {
+            	Toast.makeText(DeviceControlActivity.this, "MicroBit flashed", Toast.LENGTH_SHORT).show();
+            } else if (BluetoothLeService.ACTION_ON_ERROR.equals(action)) {
+            	Toast.makeText(DeviceControlActivity.this, "Unknown Error", Toast.LENGTH_SHORT).show();
+            } else if (BluetoothLeService.ACTION_PROGRESS_UPDATE.equals(action)) {
+            	Toast.makeText(DeviceControlActivity.this, "Uploaded " + intent.getStringExtra(BluetoothLeService.EXTRA_DATA), Toast.LENGTH_SHORT).show();
             }
+            	
         }
 
 		private boolean checkDFUService(List<BluetoothGattService> supportedGattServices) {
@@ -120,32 +136,72 @@ public class DeviceControlActivity extends Activity {
 				uuid = gattService.getUuid().toString();
 				if (uuid.equals(SampleGattAttributes.DEVICE_FIRMWARE_UPDATE)){
 		            Toast.makeText(DeviceControlActivity.this, "Found device with DFU support and connected", Toast.LENGTH_SHORT).show();
-		            List<BluetoothGattCharacteristic> gattCharacteristics = gattService.getCharacteristics();
-		            for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
-		            	uuid = gattCharacteristic.getUuid().toString();
-			            if (uuid.equals(SampleGattAttributes.DFU_CONTROL_POINT)){
-			            	final int charaProp = gattCharacteristic.getProperties();
-			            	if ((charaProp | BluetoothGattCharacteristic.PROPERTY_WRITE) > 0) {
-					            //Write to control characteristic of DFU
-			            		Toast.makeText(DeviceControlActivity.this, "Starting DFU for application", Toast.LENGTH_LONG).show();
-			            		//Add Values to the characteristic
-			            		byte [] arrayOfByte = new byte[] {(byte)(0x01),(byte)(0x4) } ;
-			            		gattCharacteristic.setValue(arrayOfByte);
-			            		//Write them back
-	                            if (mBluetoothLeService.writeCharacteristic(gattCharacteristic)){
+		            if (mDeviceName.equals(DEFAULT_DEVICE_NAME)){
+		            	List<BluetoothGattCharacteristic> gattCharacteristics = gattService.getCharacteristics();
+			            for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
+			            	uuid = gattCharacteristic.getUuid().toString();
+				            if (uuid.equals(SampleGattAttributes.DFU_CONTROL_POINT)){
+				            	if (initiateDFU(gattCharacteristic)){
 				            		Toast.makeText(DeviceControlActivity.this, "DFU control characteristic written successfully", Toast.LENGTH_LONG).show();
-	                            } else {
+				            		return true;
+				            	} else {
 				            		Toast.makeText(DeviceControlActivity.this, "Failed writing DFU Control characteristic", Toast.LENGTH_LONG).show();
-	                            }
-			            	} else {
-			            		return false;
+				            		return false;
+				            	}
+				            }
+			            }
+		            } else if (mDeviceName.equals(DFU_DEVICE_NAME )){
+		            	List<BluetoothGattCharacteristic> gattCharacteristics = gattService.getCharacteristics();
+			            for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
+			            	uuid = gattCharacteristic.getUuid().toString();
+			            	if (uuid.equals(SampleGattAttributes.DFU_PACKET)){
+			            		if (initiateFileTransfer(gattCharacteristic)){
+					            	Toast.makeText(DeviceControlActivity.this, "Initiated file transfer", Toast.LENGTH_LONG).show();
+			            			return true;
+			            		}
 			            	}
 			            }
-		            }
-					return true;
+					
 				}
+			  }
 			}
 			return false;
+		}
+
+		private boolean initiateFileTransfer(BluetoothGattCharacteristic gattCharacteristic) {
+			File file = new File(FlashSectionFragment.BINARY_FILE_NAME);
+			if(file.exists()){
+				int imageSizeInBytes = 0 ;
+				FileInputStream initIs;
+				try {
+					initIs = new FileInputStream(FlashSectionFragment.BINARY_FILE_NAME);
+					imageSizeInBytes = mimageSizeInBytes = initIs.available();
+					gattCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
+					gattCharacteristic.setValue(new byte[4]);
+					gattCharacteristic.setValue(imageSizeInBytes, BluetoothGattCharacteristic.FORMAT_UINT32, 0);
+					return  mBluetoothLeService.writeCharacteristic(gattCharacteristic) ;
+				} catch (Exception e ) {
+					Toast.makeText(DeviceControlActivity.this, "Unknown Error", Toast.LENGTH_LONG).show();
+				}
+			} else {
+        		Toast.makeText(DeviceControlActivity.this, "No binary to flash", Toast.LENGTH_LONG).show();
+        		return false;
+			}
+			return true;
+		}
+
+		private boolean initiateDFU(BluetoothGattCharacteristic gattCharacteristic) {
+        	final int charaProp = gattCharacteristic.getProperties();
+        	if ((charaProp | BluetoothGattCharacteristic.PROPERTY_WRITE) > 0) {
+	            //Write to control characteristic of DFU
+        		Toast.makeText(DeviceControlActivity.this, "Wrting control characteristic of DFU service", Toast.LENGTH_LONG).show();
+        		//Add Values to the characteristic
+        		byte [] arrayOfByte = new byte[] {(byte)(0x01),(byte)(0x4) } ;
+        		gattCharacteristic.setValue(arrayOfByte);
+        		//Write them back
+        		return  mBluetoothLeService.writeCharacteristic(gattCharacteristic) ;
+        	} 
+        	return false;
 		}
     };
 
@@ -340,6 +396,9 @@ public class DeviceControlActivity extends Activity {
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
         intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
+        intentFilter.addAction(BluetoothLeService.ACTION_ON_CHARACTERISTIC_WRITE);
+        intentFilter.addAction(BluetoothLeService.ACTION_ON_ERROR);
+        intentFilter.addAction(BluetoothLeService.ACTION_PROGRESS_UPDATE);        
         return intentFilter;
     }
 }

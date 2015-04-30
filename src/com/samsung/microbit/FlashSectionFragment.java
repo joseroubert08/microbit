@@ -48,7 +48,7 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 	private Boolean isBLuetoothEnabled = false;
     private BluetoothAdapter mBluetoothAdapter = null;
     
-    final private String BINARY_FILE_NAME= "/sdcard/output.bin";
+    final public static String BINARY_FILE_NAME= "/sdcard/output.bin";
 
     public FlashSectionFragment() {
     }
@@ -131,8 +131,12 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 		Log.d("Microbit", "onClick");
 		switch(v.getId()){
 		case R.id.searchButton:
+			File file = new File(BINARY_FILE_NAME);
+			if(file.exists()){      
 			 Intent intent = new Intent(getActivity(), DeviceScanActivity.class);
 			 startActivity(intent);
+			} else {
+				Toast.makeText(getActivity(), "Create the binary file first by clicking one file below" , Toast.LENGTH_LONG).show();			}
 			break;
 		}
 		
