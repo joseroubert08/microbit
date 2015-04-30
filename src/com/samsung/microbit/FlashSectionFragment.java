@@ -47,6 +47,8 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 	private Boolean isBLEAvailable = true;
 	private Boolean isBLuetoothEnabled = false;
     private BluetoothAdapter mBluetoothAdapter = null;
+    
+    final private String BINARY_FILE_NAME= "/sdcard/output.bin";
 
     public FlashSectionFragment() {
     }
@@ -198,7 +200,7 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 					if (reader != null) reader.close();
 					//Write file
 				    Log.d("MicroBit", "Writing output file");
-					FileOutputStream f = new FileOutputStream(new File("/sdcard/output.bin"));
+					FileOutputStream f = new FileOutputStream(new File(BINARY_FILE_NAME));
 					f.write(buffer);
 					f.flush();
 					f.close();					

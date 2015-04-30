@@ -3,11 +3,13 @@ package com.samsung.microbit;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -20,6 +22,7 @@ import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,12 +94,59 @@ public class DeviceControlActivity extends Activity {
                 invalidateOptionsMenu();
                 clearUI();
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
-                // Show all the supported services and characteristics on the user interface.
-                displayGattServices(mBluetoothLeService.getSupportedGattServices());
+                if (!checkDFUService(mBluetoothLeService.getSupportedGattServices())){
+                	AlertDialog alertDialog = new AlertDialog.Builder(DeviceControlActivity.this).create();
+                	alertDialog.setTitle("Error");
+                	alertDialog.setMessage("No DFU Service Found");
+                	alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                	    new DialogInterface.OnClickListener() {
+                	        public void onClick(DialogInterface dialog, int which) {
+                	            dialog.dismiss();
+                	        }
+                	    });
+                	alertDialog.show();
+                	// Show all the supported services and characteristics on the user interface.
+                	displayGattServices(mBluetoothLeService.getSupportedGattServices());
+                }
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
             }
         }
+
+		private boolean checkDFUService(List<BluetoothGattService> supportedGattServices) {
+			if (supportedGattServices == null) return false;
+			String uuid = null ;
+			for (BluetoothGattService gattService : supportedGattServices) {
+				uuid = gattService.getUuid().toString();
+				if (uuid.equals(SampleGattAttributes.DEVICE_FIRMWARE_UPDATE)){
+		            Toast.makeText(DeviceControlActivity.this, "Found device with DFU support and connected", Toast.LENGTH_SHORT).show();
+		            List<BluetoothGattCharacteristic> gattCharacteristics = gattService.getCharacteristics();
+		            for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
+		            	uuid = gattCharacteristic.getUuid().toString();
+			            if (uuid.equals(SampleGattAttributes.DFU_CONTROL_POINT)){
+			            	final int charaProp = gattCharacteristic.getProperties();
+			            	if ((charaProp | BluetoothGattCharacteristic.PROPERTY_WRITE) > 0) {
+					            //Write to control characteristic of DFU
+			            		Toast.makeText(DeviceControlActivity.this, "Starting DFU for application", Toast.LENGTH_LONG).show();
+			            		//Add Values to the characteristic
+			            		byte [] arrayOfByte = new byte[] {(byte)(0x01),(byte)(0x4) } ;
+			            		gattCharacteristic.setValue(arrayOfByte);
+			            		//Write them back
+	                            if (mBluetoothLeService.writeCharacteristic(gattCharacteristic)){
+				            		Toast.makeText(DeviceControlActivity.this, "DFU control characteristic written successfully", Toast.LENGTH_LONG).show();
+	                            } else {
+				            		Toast.makeText(DeviceControlActivity.this, "Failed writing DFU Control characteristic", Toast.LENGTH_LONG).show();
+	                            }
+			            	} else {
+			            		return false;
+			            	}
+			            }
+		            }
+					return true;
+				}
+			}
+			return false;
+		}
     };
 
     // If a given GATT characteristic is selected, check for supported features.  This sample
