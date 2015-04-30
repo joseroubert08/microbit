@@ -99,7 +99,6 @@ public class DeviceScanActivity extends ListActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
         // fire an intent to display a dialog asking the user to grant permission to enable it.
         if (!mBluetoothAdapter.isEnabled()) {
@@ -138,6 +137,7 @@ public class DeviceScanActivity extends ListActivity {
     	if (mScanning) {
           mBluetoothAdapter.stopLeScan(mLeScanCallback);
           mScanning = false;
+          invalidateOptionsMenu();
         } 
     	final BluetoothDevice mSelectedDevice = mLeDeviceListAdapter.getDevice(position);
         if (mSelectedDevice == null) return;
@@ -156,15 +156,6 @@ public class DeviceScanActivity extends ListActivity {
         service.putExtra(DfuService.EXTRA_KEEP_BOND, false);
 
         startService(service);
-        
-//        final Intent intent = new Intent(this, DeviceControlActivity.class);
-//        intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME, device.getName());
-//        intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, device.getAddress());
-//        if (mScanning) {
-//            mBluetoothAdapter.stopLeScan(mLeScanCallback);
-//            mScanning = false;
-//        }
-//        startActivity(intent);
     }
 
     private void scanLeDevice(final boolean enable) {
