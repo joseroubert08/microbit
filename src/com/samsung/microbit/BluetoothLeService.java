@@ -31,7 +31,11 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,7 +44,7 @@ import java.util.UUID;
  * given Bluetooth LE device.
  */
 public class BluetoothLeService extends Service {
-    private final static String TAG = BluetoothLeService.class.getSimpleName();
+    private final static String TAG = "MicroBit.BluetoothLeService";
 
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
@@ -56,10 +60,18 @@ public class BluetoothLeService extends Service {
     public final static String ACTION_GATT_DISCONNECTED = "com.samsung.microbit.ACTION_GATT_DISCONNECTED";
     public final static String ACTION_GATT_SERVICES_DISCOVERED = "com.samsung.microbit.ACTION_GATT_SERVICES_DISCOVERED";
     public final static String ACTION_DATA_AVAILABLE = "com.samsung.microbit.ACTION_DATA_AVAILABLE";
+    public final static String ACTION_ON_CHARACTERISTIC_WRITE = "com.samsung.microbit.ACTION_ON_CHARACTERISTIC_WRITE";
+    public final static String ACTION_PROGRESS_UPDATE = "com.samsung.microbit.ACTION_PROGRESS_UPDATE";
+    public final static String ACTION_ON_ERROR = "com.samsung.microbit.ACTION_ON_ERROR";
     public final static String EXTRA_DATA = "com.samsung.microbit.EXTRA_DATA";
 
     public final static UUID UUID_DFU_SERVICE = UUID.fromString(SampleGattAttributes.DEVICE_FIRMWARE_UPDATE);
 
+    public final static UUID DFU_PACKET_UUID = UUID.fromString(SampleGattAttributes.DFU_PACKET);
+	private static final int MAX_PACKET_SIZE = 20; // the maximum number of bytes in one packet is 20. May be less.
+	private final byte[] mBuffer = new byte[MAX_PACKET_SIZE];
+
+    
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
@@ -106,6 +118,31 @@ public class BluetoothLeService extends Service {
                                             BluetoothGattCharacteristic characteristic) {
             broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
         }
+        @Override
+		public void onCharacteristicWrite(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final int status) {
+        	if (status == BluetoothGatt.GATT_SUCCESS) {
+        		if (DFU_PACKET_UUID.equals(characteristic.getUuid())) {
+    				/*
+    				 * This method is called when either a CONTROL POINT or PACKET characteristic has been written.
+    				 * If it is the CONTROL POINT characteristic, just set the {@link mRequestCompleted} flag to true. The main thread will continue its task when notified.
+    				 * If the PACKET characteristic was written we must:
+    				 * - if the image size was written in DFU Start procedure, just set flag to true
+    				 * otherwise
+    				 * - send the next packet, if notification is not required at that moment, or
+    				 * - do nothing, because we have to wait for the notification to confirm the data received
+    				 */
+					if (mBytesSent ==0 ) progressUpdate(ACTION_PROGRESS_UPDATE,"Starting to Send file now. Fingers crossed");
+        			sendFile(characteristic);
+        		}
+        		else {
+    				/*
+    				 * If a Reset (Op Code = 6) or Activate and Reset (Op Code = 5) commands are sent, the DFU target resets and sometimes does it so quickly that does not manage to send
+    				 * any ACK to the controller and error 133 is thrown here. This bug should be fixed in SDK 8.0+ where the target would gracefully disconnect before restarting.
+    				 */
+        			broadcastUpdate(ACTION_ON_ERROR, characteristic);
+    			}
+    		}
+        }        
     };
 
     private void broadcastUpdate(final String action) {
@@ -113,6 +150,12 @@ public class BluetoothLeService extends Service {
         sendBroadcast(intent);
     }
 
+    private void progressUpdate(final String action, String progress) {
+			final Intent intent = new Intent(action);
+			intent.putExtra(EXTRA_DATA, progress);
+			sendBroadcast(intent);
+    }
+    
     private void broadcastUpdate(final String action,
                                  final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
@@ -148,6 +191,11 @@ public class BluetoothLeService extends Service {
     }
 
     private final IBinder mBinder = new LocalBinder();
+
+	private int m_imageSizeInBytes = 0 ;
+	private int mBytesSent = 0 ;
+
+	private FileInputStream initIs;
 
     /**
      * Initializes a reference to the local Bluetooth adapter.
@@ -291,4 +339,43 @@ public class BluetoothLeService extends Service {
 
         return mBluetoothGatt.getServices();
     }
+
+	public void sendFile(BluetoothGattCharacteristic characteristic) {
+		if (m_imageSizeInBytes == 0 ){
+			try {
+				initIs = new FileInputStream(FlashSectionFragment.BINARY_FILE_NAME);
+				m_imageSizeInBytes = initIs.available();
+	            Log.i(TAG, "sendFile - Imagesize = " + m_imageSizeInBytes);
+			} catch (Exception e ) {
+				broadcastUpdate(ACTION_ON_ERROR, characteristic);
+				return ;
+			}
+		}
+		mBytesSent += characteristic.getValue().length;
+        Log.i(TAG, "sendFile - mBytesSent = " + mBytesSent);
+		final boolean lastPacketTransferred = mBytesSent == m_imageSizeInBytes;
+		if (lastPacketTransferred){
+			broadcastUpdate(ACTION_ON_CHARACTERISTIC_WRITE, characteristic);
+			return ;
+		}
+		//Transfer the file
+		final byte[] buffer = mBuffer;
+		try {
+			final int size = initIs.read(buffer);
+			byte[] locBuffer = buffer;
+			if (buffer.length != size) {
+				locBuffer = new byte[size];
+				System.arraycopy(buffer, 0, locBuffer, 0, size);
+				characteristic.setValue(locBuffer);
+				if (mBluetoothGatt.writeCharacteristic(characteristic)){
+					progressUpdate(ACTION_PROGRESS_UPDATE,String.valueOf(mBytesSent));
+				} else {
+					broadcastUpdate(ACTION_ON_ERROR, characteristic);
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

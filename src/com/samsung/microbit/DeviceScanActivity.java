@@ -135,16 +135,36 @@ public class DeviceScanActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
     	
-        final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
-        if (device == null) return;
-        final Intent intent = new Intent(this, DeviceControlActivity.class);
-        intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME, device.getName());
-        intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, device.getAddress());
-        if (mScanning) {
-            mBluetoothAdapter.stopLeScan(mLeScanCallback);
-            mScanning = false;
-        }
-        startActivity(intent);
+    	if (mScanning) {
+          mBluetoothAdapter.stopLeScan(mLeScanCallback);
+          mScanning = false;
+        } 
+    	final BluetoothDevice mSelectedDevice = mLeDeviceListAdapter.getDevice(position);
+        if (mSelectedDevice == null) return;
+        
+        final Intent service = new Intent(this, DfuService.class);
+        service.putExtra(DfuService.EXTRA_DEVICE_ADDRESS, mSelectedDevice.getAddress());
+        service.putExtra(DfuService.EXTRA_DEVICE_NAME, mSelectedDevice.getName());
+        service.putExtra(DfuService.EXTRA_FILE_MIME_TYPE, DfuService.MIME_TYPE_OCTET_STREAM);
+        //service.putExtra(DfuService.EXTRA_FILE_TYPE, mFileType);
+        service.putExtra(DfuService.EXTRA_FILE_PATH, FlashSectionFragment.BINARY_FILE_NAME); // a path or URI must be provided.
+        //service.putExtra(DfuService.EXTRA_FILE_URI, mFileStreamUri);
+        // Init packet is required by Bootloader/DFU from SDK 7.0+ if HEX or BIN file is given above.
+        // In case of a ZIP file, the init packet (a DAT file) must be included inside the ZIP file.
+        //service.putExtra(DfuService.EXTRA_INIT_FILE_PATH, mInitFilePath); 
+        //service.putExtra(DfuService.EXTRA_INIT_FILE_URI, mInitFileStreamUri);
+        service.putExtra(DfuService.EXTRA_KEEP_BOND, false);
+
+        startService(service);
+        
+//        final Intent intent = new Intent(this, DeviceControlActivity.class);
+//        intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME, device.getName());
+//        intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, device.getAddress());
+//        if (mScanning) {
+//            mBluetoothAdapter.stopLeScan(mLeScanCallback);
+//            mScanning = false;
+//        }
+//        startActivity(intent);
     }
 
     private void scanLeDevice(final boolean enable) {

@@ -25,6 +25,7 @@ public class SampleGattAttributes {
     private static HashMap<String, String> attributes = new HashMap();
     public static String DEVICE_FIRMWARE_UPDATE = "00001530-1212-efde-1523-785feabcd123";
     public static String DFU_CONTROL_POINT="00001531-1212-efde-1523-785feabcd123";
+    public static String DFU_PACKET="00001532-1212-efde-1523-785feabcd123";
 
     static {
         // Sample Services.
@@ -33,7 +34,7 @@ public class SampleGattAttributes {
 
         // Sample Characteristics.
         attributes.put(DFU_CONTROL_POINT, "DFU Control Point");
-        attributes.put("00001532-1212-efde-1523-785feabcd123", "DFU Packet");
+        attributes.put(DFU_PACKET, "DFU Packet");
     }
 
     public static String lookup(String uuid, String defaultName) {
