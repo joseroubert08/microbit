@@ -7,25 +7,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:text="Button" />
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/searchButton"
-        android:layout_alignBottom="@+id/searchButton"
-        android:layout_toRightOf="@+id/searchButton"
-        android:text="Large Text"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
 	<ListView
 	    android:id="@+id/programList"
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
 	    android:layout_alignParentLeft="true"
 	    android:layout_below="@+id/searchButton"
-	    android:background="#444444"
+	    android:background="#ffffff"
 	    android:drawSelectorOnTop="false" >
 
 	</ListView>

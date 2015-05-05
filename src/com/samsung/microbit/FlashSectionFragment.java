@@ -28,6 +28,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,12 +42,12 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 	private static final int FAILED = -3;
 	
 	private Button flashSearchButton = null ;
-	private TextView deviceConnectedText = null ;
 	private ListView programList = null ;
 	final ArrayList<String> list = new ArrayList<String>();
 	private Boolean isBLEAvailable = true;
 	private Boolean isBLuetoothEnabled = false;
     private BluetoothAdapter mBluetoothAdapter = null;
+    private String fileNameToFlash = null ;
     
     final public static String BINARY_FILE_NAME= "/sdcard/output.bin";
 
@@ -103,23 +104,22 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 		View rootView  = inflater.inflate(R.layout.fragment_section_flash, container, false);
 		
     	flashSearchButton = (Button) rootView.findViewById(R.id.searchButton);
-    	deviceConnectedText = (TextView) rootView.findViewById(R.id.textView1);
     	programList = (ListView) rootView.findViewById(R.id.programList);
     	//Default Values
         if(!isBLEAvailable){
             flashSearchButton.setEnabled(false);
-            deviceConnectedText.setText("BLE not supported. Cannot load code.");
+            flashSearchButton.setText("BLE not supported. Cannot load code.");
         } else {
             flashSearchButton.setEnabled(true);
     		flashSearchButton.setText("Search");
         	if (isBLuetoothEnabled){
-        		deviceConnectedText.setText(R.string.microbit_not_found);
+        		flashSearchButton.setText("Flash code");
         	} else {
-        		deviceConnectedText.setText(R.string.error_bluetooth_not_enabled);
+        		flashSearchButton.setText(R.string.error_bluetooth_not_enabled);
         	}
         }
     	ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-    	        android.R.layout.simple_list_item_1, list);
+    	        android.R.layout.simple_list_item_single_choice, list);
     	programList.setAdapter(adapter);
    		flashSearchButton.setOnClickListener(this);
    		programList.setOnItemClickListener(this);
@@ -141,12 +141,15 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 		}
 		
 	}
-
 	@Override
-	public void onItemClick(AdapterView<?> adapter, View v, int position, long arg3) {
-		String value = (String)adapter.getItemAtPosition(position);
-		Toast.makeText(getActivity(), "Preparing " + value + " ..." , Toast.LENGTH_LONG).show();
-		int retValue = PrepareFile(value);
+	public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
+		View v1 = programList.getChildAt(position);
+		CheckedTextView check = (CheckedTextView) v1;
+		check.setChecked(!check.isChecked());
+		
+		fileNameToFlash = (String)adapter.getItemAtPosition(position);
+		Toast.makeText(getActivity(), "Preparing " + fileNameToFlash + " ..." , Toast.LENGTH_LONG).show();
+		int retValue = PrepareFile(fileNameToFlash);
 		switch (retValue){
 			case SUCCESS:
 				Toast.makeText(getActivity(), "Binary file ready for flashing" , Toast.LENGTH_LONG).show();
