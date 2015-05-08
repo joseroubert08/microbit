@@ -20,6 +20,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      * three primary sections of the app. We use a {@link android.support.v4.app.FragmentPagerAdapter}
      * derivative, which will keep every loaded fragment in memory. If this becomes too memory
      * intensive, it may be best to switch to a {@link android.support.v4.app.FragmentStatePagerAdapter}.
+     *
      */
     AppSectionsPagerAdapter mAppSectionsPagerAdapter;
 
