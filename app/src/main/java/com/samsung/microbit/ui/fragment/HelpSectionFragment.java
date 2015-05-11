@@ -1,4 +1,4 @@
-package com.samsung.microbit;
+package com.samsung.microbit.ui.fragment;
 
 import android.support.v4.app.Fragment;
 

@@ -1,4 +1,4 @@
-package com.samsung.microbit;
+package com.samsung.microbit.ui.fragment;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.lang.Integer;
 
 import android.bluetooth.BluetoothAdapter;
@@ -30,8 +29,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.samsung.microbit.R;
+import com.samsung.microbit.ui.DeviceScanActivity;
 
 
 public class FlashSectionFragment extends Fragment implements OnClickListener, OnItemClickListener{ 

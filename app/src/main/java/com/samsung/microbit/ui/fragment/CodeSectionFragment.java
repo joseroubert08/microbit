@@ -1,4 +1,4 @@
-package com.samsung.microbit;
+package com.samsung.microbit.ui.fragment;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -9,7 +9,6 @@ import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.LOG;
 
 import android.app.Activity;
-import android.app.DownloadManager;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -18,6 +17,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.samsung.microbit.MBApp;
+import com.samsung.microbit.R;
+
 @SuppressWarnings("unused")
 public class CodeSectionFragment extends Fragment implements CordovaInterface {
     private boolean bound;
@@ -40,7 +43,7 @@ public class CodeSectionFragment extends Fragment implements CordovaInterface {
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-    	LayoutInflater localInflater = inflater.cloneInContext(new CordovaContext(getActivity(), this));        	
+    	LayoutInflater localInflater = inflater.cloneInContext(new CordovaContext(MBApp.getContext(), this));
     	View rootView = localInflater.inflate(R.layout.fragment_section_webview, container, false);
     	touchDevelopView = (CordovaWebView) rootView.findViewById(R.id.touchDevelopView);
     	touchDevelopView.loadUrl("https://www.touchdevelop.com/app#");
