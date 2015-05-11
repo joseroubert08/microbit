@@ -1,4 +1,4 @@
-package com.samsung.microbit;
+package com.samsung.microbit.ui;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +26,11 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.samsung.microbit.MBApp;
+import com.samsung.microbit.ui.fragment.FlashSectionFragment;
+import com.samsung.microbit.R;
+import com.samsung.microbit.service.DfuService;
 
 /**
  * Activity for scanning and displaying available Bluetooth LE devices.
@@ -44,6 +50,8 @@ public class DeviceScanActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         getActionBar().setTitle(R.string.title_devices);
         mHandler = new Handler();
+
+        MBApp.setContext(this);
 
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.

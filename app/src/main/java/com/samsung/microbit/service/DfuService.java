@@ -1,6 +1,9 @@
-package com.samsung.microbit;
+package com.samsung.microbit.service;
 
 import android.app.Activity;
+
+import com.samsung.microbit.ui.NotificationActivity;
+
 import no.nordicsemi.android.dfu.DfuBaseService;
 
 public class DfuService extends DfuBaseService {
