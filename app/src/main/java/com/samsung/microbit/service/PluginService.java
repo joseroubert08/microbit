@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.plugin.AlertPlugin;
 import com.samsung.microbit.plugin.FeedbackPlugin;
+import com.samsung.microbit.plugin.InformationPlugin;
 
 /**
  * Created by kkulendiran on 10/05/2015.
@@ -25,6 +26,7 @@ public class PluginService extends Service {
     //MBS Services
     public static final int ALERT = 0;
     public static final int FEEDBACK = 1;
+    public static final int INFORMATION = 2;
 
     /**
      * Handler of incoming messages from BLEListner.
@@ -34,13 +36,16 @@ public class PluginService extends Service {
         public void handleMessage(Message msg) {
             Bundle data = msg.getData();
             mClientMessenger = msg.replyTo;
-            CmdArg cmd = new CmdArg(data.getInt("cmd"), data.getString("value"));;
+            CmdArg cmd = new CmdArg(data.getInt("cmd"), data.getString("value"));
             switch (msg.what) {
                 case ALERT:
                     AlertPlugin.pluginEntry(PluginService.this,cmd);
                     break;
                 case FEEDBACK:
                     FeedbackPlugin.pluginEntry(PluginService.this, cmd);
+                    break;
+                case INFORMATION:
+                    InformationPlugin.pluginEntry(PluginService.this, cmd);
                     break;
                 default:
                     super.handleMessage(msg);
