@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Vibrator;
+import android.view.Gravity;
 import android.widget.Toast;
 
 import com.samsung.microbit.model.CmdArg;
@@ -22,14 +23,16 @@ import java.util.TimerTask;
 public class AlertPlugin {
 
     private static Context context = null;
-    private enum Service {
-        TOAST, VIBRATE, SOUND, RINGTONE
-    }
+
+    //Alert plugin action
+    public static final int TOAST = 0;
+    public static final int VIBRATE = 1;
+    public static final int SOUND = 2;
+    public static final int RINGTONE = 3;
 
     public static void pluginEntry(Context ctx, CmdArg cmd) {
-
         context = ctx;
-        switch (Service.values()[cmd.getCMD()]) {
+        switch (cmd.getCMD()) {
             case TOAST:
                 showToast(cmd.getValue());
                 break;
@@ -49,6 +52,7 @@ public class AlertPlugin {
 
     private static void showToast(final String msg) {
         Toast toast = Toast.makeText(context, msg,  Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
     }
 
