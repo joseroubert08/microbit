@@ -27,5 +27,17 @@ proguard/
 *.log
 
 #Android Studio
-.idea
+.idea/
+.gradle
+gradle  
+/*/local.properties
+/*/out
+/*/*/build
+build  
+/*/*/production
+*.iml
+*.iws
+*.ipr
+*~
+*.swp
 
