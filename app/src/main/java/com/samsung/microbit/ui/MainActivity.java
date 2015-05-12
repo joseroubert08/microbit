@@ -1,7 +1,8 @@
-package com.samsung.microbit;
+package com.samsung.microbit.ui;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -13,6 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.samsung.microbit.MBApp;
+import com.samsung.microbit.service.PluginService;
+import com.samsung.microbit.ui.fragment.CodeSectionFragment;
+import com.samsung.microbit.ui.fragment.FlashSectionFragment;
+import com.samsung.microbit.ui.fragment.HelpSectionFragment;
+import com.samsung.microbit.R;
+
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 
     /**
@@ -20,7 +28,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      * three primary sections of the app. We use a {@link android.support.v4.app.FragmentPagerAdapter}
      * derivative, which will keep every loaded fragment in memory. If this becomes too memory
      * intensive, it may be best to switch to a {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     *
      */
     AppSectionsPagerAdapter mAppSectionsPagerAdapter;
 
@@ -34,6 +41,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         super.onCreate(savedInstanceState);
        
         setContentView(R.layout.activity_main);
+
+        MBApp.setContext(this);
 
         // Create the adapter that will return a fragment for each of the three primary sections
         // of the app.
@@ -73,6 +82,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                             .setText(mAppSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
+
+        //KKULEN - Start Plugin Service
+        Intent intent = new Intent(this, PluginService.class);
+        startService(intent);
     }
 
     @Override
