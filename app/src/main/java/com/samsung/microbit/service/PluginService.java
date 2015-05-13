@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.plugin.AlertPlugin;
+import com.samsung.microbit.plugin.AudioPlugin;
 import com.samsung.microbit.plugin.FeedbackPlugin;
 import com.samsung.microbit.plugin.InformationPlugin;
 
@@ -27,6 +28,7 @@ public class PluginService extends Service {
     public static final int ALERT = 0;
     public static final int FEEDBACK = 1;
     public static final int INFORMATION = 2;
+    public static final int AUDIO = 3;
 
     /**
      * Handler of incoming messages from BLEListner.
@@ -46,6 +48,9 @@ public class PluginService extends Service {
                     break;
                 case INFORMATION:
                     InformationPlugin.pluginEntry(PluginService.this, cmd);
+                    break;
+                case AUDIO:
+                    AudioPlugin.pluginEntry(PluginService.this, cmd);
                     break;
                 default:
                     super.handleMessage(msg);
