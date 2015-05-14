@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -49,6 +50,7 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
     private static final int STATE_SCANNING=3;
     private static final int STATE_DEVICE_DISCOVERED=4;
     private static final int STATE_DEVICE_PAIRED=5;
+    private static SharedPreferences preferences;
 
     private String deviceCodeArray[] = {"0","0","0","0","0","0","0","0","0","0",
                                         "0","0","0","0","0","0","0","0","0","0",
@@ -109,7 +111,7 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
 
         devicesButton = (Button) rootView.findViewById(R.id.devicesButton);
         devicesButton.setText(R.string.devices_initiate_process);
-
+        preferences = rootView.getContext().getSharedPreferences("Microbit_PairedDevices", Context.MODE_PRIVATE);
         /*
         //Default Values
         if(!isBLEAvailable){
@@ -507,6 +509,12 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
                         case BluetoothDevice.BOND_BONDED:
                             state=STATE_DEVICE_PAIRED;
                             Log.d("Microbit", "BOND_BONDED - Pairing finished successfully");
+                            // The SharedPreferences editor - must use commit() to submit changes
+                            SharedPreferences.Editor editor = preferences.edit();
+
+                            // Edit the saved preferences
+                            editor.putString("PairedDevice", deviceName);
+                            editor.commit();
                             Toast.makeText(getActivity(), "Partner Found - Enter both buttons on device", Toast.LENGTH_SHORT).show();
                             break;
                         case BluetoothDevice.BOND_NONE:
