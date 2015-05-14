@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.fragment.CodeSectionFragment;
+import com.samsung.microbit.ui.fragment.DevicesFragment;
 import com.samsung.microbit.ui.fragment.FlashSectionFragment;
 import com.samsung.microbit.ui.fragment.HelpSectionFragment;
 import com.samsung.microbit.R;
@@ -122,6 +123,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 case 1:
                 	return new FlashSectionFragment();
                 case 2:
+                    return new DevicesFragment();
+                case 3:
                 	return new HelpSectionFragment();
                 default:
                     // The other sections of the app are dummy placeholders.
@@ -135,7 +138,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
 
         @Override
@@ -146,6 +149,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         		case 1:
         			return "Run Code";
         		case 2:
+                                return "Devices";
+        		case 3:
         			return "Help Videos ";
         		default:
         			return "New section";
