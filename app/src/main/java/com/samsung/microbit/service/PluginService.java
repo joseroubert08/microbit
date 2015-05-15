@@ -15,6 +15,7 @@ import com.samsung.microbit.plugin.AlertPlugin;
 import com.samsung.microbit.plugin.AudioPlugin;
 import com.samsung.microbit.plugin.FeedbackPlugin;
 import com.samsung.microbit.plugin.InformationPlugin;
+import com.samsung.microbit.plugin.RemoteControlPlugin;
 
 /**
  * Created by kkulendiran on 10/05/2015.
@@ -29,6 +30,7 @@ public class PluginService extends Service {
     public static final int FEEDBACK = 1;
     public static final int INFORMATION = 2;
     public static final int AUDIO = 3;
+    public static final int REMOTE_CONTROL = 4;
 
     /**
      * Handler of incoming messages from BLEListner.
