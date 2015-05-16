@@ -16,6 +16,8 @@ import com.samsung.microbit.plugin.AudioPlugin;
 import com.samsung.microbit.plugin.FeedbackPlugin;
 import com.samsung.microbit.plugin.InformationPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
+import com.samsung.microbit.plugin.TelephonyPlugin;
+import com.samsung.microbit.plugin.CameraPlugin;
 
 /**
  * Created by kkulendiran on 10/05/2015.
@@ -31,9 +33,11 @@ public class PluginService extends Service {
     public static final int INFORMATION = 2;
     public static final int AUDIO = 3;
     public static final int REMOTE_CONTROL = 4;
+    public static final int TELEPHONY = 5;
+    public static final int CAMERA = 6;
 
     /**
-     * Handler of incoming messages from BLEListner.
+     * Handler of incoming messages from BLEListener.
      */
     class IncomingHandler extends Handler {
         @Override
@@ -53,6 +57,12 @@ public class PluginService extends Service {
                     break;
                 case AUDIO:
                     AudioPlugin.pluginEntry(PluginService.this, cmd);
+                    break;
+                case TELEPHONY:
+                    TelephonyPlugin.pluginEntry(PluginService.this, cmd);
+                    break;
+                case CAMERA:
+                    CameraPlugin.pluginEntry(PluginService.this, cmd);
                     break;
                 default:
                     super.handleMessage(msg);
