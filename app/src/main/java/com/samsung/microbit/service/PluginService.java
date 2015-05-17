@@ -58,6 +58,9 @@ public class PluginService extends Service {
                 case AUDIO:
                     AudioPlugin.pluginEntry(PluginService.this, cmd);
                     break;
+                case REMOTE_CONTROL:
+                    RemoteControlPlugin.pluginEntry(PluginService.this, cmd);
+                    break;
                 case TELEPHONY:
                     TelephonyPlugin.pluginEntry(PluginService.this, cmd);
                     break;
