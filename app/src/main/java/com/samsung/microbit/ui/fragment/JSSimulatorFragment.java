@@ -1,13 +1,5 @@
 package com.samsung.microbit.ui.fragment;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.apache.cordova.CordovaInterface;
-import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.CordovaWebView;
-import org.apache.cordova.LOG;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -21,20 +13,28 @@ import android.view.ViewGroup;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 
+import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.LOG;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @SuppressWarnings("unused")
 public class JSSimulatorFragment extends Fragment implements CordovaInterface {
     private boolean bound;
 	private boolean volumeupBound;
     private boolean volumedownBound;
     
-    String TAG = "CodeFragment";
+    String TAG = "JSSimulatorFragment";
     private CordovaPlugin activityResultCallback;
     private Object activityResultKeepRunning;
     private Object keepRunning;
     
     private final ExecutorService threadPool = Executors.newCachedThreadPool();
     
-	CordovaWebView touchDevelopView;
+	CordovaWebView jsSimulatorView;
     public static JSSimulatorFragment newInstance() {
     	JSSimulatorFragment fragment = new JSSimulatorFragment();
         return fragment;
@@ -44,11 +44,9 @@ public class JSSimulatorFragment extends Fragment implements CordovaInterface {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
     	LayoutInflater localInflater = inflater.cloneInContext(new CordovaContext(MBApp.getContext(), this));
-    	View rootView = localInflater.inflate(R.layout.fragment_section_webview, container, false);
-    	touchDevelopView = (CordovaWebView) rootView.findViewById(R.id.touchDevelopView);
-    	touchDevelopView.loadUrl("https://www.touchdevelop.com/app#");
-        //touchDevelopView.loadUrl("file:///android_asset/www/index.html"); //use this for running JS2JAVA simulator                
-    	//touchDevelopView.loadUrl("http://www.highwaycodeuk.co.uk/download-pdf.html");
+    	View rootView = localInflater.inflate(R.layout.fragment_js_simulator, container, false);
+    	jsSimulatorView = (CordovaWebView) rootView.findViewById(R.id.jsSimulatorView);
+        jsSimulatorView.loadUrl("file:///android_asset/www/index.html"); //use this for running JS2JAVA simulator
     	return rootView;
     }
 
@@ -86,8 +84,8 @@ public class JSSimulatorFragment extends Fragment implements CordovaInterface {
 	}
 	public void onDestroy() {
         super.onDestroy();
-        if (touchDevelopView.pluginManager != null) {
-        	touchDevelopView.pluginManager.onDestroy();
+        if (jsSimulatorView.pluginManager != null) {
+        	jsSimulatorView.pluginManager.onDestroy();
         }
     }
 	@Override

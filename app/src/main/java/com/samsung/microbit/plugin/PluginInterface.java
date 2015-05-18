@@ -59,7 +59,7 @@ public class PluginInterface  extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext)
             throws JSONException {
         if (action.equals("handleMessage")) {
-            handleMessage(args.getString(0), args.getString(1), callbackContext);
+            handleMessage(args.getInt(0), args.getInt(1), args.getString(2), callbackContext);
             return true;
         }
         else if (action.equals("setCallback")) {
@@ -75,20 +75,31 @@ public class PluginInterface  extends CordovaPlugin {
     }
 
     //handle incoming calls from HTML to trigger plugin calls
-    private synchronized void handleMessage(final String command, final String value, final CallbackContext callbackContext)
+    private synchronized void handleMessage(final int service, final int action, final String value, final CallbackContext callbackContext)
     {
         Log.v("PluginInterface", "handleMessage");
-        if (command.equals("ringtone")) {
-            AlertPlugin.pluginEntry(webView.getContext(), new CmdArg(AlertPlugin.RINGTONE, value));
-        }
-        else if (command.equals("sound")) {
-            AlertPlugin.pluginEntry(webView.getContext(), new CmdArg(AlertPlugin.SOUND, value));
-        }
-        else if (command.equals("toast")) {
-            AlertPlugin.pluginEntry(webView.getContext(), new CmdArg(AlertPlugin.TOAST, value));
-        }
-        else if (command.equals("vibrate")) {
-            AlertPlugin.pluginEntry(webView.getContext(), new CmdArg(AlertPlugin.VIBRATE, value));
+        switch(service) {
+            case PluginService.ALERT:
+                AlertPlugin.pluginEntry(webView.getContext(), new CmdArg(action, value));
+                break;
+            case PluginService.FEEDBACK:
+                FeedbackPlugin.pluginEntry(webView.getContext(), new CmdArg(action, value));
+                break;
+            case PluginService.INFORMATION:
+                InformationPlugin.pluginEntry(webView.getContext(), new CmdArg(action, value));
+                break;
+            case PluginService.AUDIO:
+                AudioPlugin.pluginEntry(webView.getContext(), new CmdArg(action, value));
+                break;
+            case PluginService.REMOTE_CONTROL:
+                RemoteControlPlugin.pluginEntry(webView.getContext(), new CmdArg(action, value));
+                break;
+            case PluginService.TELEPHONY:
+                TelephonyPlugin.pluginEntry(webView.getContext(), new CmdArg(action, value));
+                break;
+            case PluginService.CAMERA:
+                CameraPlugin.pluginEntry(webView.getContext(), new CmdArg(action, value));
+                break;
         }
         //execute result callback if specified in JS side
         if (callbackContext != null) {
