@@ -2,6 +2,7 @@ package com.samsung.microbit.plugin;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.view.KeyEvent;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -58,7 +59,7 @@ public class RemoteControlPlugin {
         Intent mediaEvent = new Intent(Intent.ACTION_MEDIA_BUTTON);
         KeyEvent event = new KeyEvent(action, code);
         mediaEvent.putExtra(Intent.EXTRA_KEY_EVENT, event);
-        context.sendBroadcast(mediaEvent);
+        context.sendOrderedBroadcast(mediaEvent, null);
     }
 
     private static final void scheduleMediaKeyEvent(final int action, final int code, final int duration) {
@@ -106,13 +107,23 @@ public class RemoteControlPlugin {
     }
 
     private static void VolumeUp() {
+        AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+        /*
         scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_VOLUME_UP, 0);
         scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_VOLUME_UP, 100);
+        */
     }
 
     private static void VolumeDown() {
+        AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
+        /*
         scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_VOLUME_DOWN, 0);
         scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_VOLUME_DOWN, 100);
+        */
     }
 
 }
