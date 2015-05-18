@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Page Title</title>
+    <script src="cordova.js"></script>
+    <script type="text/javascript">
+        //event is a json object built from JAVA class PluginInterface
+        function onEventReceived(event)
+        {
+            alert("Simulated event from Microbit: " +event.type + ", " + event.source);
+            //TODO: add code to handle event from microbit i.e. button press
+            //switch(event.type) {
+            //  case "button_press":
+            //      if (event.source == "left")
+        }
+
+        //wait for Cordova API initialization before initialising PluginInterface
+        function onCordovaReady()
+        {   //set the event listener for handling microbit event
+            PluginInterface.init(onEventReceived);
+        }
+
+        function onLoad()
+        {
+            document.addEventListener("deviceready", onCordovaReady, false);
+        }
+
+        function onClick(button_id,value)
+        {   //button_id contains the command name i.e. ringtone, vibrate, ...
+            //send command to JAVA plugin (PluginInterface will dispatch to corresponding plugin)
+            PluginInterface.send(button_id, value, null);
+        }
+    </script>
+</head>
+<body onload="onLoad()">
+
+<h1>JS2JAVA INTERFACE</h1>
+
+<h2>ALERT<h2>
+<button type="button" id="toast" onclick="onClick(this.id, 'Hello World')">Toast</button>
+<button type="button" id="ringtone" onclick="onClick(this.id, '')">Ringtone</button>
+<button type="button" id="sound" onclick="onClick(this.id, '')">Sound</button>
+<button type="button" id="vibrate" onclick="onClick(this.id, '1000')">Vibrate</button>
+
+</body>
+</html>
