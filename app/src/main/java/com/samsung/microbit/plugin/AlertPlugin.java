@@ -1,6 +1,7 @@
 package com.samsung.microbit.plugin;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -29,6 +30,7 @@ public class AlertPlugin {
     public static final int VIBRATE = 1;
     public static final int SOUND = 2;
     public static final int RINGTONE = 3;
+    public static final int FINDPHONE = 4;
 
     public static void pluginEntry(Context ctx, CmdArg cmd) {
         context = ctx;
@@ -44,6 +46,9 @@ public class AlertPlugin {
                 break;
             case RINGTONE:
                 playRingTone();
+                break;
+            case FINDPHONE:
+                findPhone();
                 break;
             default:
                 break;
@@ -76,6 +81,14 @@ public class AlertPlugin {
         Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         Ringtone r = RingtoneManager.getRingtone(context, ringtone);
         r.play();
+    }
+
+    private static void findPhone() {
+        Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Ringtone r = RingtoneManager.getRingtone(context, ringtone);
+        r.setStreamType(AudioManager.STREAM_ALARM);
+        r.play();
+        vibrate(1000);
     }
 
     private static void vibrate(int duration) {
