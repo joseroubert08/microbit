@@ -21,6 +21,7 @@ import com.samsung.microbit.ui.fragment.DevicesFragment;
 import com.samsung.microbit.ui.fragment.FlashSectionFragment;
 import com.samsung.microbit.ui.fragment.HelpSectionFragment;
 import com.samsung.microbit.R;
+import com.samsung.microbit.ui.fragment.JSSimulatorFragment;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 
@@ -121,10 +122,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     // a launchpad into the other demonstrations in this example application.
                     return new CodeSectionFragment();
                 case 1:
-                	return new FlashSectionFragment();
+                    return new JSSimulatorFragment();
                 case 2:
-                    return new DevicesFragment();
+                	return new FlashSectionFragment();
                 case 3:
+                    return new DevicesFragment();
+                case 4:
                 	return new HelpSectionFragment();
                 default:
                     // The other sections of the app are dummy placeholders.
@@ -138,7 +141,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
         @Override
         public int getCount() {
-            return 4;
+            return 5;
         }
 
         @Override
@@ -146,11 +149,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	switch(position){
         		case 0:
         			return "Let's Code";
-        		case 1:
-        			return "Run Code";
+                case 1:
+                    return "JS Simulator";
         		case 2:
-                                return "Devices";
+        			return "Run Code";
         		case 3:
+                    return "Devices";
+        		case 4:
         			return "Help Videos ";
         		default:
         			return "New section";

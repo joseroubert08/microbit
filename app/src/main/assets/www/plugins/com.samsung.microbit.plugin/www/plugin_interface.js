@@ -1,12 +1,12 @@
 cordova.define("com.samsung.microbit.plugin.PluginInterface", function(require, exports, module) { module.exports = {
-  send: function(cmd, value, successCallback) {
+  send: function(service, cmd, value, successCallback) {
     cordova.exec(successCallback,
                  function(err) {
                     console.log(err);
                  }, //failure callback
                  "PluginInterface",
                  "handleMessage",//action name
-                 [cmd, value]);
+                 [service, cmd, value]);
   },
   init: function(JSCallback) {
     cordova.exec(JSCallback,

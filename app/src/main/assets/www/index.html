@@ -3,6 +3,7 @@
 <head>
     <title>Page Title</title>
     <script src="cordova.js"></script>
+    <script src="microbitservice.js"></script>
     <script type="text/javascript">
         //event is a json object built from JAVA class PluginInterface
         function onEventReceived(event)
@@ -25,22 +26,29 @@
             document.addEventListener("deviceready", onCordovaReady, false);
         }
 
-        function onClick(button_id,value)
-        {   //button_id contains the command name i.e. ringtone, vibrate, ...
+        function onClick(service, action, value, callback)
+        {   
+	    //button_id contains the command name i.e. ringtone, vibrate, ...
             //send command to JAVA plugin (PluginInterface will dispatch to corresponding plugin)
-            PluginInterface.send(button_id, value, null);
+	    mbs.command(service, action, value, callback);           
         }
     </script>
 </head>
 <body onload="onLoad()">
 
-<h1>JS2JAVA INTERFACE</h1>
+<center>
+<h2>JS2JAVA INTERFACE</h2>
+</center>
 
-<h2>ALERT<h2>
-<button type="button" id="toast" onclick="onClick(this.id, 'Hello World')">Toast</button>
-<button type="button" id="ringtone" onclick="onClick(this.id, '')">Ringtone</button>
-<button type="button" id="sound" onclick="onClick(this.id, '')">Sound</button>
-<button type="button" id="vibrate" onclick="onClick(this.id, '1000')">Vibrate</button>
+<h3>ALERT<h3>
+<button type="button" id="toast" onclick="onClick(mbs.service.ALERT,mbs.alert.TOAST,'Hello World', null)">Toast</button>
+<button type="button" id="vibrate" onclick="onClick(mbs.service.ALERT,mbs.alert.VIBRATE,'1000', null)">Vibrate</button>
+<button type="button" id="sound" onclick="onClick(mbs.service.ALERT,mbs.alert.SOUND,'', null)">Sound</button>
+<button type="button" id="ringtone" onclick="onClick(mbs.service.ALERT,mbs.alert.RINGTONE,'', null)">Ringtone</button>
+<button type="button" id="findphone" onclick="onClick(mbs.service.ALERT,mbs.alert.FINDPHONE,'', null)">Find Phone</button>
+
+<h3>FEEDBACK<h3>
+<button type="button" id="display" onclick="onClick(mbs.service.FEEDBACK,mbs.feedback.DISPLAY,'', null)">Display</button>
 
 </body>
 </html>
