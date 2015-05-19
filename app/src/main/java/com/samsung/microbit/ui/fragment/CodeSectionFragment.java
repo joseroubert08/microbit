@@ -46,7 +46,8 @@ public class CodeSectionFragment extends Fragment implements CordovaInterface {
     	LayoutInflater localInflater = inflater.cloneInContext(new CordovaContext(MBApp.getContext(), this));
     	View rootView = localInflater.inflate(R.layout.fragment_section_webview, container, false);
     	touchDevelopView = (CordovaWebView) rootView.findViewById(R.id.touchDevelopView);
-    	touchDevelopView.loadUrl("https://www.touchdevelop.com/app#");
+		touchDevelopView.loadUrl("https://microbit:bitbug42@mbitmain.azurewebsites.net/app/");
+    	//touchDevelopView.loadUrl("https://www.touchdevelop.com/app#");
         //touchDevelopView.loadUrl("file:///android_asset/www/index.html"); //use this for running JS2JAVA simulator                
     	//touchDevelopView.loadUrl("http://www.highwaycodeuk.co.uk/download-pdf.html");
     	return rootView;
