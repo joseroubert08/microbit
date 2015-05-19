@@ -2,6 +2,8 @@ package com.samsung.microbit.ui.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -15,6 +17,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +39,31 @@ import com.samsung.microbit.ui.ImageAdapter;
 import java.util.ArrayList;
 
 
+class MySpinnerDialog extends DialogFragment {
+    private ProgressDialog  _dialog;
+
+    public MySpinnerDialog() {
+        // use empty constructors. If something is needed use onCreate's
+    }
+
+    @Override
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
+
+        _dialog = new ProgressDialog(getActivity());
+        this.setStyle(STYLE_NORMAL, getTheme()); // You can use styles or inflate a view
+        _dialog.setMessage("Searching for the Microbit.."); // set your messages if not inflated from XML
+        _dialog.setTitle("Microbit Pairing");
+        _dialog.setCancelable(false);
+
+        return _dialog;
+    }
+    protected void onProgressUpdate(String message)
+    {
+//        Toast.makeText(getActivity(), "calling progressUpdate", Toast.LENGTH_SHORT).show();
+        _dialog.setMessage(message);
+    }
+}
+
 public class DevicesFragment extends Fragment implements OnClickListener, OnItemClickListener{
 
     private static final int SUCCESS = 0;
@@ -51,7 +80,8 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
     private static final int STATE_DEVICE_DISCOVERED=4;
     private static final int STATE_DEVICE_PAIRED=5;
     private static SharedPreferences preferences;
-
+    private static final String PREFERENCES_KEY = "PairedDevice";
+    private MySpinnerDialog pairingProgressDialog;
     private String deviceCodeArray[] = {"0","0","0","0","0","0","0","0","0","0",
                                         "0","0","0","0","0","0","0","0","0","0",
                                         "0","0","0","0","0"};
@@ -73,6 +103,7 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
     private String fileNameToFlash = null ;
 
     private Handler mHandler;
+    private Runnable scanFailedCallback;
     private boolean mScanning;
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 10000;
@@ -83,6 +114,18 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
 
     View rootView;
 
+
+    private void alertView( String message, int title_id ) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(rootView.getContext());
+
+        dialog.setTitle(getString(title_id))
+                .setIcon(R.drawable.ic_launcher)
+                .setMessage(message)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialoginterface, int i) {
+                    }
+                }).show();
+    }
 
     public DevicesFragment() {
     }
@@ -108,10 +151,7 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
 
         //View rootView  = inflater.inflate(R.layout.fragment_devices, container, false);
         rootView  = inflater.inflate(R.layout.fragment_devices, container, false);
-
-        devicesButton = (Button) rootView.findViewById(R.id.devicesButton);
-        devicesButton.setText(R.string.devices_initiate_process);
-        preferences = rootView.getContext().getSharedPreferences("Microbit_PairedDevices", Context.MODE_PRIVATE);
+        checkBluetoothSupported();
         /*
         //Default Values
         if(!isBLEAvailable){
@@ -174,13 +214,16 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
             }
 
             case STATE_LED_GRID_DISPLAYED:
+            case STATE_DEVICE_PAIRED:
             {
                 //generateCode();
                 generateName();
 
                 devicesButton = (Button) rootView.findViewById(R.id.devicesButton);
                 devicesButton.setText(R.string.devices_scanning);
-
+                pairingProgressDialog = new MySpinnerDialog();
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                pairingProgressDialog.show(fm, "Pairing");
                 state=STATE_SCANNING;
                 scanLeDevice(true);
                 break;
@@ -194,7 +237,9 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
                 //STATE change occurs in scanLeDevice function
                 devicesButton = (Button) rootView.findViewById(R.id.devicesButton);
                 devicesButton.setText(R.string.devices_scanning);
-
+                pairingProgressDialog = new MySpinnerDialog();
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                pairingProgressDialog.show(fm, "Pairing");
                 state=STATE_SCANNING;
                 scanLeDevice(true);
                 break;
@@ -334,8 +379,11 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
                 (BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE);
         mBluetoothAdapter = bluetoothManager.getAdapter();
 
+        devicesButton = (Button) rootView.findViewById(R.id.devicesButton);
+
         if (!mBluetoothAdapter.isEnabled()) {
             if (!mBluetoothAdapter.isEnabled()) {
+                devicesButton.setText("Enable Bluetooth");
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
             }
@@ -343,8 +391,6 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
         else
         {
             isBLuetoothEnabled = true ;
-
-            devicesButton = (Button) rootView.findViewById(R.id.devicesButton);
             devicesButton.setText(R.string.devices_find_microbit);
             displayLEDGridView();
             state = STATE_LED_GRID_DISPLAYED;
@@ -395,7 +441,7 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
             }
         }
 
-        Toast.makeText(getActivity(), deviceName, Toast.LENGTH_SHORT).show();
+     //   Toast.makeText(getActivity(), deviceName, Toast.LENGTH_SHORT).show();
     }
 
 
@@ -408,7 +454,7 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
             deviceCode += deviceCodeArray[i];
         }
 
-        Toast.makeText(getActivity(), deviceCode, Toast.LENGTH_LONG).show();
+     //   Toast.makeText(getActivity(), deviceCode, Toast.LENGTH_LONG).show();
 
         return deviceCode;
     }
@@ -438,6 +484,37 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
         Log.d("Microbit","displayLEDGridView");
 
         imgAdapter=new ImageAdapter(getActivity());
+        preferences = rootView.getContext().getSharedPreferences("Microbit_PairedDevices", Context.MODE_PRIVATE);
+
+        try {
+            String pairedDeviceName = preferences.getString(PREFERENCES_KEY, "None");
+            Log.d("Microbit", "Preferences - PairedDevice" + pairedDeviceName);
+            if (!pairedDeviceName.equals("None"))
+            {
+                devicesButton.setText("Connected to " + pairedDeviceName);
+                //Columns
+                /*
+                for (int col = 0, i = 0; col < 5; col++,i++) {
+
+                    //Rows
+                    for (int row=0; row<5; row++)
+                    {
+                        if (pairedDeviceName.charAt(i) == deviceNameMapArray[(col+(5*row))].charAt(0)) {
+                            //         toggleLED(imgAdapter.getView(), col+(5*row));
+                            imgAdapter.setItem((col+(5*row)));
+                            deviceCodeArray[col+(5*row)] = "1";
+                            break;
+                        }
+                    }
+                }*/
+
+            }
+
+
+        } catch (ClassCastException e) {
+            Log.d("Microbit", "Preferences - PairedDevice NONE!!!!");
+        }
+
         devicesGridview = (GridView) rootView.findViewById(R.id.devicesLEDGridView);
         devicesGridview.setAdapter(imgAdapter);
 
@@ -456,15 +533,50 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
 
     //BLUETOOTH CODE
 
+    private void  handle_pairing_failed()
+    {
+        SharedPreferences.Editor editor = preferences.edit();
+        // Edit the saved preferences
+        editor.remove(PREFERENCES_KEY);
+        editor.commit();
+        pairingProgressDialog.dismiss();
+        alertView(getString(R.string.pairing_failed_message), R.string.pairing_failed_title);
+        devicesButton.setText(R.string.devices_find_microbit);
+    }
+
+    private void  handle_pairing_successful()
+    {
+        String pairedDeviceName = preferences.getString(PREFERENCES_KEY, "None");
+        // Edit the saved preferences
+        if ((!pairedDeviceName.equals("None") && !pairedDeviceName.equals(deviceName))
+            || (pairedDeviceName.equals("None")))
+            {
+                // TODO: Should we disconnect by calling removeBond from old BLE device??
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString(PREFERENCES_KEY, deviceName);
+                editor.commit();
+            }
+
+        devicesButton.setText("Connected to " + deviceName);
+        mHandler.removeCallbacks(scanFailedCallback);
+        pairingProgressDialog.dismiss();
+        alertView(getString(R.string.pairing_success_message_1) + deviceName + getString(R.string.pairing_success_message_2),
+                R.string.pairing_success_title);
+    }
+
     private void scanningFailed()
     {
         Log.d("Microbit", "scanning Failed to find a matching device");
 
         scanLeDevice(false);
-        state=STATE_READY_TO_SCAN;
-
         devicesButton = (Button) rootView.findViewById(R.id.devicesButton);
-        devicesButton.setText(R.string.devices_find_microbit);
+        if(state != STATE_DEVICE_PAIRED) {
+
+            state = STATE_READY_TO_SCAN;
+            // Close the Scanning Dialog
+            handle_pairing_failed();
+
+        }
     }
 
     private void scanLeDevice(final boolean enable) {
@@ -473,7 +585,7 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
 
         if (enable) {
             // Stops scanning after a pre-defined scan period.
-            mHandler.postDelayed(new Runnable() {
+            scanFailedCallback = new Runnable() {
                 @Override
                 public void run() {
                     mScanning = false;
@@ -481,11 +593,12 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
                     scanningFailed();
                     //invalidateOptionsMenu();
                 }
-            }, SCAN_PERIOD);
+            };
+
+            mHandler.postDelayed(scanFailedCallback, SCAN_PERIOD);
 
             mScanning = true;
             mBluetoothAdapter.startLeScan(mLeScanCallback);
-            rootView.getContext().registerReceiver(bBondStateReceiver, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
         } else {
             mScanning = false;
             mBluetoothAdapter.stopLeScan(mLeScanCallback);
@@ -504,22 +617,17 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
                     switch (device.getBondState()) {
                         case BluetoothDevice.BOND_BONDING:
                             Log.d("Microbit", "BOND_BONDING - it is pairing");
-                            Toast.makeText(getActivity(), "BOND_BONDING - RECEIVED", Toast.LENGTH_SHORT).show();
+ //                           Toast.makeText(getActivity(), "BOND_BONDING - RECEIVED", Toast.LENGTH_SHORT).show();
                             break;
                         case BluetoothDevice.BOND_BONDED:
                             state=STATE_DEVICE_PAIRED;
                             Log.d("Microbit", "BOND_BONDED - Pairing finished successfully");
-                            // The SharedPreferences editor - must use commit() to submit changes
-                            SharedPreferences.Editor editor = preferences.edit();
-
-                            // Edit the saved preferences
-                            editor.putString("PairedDevice", deviceName);
-                            editor.commit();
-                            Toast.makeText(getActivity(), "Partner Found - Enter both buttons on device", Toast.LENGTH_SHORT).show();
+                            handle_pairing_successful();
                             break;
                         case BluetoothDevice.BOND_NONE:
                             Log.d("Microbit", "BOND_NONE - cancel");
-                            Toast.makeText(getActivity(), "BONDING FAILED", Toast.LENGTH_SHORT).show();
+                            handle_pairing_failed();
+
                         default:
                             break;
                     }
@@ -547,14 +655,14 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
                     }
                     else if (deviceName.toLowerCase().equals(device.getName().toLowerCase()))
                     {
-                        Toast.makeText(getActivity(), "Partner Found - " + device.getName(), Toast.LENGTH_SHORT).show();
+                      //  Toast.makeText(getActivity(), "Partner Found - " + device.getName(), Toast.LENGTH_SHORT).show();
 
                         Log.d("Microbit", " deviceName == " + deviceName.toLowerCase());
                         Log.d("Microbit", " device.getName() == " + device.getName().toLowerCase());
 
                         //UPDATE THE UI TO INDICATE PAIRED DEVICE (add string to
                         //strings.xml and update the button)
-
+                        rootView.getContext().registerReceiver(bBondStateReceiver, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
                         state=STATE_DEVICE_DISCOVERED;
                         // Stop scanning as device is found.
                         scanLeDevice(false);
@@ -562,8 +670,15 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
                         //DO BLUETOOTHY THINGS HERE!!!!
 
                         Log.d("Microbit", "Matching DEVICE FOUND, Pairing");
-                        Boolean isBonded = false;
-                        isBonded = device.createBond();
+                        int bondState = device.getBondState();
+                        if(bondState != BluetoothDevice.BOND_BONDED) 
+                        {
+                            device.createBond();
+                            pairingProgressDialog.onProgressUpdate("Pairing with the Microbit ");
+                        } else {
+                            handle_pairing_successful();
+                            state = STATE_DEVICE_PAIRED;
+                        }
 
                         /*
                         if (!isBonded) {
@@ -574,8 +689,13 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
                     {
                         Log.d("Microbit", " deviceName == " + deviceName.toLowerCase());
                         Log.d("Microbit", " device.getName() == " + device.getName().toLowerCase());
-
-                        Toast.makeText(getActivity(), "NO MATCH  - " + device.getName(), Toast.LENGTH_SHORT).show();
+/* Todo 
+                        int bondState = device.getBondState();
+                        // Remove any existing paired device
+                        if(bondState == BluetoothDevice.BOND_BONDED)
+                            device.removeBond();
+*/
+                       // Toast.makeText(getActivity(), "NO MATCH  - " + device.getName(), Toast.LENGTH_SHORT).show();
                     }
 
 
