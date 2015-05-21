@@ -441,7 +441,8 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
             }
         }
 
-     //   Toast.makeText(getActivity(), deviceName, Toast.LENGTH_SHORT).show();
+        deviceName = "BBC Microbit [" + deviceName + "]";
+
     }
 
 
@@ -649,14 +650,19 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
                         return;
                     }
 
+
+                    //TEMP FOR DEBUG
+                    if (device.getName() != null) {
+                        Toast.makeText(getActivity(), "Potential Partner Found - " + device.getName(), Toast.LENGTH_SHORT).show();
+                    }
+
+
                     if ((deviceName.isEmpty()) || (device.getName() == null))
                     {
                         Log.d("Microbit", "Cannot Compare");
                     }
                     else if (deviceName.toLowerCase().equals(device.getName().toLowerCase()))
                     {
-                      //  Toast.makeText(getActivity(), "Partner Found - " + device.getName(), Toast.LENGTH_SHORT).show();
-
                         Log.d("Microbit", " deviceName == " + deviceName.toLowerCase());
                         Log.d("Microbit", " device.getName() == " + device.getName().toLowerCase());
 
