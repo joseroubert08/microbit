@@ -19,7 +19,7 @@
     android:versionCode="1"
     android:versionName="1.0">
 
-    <uses-sdk android:minSdkVersion="19" />
+    <uses-sdk android:minSdkVersion="21" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.BLUETOOTH"/>
@@ -44,16 +44,24 @@
             </intent-filter>
         </activity>
         
-          <activity android:name=".ui.DeviceScanActivity" android:label="@string/search_BLE_activity" />
-          <activity android:name=".DeviceControlActivity" android:label="@string/device_details" />
-          <activity android:name=".ui.NotificationActivity" android:label="@string/device_details" />
-          <activity android:name=".DevicePairingActivity" android:label="Pairing Activity" />
-          <service android:name=".BluetoothLeService" android:enabled="true"/>
-          <service android:name=".service.DfuService" android:enabled="true"/>
-          <service android:name="com.samsung.microbit.service.PluginService" android:process=":exported">
-              <intent-filter>
-                  <action android:name="com.samsung.microbit.service.PluginService"/>
-              </intent-filter>
-          </service>
+        <activity android:name=".ui.DeviceScanActivity" android:label="@string/search_BLE_activity" />
+        <activity android:name=".DeviceControlActivity" android:label="@string/device_details" />
+        <activity android:name=".ui.NotificationActivity" android:label="@string/device_details" />
+        <activity android:name=".DevicePairingActivity" android:label="Pairing Activity" />
+        <service android:name=".BluetoothLeService" android:enabled="true"/>
+        <service android:name=".service.DfuService" android:enabled="true"/>
+        <service android:name="com.samsung.microbit.service.PluginService" android:process=":exported">
+            <intent-filter>
+                <action android:name="com.samsung.microbit.service.PluginService"/>
+            </intent-filter>
+        </service>
+        <activity android:name=".activity.CameraActivity" android:label="Camera Microbit">
+            <intent-filter>
+                <action android:name="com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_PIC"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_VIDEO"/>
+            </intent-filter>
+        </activity>
     </application>
 </manifest>

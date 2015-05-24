@@ -6,6 +6,7 @@ import android.telephony.PhoneStateListener;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.service.PluginService;
@@ -111,11 +112,13 @@ public class TelephonyPlugin
 
     public static void registerIncomingCall()
     {
-        if (mTelephonyManager == null)
-            mTelephonyManager = (TelephonyManager)mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        if (mTelephonyManager == null) {
+            mTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        }
 
-        if(mIncomingCallListener == null)
+        if(mIncomingCallListener == null) {
             mIncomingCallListener = new IncomingCallListener();
+        }
 
         mTelephonyManager.listen(mIncomingCallListener, PhoneStateListener.LISTEN_CALL_STATE);
         CmdArg cmd = new CmdArg(0,"Registered Incoming Call Alert");
@@ -124,17 +127,20 @@ public class TelephonyPlugin
 
     public static void unregisterIncomingCall()
     {
-        if (mTelephonyManager == null)
+        if (mTelephonyManager == null) {
             return;
+        }
 
-        if(mIncomingCallListener == null)
+        if(mIncomingCallListener == null) {
             return;
+        }
 
         mTelephonyManager.listen(mIncomingCallListener, PhoneStateListener.LISTEN_NONE);
         mIncomingCallListener = null;
 
-        if(mIncomingSMSListener==null)
+        if(mIncomingSMSListener==null) {
             mTelephonyManager = null;
+        }
 
         CmdArg cmd = new CmdArg(0,"Unregistered Incoming Call Alert");
         TelephonyPlugin.sendCommandBLE(PluginService.TELEPHONY, cmd);
