@@ -51,5 +51,20 @@
     <string name="menu_disconnect">Disconnect</string>
     <string name="menu_scan">Scan</string>
     <string name="menu_stop">Stop</string>
+
+    <!-- Camera items -->
+    <string name="picture">Picture</string>
+    <string name="record">Record</string>
+    <string name="stop">Stop</string>
+    <string name="description_info">Info</string>
+    <string name="intro_message">
+        <![CDATA[
+
+
+            Camera enabled!
+
+
+        ]]>
+    </string>
     
 </resources>
