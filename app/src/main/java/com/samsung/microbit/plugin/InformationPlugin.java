@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Point;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -17,7 +18,9 @@ import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Display;
 import android.view.OrientationEventListener;
+import android.view.WindowManager;
 
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.service.PluginService;
@@ -28,6 +31,9 @@ import com.samsung.microbit.service.PluginService;
 public class InformationPlugin
 {
     private static Context mContext = null;
+
+    private static final int ORIENTATION_LANDSCAPE = 0;
+    private static final int ORIENTATION_PORTRAIT = 1;
 
     //Information plugin action
     public static final int ORIENTATION = 0;
@@ -96,6 +102,7 @@ public class InformationPlugin
 
     static SensorManager mSensorManager;
     static OrientationEventListener mOrientationListener;
+    static int mPreviousOrientation;
 
     //Signal strength code
     static TelephonyManager mTelephonyManager;
@@ -244,6 +251,7 @@ public class InformationPlugin
         mBatteryReceiver = null;
         mTelephonyManager = null;
         mPreviousBatteryPct = 0;
+        mPreviousOrientation = -1;
     }
 
     public static void registerOrientation()
@@ -259,19 +267,29 @@ public class InformationPlugin
 
             @Override
             public void onOrientationChanged(int orientation)
-            {
+            {   //we use orientation listener as a callback mechanism
+                //but in fact we do not use the given orientation value (angle)
                 long currentTime = System.currentTimeMillis();
                 long deltaTime = currentTime - previousTime;
 
                 if (deltaTime > INTERVAL)//uses interval to avoid spamming client
                 {
                     previousTime = currentTime;
-                    if (orientation != ORIENTATION_UNKNOWN)
-                    {
-                        //TODO detect landscape or portrait mode?
+                    Display display = ((WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+                    Point size = new Point();
+                    display.getRealSize(size);
+
+                    orientation = ORIENTATION_PORTRAIT;
+                    if(size.y < size.x){
+                        orientation = ORIENTATION_LANDSCAPE;
+                    }
+
+                    if (mPreviousOrientation != orientation) {
                         //notify BLE client
                         CmdArg cmd = new CmdArg(InformationPlugin.ORIENTATION, "Device orientation " + orientation);
                         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
+
+                        mPreviousOrientation = orientation;
                     }
                 }
             }
