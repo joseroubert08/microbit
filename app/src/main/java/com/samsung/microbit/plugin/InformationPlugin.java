@@ -423,7 +423,6 @@ public class InformationPlugin
 
                     mPreviousBatteryPct = batteryPct;
                 }
-                Log.d("BatteryReceiver"," onReceive: " + action);
             }
         };
 

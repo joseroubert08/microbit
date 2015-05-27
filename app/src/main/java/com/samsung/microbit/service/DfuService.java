@@ -13,5 +13,4 @@ public class DfuService extends DfuBaseService {
 		// TODO Auto-generated method stub
 		return NotificationActivity.class;
 	}
-
 }
