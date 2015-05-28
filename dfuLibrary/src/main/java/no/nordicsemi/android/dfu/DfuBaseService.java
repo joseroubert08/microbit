@@ -806,7 +806,6 @@ public abstract class DfuBaseService extends IntentService {
 		@Override
 		public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
 			// Check whether an error occurred
-			Log.i("BluetoothGattCallback", "##### onConnectionStateChange mConnectionState=" + mConnectionState + " newState=" + newState + " bonded=" + (gatt.getDevice().getBondState() == BluetoothDevice.BOND_BONDED));
 			if (status == BluetoothGatt.GATT_SUCCESS) {
 				if (newState == BluetoothGatt.STATE_CONNECTED) {
 					logi("Connected to GATT server");
@@ -994,7 +993,7 @@ public abstract class DfuBaseService extends IntentService {
 					mRequestCompleted = true;
 				}
 			} else if (characteristic.getUuid().equals(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID)) {
-				if (status == BluetoothGatt.GATT_SUCCESS || status == 133)
+				if (status == BluetoothGatt.GATT_SUCCESS)
 					mRequestCompleted = true;
 			} else {
 				/*
@@ -1164,36 +1163,28 @@ public abstract class DfuBaseService extends IntentService {
 	@Override
 	protected void onHandleIntent(final Intent intent) {
 
-		Log.i("DfuBaseService", "##### onHandleIntent Start " + this.toString());
-
 		int phase = intent.getIntExtra("com.samsung.runonly.phase", 0) & 0x03;
-		ResultReceiver resultReceiver = (ResultReceiver) intent.getParcelableExtra("com.samsung.resultReceiver");
+		ResultReceiver resultReceiver = null;
 
+		int rc = 0;
 		if ((phase & 0x01) != 0) {
-			Log.i("DfuBaseService", "##### onHandleIntent phase 1 start");
-			phase1(intent);
-			Log.i("DfuBaseService", "##### onHandleIntent phase 1 end");
+			resultReceiver = (ResultReceiver) intent.getParcelableExtra("com.samsung.resultReceiver");
+			rc = phase1(intent);
 		}
 
 		if ((phase & 0x02) != 0) {
-			Log.i("DfuBaseService", "##### onHandleIntent phase 23 start");
-			phase2(intent);
-			Log.i("DfuBaseService", "##### onHandleIntent phase 23 end");
+			resultReceiver = (ResultReceiver) intent.getParcelableExtra("com.samsung.resultReceiver");
+			rc = phase2(intent);
 		}
 
 		if (resultReceiver != null) {
-
-			Log.i("DfuBaseService", "##### onHandleIntent prep reveiver");
-			resultReceiver.send(phase, null);
-			Log.i("DfuBaseService", "##### onHandleIntent receiver sent");
+			rc <<= 8;
+			resultReceiver.send(rc | phase, null);
 		}
-
-		Log.i("DfuBaseService", "##### onHandleIntent end");
 	}
 
 	private boolean makeGattConnection(String deviceAddress) {
 
-		Log.i("DfuBaseService", "##### makeGattConnection start");
 		gatt = null;
 		sendLogBroadcast(LOG_LEVEL_VERBOSE, "Connecting to DFU target...");
 		updateProgressNotification(PROGRESS_CONNECTING);
@@ -1237,15 +1228,13 @@ public abstract class DfuBaseService extends IntentService {
 			return false;
 		}
 
-		Log.i("DfuBaseService", "##### makeGattConnection done");
 		return true;
 	}
 
 	/* TODO
 		Temporary code till we have callbacks for FLASH_PAIRING_CODE_CHARACTERISTIC_UUID
 	*/
-	void phase1(Intent intent) {
-		Log.i("DfuBaseService", "##### phase1 start");
+	int phase1(Intent intent) {
 
 		final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -1257,8 +1246,9 @@ public abstract class DfuBaseService extends IntentService {
 		final String initFilePath = intent.getStringExtra(EXTRA_INIT_FILE_PATH);
 		final Uri initFileUri = intent.getParcelableExtra(EXTRA_INIT_FILE_URI);
 		int fileType = intent.getIntExtra(EXTRA_FILE_TYPE, TYPE_AUTO);
-		if (filePath != null && fileType == TYPE_AUTO)
+		if (filePath != null && fileType == TYPE_AUTO) {
 			fileType = filePath.toLowerCase(Locale.US).endsWith("zip") ? TYPE_AUTO : TYPE_APPLICATION;
+		}
 
 		String mimeType = intent.getStringExtra(EXTRA_FILE_MIME_TYPE);
 		mimeType = mimeType != null ? mimeType : (fileType == TYPE_AUTO ? MIME_TYPE_ZIP : MIME_TYPE_OCTET_STREAM);
@@ -1270,14 +1260,14 @@ public abstract class DfuBaseService extends IntentService {
 			logw("File type or file mime-type not supported");
 			sendLogBroadcast(LOG_LEVEL_WARNING, "File type or file mime-type not supported");
 			sendErrorBroadcast(ERROR_FILE_TYPE_UNSUPPORTED);
-			return;
+			return 1;
 		}
 
 		if (MIME_TYPE_OCTET_STREAM.equals(mimeType) && fileType != TYPE_SOFT_DEVICE && fileType != TYPE_BOOTLOADER && fileType != TYPE_APPLICATION) {
 			logw("Unable to determine file type");
 			sendLogBroadcast(LOG_LEVEL_WARNING, "Unable to determine file type");
 			sendErrorBroadcast(ERROR_FILE_TYPE_UNSUPPORTED);
-			return;
+			return 2;
 		}
 
 		/*
@@ -1286,8 +1276,8 @@ public abstract class DfuBaseService extends IntentService {
 		 */
 		sendLogBroadcast(LOG_LEVEL_VERBOSE, "Connecting to DFU target...");
 		updateProgressNotification(PROGRESS_CONNECTING);
-
 		makeGattConnection(deviceAddress);
+
 		//final BluetoothGatt gatt = connect(deviceAddress);
 
 		// Are we connected?
@@ -1295,7 +1285,7 @@ public abstract class DfuBaseService extends IntentService {
 			loge("Bluetooth adapter disabled");
 			sendLogBroadcast(LOG_LEVEL_ERROR, "Bluetooth adapter disabled");
 			updateProgressNotification(ERROR_BLUETOOTH_DISABLED);
-			return;
+			return 3;
 		}
 
 		if (mError > 0) { // error occurred
@@ -1303,17 +1293,22 @@ public abstract class DfuBaseService extends IntentService {
 			loge("An error occurred while connecting to the device:" + error);
 			sendLogBroadcast(LOG_LEVEL_ERROR, String.format("Connection failed (0x%02X): %s", error, GattError.parseConnectionError(error)));
 			terminateConnection(gatt, mError);
-			return;
+			return 4;
 		}
 
 		if (mAborted) {
 			logi("Upload aborted");
 			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
 			terminateConnection(gatt, PROGRESS_ABORTED);
-			return;
+			return 5;
 		}
 
 		final BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
+
+		if(fps == null) {
+			return 6;
+		}
+
 		final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
 		sfpc.setValue(2, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 		try {
@@ -1322,55 +1317,42 @@ public abstract class DfuBaseService extends IntentService {
 			e.printStackTrace();
 		}
 
-		Log.i("DfuBaseService", "##### phase1 done");
+		return 0;
 	}
 
-
-	private boolean phase2(Intent intent) {
+	private int phase2(Intent intent) {
 		final String deviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
 
 		makeGattConnection(deviceAddress);
 
-		boolean rc = false;
+		int rc = 1;
 		final BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
 		final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
 		sfpc.setValue(1, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 		try {
 			writeCharacteristic(gatt, sfpc);
-			rc = true;
+			rc = 0;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		Log.i("DfuBaseService", "##### writeCharacteristic mError=" + mError);
-		if (rc) {
+		if (rc == 0) {
 			waitUntilDisconnected();
-			try {
-				Thread.currentThread().sleep(2000L);
-			} catch (InterruptedException e) {
-			}
-
-
-			Log.i("DfuBaseService", "##### before reconnect mConnectionState=" + mConnectionState);
-			gattConnect(gatt);
 			refreshDeviceCache(gatt, true);
-			Log.i("DfuBaseService", "##### after reconnect mConnectionState=" + mConnectionState);
+			gattConnect(gatt);
 
 			Iterator<BluetoothGattService> sItr = gatt.getServices().iterator();
 			while (sItr.hasNext()) {
 				BluetoothGattService s = sItr.next();
-				Log.i("DfuBaseService", "##### service=" + s.getUuid().toString());
 			}
 
-			//phase3(intent);
+			phase3(intent);
 		}
 
-		Log.i("DfuBaseService", "##### phase2 done rc=" + rc);
 		return rc;
 	}
 
 	private void phase3(Intent intent) {
-		Log.i("DfuBaseService", "##### phase3 start");
 
 		final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -1487,7 +1469,6 @@ public abstract class DfuBaseService extends IntentService {
 			 * Now let's connect to the device.
 			 * All the methods below are synchronous. The mLock object is used to wait for asynchronous calls.
 			 */
-			Log.i("DfuBaseService", "##### phase3 all preabmle done. on to real work.");
 
 			// Are we connected?
 			if (gatt == null) {
@@ -2187,7 +2168,7 @@ public abstract class DfuBaseService extends IntentService {
 		mConnectionState = STATE_CONNECTING;
 
 		logi("Connecting to the device...");
-		if(device == null) {
+		if (device == null) {
 			device = mBluetoothAdapter.getRemoteDevice(address);
 		}
 
@@ -2253,7 +2234,6 @@ public abstract class DfuBaseService extends IntentService {
 	 * Wait until the connection state will change to {@link #STATE_DISCONNECTED} or until an error occurs.
 	 */
 	private void waitUntilDisconnected() {
-		Log.i("DfuBaseService", "##### waitUntilDisconnected start mConnectionState=" + mConnectionState + " mError=" + mError);
 		try {
 			synchronized (mLock) {
 				while (mConnectionState != STATE_DISCONNECTED && mError == 0) {
@@ -2261,18 +2241,13 @@ public abstract class DfuBaseService extends IntentService {
 				}
 			}
 		} catch (final InterruptedException e) {
-			Log.i("DfuBaseService", "##### waitUntilDisconnected InterruptedException mConnectionState=" + mConnectionState + " mError=" + mError);
 			loge("Sleeping interrupted", e);
 		}
-
-		Log.i("DfuBaseService", "##### waitUntilDisconnected end mConnectionState=" + mConnectionState + " mError=" + mError);
-
 	}
 
 	private void gattConnect(final BluetoothGatt gatt) {
 		try {
 			if (gatt.connect()) {
-				Log.i("DfuBaseService", "##### gattConnect waiting for connection mConnectionState=" + mConnectionState + " mError=" + mError);
 				synchronized (mLock) {
 					while (mConnectionState != STATE_CONNECTED_AND_READY && mError == 0)
 						mLock.wait();
@@ -2282,9 +2257,27 @@ public abstract class DfuBaseService extends IntentService {
 			loge("Sleeping interrupted", e);
 		}
 
-		Log.i("DfuBaseService", "##### connection done mConnectionState=" + mConnectionState + " mError=" + mError);
 	}
 
+	private void discoverServices(BluetoothGatt gatt) {
+
+		try {
+			if (gatt.discoverServices()) {
+				if (mConnectionState == STATE_CONNECTED_AND_READY) {
+					mConnectionState = STATE_CONNECTED;
+				}
+
+				synchronized (mLock) {
+					while (mConnectionState != STATE_CONNECTED_AND_READY) {
+						mLock.wait();
+					}
+				}
+			}
+		} catch (final InterruptedException e) {
+			loge("Sleeping interrupted", e);
+		}
+
+	}
 
 	/**
 	 * Closes the GATT device and cleans up.
@@ -2961,7 +2954,9 @@ public abstract class DfuBaseService extends IntentService {
 
 		// final Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_stat_notify_dfu); <- this looks bad on Android 5
 
-		final NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setSmallIcon(android.R.drawable.stat_sys_upload).setOnlyAlertOnce(true);//.setLargeIcon(largeIcon);
+		final NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setSmallIcon(android.R.drawable.stat_sys_upload).
+			setOnlyAlertOnce(true);//.setLargeIcon(largeIcon);
+
 		// Android 5
 		builder.setColor(Color.GRAY);
 		switch (progress) {
@@ -2976,6 +2971,7 @@ public abstract class DfuBaseService extends IntentService {
 			case PROGRESS_ENABLING_DFU_MODE:
 				builder.setOngoing(true).setContentTitle(getString(R.string.dfu_status_switching_to_dfu)).setContentText(getString(R.string.dfu_status_switching_to_dfu_msg, deviceName))
 					.setProgress(100, 0, true);
+
 				break;
 
 			case PROGRESS_VALIDATING:
@@ -2985,16 +2981,19 @@ public abstract class DfuBaseService extends IntentService {
 			case PROGRESS_DISCONNECTING:
 				builder.setOngoing(true).setContentTitle(getString(R.string.dfu_status_disconnecting)).setContentText(getString(R.string.dfu_status_disconnecting_msg, deviceName))
 					.setProgress(100, 0, true);
+
 				break;
 
 			case PROGRESS_COMPLETED:
 				builder.setOngoing(false).setContentTitle(getString(R.string.dfu_status_completed)).setSmallIcon(android.R.drawable.stat_sys_upload_done)
 					.setContentText(getString(R.string.dfu_status_completed_msg)).setAutoCancel(true).setColor(0xFF00B81A);
+
 				break;
 
 			case PROGRESS_ABORTED:
 				builder.setOngoing(false).setContentTitle(getString(R.string.dfu_status_aborted)).setSmallIcon(android.R.drawable.stat_sys_upload_done)
 					.setContentText(getString(R.string.dfu_status_aborted_msg)).setAutoCancel(true);
+
 				break;
 
 			default:
@@ -3063,6 +3062,7 @@ public abstract class DfuBaseService extends IntentService {
 	protected abstract Class<? extends Activity> getNotificationTarget();
 
 	private void sendProgressBroadcast(final int progress) {
+
 		final long now = SystemClock.elapsedRealtime();
 		final float speed = now - mLastProgressTime != 0 ? (float) (mBytesSent - mLastBytesSent) / (float) (now - mLastProgressTime) : 0.0f;
 		final float avgSpeed = now - mStartTime != 0 ? (float) mBytesSent / (float) (now - mStartTime) : 0.0f;
@@ -3080,6 +3080,7 @@ public abstract class DfuBaseService extends IntentService {
 	}
 
 	private void sendErrorBroadcast(final int error) {
+
 		final Intent broadcast = new Intent(BROADCAST_ERROR);
 		if ((error & ERROR_CONNECTION_MASK) > 0) {
 			broadcast.putExtra(EXTRA_DATA, error & ~ERROR_CONNECTION_MASK);

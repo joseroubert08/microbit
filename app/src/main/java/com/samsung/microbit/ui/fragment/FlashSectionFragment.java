@@ -137,12 +137,9 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 		Log.d("FlashSectionFragment", "onClick");
 		switch (v.getId()) {
 			case R.id.searchButton:
-				Log.d("FlashSectionFragment", "##### onClick R.id.searchButton");
-
 				File file = new File(BINARY_FILE_NAME);
 				if (file.exists()) {
 					Intent intent = new Intent(getActivity(), DeviceScanActivity.class);
-					Log.d("FlashSectionFragment", "##### startActivity(intent)");
 					startActivity(intent);
 				} else {
 					Toast.makeText(getActivity(), "Create the binary file first by clicking one file below", Toast.LENGTH_LONG).show();
