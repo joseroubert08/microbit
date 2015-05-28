@@ -40,6 +40,7 @@ import com.samsung.microbit.service.DfuService;
  * Activity for scanning and displaying available Bluetooth LE devices.
  */
 public class DeviceScanActivity extends ListActivity {
+
 	private LeDeviceListAdapter mLeDeviceListAdapter;
 	private BluetoothAdapter mBluetoothAdapter;
 	private boolean mScanning;
@@ -50,7 +51,6 @@ public class DeviceScanActivity extends ListActivity {
 
 	// Stops scanning after 10 seconds.
 	private static final long SCAN_PERIOD = 10000;
-
 	Button continueFlash;
 
 	@Override
@@ -59,20 +59,19 @@ public class DeviceScanActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.listitem_device);
 
-		final DeviceScanActivity ds = this;
 		continueFlash = (Button) findViewById(R.id.continueFlash);
 		continueFlash.setEnabled(false);
 		continueFlash.setOnClickListener(new View.OnClickListener() {
+
 			@Override
 			public void onClick(View v) {
-				Log.i("DeviceScanActivity", "#### continueFlash.onClick");
 				int position = mPosition;
 				final BluetoothDevice mSelectedDevice = mLeDeviceListAdapter.getDevice(position);
 				if (mSelectedDevice == null) {
 					return;
 				}
 
-				final Intent service = new Intent(ds, DfuService.class);
+				final Intent service = new Intent(DeviceScanActivity.this, DfuService.class);
 				service.putExtra(DfuService.EXTRA_DEVICE_ADDRESS, mSelectedDevice.getAddress());
 				service.putExtra(DfuService.EXTRA_DEVICE_NAME, mSelectedDevice.getName());
 				service.putExtra(DfuService.EXTRA_FILE_MIME_TYPE, DfuService.MIME_TYPE_OCTET_STREAM);
@@ -82,12 +81,9 @@ public class DeviceScanActivity extends ListActivity {
 				continueFlash.setEnabled(false);
 				service.putExtra("com.samsung.resultReceiver", resultReceiver);
 				service.putExtra("com.samsung.runonly.phase", 2);
-				Log.i("DeviceScanActivity", "##### onListItemClick() - startService(service)");
 				startService(service);
-				Log.i("DeviceScanActivity", "##### onListItemClick() - startService(service) end");
 			}
 		});
-
 
 		getActionBar().setTitle(R.string.title_devices);
 		mHandler = new Handler();
@@ -165,6 +161,7 @@ public class DeviceScanActivity extends ListActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
 		// User chose not to enable Bluetooth.
 		if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
 			finish();
@@ -205,13 +202,11 @@ public class DeviceScanActivity extends ListActivity {
 		service.putExtra("com.samsung.resultReceiver", resultReceiver);
 		service.putExtra("com.samsung.runonly.phase", 1);
 		getListView().setEnabled(false);
-
-		Log.i("DeviceScanActivity", "##### onListItemClick() - startService(service)");
 		startService(service);
-		Log.i("DeviceScanActivity", "##### onListItemClick() - startService(service) end");
 	}
 
 	private void scanLeDevice(final boolean enable) {
+
 		if (enable) {
 			// Stops scanning after a pre-defined scan period.
 			mHandler.postDelayed(new Runnable() {
@@ -332,6 +327,7 @@ public class DeviceScanActivity extends ListActivity {
 		@Override
 		public View getView(int i, View view, ViewGroup viewGroup) {
 			ViewHolder viewHolder;
+
 			// General ListView optimization code.
 			if (view == null) {
 				view = mInflator.inflate(R.layout.row_layout, null);
@@ -345,10 +341,11 @@ public class DeviceScanActivity extends ListActivity {
 
 			BluetoothDevice device = mLeDevices.get(i);
 			final String deviceName = device.getName();
-			if (deviceName != null && deviceName.length() > 0)
+			if (deviceName != null && deviceName.length() > 0) {
 				viewHolder.deviceName.setText(deviceName);
-			else
+			} else {
 				viewHolder.deviceName.setText(R.string.unknown_device);
+			}
 
 			viewHolder.deviceAddress.setText(device.getAddress());
 			return view;
@@ -360,27 +357,32 @@ public class DeviceScanActivity extends ListActivity {
 		TextView deviceAddress;
 	}
 
-
 	ResultReceiver resultReceiver = new ResultReceiver(new Handler()) {
 
 		@Override
 		protected void onReceiveResult(int resultCode, Bundle resultData) {
 
-			int phase = resultCode & 0x03;
-			Log.i("DeviceScanActivity", "##### onReceiveResult() - OK : " + phase);
+			int phase = resultCode & 0x0ffff;
 
 			if ((phase & 0x01) != 0) {
-				getListView().setEnabled(false);
-				continueFlash.setEnabled(true);
+				if ((phase & 0x0ff00) == 0) {
+					getListView().setEnabled(false);
+					continueFlash.setEnabled(true);
+					Toast.makeText(DeviceScanActivity.this, R.string.phase1_complete_ok, Toast.LENGTH_SHORT).show();
+				} else {
+					// error in locating service. reset device and try again
+					getListView().setEnabled(true);
+					Toast.makeText(DeviceScanActivity.this, R.string.phase1_complete_not_ok, Toast.LENGTH_SHORT).show();
+				}
 			}
 
 			if ((phase & 0x02) != 0) {
 				continueFlash.setEnabled(false);
 				getListView().setEnabled(true);
+				Toast.makeText(DeviceScanActivity.this, R.string.phase2_complete_ok, Toast.LENGTH_SHORT).show();
 			}
 
 			super.onReceiveResult(resultCode, resultData);
 		}
 	};
-
 }
