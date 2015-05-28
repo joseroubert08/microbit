@@ -1,4 +1,6 @@
 <org.apache.cordova.CordovaWebView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id = "@+id/touchDevelopView"/>
+        android:id = "@+id/touchDevelopView"
+        android:background="@android:drawable/screen_background_light_transparent"
+        android:theme="@style/AppBaseTheme" />
