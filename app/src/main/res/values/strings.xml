@@ -15,7 +15,8 @@
   -->
 
 <resources>
-    <string name="app_name">My Programing companion</string>
+    <string name="app_name">Companion</string>
+    <string name="poweredBy">Powered by\r\n SAMSUNG</string>
 
     <string name="search_BLE_activity">Search Microbit</string>
     <string name="device_details">Device_details</string>
@@ -70,5 +71,9 @@
 
         ]]>
     </string>
+
+    <string name="title_activity_about_us">about_us</string>
+    <string name="back_button">Take me Back</string>
+    <string name="about_us"> That\'s All !! Happy Coding </string>
     
 </resources>
