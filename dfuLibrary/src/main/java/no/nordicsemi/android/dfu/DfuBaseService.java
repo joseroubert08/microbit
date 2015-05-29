@@ -1346,6 +1346,8 @@ public abstract class DfuBaseService extends IntentService {
 				BluetoothGattService s = sItr.next();
 			}
 
+			Log.i("DfuBaseService", "##### phase2 - We are ok.");
+			mError = 0;
 			phase3(intent);
 		}
 
@@ -1354,6 +1356,7 @@ public abstract class DfuBaseService extends IntentService {
 
 	private void phase3(Intent intent) {
 
+		Log.i("DfuBaseService", "##### phase3 - @start. merror = " + mError);
 		final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
 		// Read input parameters
@@ -1376,6 +1379,8 @@ public abstract class DfuBaseService extends IntentService {
 		mDeviceName = deviceName;
 
 		// Read preferences
+		Log.i("DfuBaseService", "##### phase3 - Read preferences");
+
 		final boolean packetReceiptNotificationEnabled = preferences.getBoolean(DfuSettingsConstants.SETTINGS_PACKET_RECEIPT_NOTIFICATION_ENABLED, true);
 		String value = preferences.getString(DfuSettingsConstants.SETTINGS_NUMBER_OF_PACKETS, String.valueOf(DfuSettingsConstants.SETTINGS_NUMBER_OF_PACKETS_DEFAULT));
 		int numberOfPackets;
@@ -1408,6 +1413,8 @@ public abstract class DfuBaseService extends IntentService {
 		/*
 		 * First the service is trying to read the firmware and init packet files.
 		 */
+		Log.i("DfuBaseService", "##### phase3 - First the service is trying to read the firmware and init packet files. mError =" + mError);
+
 		InputStream is = null;
 		InputStream initIs = null;
 		int imageSizeInBytes;
@@ -1502,6 +1509,7 @@ public abstract class DfuBaseService extends IntentService {
 				return;
 			}
 
+		Log.i("DfuBaseService", "##### phase3 - dfuService found.");
 			final BluetoothGattCharacteristic controlPointCharacteristic = dfuService.getCharacteristic(DFU_CONTROL_POINT_UUID);
 			final BluetoothGattCharacteristic packetCharacteristic = dfuService.getCharacteristic(DFU_PACKET_UUID);
 			if (controlPointCharacteristic == null || packetCharacteristic == null) {
@@ -1510,6 +1518,7 @@ public abstract class DfuBaseService extends IntentService {
 				terminateConnection(gatt, ERROR_CHARACTERISTICS_NOT_FOUND);
 				return;
 			}
+		Log.i("DfuBaseService", "##### phase3 - controlPointCharacteristic|packetCharacteristic found.");
 
 			/*
 			 * The DFU Version characteristic has been added in SDK 7.0.
