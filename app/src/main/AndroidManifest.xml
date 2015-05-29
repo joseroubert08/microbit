@@ -89,6 +89,12 @@
                 <action android:name="com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_VIDEO" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".service.BLEService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>
