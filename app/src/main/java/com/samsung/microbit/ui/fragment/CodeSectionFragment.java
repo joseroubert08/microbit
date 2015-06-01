@@ -1,13 +1,5 @@
 package com.samsung.microbit.ui.fragment;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.apache.cordova.CordovaInterface;
-import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.CordovaWebView;
-import org.apache.cordova.LOG;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -17,9 +9,21 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.widget.ProgressBar;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+
+import org.apache.cordova.CordovaChromeClient;
+import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.LOG;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @SuppressWarnings("unused")
 public class CodeSectionFragment extends Fragment implements CordovaInterface {
@@ -34,23 +38,43 @@ public class CodeSectionFragment extends Fragment implements CordovaInterface {
     
     private final ExecutorService threadPool = Executors.newCachedThreadPool();
     
-	CordovaWebView touchDevelopView;
+	CordovaWebView touchDevelopView = null;
+    ProgressBar  touchDevelopProgress = null;
+
     public static CodeSectionFragment newInstance() {
     	CodeSectionFragment fragment = new CodeSectionFragment();
         return fragment;
     }
-    
+
+
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
+
     	LayoutInflater localInflater = inflater.cloneInContext(new CordovaContext(MBApp.getContext(), this));
     	View rootView = localInflater.inflate(R.layout.fragment_section_webview, container, false);
     	touchDevelopView = (CordovaWebView) rootView.findViewById(R.id.touchDevelopView);
-		touchDevelopView.loadUrl("https://microbit:bitbug42@mbitmain.azurewebsites.net/app/");
-    	//touchDevelopView.loadUrl("https://www.touchdevelop.com/app#");
-        //touchDevelopView.loadUrl("file:///android_asset/www/index.html"); //use this for running JS2JAVA simulator                
-    	//touchDevelopView.loadUrl("http://www.highwaycodeuk.co.uk/download-pdf.html");
+        touchDevelopProgress = (ProgressBar) rootView.findViewById(R.id.progressBar);
+		touchDevelopProgress.setProgress(0);
+        touchDevelopProgress.setMax(100);
+
+        //Load URL now
+        touchDevelopView.loadUrl("https://microbit:bitbug42@live.microbit.co.uk/");
+
+        touchDevelopView.setWebChromeClient(new CordovaChromeClient(this) {
+            public void onProgressChanged(WebView view, int newProgress) {
+                LOG.d(TAG, "onProgressChanged");
+                CodeSectionFragment.this.setValue(newProgress);
+                super.onProgressChanged(view, newProgress);
+            }
+        });
+
     	return rootView;
+    }
+
+    public void setValue(int progress) {
+        if (touchDevelopProgress != null)
+            touchDevelopProgress.setProgress(progress);
     }
 
 	public void bindBackButton(boolean override) {
@@ -78,6 +102,13 @@ public class CodeSectionFragment extends Fragment implements CordovaInterface {
 	@Override
 	public Object onMessage(String id, Object data) {
 		LOG.d(TAG, "onMessage(" + id + "," + data + ")");
+        switch(id){
+            case "spinner":
+                if (touchDevelopProgress != null ){
+                    touchDevelopProgress.setVisibility(View.INVISIBLE);
+                }
+                break;
+        }
         return null;
 	}
 
