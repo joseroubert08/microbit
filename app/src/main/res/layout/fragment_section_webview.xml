@@ -15,4 +15,16 @@
                 android:layout_height="fill_parent"
                 android:id = "@+id/touchDevelopView"
                 android:layout_below="@id/progressBar"/>
+
+        <TextView
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Loading. Please wait...."
+            android:id="@+id/loadingText"
+            android:includeFontPadding="false"
+            android:layout_gravity="center"
+            android:autoText="false"
+            android:textColor="@android:color/primary_text_light"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold|italic" />
 </FrameLayout>
