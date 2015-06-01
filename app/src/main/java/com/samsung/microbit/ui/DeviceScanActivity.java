@@ -7,18 +7,24 @@ import java.util.List;
 import java.util.UUID;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-
+import android.os.Looper;
 import android.os.Message;
 import android.os.ResultReceiver;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,6 +52,7 @@ public class DeviceScanActivity extends ListActivity {
 	private boolean mScanning;
 	private Handler mHandler;
 	private int mPosition = -1;
+	DFUResultReceiver dfuResultReceiver;
 
 	private static final int REQUEST_ENABLE_BT = 1;
 
@@ -81,6 +88,13 @@ public class DeviceScanActivity extends ListActivity {
 				continueFlash.setEnabled(false);
 				service.putExtra("com.samsung.resultReceiver", resultReceiver);
 				service.putExtra("com.samsung.runonly.phase", 2);
+
+				IntentFilter filter = new IntentFilter(DfuService.BROADCAST_PROGRESS);
+				IntentFilter filter1 = new IntentFilter(DfuService.BROADCAST_ERROR);
+				dfuResultReceiver = new DFUResultReceiver();
+				LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter);
+				LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter1);
+
 				startService(service);
 			}
 		});
@@ -385,4 +399,100 @@ public class DeviceScanActivity extends ListActivity {
 			super.onReceiveResult(resultCode, resultData);
 		}
 	};
-}
+
+	private void alertView( final String message, int title_id) {
+
+        Context  ctx = MBApp.getContext();
+        Looper loop= ctx.getMainLooper();
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+
+        Runnable task = new Runnable() {
+            public void run() {
+				dialog.setIconAttribute(R.drawable.ic_launcher);
+                //dialog.setIcon(R.drawable.ic_launcher);
+                dialog.setTitle("Flashing")
+                        .setMessage(message)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialoginterface, int i) {
+                            }
+                        }).show();
+            }
+        };
+
+
+        new Handler(Looper.getMainLooper()).post(task);
+    }
+    class DFUResultReceiver extends BroadcastReceiver
+    {
+        private ProgressDialog flashSpinnerDialog;
+        private boolean dialogInitDone = false;
+        private boolean isCompleted=false;
+        private boolean inInit=false;
+        private boolean inProgress=false;
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = "Broadcast intent detected "+ intent.getAction();
+            Log.i("Microbit", message);
+            if (intent.getAction() == DfuService.BROADCAST_PROGRESS)
+            {
+                if(!dialogInitDone)
+                {
+                    flashSpinnerDialog = new ProgressDialog(MBApp.getContext());
+                  //  flashSpinnerDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    flashSpinnerDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                    flashSpinnerDialog.setTitle("Flashing");
+                    flashSpinnerDialog.setMessage("Flashing Program to BBC Microbit");
+                    flashSpinnerDialog.setCancelable(false);
+                    dialogInitDone=true;
+                }
+                int state = intent.getIntExtra(DfuService.EXTRA_DATA ,0);
+                Log.i("Microbit", "state -- " + state);
+
+                if(state < 0)
+                {
+                    switch(state)
+                    {
+                        case DfuService.PROGRESS_COMPLETED:
+                            if(!isCompleted) {
+                                flashSpinnerDialog.dismiss();
+                                alertView(getString(R.string.flashing_success_message), R.string.flashing_success_title);
+                            }
+                            isCompleted=true;
+                            inInit=false;
+                            inProgress=false;
+                            break;
+                        case DfuService.PROGRESS_DISCONNECTING:
+                            break;
+                        default:
+                            if(!inInit) {
+                                flashSpinnerDialog.setMessage("Initialising the connection");
+                                flashSpinnerDialog.show();
+                            }
+                            inInit=true;
+                            isCompleted=false;
+                            break;
+                    }
+
+                } else if ((state > 0) && (state < 100)){
+                    if(!inProgress) {
+                        flashSpinnerDialog.dismiss();
+                       // flashSpinnerDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                        flashSpinnerDialog.setMax(100);
+                        flashSpinnerDialog.setIndeterminate(false);
+                        flashSpinnerDialog.setMessage("Transmitting program to BBC Microbit");
+                        flashSpinnerDialog.show();
+                        inProgress=true;
+                    }
+                    flashSpinnerDialog.setProgress(state);
+                }
+            }
+            else if(intent.getAction() == DfuService.BROADCAST_ERROR)
+            {
+                String error_message = "Flashing Error Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA,0)
+                        + "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE,0) + "]";
+                Log.e("Microbit", error_message);
+                flashSpinnerDialog.dismiss();
+                alertView(error_message, R.string.flashing_failed_title);
+            }
+        }
+    }}
