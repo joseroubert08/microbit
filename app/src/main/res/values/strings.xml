@@ -15,12 +15,17 @@
   -->
 
 <resources>
-    <string name="app_name">My Programing companion</string>
+    <string name="app_name">Companion</string>
+    <string name="poweredBy">Powered by\r\n SAMSUNG</string>
 
     <string name="search_BLE_activity">Search Microbit</string>
     <string name="device_details">Device_details</string>
     <string name="dummy_section_text">Section %1d is just a dummy section.</string>
     <string name="ble_not_supported">BLE is not supported</string>
+	<string name="phase1_complete_ok">Phase 1 completed. press button 1 followed by button on screen</string>
+	<string name="phase2_complete_ok">Phase 2 completed. Device should be flashed</string>
+	<string name="phase1_complete_not_ok">Device not found or in right mode or connection error</string>
+
     <string name="label_data">Data:</string>
     <string name="label_device_address">Device address:</string>
     <string name="label_state">State:</string>
@@ -66,5 +71,9 @@
 
         ]]>
     </string>
+
+    <string name="title_activity_about_us">about_us</string>
+    <string name="back_button">Take me Back</string>
+    <string name="about_us"> That\'s All !! Happy Coding </string>
     
 </resources>

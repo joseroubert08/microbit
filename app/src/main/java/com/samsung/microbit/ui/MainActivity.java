@@ -10,6 +10,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -60,6 +63,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         // Specify that we will be displaying tabs in the action bar.
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
+
+
         // Set up the ViewPager, attaching the adapter and setting up a listener for when the
         // user swipes between sections.
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -90,10 +95,31 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         startService(intent);
     }
 
+
     @Override
     public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.appmenu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Take appropriate action for each action item click
+        switch (item.getItemId()) {
+            case R.id.about_menu:
+           /*     Intent intent = new Intent(this, AboutUsActivity.class);
+                startActivity(intent);*/
+                return true;
+            case R.id.samsung_logo:
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         // When the given tab is selected, switch to the corresponding page in the ViewPager.
@@ -154,7 +180,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         		case 2:
         			return "Run Code";
         		case 3:
-                    return "Devices";
+                    return "Pairing";
         		case 4:
         			return "Help Videos ";
         		default:
