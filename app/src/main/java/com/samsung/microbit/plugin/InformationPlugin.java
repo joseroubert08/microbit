@@ -4,15 +4,23 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Point;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.RemoteException;
+import android.provider.Settings;
+import android.telephony.PhoneStateListener;
+import android.telephony.SignalStrength;
+import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Display;
 import android.view.OrientationEventListener;
+import android.view.WindowManager;
 
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.service.PluginService;
@@ -24,16 +32,27 @@ public class InformationPlugin
 {
     private static Context mContext = null;
 
+    private static final int ORIENTATION_LANDSCAPE = 0;
+    private static final int ORIENTATION_PORTRAIT = 1;
+
     //Information plugin action
     public static final int ORIENTATION = 0;
     public static final int SHAKE = 1;
     public static final int BATTERY = 2;
     public static final int TEMPERATURE = 3;
+    public static final int SIGNAL = 4;
 
     public static void pluginEntry(Context ctx, CmdArg cmd) {
         mContext = ctx;
         boolean register = cmd.getValue().equals("on");
         switch (cmd.getCMD()) {
+            case SIGNAL: {
+                if (register)
+                    registerSignalStrength();
+                else
+                    unregisterSignalStrength();
+                break;
+            }
             case ORIENTATION: {
                 if (register)
                     registerOrientation();
@@ -83,6 +102,63 @@ public class InformationPlugin
 
     static SensorManager mSensorManager;
     static OrientationEventListener mOrientationListener;
+    static int mPreviousOrientation;
+
+    //Signal strength code
+    static TelephonyManager mTelephonyManager;
+    static SignalStrength mSignalStrength;
+    static PhoneStateListener mPhoneListener = new PhoneStateListener() {
+        @Override
+        public void onSignalStrengthsChanged(SignalStrength signalStrength) {
+            mSignalStrength = signalStrength;
+            updateSignalStrength();
+        }
+    };
+
+    static private final void updateSignalStrength() {
+        int level = 0;
+        if (!isCdma()) {
+            int asu = mSignalStrength.getGsmSignalStrength();
+            // ASU ranges from 0 to 31 - TS 27.007 Sec 8.5
+            // asu = 0 (-113dB or less) is very weak
+            // signal, its better to show 0 bars to the user in such cases.
+            // asu = 99 is a special case, where the signal strength is unknown.
+            if (asu <= 2 || asu == 99) level = 0;
+            else if (asu >= 12) level = 4;
+            else if (asu >= 8)  level = 3;
+            else if (asu >= 5)  level = 2;
+            else level = 1;
+        } else {
+            level = getCdmaLevel();
+        }
+
+        CmdArg cmd = new CmdArg(InformationPlugin.SIGNAL,"SignalStrength " + level);
+        InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
+    }
+
+    static private int getCdmaLevel()
+    {
+        final int cdmaDbm = mSignalStrength.getCdmaDbm();
+        final int cdmaEcio = mSignalStrength.getCdmaEcio();
+        int levelDbm = 0;
+        int levelEcio = 0;
+        if (cdmaDbm >= -75) levelDbm = 4;
+        else if (cdmaDbm >= -85) levelDbm = 3;
+        else if (cdmaDbm >= -95) levelDbm = 2;
+        else if (cdmaDbm >= -100) levelDbm = 1;
+        else levelDbm = 0;
+        // Ec/Io are in dB*10
+        if (cdmaEcio >= -90) levelEcio = 4;
+        else if (cdmaEcio >= -110) levelEcio = 3;
+        else if (cdmaEcio >= -130) levelEcio = 2;
+        else if (cdmaEcio >= -150) levelEcio = 1;
+        else levelEcio = 0;
+        return (levelDbm < levelEcio) ? levelDbm : levelEcio;
+    }
+
+    static private boolean isCdma() {
+        return (mSignalStrength != null) && !mSignalStrength.isGsm();
+    }
 
     static class TemperatureListener implements SensorEventListener
     {
@@ -165,6 +241,7 @@ public class InformationPlugin
 
     static ShakeEventListener mShakeListener;
     static BroadcastReceiver mBatteryReceiver;
+    static int mPreviousBatteryPct;
 
     static
     {
@@ -172,6 +249,9 @@ public class InformationPlugin
         mTemperatureListener = null;
         mShakeListener = null;
         mBatteryReceiver = null;
+        mTelephonyManager = null;
+        mPreviousBatteryPct = 0;
+        mPreviousOrientation = -1;
     }
 
     public static void registerOrientation()
@@ -187,19 +267,29 @@ public class InformationPlugin
 
             @Override
             public void onOrientationChanged(int orientation)
-            {
+            {   //we use orientation listener as a callback mechanism
+                //but in fact we do not use the given orientation value (angle)
                 long currentTime = System.currentTimeMillis();
                 long deltaTime = currentTime - previousTime;
 
                 if (deltaTime > INTERVAL)//uses interval to avoid spamming client
                 {
                     previousTime = currentTime;
-                    if (orientation != ORIENTATION_UNKNOWN)
-                    {
-                        //TODO detect landscape or portrait mode?
+                    Display display = ((WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+                    Point size = new Point();
+                    display.getRealSize(size);
+
+                    orientation = ORIENTATION_PORTRAIT;
+                    if(size.y < size.x){
+                        orientation = ORIENTATION_LANDSCAPE;
+                    }
+
+                    if (mPreviousOrientation != orientation) {
                         //notify BLE client
                         CmdArg cmd = new CmdArg(InformationPlugin.ORIENTATION, "Device orientation " + orientation);
                         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
+
+                        mPreviousOrientation = orientation;
                     }
                 }
             }
@@ -232,6 +322,34 @@ public class InformationPlugin
     public static boolean isOrientationRegistered()
     {
         return mOrientationListener != null;
+    }
+
+    public static void registerSignalStrength()
+    {
+        if (mTelephonyManager != null)
+            return;
+
+        mTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        mTelephonyManager.listen(mPhoneListener,
+                        PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+        CmdArg cmd = new CmdArg(0,"Registered Signal Strength.");
+        InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
+    }
+
+    public static void unregisterSignalStrength()
+    {
+        if (mTelephonyManager == null)
+            return;
+        mTelephonyManager.listen(mPhoneListener,
+                                PhoneStateListener.LISTEN_NONE);
+        mTelephonyManager = null;
+        CmdArg cmd = new CmdArg(0,"Unregistered Signal Strength.");
+        InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
+    }
+
+    public static boolean isSignalStrengthRegistered()
+    {
+        return mTelephonyManager != null;
     }
 
     public static void registerTemperature()
@@ -313,28 +431,20 @@ public class InformationPlugin
             @Override
             public void onReceive(Context context, Intent intent)
             {
-                String action = intent.getAction();
-                switch(action)//notify BLE client
-                {
-                    case Intent.ACTION_BATTERY_LOW:
-                    {
-                        CmdArg cmd = new CmdArg(InformationPlugin.BATTERY,"Battery LOW");
-                        InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
-                        break;
-                    }
-                    case Intent.ACTION_BATTERY_OKAY:
-                    {
-                        CmdArg cmd = new CmdArg(InformationPlugin.BATTERY,"Battery OK");
-                        InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
-                        break;
-                    }
+                int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+                int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+                int batteryPct = (int)(level/(float)scale * 100);
+
+                if (batteryPct != mPreviousBatteryPct) {
+                    CmdArg cmd = new CmdArg(InformationPlugin.BATTERY, "Battery level " + batteryPct);
+                    InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
+
+                    mPreviousBatteryPct = batteryPct;
                 }
-                Log.d("BatteryReceiver"," onReceive: " + action);
             }
         };
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_BATTERY_LOW);
-        filter.addAction(Intent.ACTION_BATTERY_OKAY);
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         mContext.registerReceiver(mBatteryReceiver, filter);
 
         CmdArg cmd = new CmdArg(0,"Registered Battery.");

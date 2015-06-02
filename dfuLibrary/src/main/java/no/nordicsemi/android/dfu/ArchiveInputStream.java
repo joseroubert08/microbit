@@ -127,6 +127,7 @@ public class ArchiveInputStream extends ZipInputStream {
 
 					if (applicationBytes == null)
 						throw new IOException("Application file " + application.getBinFileName() + " not found.");
+
 					applicationSize = applicationBytes.length;
 					currentSource = applicationBytes;
 					valid = true;
@@ -143,6 +144,7 @@ public class ArchiveInputStream extends ZipInputStream {
 
 					if (bootloaderBytes == null)
 						throw new IOException("Bootloader file " + bootloader.getBinFileName() + " not found.");
+
 					bootloaderSize = bootloaderBytes.length;
 					currentSource = bootloaderBytes;
 					valid = true;
@@ -156,6 +158,7 @@ public class ArchiveInputStream extends ZipInputStream {
 
 					if (softDeviceBytes == null)
 						throw new IOException("SoftDevice file " + softdevice.getBinFileName() + " not found.");
+
 					softDeviceSize = softDeviceBytes.length;
 					currentSource = softDeviceBytes;
 					valid = true;
@@ -164,6 +167,7 @@ public class ArchiveInputStream extends ZipInputStream {
 				// Read the combined Soft Device and Bootloader
 				if (manifest.getSoftdeviceBootloaderInfo() != null && (types == DfuBaseService.TYPE_AUTO ||
 						((types & DfuBaseService.TYPE_SOFT_DEVICE) > 0) && (types & DfuBaseService.TYPE_BOOTLOADER) > 0)) {
+
 					if (systemInitBytes != null)
 						throw new IOException("Manifest: The softdevice_bootloader may not be used together with softdevice or bootloader.");
 
@@ -173,6 +177,7 @@ public class ArchiveInputStream extends ZipInputStream {
 
 					if (softDeviceAndBootloaderBytes == null)
 						throw new IOException("File " + system.getBinFileName() + " not found.");
+
 					softDeviceSize = system.getSoftdeviceSize();
 					bootloaderSize = system.getBootloaderSize();
 					currentSource = softDeviceAndBootloaderBytes;
@@ -200,6 +205,7 @@ public class ArchiveInputStream extends ZipInputStream {
 					applicationBytes = entries.get(APPLICATION_HEX); // the entry bytes has already been converted to BIN, just the name remained.
 					if (applicationBytes == null)
 						applicationBytes = entries.get(APPLICATION_BIN);
+
 					if (applicationBytes != null) {
 						applicationSize = applicationBytes.length;
 						applicationInitBytes = entries.get(APPLICATION_INIT);
@@ -213,6 +219,7 @@ public class ArchiveInputStream extends ZipInputStream {
 					bootloaderBytes = entries.get(BOOTLOADER_HEX); // the entry bytes has already been converted to BIN, just the name remained.
 					if (bootloaderBytes == null)
 						bootloaderBytes = entries.get(BOOTLOADER_BIN);
+
 					if (bootloaderBytes != null) {
 						bootloaderSize = bootloaderBytes.length;
 						systemInitBytes = entries.get(SYSTEM_INIT);
@@ -226,6 +233,7 @@ public class ArchiveInputStream extends ZipInputStream {
 					softDeviceBytes = entries.get(SOFTDEVICE_HEX); // the entry bytes has already been converted to BIN, just the name remained.
 					if (softDeviceBytes == null)
 						softDeviceBytes = entries.get(SOFTDEVICE_BIN);
+
 					if (softDeviceBytes != null) {
 						softDeviceSize = softDeviceBytes.length;
 						systemInitBytes = entries.get(SYSTEM_INIT);
@@ -342,10 +350,13 @@ public class ArchiveInputStream extends ZipInputStream {
 		byte b = 0;
 		if (softDeviceSize > 0)
 			b |= DfuBaseService.TYPE_SOFT_DEVICE;
+
 		if (bootloaderSize > 0)
 			b |= DfuBaseService.TYPE_BOOTLOADER;
+
 		if (applicationSize > 0)
 			b |= DfuBaseService.TYPE_APPLICATION;
+
 		return b;
 	}
 
