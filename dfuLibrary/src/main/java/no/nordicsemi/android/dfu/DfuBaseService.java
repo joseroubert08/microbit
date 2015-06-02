@@ -45,6 +45,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.ResultReceiver;
 import android.os.SystemClock;
@@ -738,13 +739,11 @@ public abstract class DfuBaseService extends IntentService {
 			if (!device.getAddress().equals(mDeviceAddress))
 				return;
 
-			final String action = intent.getAction();
-
-			logi("Action received: " + action);
-			mConnectionState = STATE_DISCONNECTED;
-
 			// Notify waiting thread
 			synchronized (mLock) {
+				final String action = intent.getAction();
+				logi("Action received: " + action);
+				mConnectionState = STATE_DISCONNECTED;
 				mLock.notifyAll();
 			}
 		}
@@ -761,20 +760,18 @@ public abstract class DfuBaseService extends IntentService {
 					break;
 
 				case ACTION_RESUME:
-					mPaused = false;
-
 					// Notify waiting thread
 					synchronized (mLock) {
+						mPaused = false;
 						mLock.notifyAll();
 					}
 					break;
 
 				case ACTION_ABORT:
-					mPaused = false;
-					mAborted = true;
-
 					// Notify waiting thread
 					synchronized (mLock) {
+						mPaused = false;
+						mAborted = true;
 						mLock.notifyAll();
 					}
 					break;
@@ -795,10 +792,9 @@ public abstract class DfuBaseService extends IntentService {
 			if (bondState == BluetoothDevice.BOND_BONDING)
 				return;
 
-			mRequestCompleted = true;
-
 			// Notify waiting thread
 			synchronized (mLock) {
+				mRequestCompleted = true;
 				mLock.notifyAll();
 			}
 		}
@@ -860,6 +856,7 @@ public abstract class DfuBaseService extends IntentService {
 				loge("Connection state change error: " + status + " newState: " + newState);
 				mPaused = false;
 				mError = ERROR_CONNECTION_STATE_MASK | status;
+				mConnectionState = STATE_DISCONNECTED;
 			}
 
 			// Notify waiting thread
@@ -870,60 +867,61 @@ public abstract class DfuBaseService extends IntentService {
 
 		@Override
 		public void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
-			if (status == BluetoothGatt.GATT_SUCCESS) {
-				logi("Services discovered");
-				mConnectionState = STATE_CONNECTED_AND_READY;
-			} else {
-				loge("Service discovery error: " + status);
-				mError = ERROR_CONNECTION_MASK | status;
-			}
-
 			// Notify waiting thread
 			synchronized (mLock) {
+				if (status == BluetoothGatt.GATT_SUCCESS) {
+					logi("Services discovered");
+					mConnectionState = STATE_CONNECTED_AND_READY;
+				} else {
+					loge("Service discovery error: " + status);
+					mError = ERROR_CONNECTION_MASK | status;
+				}
+
 				mLock.notifyAll();
 			}
 		}
 
 		@Override
 		public void onDescriptorRead(final BluetoothGatt gatt, final BluetoothGattDescriptor descriptor, final int status) {
-			if (status == BluetoothGatt.GATT_SUCCESS) {
-				if (CLIENT_CHARACTERISTIC_CONFIG.equals(descriptor.getUuid())) {
-					if (SERVICE_CHANGED_UUID.equals(descriptor.getCharacteristic().getUuid())) {
-						// We have enabled indications for the Service Changed characteristic
-						mServiceChangedIndicationsEnabled = descriptor.getValue()[0] == 2;
-						mRequestCompleted = true;
-					}
-				}
-			} else {
-				loge("Descriptor read error: " + status);
-				mError = ERROR_CONNECTION_MASK | status;
-			}
-
 			// Notify waiting thread
 			synchronized (mLock) {
+				if (status == BluetoothGatt.GATT_SUCCESS) {
+					if (CLIENT_CHARACTERISTIC_CONFIG.equals(descriptor.getUuid())) {
+						if (SERVICE_CHANGED_UUID.equals(descriptor.getCharacteristic().getUuid())) {
+							// We have enabled indications for the Service Changed characteristic
+							mServiceChangedIndicationsEnabled = descriptor.getValue()[0] == 2;
+							mRequestCompleted = true;
+						}
+					}
+				} else {
+					loge("Descriptor read error: " + status);
+					mError = ERROR_CONNECTION_MASK | status;
+				}
+
 				mLock.notifyAll();
 			}
 		}
 
 		@Override
 		public void onDescriptorWrite(final BluetoothGatt gatt, final BluetoothGattDescriptor descriptor, final int status) {
-			if (status == BluetoothGatt.GATT_SUCCESS) {
-				if (CLIENT_CHARACTERISTIC_CONFIG.equals(descriptor.getUuid())) {
-					if (SERVICE_CHANGED_UUID.equals(descriptor.getCharacteristic().getUuid())) {
-						// We have enabled indications for the Service Changed characteristic
-						mServiceChangedIndicationsEnabled = descriptor.getValue()[0] == 2;
-					} else {
-						// We have enabled notifications for this characteristic
-						mNotificationsEnabled = descriptor.getValue()[0] == 1;
-					}
-				}
-			} else {
-				loge("Descriptor write error: " + status);
-				mError = ERROR_CONNECTION_MASK | status;
-			}
 
 			// Notify waiting thread
 			synchronized (mLock) {
+				if (status == BluetoothGatt.GATT_SUCCESS) {
+					if (CLIENT_CHARACTERISTIC_CONFIG.equals(descriptor.getUuid())) {
+						if (SERVICE_CHANGED_UUID.equals(descriptor.getCharacteristic().getUuid())) {
+							// We have enabled indications for the Service Changed characteristic
+							mServiceChangedIndicationsEnabled = descriptor.getValue()[0] == 2;
+						} else {
+							// We have enabled notifications for this characteristic
+							mNotificationsEnabled = descriptor.getValue()[0] == 1;
+						}
+					}
+				} else {
+					loge("Descriptor write error: " + status);
+					mError = ERROR_CONNECTION_MASK | status;
+				}
+
 				mLock.notifyAll();
 			}
 		}
@@ -1340,7 +1338,12 @@ public abstract class DfuBaseService extends IntentService {
 
 		if (rc == 0) {
 			waitUntilDisconnected();
+
+			//sleep(2500);
 			refreshDeviceCache(gatt, true);
+			//sleep(2500);
+
+			mError = 0;
 			gattConnect(gatt);
 
 			Iterator<BluetoothGattService> sItr = gatt.getServices().iterator();
@@ -1357,6 +1360,13 @@ public abstract class DfuBaseService extends IntentService {
 		}
 
 		return rc;
+	}
+
+	private void sleep(long period) {
+		try {
+			Thread.sleep(2500L);
+		} catch (InterruptedException e) {
+		}
 	}
 
 	private Intent phase3(Intent intent) {
@@ -1505,10 +1515,10 @@ public abstract class DfuBaseService extends IntentService {
 			}
 
 			// We have connected to DFU device and services are discoverer
-
 			BluetoothGattService dfuService = null;
-			int retry = 15;
 
+/*
+			int retry = 15;
 			do {
 				dfuService = gatt.getService(DFU_SERVICE_UUID); // there was a case when the service was null. I don't know why
 				if (dfuService == null) {
@@ -1524,7 +1534,8 @@ public abstract class DfuBaseService extends IntentService {
 					}
 				}
 			} while (dfuService == null);
-
+*/
+			dfuService = gatt.getService(DFU_SERVICE_UUID); // there was a case when the service was null. I don't know why
 			if (dfuService == null) {
 				loge("DFU service does not exists on the device");
 				sendLogBroadcast(LOG_LEVEL_WARNING, "Connected. DFU Service not found");
@@ -2205,8 +2216,6 @@ public abstract class DfuBaseService extends IntentService {
 		if (!mBluetoothAdapter.isEnabled())
 			return null;
 
-		mConnectionState = STATE_CONNECTING;
-
 		logi("Connecting to the device...");
 		if (device == null) {
 			device = mBluetoothAdapter.getRemoteDevice(address);
@@ -2217,6 +2226,7 @@ public abstract class DfuBaseService extends IntentService {
 		// We have to wait until the device is connected and services are discovered
 		// Connection error may occur as well.
 		try {
+			mConnectionState = STATE_CONNECTING;
 			synchronized (mLock) {
 				while (((mConnectionState == STATE_CONNECTING || mConnectionState == STATE_CONNECTED) && mError == 0 && !mAborted) || mPaused)
 					mLock.wait();
@@ -2262,7 +2272,6 @@ public abstract class DfuBaseService extends IntentService {
 			return;
 
 		mConnectionState = STATE_DISCONNECTING;
-
 		logi("Disconnecting from the device...");
 		gatt.disconnect();
 
@@ -2294,26 +2303,7 @@ public abstract class DfuBaseService extends IntentService {
 				}
 			}
 		} catch (final InterruptedException e) {
-			loge("Sleeping interrupted", e);
-		}
-
-	}
-
-	private void discoverServices(BluetoothGatt gatt) {
-
-		try {
-			if (gatt.discoverServices()) {
-				if (mConnectionState == STATE_CONNECTED_AND_READY) {
-					mConnectionState = STATE_CONNECTED;
-				}
-
-				synchronized (mLock) {
-					while (mConnectionState != STATE_CONNECTED_AND_READY) {
-						mLock.wait();
-					}
-				}
-			}
-		} catch (final InterruptedException e) {
+			e.printStackTrace();
 			loge("Sleeping interrupted", e);
 		}
 
