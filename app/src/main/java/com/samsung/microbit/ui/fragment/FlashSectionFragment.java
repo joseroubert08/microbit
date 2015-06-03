@@ -18,6 +18,7 @@ import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -55,6 +56,9 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
 	private BluetoothAdapter mBluetoothAdapter = null;
 	private String fileNameToFlash = null;
 
+    private static SharedPreferences preferences;
+    private static final String PREFERENCES_NAME_KEY = "PairedDeviceName";
+    private static final String PREFERENCES_ADDRESS_KEY = "PairedDeviceAddress";
     private HashMap<String, String> prettyFileNameMap = new HashMap<String, String>();
 
 	final public static String BINARY_FILE_NAME = "/sdcard/output.bin";
@@ -182,6 +186,46 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
 	}
     */
 
+    private void prepareToFlash(boolean useExistingDevice)
+    {
+        int retValue = PrepareFile(fileNameToFlash);
+
+        switch (retValue) {
+            case SUCCESS:
+                preferences = rootView.getContext().getSharedPreferences("Microbit_PairedDevices", Context.MODE_PRIVATE);
+                String pairedDeviceName = preferences.getString(PREFERENCES_NAME_KEY, "None");
+                String pairedDeviceAddress = preferences.getString(PREFERENCES_ADDRESS_KEY, "None");
+
+                Toast.makeText(getActivity(), "Name == " + pairedDeviceName + " Address == " + pairedDeviceAddress, Toast.LENGTH_LONG).show();
+
+                Intent intent = new Intent(getActivity(), LEDGridActivity.class); //DeviceScanActivity.class);
+                intent.putExtra("download_file", fileNameToFlash);
+                intent.putExtra("use_existing_device", useExistingDevice);
+                intent.putExtra("existing_device_name", pairedDeviceName);
+                intent.putExtra("existing_device_address", pairedDeviceAddress);
+                startActivity(intent);
+                //Toast.makeText(getActivity(), "Binary file ready for flashing", Toast.LENGTH_LONG).show();
+                break;
+
+            case FILE_NOT_FOUND:
+            case FILE_IO_ERROR:
+            case FAILED:
+                handle_flashing_failed(retValue);
+                Toast.makeText(getActivity(), "Failed to create binary file", Toast.LENGTH_LONG).show();
+                break;
+        }
+    }
+
+    private void findNewDevice()
+    {
+        prepareToFlash(false);
+    }
+
+    private void useExistingDevice()
+    {
+        prepareToFlash(true);
+    }
+
 	@Override
 	public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
 
@@ -195,23 +239,36 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
         fileNameToFlash = prettyFileNameMap.get(fileNameToFlash);
 
 		//Toast.makeText(getActivity(), "Preparing " + fileNameToFlash + " ...", Toast.LENGTH_LONG).show();
-		int retValue = PrepareFile(fileNameToFlash);
+        //int retValue = PrepareFile(fileNameToFlash);
 
-		switch (retValue) {
-			case SUCCESS:
-				Intent intent = new Intent(getActivity(), LEDGridActivity.class); //DeviceScanActivity.class);
-				intent.putExtra("download_file", fileNameToFlash);
-				startActivity(intent);
-				//Toast.makeText(getActivity(), "Binary file ready for flashing", Toast.LENGTH_LONG).show();
-				break;
+        preferences = rootView.getContext().getSharedPreferences("Microbit_PairedDevices", Context.MODE_PRIVATE);
 
-			case FILE_NOT_FOUND:
-			case FILE_IO_ERROR:
-			case FAILED:
-                handle_flashing_failed(retValue);
-				Toast.makeText(getActivity(), "Failed to create binary file", Toast.LENGTH_LONG).show();
-				break;
-		}
+
+        String pairedDeviceName = preferences.getString(PREFERENCES_NAME_KEY, "None");
+
+
+        Log.d("Microbit", "Preferences - PairedDevice" + pairedDeviceName);
+        if (!pairedDeviceName.equals("None")) {
+
+            AlertDialog.Builder dialog = new AlertDialog.Builder(rootView.getContext());
+
+            dialog.setTitle(R.string.microbit_found)
+                    .setMessage("If you want to flash your code to the last micro:bit that you used, click 'Yes'.\nIf you'd prefer to use a different micro:bit instead, click 'No'.")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialoginterface, int i) {
+                            useExistingDevice();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialoginterface, int i) {
+                            findNewDevice();
+                        }
+                    })
+                    .show();
+        }
+        else {
+            findNewDevice();
+        }
 	}
 
     private void alertView( String message, int title_id ) {
