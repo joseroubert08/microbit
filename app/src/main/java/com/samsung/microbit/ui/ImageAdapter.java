@@ -10,6 +10,7 @@ import com.samsung.microbit.R;
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
+    private int tickMark[] = {9, 13, 15, 17, 21};
 
     // Keep all Images in array
     public Integer[] mThumbIds = {
@@ -46,6 +47,13 @@ public class ImageAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+
+    public void displayTick() {
+
+        for(int i=0; i<5;i++)
+            mThumbIds[tickMark[i]] = R.drawable.ledon;
     }
 
     @Override
