@@ -11,9 +11,11 @@ import java.util.ArrayList;
 import java.lang.Integer;
 import java.util.UUID;
 
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -34,6 +36,7 @@ import android.widget.Toast;
 
 import com.samsung.microbit.R;
 import com.samsung.microbit.ui.DeviceScanActivity;
+import com.samsung.microbit.ui.LEDGridActivity;
 
 public class FlashSectionFragment extends Fragment implements OnClickListener, OnItemClickListener {
 
@@ -41,7 +44,7 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 	private static final int FILE_NOT_FOUND = -1;
 	private static final int FILE_IO_ERROR = -2;
 	private static final int FAILED = -3;
-
+	private View rootView;
 	private Button flashSearchButton = null;
 
 	private ListView programList = null;
@@ -105,7 +108,7 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		View rootView = inflater.inflate(R.layout.fragment_section_flash, container, false);
+		rootView  = inflater.inflate(R.layout.fragment_section_flash, container, false);
 		flashSearchButton = (Button) rootView.findViewById(R.id.searchButton);
 		programList = (ListView) rootView.findViewById(R.id.programList);
 
@@ -117,7 +120,7 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 			flashSearchButton.setEnabled(true);
 			flashSearchButton.setText("Search");
 			if (isBLuetoothEnabled) {
-				flashSearchButton.setText("Flash code");
+				flashSearchButton.setText(R.string.run_code_button_name);
 			} else {
 				flashSearchButton.setText(R.string.error_bluetooth_not_enabled);
 			}
@@ -139,7 +142,9 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 			case R.id.searchButton:
 				File file = new File(BINARY_FILE_NAME);
 				if (file.exists()) {
-					Intent intent = new Intent(getActivity(), DeviceScanActivity.class);
+					// Intent intent = new Intent(getActivity(), DeviceScanActivity.class);
+			 		Intent intent = new Intent(getActivity(), LEDGridActivity.class); //DeviceScanActivity.class);
+					intent.putExtra("download_file", fileNameToFlash);
 					startActivity(intent);
 				} else {
 					Toast.makeText(getActivity(), "Create the binary file first by clicking one file below", Toast.LENGTH_LONG).show();
@@ -157,22 +162,65 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 		check.setChecked(!check.isChecked());
 
 		fileNameToFlash = (String) adapter.getItemAtPosition(position);
-		Toast.makeText(getActivity(), "Preparing " + fileNameToFlash + " ...", Toast.LENGTH_LONG).show();
+		//Toast.makeText(getActivity(), "Preparing " + fileNameToFlash + " ...", Toast.LENGTH_LONG).show();
 		int retValue = PrepareFile(fileNameToFlash);
 
 		switch (retValue) {
 			case SUCCESS:
-				Toast.makeText(getActivity(), "Binary file ready for flashing", Toast.LENGTH_LONG).show();
+				Intent intent = new Intent(getActivity(), LEDGridActivity.class); //DeviceScanActivity.class);
+				intent.putExtra("download_file", fileNameToFlash);
+				startActivity(intent);
+				//Toast.makeText(getActivity(), "Binary file ready for flashing", Toast.LENGTH_LONG).show();
 				break;
 
 			case FILE_NOT_FOUND:
 			case FILE_IO_ERROR:
 			case FAILED:
+                handle_flashing_failed(retValue);
 				Toast.makeText(getActivity(), "Failed to create binary file", Toast.LENGTH_LONG).show();
 				break;
 		}
 	}
 
+    private void alertView( String message, int title_id ) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(rootView.getContext());
+
+        dialog.setTitle(getString(title_id))
+                .setIcon(R.drawable.ic_launcher)
+                .setMessage(message)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialoginterface, int i) {
+                    }
+                }).show();
+    }
+    private void  handle_flashing_failed(int failureCode)
+    {
+        int messageId;
+      //  progressDialog.dismiss();
+        switch(failureCode)
+        {
+            case FILE_NOT_FOUND:
+                messageId = R.string.flashing_failed_not_found;
+                break;
+            case FILE_IO_ERROR:
+                messageId = R.string.flashing_failed_io_error;
+                break;
+            case FAILED:
+                default:
+                messageId = R.string.flashing_failed_message;
+                break;
+        }
+        alertView(getString(messageId), R.string.flashing_failed_title);
+       // devicesButton.setText(R.string.devices_find_microbit);
+    }
+    private void  handle_flashing_successful()
+    {
+    //    devicesButton.setText("Connected to " + deviceName);
+      //  mHandler.removeCallbacks(scanFailedCallback);
+       // progressDialog.dismiss();
+        alertView(getString(R.string.flashing_success_message),
+                R.string.flashing_success_title);
+    }
 	// Creates binary buffer from ONLY the data specified by hex, spec here:
 	// http://en.wikipedia.org/wiki/Intel_HEX
 	private int PrepareFile(String fileName) {
