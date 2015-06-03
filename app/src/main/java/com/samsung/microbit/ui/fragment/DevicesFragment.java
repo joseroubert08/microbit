@@ -551,7 +551,7 @@ public class DevicesFragment extends Fragment implements OnClickListener, OnItem
 		devicesButton.setText("Connected to " + deviceName);
 		mHandler.removeCallbacks(scanFailedCallback);
 		pairingProgressDialog.dismiss();
-		alertView(getString(R.string.pairing_success_message_1) + deviceName + getString(R.string.pairing_success_message_2),
+		alertView(getString(R.string.pairing_success_message_1),
 			R.string.pairing_success_title);
 	}
 
