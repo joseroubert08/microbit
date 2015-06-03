@@ -33,6 +33,7 @@
     <string name="connected">Connected</string>
     <string name="disconnected">Disconnected</string>
     <string name="title_devices">MicroBit Device Scan</string>
+    <string name="title_activity_ledgrid">Find MicroBit</string>
     <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
     <string name="microbit_not_found">Microbit not found. Please search.</string>
     <string name="error_bluetooth_not_enabled">Bluetooth not enabled.</string>
@@ -46,10 +47,10 @@
     <string name="unknown_characteristic">Unknown characteristic</string>
     <string name="unknown_service">Unknown service</string>
     <string name="pairing_failed_message">No Microbit displaying the pattern you entered could be found. Please enter the pattern displayed on your Microbit and try again.</string>
-    <string name="pairing_failed_title">Pairing Unsuccesful</string>
-    <string name="pairing_success_message_1">You have successfully paired with BBC Microbit [ </string>
-    <string name="pairing_success_message_2"> ]  Please press both buttons on the Microbit now.</string>
-    <string name="pairing_success_title">Pairing Succesful</string>
+    <string name="pairing_failed_title">Linking Unsuccesful</string>
+    <string name="pairing_success_message_1">You have successfully linked with micro:bit </string>
+    <string name="pairing_success_title">micro:bit found</string>
+    <string name="run_code_button_name">Continue to Flash</string>
     <string name="flashing_failed_not_found">Flashing Failed!Cannot read the file</string>
     <string name="flashing_failed_io_error">Flashing Failed! Cannot find the file</string>
     <string name="flashing_failed_message">Flashing Failed! No Programs Found</string>
