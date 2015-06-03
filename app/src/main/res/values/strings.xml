@@ -36,6 +36,7 @@
     <string name="title_activity_ledgrid">Find MicroBit</string>
     <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
     <string name="microbit_not_found">Microbit not found. Please search.</string>
+    <string name="microbit_found">Use existing micro:bit?</string>
     <string name="error_bluetooth_not_enabled">Bluetooth not enabled.</string>
     <string name="devices_bluetooth_not_enabled">Click to enable Bluetooth.</string>
     <string name="devices_initiate_process">Click to start.</string>

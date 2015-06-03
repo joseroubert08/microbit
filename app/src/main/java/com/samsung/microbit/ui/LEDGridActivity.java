@@ -59,7 +59,8 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
     final ArrayList<String> list = new ArrayList<String>();
     private String deviceName = "";
     private static SharedPreferences preferences;
-    private static final String PREFERENCES_KEY = "PairedDevice";
+    private static final String PREFERENCES_NAME_KEY = "PairedDeviceName";
+    private static final String PREFERENCES_ADDRESS_KEY = "PairedDeviceAddress";
     private Handler mHandler;
     private Runnable scanFailedCallback;
     private boolean mScanning;
@@ -70,6 +71,9 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
     private BluetoothDevice mSelectedDevice;
     private DFUResultReceiver dfuResultReceiver;
     private String file_to_be_downloaded;
+    private Boolean use_existing_device;
+    private String existing_device_name;
+    private String existing_device_address;
 
     private String deviceCodeArray[] = {"0","0","0","0","0","0","0","0","0","0",
             "0","0","0","0","0","0","0","0","0","0",
@@ -97,6 +101,9 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
         pairingStatus = (TextView) findViewById(R.id.connectingStatus);
         pairingMessage = (TextView) findViewById(R.id.connectingMessage);
         file_to_be_downloaded = getIntent().getStringExtra("download_file");
+        use_existing_device = getIntent().getBooleanExtra("use_existing_device", false);
+        existing_device_name = getIntent().getStringExtra("existing_device_name");
+        existing_device_address = getIntent().getStringExtra("existing_device_address");
         pairingMessage.setText("Flashing program [" +file_to_be_downloaded +"]");
 
         mHandler = new Handler();
@@ -113,8 +120,16 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
         }
 
         getActionBar().setTitle("Find microbit");
-        displayLEDGridView();
 
+        if (use_existing_device == true)
+        {
+            displayLEDGridView();
+            startFlashingExisting();
+        }
+        else
+        {
+            displayLEDGridView();
+        }
     }
 
 
@@ -160,15 +175,21 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
                 pairingStatus.setText("micro:bit found");
                 pairingMessage.setText("Downloading file "+ file_to_be_downloaded);
 			    final Intent service = new Intent(LEDGridActivity.this, DfuService.class);
-                service.putExtra(DfuService.EXTRA_DEVICE_ADDRESS, mSelectedDevice.getAddress());
-                service.putExtra(DfuService.EXTRA_DEVICE_NAME, mSelectedDevice.getName());
+                if(use_existing_device == true) {
+                    service.putExtra(DfuService.EXTRA_DEVICE_ADDRESS, existing_device_address);
+                    service.putExtra(DfuService.EXTRA_DEVICE_NAME, existing_device_name);
+
+                } else {
+                    service.putExtra(DfuService.EXTRA_DEVICE_ADDRESS, mSelectedDevice.getAddress());
+                    service.putExtra(DfuService.EXTRA_DEVICE_NAME, mSelectedDevice.getName());
+                }
                 service.putExtra(DfuService.EXTRA_FILE_MIME_TYPE, DfuService.MIME_TYPE_OCTET_STREAM);
                 service.putExtra(DfuService.EXTRA_FILE_PATH, FlashSectionFragment.BINARY_FILE_NAME); // a path or URI must be provided.
                 service.putExtra(DfuService.EXTRA_KEEP_BOND, false);
                 service.putExtra("com.samsung.resultReceiver", resultReceiver);
                 service.putExtra("com.samsung.runonly.phase", 2);
 
-        startService(service);
+                startService(service);
                 break;
         }
     }
@@ -296,11 +317,11 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
     private void  handle_pairing_failed()
     {
         SharedPreferences.Editor editor = preferences.edit();
-        String pairedDeviceName = preferences.getString(PREFERENCES_KEY, "None");
+        String pairedDeviceName = preferences.getString(PREFERENCES_NAME_KEY, "None");
         Log.d("Microbit", "Preferences - PairedDevice" + pairedDeviceName);
         if (!pairedDeviceName.equals("None")) {
             // Edit the saved preferences
-            editor.remove(PREFERENCES_KEY);
+            editor.remove(PREFERENCES_NAME_KEY);
             editor.commit();
         }
 
@@ -320,6 +341,41 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
         pairingMessage.setText("Enter the pattern on your micro:bit");
     }
 
+
+
+    protected void startFlashingExisting() {
+
+        pairingStatus.setText("micro:bit found");
+        pairingMessage.setText("Starting reprogramming");
+
+        devicesButton.setText("Connected to " + existing_device_name);
+        devicesButton.setEnabled(false);
+
+        final Intent service = new Intent(this, DfuService.class);
+        service.putExtra(DfuService.EXTRA_DEVICE_ADDRESS, existing_device_address);
+        service.putExtra(DfuService.EXTRA_DEVICE_NAME, existing_device_name);
+        service.putExtra(DfuService.EXTRA_FILE_MIME_TYPE, DfuService.MIME_TYPE_OCTET_STREAM);
+        //service.putExtra(DfuService.EXTRA_FILE_TYPE, mFileType);
+        service.putExtra(DfuService.EXTRA_FILE_PATH, FlashSectionFragment.BINARY_FILE_NAME); // a path or URI must be provided.
+        //service.putExtra(DfuService.EXTRA_FILE_URI, mFileStreamUri);
+        // Init packet is required by Bootloader/DFU from SDK 7.0+ if HEX or BIN file is given above.
+        // In case of a ZIP file, the init packet (a DAT file) must be included inside the ZIP file.
+        //service.putExtra(DfuService.EXTRA_INIT_FILE_PATH, mInitFilePath);
+        //service.putExtra(DfuService.EXTRA_INIT_FILE_URI, mInitFileStreamUri);
+        service.putExtra(DfuService.EXTRA_KEEP_BOND, false);
+
+        service.putExtra("com.samsung.resultReceiver", resultReceiver);
+        service.putExtra("com.samsung.runonly.phase", 1);
+
+
+        IntentFilter filter = new IntentFilter(DfuService.BROADCAST_PROGRESS);
+        IntentFilter filter1 = new IntentFilter(DfuService.BROADCAST_ERROR);
+        dfuResultReceiver = new DFUResultReceiver();
+        LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter);
+        LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter1);
+        //   Toast.makeText(MBApp.getContext(), "Starting service", Toast.LENGTH_SHORT).show();
+        startService(service);
+    }
 
     protected void startFlashing() {
 
@@ -351,14 +407,15 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 
     private void  handle_pairing_successful()
     {
-        String pairedDeviceName = preferences.getString(PREFERENCES_KEY, "None");
+        String pairedDeviceName = preferences.getString(PREFERENCES_NAME_KEY, "None");
         // Edit the saved preferences
         if ((!pairedDeviceName.equals("None") && !pairedDeviceName.equals(deviceName))
                 || (pairedDeviceName.equals("None")))
         {
             // TODO: Should we disconnect by calling removeBond from old BLE device??
             SharedPreferences.Editor editor = preferences.edit();
-            editor.putString(PREFERENCES_KEY, deviceName);
+            editor.putString(PREFERENCES_NAME_KEY, deviceName);
+            editor.putString(PREFERENCES_ADDRESS_KEY, mSelectedDevice.getAddress());
             editor.commit();
         }
         pairingStatus.setText("micro:bit found");
