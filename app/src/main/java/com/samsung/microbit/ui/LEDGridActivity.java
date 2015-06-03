@@ -368,11 +368,6 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
         service.putExtra("com.samsung.runonly.phase", 1);
 
 
-        IntentFilter filter = new IntentFilter(DfuService.BROADCAST_PROGRESS);
-        IntentFilter filter1 = new IntentFilter(DfuService.BROADCAST_ERROR);
-        dfuResultReceiver = new DFUResultReceiver();
-        LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter);
-        LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter1);
         //   Toast.makeText(MBApp.getContext(), "Starting service", Toast.LENGTH_SHORT).show();
         startService(service);
     }
@@ -395,12 +390,6 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
         service.putExtra("com.samsung.resultReceiver", resultReceiver);
         service.putExtra("com.samsung.runonly.phase", 1);
 
-
-        IntentFilter filter = new IntentFilter(DfuService.BROADCAST_PROGRESS);
-        IntentFilter filter1 = new IntentFilter(DfuService.BROADCAST_ERROR);
-        dfuResultReceiver = new DFUResultReceiver();
-        LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter);
-        LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter1);
      //   Toast.makeText(MBApp.getContext(), "Starting service", Toast.LENGTH_SHORT).show();
         startService(service);
     }
@@ -597,12 +586,12 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
                             }
 
                             break;
-                        default:
-                            /*if(!inInit) {
+                        case DfuService.PROGRESS_CONNECTING:
+                            if(!inInit) {
                                 flashSpinnerDialog.setMessage("Initialising the connection");
                                 flashSpinnerDialog.show();
                             }
-                            inInit=true; */
+                            inInit=true;
                             isCompleted=false;
                             break;
                     }
@@ -640,6 +629,11 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
         pairingMessage.setText("Press button on micro:bit and then select OK");
         state = STATE_PHASE1_COMPLETE;
 
+        IntentFilter filter = new IntentFilter(DfuService.BROADCAST_PROGRESS);
+        IntentFilter filter1 = new IntentFilter(DfuService.BROADCAST_ERROR);
+        dfuResultReceiver = new DFUResultReceiver();
+        LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter);
+        LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter1);
     }
     ResultReceiver resultReceiver = new ResultReceiver(new Handler()) {
 
