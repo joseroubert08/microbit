@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.lang.Integer;
+import java.util.HashMap;
 import java.util.UUID;
 
 import android.app.AlertDialog;
@@ -38,7 +39,7 @@ import com.samsung.microbit.R;
 import com.samsung.microbit.ui.DeviceScanActivity;
 import com.samsung.microbit.ui.LEDGridActivity;
 
-public class FlashSectionFragment extends Fragment implements OnClickListener, OnItemClickListener {
+public class FlashSectionFragment extends Fragment implements OnItemClickListener {
 
 	private static final int SUCCESS = 0;
 	private static final int FILE_NOT_FOUND = -1;
@@ -53,6 +54,8 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 	private Boolean isBLuetoothEnabled = false;
 	private BluetoothAdapter mBluetoothAdapter = null;
 	private String fileNameToFlash = null;
+
+    private HashMap<String, String> prettyFileNameMap = new HashMap<String, String>();
 
 	final public static String BINARY_FILE_NAME = "/sdcard/output.bin";
 
@@ -94,7 +97,17 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 			for (int i = 0; i < files.length; i++) {
 				String fileName = files[i].getName();
 				if (fileName.endsWith(".hex")) {
-					list.add(fileName);
+
+                    //Beautify the filename
+                    String parsedFileName;
+
+                    int dot = fileName.lastIndexOf(".");
+                    parsedFileName = fileName.substring(0, dot);
+                    parsedFileName = parsedFileName.replace('_',' ');
+
+                    prettyFileNameMap.put(parsedFileName, fileName);
+
+					list.add(parsedFileName);
 					++iTotalPrograms;
 				}
 			}
@@ -109,9 +122,10 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		rootView  = inflater.inflate(R.layout.fragment_section_flash, container, false);
-		flashSearchButton = (Button) rootView.findViewById(R.id.searchButton);
+		//flashSearchButton = (Button) rootView.findViewById(R.id.searchButton);
 		programList = (ListView) rootView.findViewById(R.id.programList);
 
+        /*
 		//Default Values
 		if (!isBLEAvailable) {
 			flashSearchButton.setEnabled(false);
@@ -125,14 +139,27 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 				flashSearchButton.setText(R.string.error_bluetooth_not_enabled);
 			}
 		}
+        */
 
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_single_choice, list);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
 		programList.setAdapter(adapter);
-		flashSearchButton.setOnClickListener(this);
+		//flashSearchButton.setOnClickListener(this);
 		programList.setOnItemClickListener(this);
 		return rootView;
 	}
 
+    public void flashCode()
+    {
+        File file = new File(BINARY_FILE_NAME);
+        if (file.exists()) {
+            Intent intent = new Intent(getActivity(), DeviceScanActivity.class);
+            startActivity(intent);
+        } else {
+            Toast.makeText(getActivity(), "Create the binary file first by clicking one file below", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /*
 	@Override
 	public void onClick(View v) {
 
@@ -153,15 +180,20 @@ public class FlashSectionFragment extends Fragment implements OnClickListener, O
 				break;
 		}
 	}
+    */
 
 	@Override
 	public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
 
 		View v1 = programList.getChildAt(position);
+        /*
 		CheckedTextView check = (CheckedTextView) v1;
 		check.setChecked(!check.isChecked());
+        */
 
 		fileNameToFlash = (String) adapter.getItemAtPosition(position);
+        fileNameToFlash = prettyFileNameMap.get(fileNameToFlash);
+
 		//Toast.makeText(getActivity(), "Preparing " + fileNameToFlash + " ...", Toast.LENGTH_LONG).show();
 		int retValue = PrepareFile(fileNameToFlash);
 
