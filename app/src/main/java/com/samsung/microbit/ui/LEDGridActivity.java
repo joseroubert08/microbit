@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -140,7 +141,9 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
         switch (state) {
 
             case STATE_LED_GRID_DISPLAYED:
-            case STATE_DEVICE_PAIRED: {
+            case STATE_DEVICE_PAIRED:
+            case STATE_READY_TO_SCAN:
+            {
                 //generateCode();
                 generateName();
 
@@ -153,7 +156,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
                 break;
             }
 
-            case STATE_READY_TO_SCAN: {
+           /* case STATE_READY_TO_SCAN: {
                 //Call this again in case the details changed
                 generateName();
 
@@ -167,7 +170,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
                 state = STATE_SCANNING;
 
                 break;
-            }
+            }*/
             case STATE_PHASE1_COMPLETE:
 
                 displayLEDGridViewConnected();
@@ -611,13 +614,90 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
             }
             else if(intent.getAction() == DfuService.BROADCAST_ERROR)
             {
-                String error_message = "Flashing Error Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA,0)
-                        + "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE,0) + "]";
-                Log.e("Microbit", error_message);
+                String error_message = broadcastGetErrorMessage(intent.getIntExtra(DfuService.EXTRA_DATA,0));
+
+                Log.e("Microbit","Flashing ERROR!!  Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA,0)
+                        + "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE,0) + "]");
                 if(flashSpinnerDialog != null)
-                flashSpinnerDialog.dismiss();
+                    flashSpinnerDialog.dismiss();
                 alertView(error_message, R.string.flashing_failed_title);
             }
+        }
+
+        private String broadcastGetErrorMessage(int errorCode)
+        {
+            String errorMessage;
+
+            switch(errorCode)
+            {
+                case DfuService.ERROR_DEVICE_DISCONNECTED:
+                    errorMessage = "micro:bit disconnected";
+                    break;
+                case DfuService.ERROR_FILE_NOT_FOUND:
+                    errorMessage = "File not found";
+                    break;
+                /**
+                 * Thrown if service was unable to open the file ({@link java.io.IOException} has been thrown).
+                 */
+                case DfuService.ERROR_FILE_ERROR:
+                    errorMessage = "Unable to open file";
+                    break;
+                /**
+                 * Thrown then input file is not a valid HEX or ZIP file.
+                 */
+                case DfuService.ERROR_FILE_INVALID:
+                    errorMessage = "File not a valid HEX";
+                    break;
+                /**
+                 * Thrown when {@link java.io.IOException} occurred when reading from file.
+                 */
+                case DfuService.ERROR_FILE_IO_EXCEPTION:
+                    errorMessage = "Unable to read file";
+                    break;
+                /**
+                 * Error thrown then {@code gatt.discoverServices();} returns false.
+                 */
+                case DfuService.ERROR_SERVICE_DISCOVERY_NOT_STARTED:
+                    errorMessage = "Bluetooth Discovery not started";
+                    break;
+                /**
+                 * Thrown when the service discovery has finished but the DFU service has not been found. The device does not support DFU of is not in DFU mode.
+                 */
+                case DfuService.ERROR_SERVICE_NOT_FOUND:
+                    errorMessage = "Dfu Service not found";
+                    break;
+                /**
+                 * Thrown when the required DFU service has been found but at least one of the DFU characteristics is absent.
+                 */
+                case DfuService.ERROR_CHARACTERISTICS_NOT_FOUND:
+                    errorMessage = "Dfu Characteristics not found";
+                    break;
+                /**
+                 * Thrown when unknown response has been obtained from the target. The DFU target must follow specification.
+                 */
+                case DfuService.ERROR_INVALID_RESPONSE:
+                    errorMessage = "Invalid response from micro:bit";
+                    break;
+
+                /**
+                 * Thrown when the the service does not support given type or mime-type.
+                 */
+                case DfuService.ERROR_FILE_TYPE_UNSUPPORTED:
+                    errorMessage = "Unsupported file type";
+                    break;
+
+                /**
+                 * Thrown when the the Bluetooth adapter is disabled.
+                 */
+                case DfuService.ERROR_BLUETOOTH_DISABLED:
+                    errorMessage = "Bluetooth Disabled";
+                    break;
+                default:
+                    errorMessage = "Unknown Error";
+                    break;
+            }
+
+            return errorMessage;
         }
     }
 
@@ -625,6 +705,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
     {
         devicesButton.setText("OK");
         devicesButton.setEnabled(true);
+        pairingStatus.setTextColor(Color.GREEN);
         pairingStatus.setText("micro:bit found");
         pairingMessage.setText("Press button on micro:bit and then select OK");
         state = STATE_PHASE1_COMPLETE;
@@ -650,6 +731,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
               //      Toast.makeText(MBApp.getContext(), R.string.phase1_complete_ok, Toast.LENGTH_SHORT).show();
                 } else {
                     Log.d("microbit", "Phase 1 not complete recieved ");
+                    alertView("micro:bit not in correct state", R.string.flashing_failed_title);
                //     Toast.makeText(MBApp.getContext(), R.string.phase1_complete_not_ok, Toast.LENGTH_SHORT).show();
                 }
             }
