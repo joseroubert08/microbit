@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Page Title</title>
+    <script src="cordova.js"></script>
+    <script src="microbitservice.js"></script>
+    <script type="text/javascript">
+        //event is a json object built from JAVA class PluginInterface
+        function onEventReceived(event)
+        {
+            alert("Simulated event from Microbit: " +event.type + ", " + event.source);
+            //TODO: add code to handle event from microbit i.e. button press
+            //switch(event.type) {
+            //  case "button_press":
+            //      if (event.source == "left")
+        }
+
+        //wait for Cordova API initialization before initialising PluginInterface
+        function onCordovaReady()
+        {   //set the event listener for handling microbit event
+            PluginInterface.init(onEventReceived);
+        }
+
+        function onLoad()
+        {
+            document.addEventListener("deviceready", onCordovaReady, false);
+        }
+
+        function onClick(service, action, value, callback)
+        {   
+	    //button_id contains the command name i.e. ringtone, vibrate, ...
+            //send command to JAVA plugin (PluginInterface will dispatch to corresponding plugin)
+	    mbs.command(service, action, value, callback);           
+        }
+    </script>
+</head>
+<body onload="onLoad()">
+
+<center>
+<h2>JS2JAVA INTERFACE</h2>
+</center>
+
+<h3>ALERT<h3>
+<button type="button" id="toast" onclick="onClick(mbs.service.ALERT,mbs.alert.TOAST,'Hello World', null)">Toast</button>
+<button type="button" id="vibrate" onclick="onClick(mbs.service.ALERT,mbs.alert.VIBRATE,'1000', null)">Vibrate</button>
+<button type="button" id="sound" onclick="onClick(mbs.service.ALERT,mbs.alert.SOUND,'', null)">Sound</button>
+<button type="button" id="ringtone" onclick="onClick(mbs.service.ALERT,mbs.alert.RINGTONE,'', null)">Ringtone</button>
+<button type="button" id="findphone" onclick="onClick(mbs.service.ALERT,mbs.alert.FINDPHONE,'', null)">Find Phone</button>
+
+<h3>FEEDBACK<h3>
+<button type="button" id="display" onclick="onClick(mbs.service.FEEDBACK,mbs.feedback.DISPLAY,'', null)">Display</button>
+
+<h3>REMOTE<h3>
+<button type="button" id="play" onclick="onClick(mbs.service.REMOTE,mbs.remote.PLAY,'', null)">Play</button>
+<button type="button" id="pause" onclick="onClick(mbs.service.REMOTE,mbs.remote.PAUSE,'', null)">Pause</button>
+<button type="button" id="stop" onclick="onClick(mbs.service.REMOTE,mbs.remote.STOP,'', null)">Stop</button>
+<button type="button" id="next" onclick="onClick(mbs.service.REMOTE,mbs.remote.NEXT_TRACK,'', null)">Next track</button>
+<button type="button" id="next" onclick="onClick(mbs.service.REMOTE,mbs.remote.PREV_TRACK,'', null)">Prev track</button>
+<button type="button" id="forward" onclick="onClick(mbs.service.REMOTE,mbs.remote.FORWARD,'', null)">Forward</button>
+<button type="button" id="rewind" onclick="onClick(mbs.service.REMOTE,mbs.remote.REWIND,'', null)">Rewind</button>
+<button type="button" id="volume_up" onclick="onClick(mbs.service.REMOTE,mbs.remote.VOLUME_UP,'', null)">Volume Up</button>
+<button type="button" id="volume_down" onclick="onClick(mbs.service.REMOTE,mbs.remote.VOLUME_DOWN,'', null)">Volume Down</button>
+
+</body>
+</html>
