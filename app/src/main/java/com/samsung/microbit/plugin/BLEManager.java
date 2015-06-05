@@ -71,8 +71,6 @@ public class BLEManager {
 		this.bluetoothDevice = bluetoothDevice;
 	}
 
-	;
-
 	public BLEManager(Context context, BluetoothDevice bluetoothDevice, CharacteristicChangeListener characteristicChangeListener) {
 		logi("BLEManager(,,) :: start");
 		this.context = context;
@@ -83,8 +81,6 @@ public class BLEManager {
 	public void setCharacteristicChangeListener(CharacteristicChangeListener characteristicChangeListener) {
 		this.characteristicChangeListener = characteristicChangeListener;
 	}
-
-	;
 
 	public int getError() {
 		return error;
