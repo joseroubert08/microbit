@@ -109,7 +109,7 @@ public class MyBlankFragment extends Fragment {
 							break;
 					}
 
-					if(cmd != null) {
+					if (cmd != null) {
 						sendCommand(msgService, cmd);
 					}
 				}
@@ -186,6 +186,7 @@ public class MyBlankFragment extends Fragment {
 		Intent mIntent = new Intent();
 		mIntent.setAction("com.samsung.microbit.service.PluginService");
 		getActivity().bindService(mIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+
 	}
 
 	public void sendCommand(int mbsService, CmdArg cmd) {
@@ -208,8 +209,9 @@ public class MyBlankFragment extends Fragment {
 
 	@Override
 	public void onDestroy() {
-		super.onDestroy();
 		doUnbindService();
+		super.onDestroy();
+
 		//if (updateReceiver != null) {
 		//	getActivity().unregisterReceiver(updateReceiver);
 		//}
@@ -252,7 +254,14 @@ public class MyBlankFragment extends Fragment {
 		if (isBound) {
 
 			getActivity().unbindService(serviceConnection);
+			serviceConnection = null;
 			isBound = false;
+		}
+
+		if (mIsBinded) {
+			getActivity().unbindService(mServiceConnection);
+			mServiceConnection = null;
+			mIsBinded = false;
 		}
 	}
 
@@ -260,7 +269,6 @@ public class MyBlankFragment extends Fragment {
 		logi("runTestCodeButton() :: start");
 
 		runTestCodeButton.setEnabled(false);
-
 		new Thread(new Runnable() {
 
 			@Override
@@ -269,9 +277,19 @@ public class MyBlankFragment extends Fragment {
 				bleService.connect();
 				bleService.discoverServices();
 				bleService.registerNotifications(true);
+				showToast("Notifications registered. Ready");
 			}
 		}).start();
 	}
 
+	void showToast(final String message) {
 
+		getActivity().runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+			}
+		});
+	}
 }
