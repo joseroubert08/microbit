@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.plugin.AlertPlugin;
+import com.samsung.microbit.plugin.RemoteControlPlugin;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.PluginService;
 
@@ -48,6 +49,7 @@ public class MyBlankFragment extends Fragment {
 
 	static final String TAG = "MyBlankFragment";
 	private boolean debug = false;
+	private boolean mIsRemoteControlPlay = false;
 
 	void logi(String message) {
 		if (debug) {
@@ -95,6 +97,10 @@ public class MyBlankFragment extends Fragment {
 					CmdArg cmd = null;
 					switch (buttonPressed) {
 						case 1:
+							msgService = PluginService.REMOTE_CONTROL;
+							mIsRemoteControlPlay = !mIsRemoteControlPlay;
+							cmd = new CmdArg(mIsRemoteControlPlay ? RemoteControlPlugin.PLAY : RemoteControlPlugin.PAUSE, "");
+							break;
 						case 2:
 						case 3:
 						case 4:
@@ -102,6 +108,9 @@ public class MyBlankFragment extends Fragment {
 							break;
 
 						case 11:
+							msgService = PluginService.REMOTE_CONTROL;
+							cmd = new CmdArg(RemoteControlPlugin.NEXT_TRACK, "");
+							break;
 						case 12:
 						case 13:
 						case 14:
