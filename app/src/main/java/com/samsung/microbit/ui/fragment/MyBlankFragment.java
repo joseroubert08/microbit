@@ -1,20 +1,19 @@
 package com.samsung.microbit.ui.fragment;
 
-import android.app.Activity;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
-import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.net.Uri;
 import android.os.Bundle;
 
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.os.ResultReceiver;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -26,11 +25,10 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.samsung.microbit.R;
+import com.samsung.microbit.model.CmdArg;
+import com.samsung.microbit.plugin.AlertPlugin;
 import com.samsung.microbit.service.BLEService;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import com.samsung.microbit.service.PluginService;
 
 public class MyBlankFragment extends Fragment {
 
@@ -38,20 +36,18 @@ public class MyBlankFragment extends Fragment {
 	private Button initButton;
 	private Button runTestCodeButton;
 
-
 	private BLEService bleService;
 	private boolean isBound;
 
+	private Messenger mMessenger = null;
+	private Messenger mClientMessenger = null;
+	private ServiceConnection mServiceConnection = null;
+	private IncomingHandler handler = null;
+	private HandlerThread handlerThread = null;
+	private boolean mIsBinded = false;
+
 	static final String TAG = "MyBlankFragment";
 	private boolean debug = false;
-
-	public static final UUID button1Service = UUID.fromString("0000a000-0000-1000-8000-00805f9b34fb");
-	public static final UUID button2Service = UUID.fromString("0000b000-0000-1000-8000-00805f9b34fb");
-
-	public static final UUID button1Characteristic = UUID.fromString("0000a001-0000-1000-8000-00805f9b34fb");
-	public static final UUID button2Characteristic = UUID.fromString("0000b001-0000-1000-8000-00805f9b34fb");
-
-	UUID callBackDescriptor = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
 	void logi(String message) {
 		if (debug) {
@@ -79,39 +75,49 @@ public class MyBlankFragment extends Fragment {
 		logi("MyBlankFragment()");
 	}
 
-	BroadcastReceiver btn5rxer;
-	BroadcastReceiver btn15rxer;
+	BroadcastReceiver btnReceiver;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		if (btn5rxer == null) {
+		if (btnReceiver == null) {
 			Log.i("Main", "### registering receiver");
-			btn5rxer = new BroadcastReceiver() {
+			btnReceiver = new BroadcastReceiver() {
 				@Override
 				public void onReceive(Context context, Intent intent) {
-					Log.i("Main", "### uBit Button detected for 5");
+					int buttonPressed = intent.getIntExtra("buttonPressed", 0);
+					if (buttonPressed == 0) {
+						return;
+					}
+
+					Log.i("Main", "### uBit Button detected for button = " + buttonPressed);
+					int msgService = PluginService.ALERT;
+					CmdArg cmd = null;
+					switch (buttonPressed) {
+						case 1:
+						case 2:
+						case 3:
+						case 4:
+							cmd = new CmdArg(AlertPlugin.FINDPHONE, "");
+							break;
+
+						case 11:
+						case 12:
+						case 13:
+						case 14:
+							cmd = new CmdArg(AlertPlugin.VIBRATE, "500");
+							break;
+					}
+
+					if(cmd != null) {
+						sendCommand(msgService, cmd);
+					}
 				}
 			};
 
 			IntentFilter intentFilter = new IntentFilter();
-			intentFilter.addAction(BLEService.messageName + 5);
-			LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(btn5rxer, intentFilter);
-		}
-
-
-		if (btn15rxer == null) {
-			Log.i("Main", "### registering receiver");
-			btn15rxer = new BroadcastReceiver() {
-				@Override
-				public void onReceive(Context context, Intent intent) {
-					Log.i("Main", "### uBit Button detected for 15");
-				}
-			};
-
-			IntentFilter intentFilter = new IntentFilter();
-			intentFilter.addAction(BLEService.messageName + 15);
-			LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(btn15rxer, intentFilter);
+			intentFilter.addAction(BLEService.MESSAGE_NAME);
+			LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(btnReceiver, intentFilter);
 		}
 
 		// Inflate the layout for this fragment
@@ -134,8 +140,71 @@ public class MyBlankFragment extends Fragment {
 			}
 		});
 
+		if (handler == null) {
+			connectWithServer();
+		}
+
 		return rootView;
 	}
+
+	// ######################################################################
+
+	/**
+	 * Handler of incoming messages from handset service.
+	 */
+	class IncomingHandler extends Handler {
+		public IncomingHandler(HandlerThread thr) {
+			super(thr.getLooper());
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+		}
+	}
+
+	public void connectWithServer() {
+		handlerThread = new HandlerThread("BLEReceiverThread");
+		handlerThread.start();
+		handler = new IncomingHandler(handlerThread);
+		mClientMessenger = new Messenger(handler);
+
+		mServiceConnection = new ServiceConnection() {
+			@Override
+			public void onServiceConnected(ComponentName name, IBinder service) {
+				mIsBinded = true;
+				mMessenger = new Messenger(service);
+			}
+
+			@Override
+			public void onServiceDisconnected(ComponentName name) {
+				mIsBinded = false;
+				mServiceConnection = null;
+			}
+		};
+
+		Intent mIntent = new Intent();
+		mIntent.setAction("com.samsung.microbit.service.PluginService");
+		getActivity().bindService(mIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+	}
+
+	public void sendCommand(int mbsService, CmdArg cmd) {
+		if (mMessenger != null) {
+			Message msg = Message.obtain(null, mbsService);
+			Bundle bundle = new Bundle();
+			bundle.putInt("cmd", cmd.getCMD());
+			bundle.putString("value", cmd.getValue());
+			msg.setData(bundle);
+			msg.replyTo = mClientMessenger;
+			try {
+				mMessenger.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	// ######################################################################
 
 	@Override
 	public void onDestroy() {
@@ -154,7 +223,6 @@ public class MyBlankFragment extends Fragment {
 		serviceIntent.putExtra("DEVICE_ADDRESS", "F7:61:FB:87:A2:46");
 		serviceIntent.putExtra("com.samsung.resultReceiver", resultReceiver);
 		getActivity().startService(serviceIntent);
-
 		logi("### initButtonClicked() :: service start called");
 		initButton.setEnabled(false);
 	}
@@ -198,35 +266,9 @@ public class MyBlankFragment extends Fragment {
 			@Override
 			public void run() {
 
-
-				int i = bleService.connect();
-				logi("runTestCodeButton() :: i=" + i);
-				if (i != 0) {
-					return;
-				}
-
-				i = bleService.discoverServices();
-				List<BluetoothGattService> services = bleService.getServices();
-				if (services == null) {
-					logi("runTestCodeButton() :: discoverServices services=null");
-				}
-
-				Iterator<BluetoothGattService> sitr = services.iterator();
-				while (sitr.hasNext()) {
-					BluetoothGattService s = sitr.next();
-					logi("runTestCodeButton() :: discoverServices s = " + s.getUuid().toString());
-				}
-
-				BluetoothGattService button1s = bleService.getService(button1Service);
-				BluetoothGattCharacteristic button1c = button1s.getCharacteristic(button1Characteristic);
-				BluetoothGattDescriptor button1d = button1c.getDescriptor(callBackDescriptor);
-				bleService.enableCharacteristicNotification(button1c, button1d, true);
-
-				BluetoothGattService button2s = bleService.getService(button2Service);
-				BluetoothGattCharacteristic button2c = button2s.getCharacteristic(button2Characteristic);
-				BluetoothGattDescriptor button2d = button2c.getDescriptor(callBackDescriptor);
-				bleService.enableCharacteristicNotification(button2c, button2d, true);
-
+				bleService.connect();
+				bleService.discoverServices();
+				bleService.registerNotifications(true);
 			}
 		}).start();
 	}

@@ -27,6 +27,7 @@ import com.samsung.microbit.ui.fragment.FlashSectionFragment;
 import com.samsung.microbit.ui.fragment.HelpSectionFragment;
 import com.samsung.microbit.R;
 import com.samsung.microbit.ui.fragment.JSSimulatorFragment;
+import com.samsung.microbit.ui.fragment.MyBlankFragment;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 
@@ -143,7 +144,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      */
     public static class AppSectionsPagerAdapter extends FragmentPagerAdapter {
 
-        private int numFragments = 3;
+        private int numFragments = 4;
 
         public AppSectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -160,6 +161,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     return new FlashSectionFragment();
                 case 2:
                     return new DevicesFragment();
+				case 3:
+					return new MyBlankFragment();
                 /*
                 case 3:
                     return new JSSimulatorFragment();
@@ -188,6 +191,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     return "Run Code";
                 case 2:
                     return "Pairing";
+				case 3:
+					return "Blank Test Fragment";
         		/*
         		case 3:
                     return "JS Simulator";
