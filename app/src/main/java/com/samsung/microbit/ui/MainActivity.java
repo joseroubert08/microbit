@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
+import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.fragment.CodeSectionFragment;
 import com.samsung.microbit.ui.fragment.DevicesFragment;
@@ -101,6 +102,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         //KKULEN - Start Plugin Service
         Intent intent = new Intent(this, PluginService.class);
         startService(intent);
+
+        Intent bleIntent = new Intent(this, BLEService.class);
+		bleIntent.putExtra("DEVICE_ADDRESS", "F7:61:FB:87:A2:46");
+        startService(bleIntent);
     }
 
 
@@ -144,7 +149,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      */
     public static class AppSectionsPagerAdapter extends FragmentPagerAdapter {
 
-        private int numFragments = 4;
+        private int numFragments = 3;
 
         public AppSectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -161,8 +166,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     return new FlashSectionFragment();
                 case 2:
                     return new DevicesFragment();
+
+				/*
 				case 3:
 					return new MyBlankFragment();
+				*/
                 /*
                 case 3:
                     return new JSSimulatorFragment();
@@ -191,8 +199,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     return "Run Code";
                 case 2:
                     return "Pairing";
+				/*
 				case 3:
 					return "Blank Test Fragment";
+				*/
         		/*
         		case 3:
                     return "JS Simulator";

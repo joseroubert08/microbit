@@ -40,12 +40,6 @@ public class MyBlankFragment extends Fragment {
 	private BLEService bleService;
 	private boolean isBound;
 
-	private Messenger mMessenger = null;
-	private Messenger mClientMessenger = null;
-	private ServiceConnection mServiceConnection = null;
-	private IncomingHandler handler = null;
-	private HandlerThread handlerThread = null;
-	private boolean mIsBinded = false;
 
 	static final String TAG = "MyBlankFragment";
 	private boolean debug = false;
@@ -83,7 +77,7 @@ public class MyBlankFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		if (btnReceiver == null) {
-			Log.i("Main", "### registering receiver");
+			Log.i(TAG, "### registering receiver");
 			btnReceiver = new BroadcastReceiver() {
 				@Override
 				public void onReceive(Context context, Intent intent) {
@@ -92,28 +86,32 @@ public class MyBlankFragment extends Fragment {
 						return;
 					}
 
-					Log.i("Main", "### uBit Button detected for button = " + buttonPressed);
+					if((buttonPressed  & 0x010) == 0) {
+						return;
+					}
+
+					Log.i(TAG, "### uBit Button detected for button = " + buttonPressed);
 					int msgService = PluginService.ALERT;
 					CmdArg cmd = null;
 					switch (buttonPressed) {
-						case 1:
+						case 0x011:
 							msgService = PluginService.REMOTE_CONTROL;
 							mIsRemoteControlPlay = !mIsRemoteControlPlay;
 							cmd = new CmdArg(mIsRemoteControlPlay ? RemoteControlPlugin.PLAY : RemoteControlPlugin.PAUSE, "");
 							break;
-						case 2:
-						case 3:
-						case 4:
+						case 0x012:
+						case 0x014:
+						case 0x018:
 							cmd = new CmdArg(AlertPlugin.FINDPHONE, "");
 							break;
 
-						case 11:
+						case 0x031:
 							msgService = PluginService.REMOTE_CONTROL;
 							cmd = new CmdArg(RemoteControlPlugin.NEXT_TRACK, "");
 							break;
-						case 12:
-						case 13:
-						case 14:
+						case 0x032:
+						case 0x034:
+						case 0x038:
 							cmd = new CmdArg(AlertPlugin.VIBRATE, "500");
 							break;
 					}
@@ -149,72 +147,12 @@ public class MyBlankFragment extends Fragment {
 			}
 		});
 
-		if (handler == null) {
+		if (messageHandler == null) {
 			connectWithServer();
 		}
 
 		return rootView;
 	}
-
-	// ######################################################################
-
-	/**
-	 * Handler of incoming messages from handset service.
-	 */
-	class IncomingHandler extends Handler {
-		public IncomingHandler(HandlerThread thr) {
-			super(thr.getLooper());
-		}
-
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-		}
-	}
-
-	public void connectWithServer() {
-		handlerThread = new HandlerThread("BLEReceiverThread");
-		handlerThread.start();
-		handler = new IncomingHandler(handlerThread);
-		mClientMessenger = new Messenger(handler);
-
-		mServiceConnection = new ServiceConnection() {
-			@Override
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				mIsBinded = true;
-				mMessenger = new Messenger(service);
-			}
-
-			@Override
-			public void onServiceDisconnected(ComponentName name) {
-				mIsBinded = false;
-				mServiceConnection = null;
-			}
-		};
-
-		Intent mIntent = new Intent();
-		mIntent.setAction("com.samsung.microbit.service.PluginService");
-		getActivity().bindService(mIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
-
-	}
-
-	public void sendCommand(int mbsService, CmdArg cmd) {
-		if (mMessenger != null) {
-			Message msg = Message.obtain(null, mbsService);
-			Bundle bundle = new Bundle();
-			bundle.putInt("cmd", cmd.getCMD());
-			bundle.putString("value", cmd.getValue());
-			msg.setData(bundle);
-			msg.replyTo = mClientMessenger;
-			try {
-				mMessenger.send(msg);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	// ######################################################################
 
 	@Override
 	public void onDestroy() {
@@ -267,10 +205,10 @@ public class MyBlankFragment extends Fragment {
 			isBound = false;
 		}
 
-		if (mIsBinded) {
-			getActivity().unbindService(mServiceConnection);
-			mServiceConnection = null;
-			mIsBinded = false;
+		if (isBoundToPluginService) {
+			getActivity().unbindService(serviceConnectionPluginService);
+			serviceConnectionPluginService = null;
+			isBoundToPluginService = false;
 		}
 	}
 
@@ -301,4 +239,68 @@ public class MyBlankFragment extends Fragment {
 			}
 		});
 	}
+
+	// ######################################################################
+	private Messenger messengerPluginService = null;
+	private Messenger mClientMessenger = null;
+	private ServiceConnection serviceConnectionPluginService = null;
+	private IncomingHandler messageHandler = null;
+	private HandlerThread messageHandlerThread = null;
+	private boolean isBoundToPluginService = false;
+
+
+	class IncomingHandler extends Handler {
+		public IncomingHandler(HandlerThread thr) {
+			super(thr.getLooper());
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+		}
+	}
+
+	public void connectWithServer() {
+		messageHandlerThread = new HandlerThread("BLEReceiverThread");
+		messageHandlerThread.start();
+		messageHandler = new IncomingHandler(messageHandlerThread);
+		mClientMessenger = new Messenger(messageHandler);
+
+		serviceConnectionPluginService = new ServiceConnection() {
+			@Override
+			public void onServiceConnected(ComponentName name, IBinder service) {
+				isBoundToPluginService = true;
+				messengerPluginService = new Messenger(service);
+			}
+
+			@Override
+			public void onServiceDisconnected(ComponentName name) {
+				isBoundToPluginService = false;
+				serviceConnectionPluginService = null;
+			}
+		};
+
+		Intent mIntent = new Intent();
+		mIntent.setAction("com.samsung.microbit.service.PluginService");
+		getActivity().bindService(mIntent, serviceConnectionPluginService, Context.BIND_AUTO_CREATE);
+	}
+
+	public void sendCommand(int mbsService, CmdArg cmd) {
+		if (messengerPluginService != null) {
+			Message msg = Message.obtain(null, mbsService);
+			Bundle bundle = new Bundle();
+			bundle.putInt("cmd", cmd.getCMD());
+			bundle.putString("value", cmd.getValue());
+			msg.setData(bundle);
+			msg.replyTo = mClientMessenger;
+			try {
+				messengerPluginService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	// ######################################################################
+
 }
