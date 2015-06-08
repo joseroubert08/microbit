@@ -73,8 +73,8 @@
 			android:name=".service.DfuService"
 			android:enabled="true"/>
 		<service
-			android:name=".service.PluginService"
-			android:process=":exported">
+			android:process=":exported"
+			android:name=".service.PluginService">
 			<intent-filter>
 				<action android:name="com.samsung.microbit.service.PluginService"/>
 			</intent-filter>
@@ -101,8 +101,9 @@
 
 		<service
 			android:name=".service.BLEService"
-			android:enabled="true"
-			android:exported="false">
+			android:process=":BLEService"
+			android:exported="false"
+			android:enabled="true">
 		</service>
 	</application>
 

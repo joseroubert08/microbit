@@ -10,8 +10,10 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.ResultReceiver;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.samsung.microbit.plugin.BLEManager;
 import com.samsung.microbit.plugin.CharacteristicChangeListener;
@@ -21,11 +23,15 @@ import java.util.UUID;
 
 public abstract class BLEBaseService extends Service {
 
-	protected BLEManager bleManager;BluetoothDevice bluetoothDevice;
+	protected BLEManager bleManager;
+	BluetoothManager bluetoothManager;
+	BluetoothAdapter bluetoothAdapter;
+	BluetoothDevice bluetoothDevice;
+
 	protected String deviceAddress;
 
 	protected String TAG = "BLEBaseService";
-	protected boolean debug = false;
+	protected boolean debug = true;
 
 	protected void logi(String message) {
 		if (debug) {
@@ -41,14 +47,18 @@ public abstract class BLEBaseService extends Service {
 	private boolean initialize() {
 
 		logi("initialize() :: remoteDevice = " + deviceAddress);
-		BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 		if (bluetoothManager == null) {
-			return false;
+			bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+			if (bluetoothManager == null) {
+				return false;
+			}
 		}
 
-		BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
 		if (bluetoothAdapter == null) {
-			return false;
+			bluetoothAdapter = bluetoothManager.getAdapter();
+			if (bluetoothAdapter == null) {
+				return false;
+			}
 		}
 
 		if (bluetoothDevice == null) {
@@ -62,17 +72,27 @@ public abstract class BLEBaseService extends Service {
 		return true;
 	}
 
+
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
+		String deviceAddress;
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
 		if (intent != null) {
 			logi("onStartCommand() :: Received start id " + startId + ": " + intent);
-			String deviceAddress = intent.getStringExtra("DEVICE_ADDRESS");
+			deviceAddress = intent.getStringExtra("DEVICE_ADDRESS");
 			this.deviceAddress = deviceAddress;
+			preferences.edit().putString(this.getClass().getName() + ".deviceAddress", deviceAddress);
+		} else {
+			deviceAddress = preferences.getString(this.getClass().getName() + ".deviceAddress", null);
+			this.deviceAddress = deviceAddress;
+		}
 
-			if (initialize()) {
+		if (initialize()) {
 
-				logi("onStartCommand() :: initialize(deviceAddress) = OK");
+			logi("onStartCommand() :: initialize(deviceAddress) = OK");
+			if (bleManager == null) {
 				bleManager = new BLEManager(getApplicationContext(), bluetoothDevice, new CharacteristicChangeListener() {
 					@Override
 					public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
@@ -84,18 +104,20 @@ public abstract class BLEBaseService extends Service {
 		}
 
 		return START_STICKY;
+		//return START_REDELIVER_INTENT;
 	}
 
-	protected void handleCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {}
+	protected void handleCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+	}
 
 	@Override
 	public void onDestroy() {
 		Log.i(TAG, "onDestroy called");
 
-		if (bleManager != null) {
-			bleManager.disconnect();
-			bleManager = null;
-		}
+		//if (bleManager != null) {
+		//	bleManager.disconnect();
+		//	bleManager = null;
+		//}
 	}
 
 	public BluetoothGattService getService(UUID uuid) {

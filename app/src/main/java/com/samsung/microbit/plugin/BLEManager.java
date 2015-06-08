@@ -78,6 +78,10 @@ public class BLEManager {
 		this.characteristicChangeListener = characteristicChangeListener;
 	}
 
+	public void setBluetoothDevice(BluetoothDevice bluetoothDevice) {
+		this.bluetoothDevice = bluetoothDevice;
+	}
+
 	public void setCharacteristicChangeListener(CharacteristicChangeListener characteristicChangeListener) {
 		this.characteristicChangeListener = characteristicChangeListener;
 	}
@@ -94,7 +98,7 @@ public class BLEManager {
 		return inBleOp;
 	}
 
-	public boolean reset() {
+	public boolean reset(boolean fullReset) {
 
 		synchronized (locker) {
 			if (bleState != 0) {
@@ -111,6 +115,11 @@ public class BLEManager {
 			error = 0;
 			inBleOp = OP_NOOP;
 			callbackCompleted = false;
+
+			if (fullReset) {
+				gatt = null;
+			}
+
 			return true;
 		}
 	}
