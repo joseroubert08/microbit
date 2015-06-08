@@ -77,13 +77,17 @@ public abstract class BLEBaseService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
 		String deviceAddress;
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+		SharedPreferences preferences = getApplicationContext().getSharedPreferences("myAppPrefs", Context.MODE_PRIVATE);
 
 		if (intent != null) {
 			logi("onStartCommand() :: Received start id " + startId + ": " + intent);
 			deviceAddress = intent.getStringExtra("DEVICE_ADDRESS");
 			this.deviceAddress = deviceAddress;
-			preferences.edit().putString(this.getClass().getName() + ".deviceAddress", deviceAddress);
+			SharedPreferences.Editor editor = preferences.edit();
+			editor.putString(this.getClass().getName() + ".deviceAddress", deviceAddress);
+			editor.commit();
+
 		} else {
 			deviceAddress = preferences.getString(this.getClass().getName() + ".deviceAddress", null);
 			this.deviceAddress = deviceAddress;
