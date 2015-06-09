@@ -15,14 +15,20 @@ import com.samsung.microbit.model.CmdArg;
 public class RemoteControlPlugin {
 
     private static Context context = null;
-    private enum Service {
-        PLAY, PAUSE, STOP, NEXT_TRACK, PREV_TRACK, FORWARD, REWIND, VOLUME_UP, VOLUME_DOWN
-    }
+    
+    public static final int PLAY = 0;
+    public static final int PAUSE = 1;
+    public static final int STOP = 2;
+    public static final int NEXT_TRACK = 3;
+    public static final int PREV_TRACK = 4;
+    public static final int FORWARD = 5;
+    public static final int REWIND = 6;
+    public static final int VOLUME_UP = 7;
+    public static final int VOLUME_DOWN = 8;
 
     public static void pluginEntry(Context ctx, CmdArg cmd) {
-
         context = ctx;
-        switch (Service.values()[cmd.getCMD()]) {
+        switch (cmd.getCMD()) {
             case PLAY:
                 Play();
                 break;
