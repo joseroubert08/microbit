@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
@@ -40,6 +41,7 @@ public class CodeSectionFragment extends Fragment implements CordovaInterface {
     
 	CordovaWebView touchDevelopView = null;
     ProgressBar  touchDevelopProgress = null;
+	TextView loadingText = null ;
 
     public static CodeSectionFragment newInstance() {
     	CodeSectionFragment fragment = new CodeSectionFragment();
@@ -57,7 +59,7 @@ public class CodeSectionFragment extends Fragment implements CordovaInterface {
         touchDevelopProgress = (ProgressBar) rootView.findViewById(R.id.progressBar);
 		touchDevelopProgress.setProgress(0);
         touchDevelopProgress.setMax(100);
-
+		loadingText = (TextView) rootView.findViewById(R.id.loadingText);
         //Load URL now
         touchDevelopView.loadUrl("https://microbit:bitbug42@live.microbit.co.uk/");
 
@@ -106,6 +108,7 @@ public class CodeSectionFragment extends Fragment implements CordovaInterface {
             case "spinner":
                 if (touchDevelopProgress != null ){
                     touchDevelopProgress.setVisibility(View.INVISIBLE);
+					loadingText.setVisibility(View.INVISIBLE);
                 }
                 break;
         }

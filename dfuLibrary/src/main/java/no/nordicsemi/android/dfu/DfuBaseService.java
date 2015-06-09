@@ -45,6 +45,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.ResultReceiver;
 import android.os.SystemClock;
@@ -109,6 +110,8 @@ import no.nordicsemi.android.error.GattError;
 public abstract class DfuBaseService extends IntentService {
 
 	private static final String TAG = "DfuBaseService";
+	//private static final boolean DEBUG = BuildConfig.DEBUG;
+	private static final boolean DEBUG = false;
 
 	/**
 	 * The address of the device to update.
@@ -736,13 +739,11 @@ public abstract class DfuBaseService extends IntentService {
 			if (!device.getAddress().equals(mDeviceAddress))
 				return;
 
-			final String action = intent.getAction();
-
-			logi("Action received: " + action);
-			mConnectionState = STATE_DISCONNECTED;
-
 			// Notify waiting thread
 			synchronized (mLock) {
+				final String action = intent.getAction();
+				logi("Action received: " + action);
+				mConnectionState = STATE_DISCONNECTED;
 				mLock.notifyAll();
 			}
 		}
@@ -759,20 +760,18 @@ public abstract class DfuBaseService extends IntentService {
 					break;
 
 				case ACTION_RESUME:
-					mPaused = false;
-
 					// Notify waiting thread
 					synchronized (mLock) {
+						mPaused = false;
 						mLock.notifyAll();
 					}
 					break;
 
 				case ACTION_ABORT:
-					mPaused = false;
-					mAborted = true;
-
 					// Notify waiting thread
 					synchronized (mLock) {
+						mPaused = false;
+						mAborted = true;
 						mLock.notifyAll();
 					}
 					break;
@@ -793,10 +792,9 @@ public abstract class DfuBaseService extends IntentService {
 			if (bondState == BluetoothDevice.BOND_BONDING)
 				return;
 
-			mRequestCompleted = true;
-
 			// Notify waiting thread
 			synchronized (mLock) {
+				mRequestCompleted = true;
 				mLock.notifyAll();
 			}
 		}
@@ -858,6 +856,7 @@ public abstract class DfuBaseService extends IntentService {
 				loge("Connection state change error: " + status + " newState: " + newState);
 				mPaused = false;
 				mError = ERROR_CONNECTION_STATE_MASK | status;
+				mConnectionState = STATE_DISCONNECTED;
 			}
 
 			// Notify waiting thread
@@ -868,60 +867,61 @@ public abstract class DfuBaseService extends IntentService {
 
 		@Override
 		public void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
-			if (status == BluetoothGatt.GATT_SUCCESS) {
-				logi("Services discovered");
-				mConnectionState = STATE_CONNECTED_AND_READY;
-			} else {
-				loge("Service discovery error: " + status);
-				mError = ERROR_CONNECTION_MASK | status;
-			}
-
 			// Notify waiting thread
 			synchronized (mLock) {
+				if (status == BluetoothGatt.GATT_SUCCESS) {
+					logi("Services discovered");
+					mConnectionState = STATE_CONNECTED_AND_READY;
+				} else {
+					loge("Service discovery error: " + status);
+					mError = ERROR_CONNECTION_MASK | status;
+				}
+
 				mLock.notifyAll();
 			}
 		}
 
 		@Override
 		public void onDescriptorRead(final BluetoothGatt gatt, final BluetoothGattDescriptor descriptor, final int status) {
-			if (status == BluetoothGatt.GATT_SUCCESS) {
-				if (CLIENT_CHARACTERISTIC_CONFIG.equals(descriptor.getUuid())) {
-					if (SERVICE_CHANGED_UUID.equals(descriptor.getCharacteristic().getUuid())) {
-						// We have enabled indications for the Service Changed characteristic
-						mServiceChangedIndicationsEnabled = descriptor.getValue()[0] == 2;
-						mRequestCompleted = true;
-					}
-				}
-			} else {
-				loge("Descriptor read error: " + status);
-				mError = ERROR_CONNECTION_MASK | status;
-			}
-
 			// Notify waiting thread
 			synchronized (mLock) {
+				if (status == BluetoothGatt.GATT_SUCCESS) {
+					if (CLIENT_CHARACTERISTIC_CONFIG.equals(descriptor.getUuid())) {
+						if (SERVICE_CHANGED_UUID.equals(descriptor.getCharacteristic().getUuid())) {
+							// We have enabled indications for the Service Changed characteristic
+							mServiceChangedIndicationsEnabled = descriptor.getValue()[0] == 2;
+							mRequestCompleted = true;
+						}
+					}
+				} else {
+					loge("Descriptor read error: " + status);
+					mError = ERROR_CONNECTION_MASK | status;
+				}
+
 				mLock.notifyAll();
 			}
 		}
 
 		@Override
 		public void onDescriptorWrite(final BluetoothGatt gatt, final BluetoothGattDescriptor descriptor, final int status) {
-			if (status == BluetoothGatt.GATT_SUCCESS) {
-				if (CLIENT_CHARACTERISTIC_CONFIG.equals(descriptor.getUuid())) {
-					if (SERVICE_CHANGED_UUID.equals(descriptor.getCharacteristic().getUuid())) {
-						// We have enabled indications for the Service Changed characteristic
-						mServiceChangedIndicationsEnabled = descriptor.getValue()[0] == 2;
-					} else {
-						// We have enabled notifications for this characteristic
-						mNotificationsEnabled = descriptor.getValue()[0] == 1;
-					}
-				}
-			} else {
-				loge("Descriptor write error: " + status);
-				mError = ERROR_CONNECTION_MASK | status;
-			}
 
 			// Notify waiting thread
 			synchronized (mLock) {
+				if (status == BluetoothGatt.GATT_SUCCESS) {
+					if (CLIENT_CHARACTERISTIC_CONFIG.equals(descriptor.getUuid())) {
+						if (SERVICE_CHANGED_UUID.equals(descriptor.getCharacteristic().getUuid())) {
+							// We have enabled indications for the Service Changed characteristic
+							mServiceChangedIndicationsEnabled = descriptor.getValue()[0] == 2;
+						} else {
+							// We have enabled notifications for this characteristic
+							mNotificationsEnabled = descriptor.getValue()[0] == 1;
+						}
+					}
+				} else {
+					loge("Descriptor write error: " + status);
+					mError = ERROR_CONNECTION_MASK | status;
+				}
+
 				mLock.notifyAll();
 			}
 		}
@@ -1305,7 +1305,7 @@ public abstract class DfuBaseService extends IntentService {
 
 		final BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
 
-		if(fps == null) {
+		if (fps == null) {
 			return 6;
 		}
 
@@ -1338,7 +1338,12 @@ public abstract class DfuBaseService extends IntentService {
 
 		if (rc == 0) {
 			waitUntilDisconnected();
+
+			//sleep(2500);
 			refreshDeviceCache(gatt, true);
+			//sleep(2500);
+
+			mError = 0;
 			gattConnect(gatt);
 
 			Iterator<BluetoothGattService> sItr = gatt.getServices().iterator();
@@ -1346,17 +1351,26 @@ public abstract class DfuBaseService extends IntentService {
 				BluetoothGattService s = sItr.next();
 			}
 
-			Log.i("DfuBaseService", "##### phase2 - We are ok.");
-			mError = 0;
-			phase3(intent);
+			do {
+				logi("Calling phase 3");
+				mError = 0;
+				intent = phase3(intent);
+				logi("End phase 3");
+			} while (intent != null);
 		}
 
 		return rc;
 	}
 
-	private void phase3(Intent intent) {
+	private void sleep(long period) {
+		try {
+			Thread.sleep(2500L);
+		} catch (InterruptedException e) {
+		}
+	}
 
-		Log.i("DfuBaseService", "##### phase3 - @start. merror = " + mError);
+	private Intent phase3(Intent intent) {
+
 		final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
 		// Read input parameters
@@ -1379,8 +1393,6 @@ public abstract class DfuBaseService extends IntentService {
 		mDeviceName = deviceName;
 
 		// Read preferences
-		Log.i("DfuBaseService", "##### phase3 - Read preferences");
-
 		final boolean packetReceiptNotificationEnabled = preferences.getBoolean(DfuSettingsConstants.SETTINGS_PACKET_RECEIPT_NOTIFICATION_ENABLED, true);
 		String value = preferences.getString(DfuSettingsConstants.SETTINGS_NUMBER_OF_PACKETS, String.valueOf(DfuSettingsConstants.SETTINGS_NUMBER_OF_PACKETS_DEFAULT));
 		int numberOfPackets;
@@ -1413,8 +1425,6 @@ public abstract class DfuBaseService extends IntentService {
 		/*
 		 * First the service is trying to read the firmware and init packet files.
 		 */
-		Log.i("DfuBaseService", "##### phase3 - First the service is trying to read the firmware and init packet files. mError =" + mError);
-
 		InputStream is = null;
 		InputStream initIs = null;
 		int imageSizeInBytes;
@@ -1461,15 +1471,15 @@ public abstract class DfuBaseService extends IntentService {
 			} catch (final SecurityException e) {
 				loge("A security exception occurred while opening file", e);
 				updateProgressNotification(ERROR_FILE_NOT_FOUND);
-				return;
+				return null;
 			} catch (final FileNotFoundException e) {
 				loge("An exception occurred while opening file", e);
 				updateProgressNotification(ERROR_FILE_NOT_FOUND);
-				return;
+				return null;
 			} catch (final IOException e) {
 				loge("An exception occurred while calculating file size", e);
 				updateProgressNotification(ERROR_FILE_ERROR);
-				return;
+				return null;
 			}
 
 			/*
@@ -1479,10 +1489,14 @@ public abstract class DfuBaseService extends IntentService {
 
 			// Are we connected?
 			if (gatt == null) {
-				loge("Bluetooth adapter disabled");
-				sendLogBroadcast(LOG_LEVEL_ERROR, "Bluetooth adapter disabled");
-				updateProgressNotification(ERROR_BLUETOOTH_DISABLED);
-				return;
+				makeGattConnection(deviceAddress);
+				if (gatt == null) {
+
+					loge("Bluetooth adapter disabled");
+					sendLogBroadcast(LOG_LEVEL_ERROR, "Bluetooth adapter disabled");
+					updateProgressNotification(ERROR_BLUETOOTH_DISABLED);
+					return null;
+				}
 			}
 
 			if (mError > 0) { // error occurred
@@ -1490,35 +1504,53 @@ public abstract class DfuBaseService extends IntentService {
 				loge("An error occurred while connecting to the device:" + error);
 				sendLogBroadcast(LOG_LEVEL_ERROR, String.format("Connection failed (0x%02X): %s", error, GattError.parseConnectionError(error)));
 				terminateConnection(gatt, mError);
-				return;
+				return null;
 			}
 
 			if (mAborted) {
 				logi("Upload aborted");
 				sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
 				terminateConnection(gatt, PROGRESS_ABORTED);
-				return;
+				return null;
 			}
 
 			// We have connected to DFU device and services are discoverer
-			final BluetoothGattService dfuService = gatt.getService(DFU_SERVICE_UUID); // there was a case when the service was null. I don't know why
+			BluetoothGattService dfuService = null;
+
+/*
+			int retry = 15;
+			do {
+				dfuService = gatt.getService(DFU_SERVICE_UUID); // there was a case when the service was null. I don't know why
+				if (dfuService == null) {
+					retry--;
+					if (retry == 0) {
+						break;
+					}
+
+					try {
+						logi("Retry sleep " + retry);
+						Thread.sleep(1000L);
+					} catch (InterruptedException e) {
+					}
+				}
+			} while (dfuService == null);
+*/
+			dfuService = gatt.getService(DFU_SERVICE_UUID); // there was a case when the service was null. I don't know why
 			if (dfuService == null) {
 				loge("DFU service does not exists on the device");
 				sendLogBroadcast(LOG_LEVEL_WARNING, "Connected. DFU Service not found");
 				terminateConnection(gatt, ERROR_SERVICE_NOT_FOUND);
-				return;
+				return null;
 			}
 
-		Log.i("DfuBaseService", "##### phase3 - dfuService found.");
 			final BluetoothGattCharacteristic controlPointCharacteristic = dfuService.getCharacteristic(DFU_CONTROL_POINT_UUID);
 			final BluetoothGattCharacteristic packetCharacteristic = dfuService.getCharacteristic(DFU_PACKET_UUID);
 			if (controlPointCharacteristic == null || packetCharacteristic == null) {
 				loge("DFU characteristics not found in the DFU service");
 				sendLogBroadcast(LOG_LEVEL_WARNING, "Connected. DFU Characteristics not found");
 				terminateConnection(gatt, ERROR_CHARACTERISTICS_NOT_FOUND);
-				return;
+				return null;
 			}
-		Log.i("DfuBaseService", "##### phase3 - controlPointCharacteristic|packetCharacteristic found.");
 
 			/*
 			 * The DFU Version characteristic has been added in SDK 7.0.
@@ -1615,12 +1647,13 @@ public abstract class DfuBaseService extends IntentService {
 
 										// Close the device
 										close(gatt);
+										gatt = null;
 
 										logi("Restarting service");
 										final Intent newIntent = new Intent();
 										newIntent.fillIn(intent, Intent.FILL_IN_COMPONENT | Intent.FILL_IN_PACKAGE);
-										startService(newIntent);
-										return;
+										//startService(newIntent);
+										return newIntent;
 									}
 								} else {
 									sendLogBroadcast(LOG_LEVEL_APPLICATION, "Service Changed indications enabled");
@@ -1664,12 +1697,13 @@ public abstract class DfuBaseService extends IntentService {
 
 					// Close the device
 					close(gatt);
+					gatt = null;
 
 					logi("Starting service that will connect to the DFU bootloader");
 					final Intent newIntent = new Intent();
 					newIntent.fillIn(intent, Intent.FILL_IN_COMPONENT | Intent.FILL_IN_PACKAGE);
 					startService(newIntent);
-					return;
+					return newIntent;
 				}
 
 				// Enable notifications
@@ -2013,6 +2047,8 @@ public abstract class DfuBaseService extends IntentService {
 						}
 
 						updateProgressNotification(PROGRESS_COMPLETED);
+						logi("phase 3 complete");
+						return null;
 					} else {
 						/*
 						 * The current service handle will try to upload Soft Device and/or Bootloader.
@@ -2025,7 +2061,11 @@ public abstract class DfuBaseService extends IntentService {
 						newIntent.putExtra(EXTRA_FILE_TYPE, TYPE_APPLICATION); // set the type to application only
 						newIntent.putExtra(EXTRA_PART_CURRENT, mPartCurrent + 1);
 						newIntent.putExtra(EXTRA_PARTS_TOTAL, mPartsTotal);
-						startService(newIntent);
+						//startService(newIntent);
+
+						close(gatt);
+						gatt = null;
+						return newIntent;
 					}
 				} catch (final UnknownResponseException e) {
 					final int error = ERROR_INVALID_RESPONSE;
@@ -2100,6 +2140,8 @@ public abstract class DfuBaseService extends IntentService {
 				// do nothing
 			}
 		}
+
+		return null;
 	}
 
 	/**
@@ -2174,8 +2216,6 @@ public abstract class DfuBaseService extends IntentService {
 		if (!mBluetoothAdapter.isEnabled())
 			return null;
 
-		mConnectionState = STATE_CONNECTING;
-
 		logi("Connecting to the device...");
 		if (device == null) {
 			device = mBluetoothAdapter.getRemoteDevice(address);
@@ -2186,6 +2226,7 @@ public abstract class DfuBaseService extends IntentService {
 		// We have to wait until the device is connected and services are discovered
 		// Connection error may occur as well.
 		try {
+			mConnectionState = STATE_CONNECTING;
 			synchronized (mLock) {
 				while (((mConnectionState == STATE_CONNECTING || mConnectionState == STATE_CONNECTED) && mError == 0 && !mAborted) || mPaused)
 					mLock.wait();
@@ -2231,7 +2272,6 @@ public abstract class DfuBaseService extends IntentService {
 			return;
 
 		mConnectionState = STATE_DISCONNECTING;
-
 		logi("Disconnecting from the device...");
 		gatt.disconnect();
 
@@ -2263,26 +2303,7 @@ public abstract class DfuBaseService extends IntentService {
 				}
 			}
 		} catch (final InterruptedException e) {
-			loge("Sleeping interrupted", e);
-		}
-
-	}
-
-	private void discoverServices(BluetoothGatt gatt) {
-
-		try {
-			if (gatt.discoverServices()) {
-				if (mConnectionState == STATE_CONNECTED_AND_READY) {
-					mConnectionState = STATE_CONNECTED;
-				}
-
-				synchronized (mLock) {
-					while (mConnectionState != STATE_CONNECTED_AND_READY) {
-						mLock.wait();
-					}
-				}
-			}
-		} catch (final InterruptedException e) {
+			e.printStackTrace();
 			loge("Sleeping interrupted", e);
 		}
 
@@ -2962,7 +2983,7 @@ public abstract class DfuBaseService extends IntentService {
 		final String deviceName = mDeviceName != null ? mDeviceName : getString(R.string.dfu_unknown_name);
 
 		// final Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_stat_notify_dfu); <- this looks bad on Android 5
-
+/*
 		final NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setSmallIcon(android.R.drawable.stat_sys_upload).
 			setOnlyAlertOnce(true);//.setLargeIcon(largeIcon);
 
@@ -3016,7 +3037,7 @@ public abstract class DfuBaseService extends IntentService {
 					final String text = (mFileType & TYPE_APPLICATION) > 0 ? getString(R.string.dfu_status_uploading_msg, deviceName) : getString(R.string.dfu_status_uploading_components_msg, deviceName);
 					builder.setOngoing(true).setContentTitle(title).setContentText(text).setProgress(100, progress, false);
 				}
-		}
+		}*/
 		// send progress or error broadcast
 		if (progress < ERROR_MASK)
 			sendProgressBroadcast(progress);
@@ -3030,18 +3051,18 @@ public abstract class DfuBaseService extends IntentService {
 		intent.putExtra(EXTRA_DEVICE_NAME, deviceName);
 		intent.putExtra(EXTRA_PROGRESS, progress); // this may contains ERROR_CONNECTION_MASK bit!
 		final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		builder.setContentIntent(pendingIntent);
+	//	builder.setContentIntent(pendingIntent);
 
 		// Add Abort action to the notification
 		if (progress != PROGRESS_ABORTED && progress != PROGRESS_COMPLETED && progress < ERROR_MASK) {
 			final Intent abortIntent = new Intent(BROADCAST_ACTION);
 			abortIntent.putExtra(EXTRA_ACTION, ACTION_ABORT);
 			final PendingIntent pendingAbortIntent = PendingIntent.getBroadcast(this, 1, abortIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-			builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
+	//		builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
 		}
 
 		final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		manager.notify(NOTIFICATION_ID, builder.build());
+	//	manager.notify(NOTIFICATION_ID, builder.build());
 	}
 
 	/**
@@ -3142,28 +3163,33 @@ public abstract class DfuBaseService extends IntentService {
 	}
 
 	private void loge(final String message) {
-		if (BuildConfig.DEBUG)
-			Log.e(TAG, message);
+		if (DEBUG) {
+			Log.e(TAG, "### " + message);
+		}
 	}
 
 	private void loge(final String message, final Throwable e) {
-		if (BuildConfig.DEBUG)
-			Log.e(TAG, message, e);
+		if (DEBUG) {
+			Log.e(TAG, "### " + message, e);
+		}
 	}
 
 	private void logw(final String message) {
-		if (BuildConfig.DEBUG)
-			Log.w(TAG, message);
+		if (DEBUG) {
+			Log.w(TAG, "### " + message);
+		}
 	}
 
 	private void logi(final String message) {
-		if (BuildConfig.DEBUG)
-			Log.i(TAG, message);
+		if (DEBUG) {
+			Log.i(TAG, "### " + message);
+		}
 	}
 
 	private void logd(final String message) {
-		if (BuildConfig.DEBUG)
-			Log.d(TAG, message);
+		if (DEBUG) {
+			Log.d(TAG, "### " + message);
+		}
 	}
 
 	private String parse(final byte[] data) {

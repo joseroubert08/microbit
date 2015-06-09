@@ -3,6 +3,8 @@ package com.samsung.microbit.ui;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -18,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
+import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.fragment.CodeSectionFragment;
 import com.samsung.microbit.ui.fragment.DevicesFragment;
@@ -25,6 +28,7 @@ import com.samsung.microbit.ui.fragment.FlashSectionFragment;
 import com.samsung.microbit.ui.fragment.HelpSectionFragment;
 import com.samsung.microbit.R;
 import com.samsung.microbit.ui.fragment.JSSimulatorFragment;
+import com.samsung.microbit.ui.fragment.MyBlankFragment;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 
@@ -60,10 +64,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         // parent.
         actionBar.setHomeButtonEnabled(false);
 
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#0C4DA2")));
+        actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#0C4DA2")));
+
         // Specify that we will be displaying tabs in the action bar.
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-
+        int titleId = getResources().getIdentifier("action_bar_title", "id", "android");
+        TextView abTitle = (TextView) findViewById(titleId);
+        abTitle.setTextColor(Color.parseColor("#07EB16"));
 
         // Set up the ViewPager, attaching the adapter and setting up a listener for when the
         // user swipes between sections.
@@ -93,6 +102,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         //KKULEN - Start Plugin Service
         Intent intent = new Intent(this, PluginService.class);
         startService(intent);
+
+        Intent bleIntent = new Intent(this, BLEService.class);
+		bleIntent.putExtra("DEVICE_ADDRESS", "F7:61:FB:87:A2:46");
+        startService(bleIntent);
     }
 
 
@@ -136,6 +149,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      */
     public static class AppSectionsPagerAdapter extends FragmentPagerAdapter {
 
+        private int numFragments = 3;
+
         public AppSectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -148,13 +163,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     // a launchpad into the other demonstrations in this example application.
                     return new CodeSectionFragment();
                 case 1:
-                    return new JSSimulatorFragment();
+                    return new FlashSectionFragment();
                 case 2:
-                	return new FlashSectionFragment();
-                case 3:
                     return new DevicesFragment();
-                case 4:
-                	return new HelpSectionFragment();
+
+				/*
+				case 3:
+					return new MyBlankFragment();
+				*/
+                /*
+                case 3:
+                    return new JSSimulatorFragment();
+                */
                 default:
                     // The other sections of the app are dummy placeholders.
                     Fragment fragment = new DummySectionFragment();
@@ -167,24 +187,28 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
         @Override
         public int getCount() {
-            return 5;
+            return numFragments;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
         	switch(position){
-        		case 0:
-        			return "Let's Code";
+                case 0:
+                    return "Let's Code";
                 case 1:
-                    return "JS Simulator";
-        		case 2:
-        			return "Run Code";
-        		case 3:
+                    return "Run Code";
+                case 2:
                     return "Pairing";
-        		case 4:
-        			return "Help Videos ";
-        		default:
-        			return "New section";
+				/*
+				case 3:
+					return "Blank Test Fragment";
+				*/
+        		/*
+        		case 3:
+                    return "JS Simulator";
+                */
+                default:
+                    return "New section";
         	}
         }
     }
