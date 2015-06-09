@@ -62,7 +62,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
         // Specify that the Home/Up button should not be enabled, since there is no hierarchical
         // parent.
-        actionBar.setHomeButtonEnabled(false);
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setIcon(R.drawable.ic_launcher);
+        actionBar.setDisplayShowHomeEnabled(true);
 
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#0C4DA2")));
         actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#0C4DA2")));
@@ -70,9 +74,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         // Specify that we will be displaying tabs in the action bar.
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        int titleId = getResources().getIdentifier("action_bar_title", "id", "android");
-        TextView abTitle = (TextView) findViewById(titleId);
-        abTitle.setTextColor(Color.parseColor("#07EB16"));
+        //int titleId = getResources().getIdentifier("action_bar_title", "id", "android");
+        //TextView abTitle = (TextView) findViewById(titleId);
+        //abTitle.setTextColor(Color.parseColor("#07EB16"));
 
         // Set up the ViewPager, attaching the adapter and setting up a listener for when the
         // user swipes between sections.
@@ -149,7 +153,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      */
     public static class AppSectionsPagerAdapter extends FragmentPagerAdapter {
 
-        private int numFragments = 3;
+        private int numFragments = 2;
 
         public AppSectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -164,10 +168,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     return new CodeSectionFragment();
                 case 1:
                     return new FlashSectionFragment();
+                /*
                 case 2:
                     return new DevicesFragment();
-
-				/*
 				case 3:
 					return new MyBlankFragment();
 				*/
@@ -197,9 +200,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     return "Let's Code";
                 case 1:
                     return "Run Code";
+                /*
                 case 2:
                     return "Pairing";
-				/*
 				case 3:
 					return "Blank Test Fragment";
 				*/
