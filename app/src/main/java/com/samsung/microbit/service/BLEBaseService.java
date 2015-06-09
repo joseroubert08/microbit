@@ -11,9 +11,7 @@ import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.samsung.microbit.plugin.BLEManager;
 import com.samsung.microbit.plugin.CharacteristicChangeListener;
@@ -31,7 +29,7 @@ public abstract class BLEBaseService extends Service {
 	protected String deviceAddress;
 
 	protected String TAG = "BLEBaseService";
-	protected boolean debug = true;
+	protected boolean debug = false;
 
 	protected void logi(String message) {
 		if (debug) {

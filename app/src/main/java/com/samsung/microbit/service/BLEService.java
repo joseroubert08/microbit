@@ -16,8 +16,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.os.ResultReceiver;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -40,7 +38,7 @@ public class BLEService extends BLEBaseService {
 	public static final String MESSAGE_NAME = "uBIT_BUTTON_PRESS";
 
 	protected String TAG = "BLEService";
-	protected boolean debug = true;
+	protected boolean debug = false;
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -51,9 +49,12 @@ public class BLEService extends BLEBaseService {
 		//ResultReceiver resultReceiver = (ResultReceiver) intent.getParcelableExtra("com.samsung.resultReceiver");
 		//resultReceiver.send(1, null);
 
-		connect();
-		discoverServices();
-		registerNotifications(true);
+		if(connect() == 0) {
+			if(discoverServices() == 0) {
+				registerNotifications(true);
+			}
+		}
+
 		connectWithServer();
 		Toast.makeText(this, TAG + " Started", Toast.LENGTH_SHORT).show();
 		return rc;
@@ -67,13 +68,38 @@ public class BLEService extends BLEBaseService {
 	public void registerNotifications(boolean enable) {
 
 		BluetoothGattService button1s = getService(BUTTON_1_SERVICE);
+		if (button1s == null) {
+			return;
+		}
+
 		BluetoothGattCharacteristic button1c = button1s.getCharacteristic(BUTTON_1_CHARACTERISTIC);
+		if (button1c == null) {
+			return;
+		}
+
 		BluetoothGattDescriptor button1d = button1c.getDescriptor(CALLBACK_DESCRIPTOR);
+		if (button1d == null) {
+			return;
+		}
+
 		enableCharacteristicNotification(button1c, button1d, enable);
 
+
 		BluetoothGattService button2s = getService(BUTTON_2_SERVICE);
+		if (button2s == null) {
+			return;
+		}
+
 		BluetoothGattCharacteristic button2c = button2s.getCharacteristic(BUTTON_2_CHARACTERISTIC);
+		if (button2c == null) {
+			return;
+		}
+
 		BluetoothGattDescriptor button2d = button2c.getDescriptor(CALLBACK_DESCRIPTOR);
+		if (button2d == null) {
+			return;
+		}
+
 		enableCharacteristicNotification(button2c, button2d, enable);
 	}
 
