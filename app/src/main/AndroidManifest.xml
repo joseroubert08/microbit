@@ -89,8 +89,10 @@
 				android:value="com.samsung.microbit.ui.DeviceScanActivity"/>
 		</activity>
 		<activity
-			android:name=".activity.CameraActivity"
-			android:label="Camera Microbit">
+			android:name=".activity.CameraActivity_OldAPI"
+			android:label="Camera Microbit"
+			android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden">
 			<intent-filter>
 				<action android:name="com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_PIC"/>
 			</intent-filter>
