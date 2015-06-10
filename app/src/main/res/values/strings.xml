@@ -79,6 +79,7 @@
 
         ]]>
     </string>
+    <string name="camera_not_found">Camera Not Found</string>
 
     <string name="title_activity_about_us">about_us</string>
     <string name="back_button">Take me Back</string>
