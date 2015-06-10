@@ -56,10 +56,10 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
 	private BluetoothAdapter mBluetoothAdapter = null;
 	private String fileNameToFlash = null;
 
-    private static SharedPreferences preferences;
-    private static final String PREFERENCES_NAME_KEY = "PairedDeviceName";
-    private static final String PREFERENCES_ADDRESS_KEY = "PairedDeviceAddress";
-    private HashMap<String, String> prettyFileNameMap = new HashMap<String, String>();
+	private static SharedPreferences preferences;
+	private static final String PREFERENCES_NAME_KEY = "PairedDeviceName";
+	private static final String PREFERENCES_ADDRESS_KEY = "PairedDeviceAddress";
+	private HashMap<String, String> prettyFileNameMap = new HashMap<String, String>();
 
 	final public static String BINARY_FILE_NAME = "/sdcard/output.bin";
 
@@ -86,8 +86,12 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
 
 		final BluetoothManager bluetoothManager = (BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE);
 		mBluetoothAdapter = bluetoothManager.getAdapter();
+
 		if (mBluetoothAdapter.isEnabled()) {
 			isBLuetoothEnabled = true;
+		} else {
+			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+			startActivityForResult(enableBtIntent, 1);
 		}
 	}
 
@@ -102,14 +106,14 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
 				String fileName = files[i].getName();
 				if (fileName.endsWith(".hex")) {
 
-                    //Beautify the filename
-                    String parsedFileName;
+					//Beautify the filename
+					String parsedFileName;
 
-                    int dot = fileName.lastIndexOf(".");
-                    parsedFileName = fileName.substring(0, dot);
-                    parsedFileName = parsedFileName.replace('_',' ');
+					int dot = fileName.lastIndexOf(".");
+					parsedFileName = fileName.substring(0, dot);
+					parsedFileName = parsedFileName.replace('_', ' ');
 
-                    prettyFileNameMap.put(parsedFileName, fileName);
+					prettyFileNameMap.put(parsedFileName, fileName);
 
 					list.add(parsedFileName);
 					++iTotalPrograms;
@@ -125,43 +129,26 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		rootView  = inflater.inflate(R.layout.fragment_section_flash, container, false);
+		rootView = inflater.inflate(R.layout.fragment_section_flash, container, false);
 		//flashSearchButton = (Button) rootView.findViewById(R.id.searchButton);
 		programList = (ListView) rootView.findViewById(R.id.programList);
 
-        /*
-		//Default Values
-		if (!isBLEAvailable) {
-			flashSearchButton.setEnabled(false);
-			flashSearchButton.setText("BLE not supported. Cannot load code.");
-		} else {
-			flashSearchButton.setEnabled(true);
-			flashSearchButton.setText("Search");
-			if (isBLuetoothEnabled) {
-				flashSearchButton.setText(R.string.run_code_button_name);
-			} else {
-				flashSearchButton.setText(R.string.error_bluetooth_not_enabled);
-			}
-		}
-        */
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
 		programList.setAdapter(adapter);
 		//flashSearchButton.setOnClickListener(this);
 		programList.setOnItemClickListener(this);
 		return rootView;
 	}
 
-    public void flashCode()
-    {
-        File file = new File(BINARY_FILE_NAME);
-        if (file.exists()) {
-            Intent intent = new Intent(getActivity(), DeviceScanActivity.class);
-            startActivity(intent);
-        } else {
-            Toast.makeText(getActivity(), "Create the binary file first by clicking one file below", Toast.LENGTH_LONG).show();
-        }
-    }
+	public void flashCode() {
+		File file = new File(BINARY_FILE_NAME);
+		if (file.exists()) {
+			Intent intent = new Intent(getActivity(), DeviceScanActivity.class);
+			startActivity(intent);
+		} else {
+			Toast.makeText(getActivity(), "Create the binary file first by clicking one file below", Toast.LENGTH_LONG).show();
+		}
+	}
 
     /*
 	@Override
@@ -186,130 +173,134 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
 	}
     */
 
-    private void prepareToFlash(boolean useExistingDevice)
-    {
-        int retValue = PrepareFile(fileNameToFlash);
+	private void prepareToFlash(boolean useExistingDevice) {
+		int retValue = PrepareFile(fileNameToFlash);
 
-        switch (retValue) {
-            case SUCCESS:
-                preferences = rootView.getContext().getSharedPreferences("Microbit_PairedDevices", Context.MODE_PRIVATE);
-                String pairedDeviceName = preferences.getString(PREFERENCES_NAME_KEY, "None");
-                String pairedDeviceAddress = preferences.getString(PREFERENCES_ADDRESS_KEY, "None");
+		switch (retValue) {
+			case SUCCESS:
+				preferences = rootView.getContext().getSharedPreferences("Microbit_PairedDevices", Context.MODE_PRIVATE);
+				String pairedDeviceName = preferences.getString(PREFERENCES_NAME_KEY, "None");
+				String pairedDeviceAddress = preferences.getString(PREFERENCES_ADDRESS_KEY, "None");
 
-                Toast.makeText(getActivity(), "Name == " + pairedDeviceName + " Address == " + pairedDeviceAddress, Toast.LENGTH_LONG).show();
+				//Toast.makeText(getActivity(), "Name == " + pairedDeviceName + " Address == " + pairedDeviceAddress, Toast.LENGTH_LONG).show();
 
-                Intent intent = new Intent(getActivity(), LEDGridActivity.class); //DeviceScanActivity.class);
-                intent.putExtra("download_file", fileNameToFlash);
-                intent.putExtra("use_existing_device", useExistingDevice);
-                intent.putExtra("existing_device_name", pairedDeviceName);
-                intent.putExtra("existing_device_address", pairedDeviceAddress);
-                startActivity(intent);
-                //Toast.makeText(getActivity(), "Binary file ready for flashing", Toast.LENGTH_LONG).show();
-                break;
+				Intent intent = new Intent(getActivity(), LEDGridActivity.class); //DeviceScanActivity.class);
+				intent.putExtra("download_file", fileNameToFlash);
+				intent.putExtra("use_existing_device", useExistingDevice);
+				intent.putExtra("existing_device_name", pairedDeviceName);
+				intent.putExtra("existing_device_address", pairedDeviceAddress);
+				startActivity(intent);
+				//Toast.makeText(getActivity(), "Binary file ready for flashing", Toast.LENGTH_LONG).show();
+				break;
 
-            case FILE_NOT_FOUND:
-            case FILE_IO_ERROR:
-            case FAILED:
-                handle_flashing_failed(retValue);
-                Toast.makeText(getActivity(), "Failed to create binary file", Toast.LENGTH_LONG).show();
-                break;
-        }
-    }
+			case FILE_NOT_FOUND:
+			case FILE_IO_ERROR:
+			case FAILED:
+				handle_flashing_failed(retValue);
+				Toast.makeText(getActivity(), "Failed to create binary file", Toast.LENGTH_LONG).show();
+				break;
+		}
+	}
 
-    private void findNewDevice()
-    {
-        prepareToFlash(false);
-    }
+	private void findNewDevice() {
+		prepareToFlash(false);
+	}
 
-    private void useExistingDevice()
-    {
-        prepareToFlash(true);
-    }
+	private void useExistingDevice() {
+		prepareToFlash(true);
+	}
 
 	@Override
 	public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
 
+		if(!isBLuetoothEnabled) {
+			Toast.makeText(getActivity(), "Bluetooth needs to be enabled", Toast.LENGTH_LONG).show();
+			return;
+		}
+
 		View v1 = programList.getChildAt(position);
-        /*
+		/*
 		CheckedTextView check = (CheckedTextView) v1;
 		check.setChecked(!check.isChecked());
         */
 
 		fileNameToFlash = (String) adapter.getItemAtPosition(position);
-        fileNameToFlash = prettyFileNameMap.get(fileNameToFlash);
+		fileNameToFlash = prettyFileNameMap.get(fileNameToFlash);
 
 		//Toast.makeText(getActivity(), "Preparing " + fileNameToFlash + " ...", Toast.LENGTH_LONG).show();
-        //int retValue = PrepareFile(fileNameToFlash);
+		//int retValue = PrepareFile(fileNameToFlash);
 
-        preferences = rootView.getContext().getSharedPreferences("Microbit_PairedDevices", Context.MODE_PRIVATE);
-
-
-        String pairedDeviceName = preferences.getString(PREFERENCES_NAME_KEY, "None");
+		preferences = rootView.getContext().getSharedPreferences("Microbit_PairedDevices", Context.MODE_PRIVATE);
 
 
-        Log.d("Microbit", "Preferences - PairedDevice" + pairedDeviceName);
-        if (!pairedDeviceName.equals("None")) {
+		String pairedDeviceName = preferences.getString(PREFERENCES_NAME_KEY, "None");
 
-            AlertDialog.Builder dialog = new AlertDialog.Builder(rootView.getContext());
 
-            dialog.setTitle(R.string.microbit_found)
-                    .setMessage("If you want to flash your code to the last micro:bit that you used, click 'Yes'.\nIf you'd prefer to use a different micro:bit instead, click 'No'.")
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialoginterface, int i) {
-                            useExistingDevice();
-                        }
-                    })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialoginterface, int i) {
-                            findNewDevice();
-                        }
-                    })
-                    .show();
-        }
-        else {
-            findNewDevice();
-        }
+		Log.d("Microbit", "Preferences - PairedDevice" + pairedDeviceName);
+		if (!pairedDeviceName.equals("None")) {
+
+			AlertDialog.Builder dialog = new AlertDialog.Builder(rootView.getContext());
+
+			dialog.setTitle(R.string.microbit_found)
+				.setMessage("Click 'Yes' to flash device '" + pairedDeviceName + "'.\n\n" +
+					"Click 'No' to flash a different micro:bit device.")
+				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialoginterface, int i) {
+						useExistingDevice();
+					}
+				})
+				.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialoginterface, int i) {
+						findNewDevice();
+					}
+				})
+				.show();
+		} else {
+			findNewDevice();
+		}
 	}
 
-    private void alertView( String message, int title_id ) {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(rootView.getContext());
+	private void alertView(String message, int title_id) {
+		AlertDialog.Builder dialog = new AlertDialog.Builder(rootView.getContext());
 
-        dialog.setTitle(getString(title_id))
-                .setIcon(R.drawable.ic_launcher)
-                .setMessage(message)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialoginterface, int i) {
-                    }
-                }).show();
-    }
-    private void  handle_flashing_failed(int failureCode)
-    {
-        int messageId;
-      //  progressDialog.dismiss();
-        switch(failureCode)
-        {
-            case FILE_NOT_FOUND:
-                messageId = R.string.flashing_failed_not_found;
-                break;
-            case FILE_IO_ERROR:
-                messageId = R.string.flashing_failed_io_error;
-                break;
-            case FAILED:
-                default:
-                messageId = R.string.flashing_failed_message;
-                break;
-        }
-        alertView(getString(messageId), R.string.flashing_failed_title);
-       // devicesButton.setText(R.string.devices_find_microbit);
-    }
-    private void  handle_flashing_successful()
-    {
-    //    devicesButton.setText("Connected to " + deviceName);
-      //  mHandler.removeCallbacks(scanFailedCallback);
-       // progressDialog.dismiss();
-        alertView(getString(R.string.flashing_success_message),
-                R.string.flashing_success_title);
-    }
+		dialog.setTitle(getString(title_id))
+			.setIcon(R.drawable.ic_launcher)
+			.setMessage(message)
+			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialoginterface, int i) {
+				}
+			}).show();
+	}
+
+	private void handle_flashing_failed(int failureCode) {
+		int messageId;
+		//  progressDialog.dismiss();
+		switch (failureCode) {
+			case FILE_NOT_FOUND:
+				messageId = R.string.flashing_failed_not_found;
+				break;
+
+			case FILE_IO_ERROR:
+				messageId = R.string.flashing_failed_io_error;
+				break;
+
+			case FAILED:
+			default:
+				messageId = R.string.flashing_failed_message;
+				break;
+		}
+		alertView(getString(messageId), R.string.flashing_failed_title);
+		// devicesButton.setText(R.string.devices_find_microbit);
+	}
+
+	private void handle_flashing_successful() {
+		//    devicesButton.setText("Connected to " + deviceName);
+		//  mHandler.removeCallbacks(scanFailedCallback);
+		// progressDialog.dismiss();
+		alertView(getString(R.string.flashing_success_message),
+			R.string.flashing_success_title);
+	}
+
 	// Creates binary buffer from ONLY the data specified by hex, spec here:
 	// http://en.wikipedia.org/wiki/Intel_HEX
 	private int PrepareFile(String fileName) {
