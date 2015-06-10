@@ -56,7 +56,7 @@ public class BLEService extends BLEBaseService {
 		}
 
 		connectWithServer();
-		Toast.makeText(this, TAG + " Started", Toast.LENGTH_SHORT).show();
+		//Toast.makeText(this, TAG + " Started", Toast.LENGTH_SHORT).show();
 		return rc;
 	}
 

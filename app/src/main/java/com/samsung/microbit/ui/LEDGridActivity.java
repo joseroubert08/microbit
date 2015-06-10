@@ -69,7 +69,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 	private Runnable scanFailedCallback;
 	private boolean mScanning;
 	// Stops scanning after 10 seconds.
-	private static final long SCAN_PERIOD = 10000;
+	private static final long SCAN_PERIOD = 15000;
 	private ProgressDialog pairingProgressDialog;
 	private BluetoothAdapter mBluetoothAdapter = null;
 	private BluetoothDevice mSelectedDevice;
@@ -78,6 +78,16 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 	private Boolean use_existing_device;
 	private String existing_device_name;
 	private String existing_device_address;
+
+	protected String TAG = "LEDGridActivity";
+	protected boolean debug = true;
+
+	protected void logi(String message) {
+		if (debug) {
+			Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+		}
+	}
+
 
 	// @formatter:off
     private String deviceCodeArray[] = {
@@ -100,11 +110,13 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 
 		super.onCreate(savedInstanceState);
 		MBApp.setContext(this);
+
 		// requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_ledgrid);
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-			android.R.layout.simple_list_item_single_choice, list);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, list);
+
 		state = STATE_LED_GRID_DISPLAYED;
+
 		//programList.setAdapter(adapter);
 		devicesButton = (Button) findViewById(R.id.devicesButton);
 		devicesButton.setText(R.string.devices_find_microbit);
@@ -120,8 +132,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 
 		mHandler = new Handler();
 
-		final BluetoothManager bluetoothManager =
-			(BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+		final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 		mBluetoothAdapter = bluetoothManager.getAdapter();
 
 		// Checks if Bluetooth is supported on the device.
@@ -132,7 +143,6 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		}
 
 		getActionBar().setTitle("Find microbit");
-
 		if (use_existing_device == true) {
 			displayLEDGridView();
 			startFlashingExisting();
@@ -150,9 +160,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 			case STATE_LED_GRID_DISPLAYED:
 			case STATE_DEVICE_PAIRED:
 			case STATE_READY_TO_SCAN: {
-				//generateCode();
 				generateName();
-
 				devicesButton.setText(R.string.devices_scanning);
 				pairingStatus.setText("Searching for device");
 				pairingMessage.setText("Looking for a micro:bit matching the pattern");
@@ -177,6 +185,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 
                 break;
             }*/
+
 			case STATE_PHASE1_COMPLETE:
 
 				displayLEDGridViewConnected();
@@ -222,22 +231,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 
 		deviceCode = deviceName;
 		deviceName = "BBC microbit [" + deviceName + "]";
-		//   Toast.makeText(this, deviceName, Toast.LENGTH_SHORT).show();
 	}
-
-
-	private String generateCode() {
-		String deviceCode = "";
-
-		for (int i = 0; i < NUM_LED_ELEMENTS; i++) {
-			deviceCode += deviceCodeArray[i];
-		}
-
-		//   Toast.makeText(getActivity(), deviceCode, Toast.LENGTH_LONG).show();
-
-		return deviceCode;
-	}
-
 
 	private void toggleLED(ImageView image, int pos) {
 		if (image.getTag() != "1") {
@@ -253,37 +247,30 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		}
 	}
 
-
 	private void displayLEDGridView() {
-		Log.d("Microbit", "displayLEDGridView");
+		logi("displayLEDGridView() :: Start");
 
 		imgAdapter = new ImageAdapter(this);
 		preferences = MBApp.getContext().getSharedPreferences("Microbit_PairedDevices", Context.MODE_PRIVATE);
-
 
 		devicesGridview = (GridView) findViewById(R.id.devicesLEDGridView);
 		devicesGridview.setAdapter(imgAdapter);
 
 		devicesGridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View v,
-									int position, long id) {
-
+			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 				ImageView imageview = (ImageView) v;
 				toggleLED(imageview, position);
-
-				Log.d("Microbit", "position == " + position + " id == " + id);
+				logi("displayLEDGridView() :: position == " + position + " id == " + id);
 			}
 		});
 	}
 
 	private void displayLEDGridViewConnected() {
-		Log.d("Microbit", "displayLEDGridViewConnected");
+		logi("displayLEDGridViewConnected() :: Start");
 
 		devicesGridview = (GridView) findViewById(R.id.devicesLEDGridView);
 		imgAdapter.displayTick();
 		devicesGridview.setAdapter(imgAdapter);
-
-
 	}
 
 	private void display_spinner_dialog() {
@@ -305,42 +292,161 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialoginterface, int i) {
 					finish();
-								/*if(getTitle().equals(getString(R.string.pairing_success_title))) {
-                                    startFlashing();
-                                }*/
 				}
 			}).show();
-
 	}
 
 	//BLUETOOTH CODE
 
 	private void handle_pairing_failed() {
+
+		logi("handle_pairing_failed() :: Start");
 		SharedPreferences.Editor editor = preferences.edit();
 		String pairedDeviceName = preferences.getString(PREFERENCES_NAME_KEY, "None");
-		Log.d("Microbit", "Preferences - PairedDevice" + pairedDeviceName);
+		logi("handle_pairing_failed() :: PairedDevice" + pairedDeviceName);
 		if (!pairedDeviceName.equals("None")) {
 			// Edit the saved preferences
 			editor.remove(PREFERENCES_NAME_KEY);
 			editor.commit();
 		}
 
-		pairingProgressDialog.dismiss();
-
 		final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
 		dialog.setIcon(R.drawable.ic_action_about);
+
 		dialog.setTitle("Searching")
 			.setMessage("Can not find the BBC Micro:bit")
 			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialoginterface, int i) {
 				}
 			}).show();
+
 		devicesButton.setText(R.string.devices_find_microbit);
 		devicesButton.setEnabled(true);
 		pairingStatus.setText("Not yet linked");
 		pairingMessage.setText("Enter the pattern on your micro:bit");
 	}
 
+	private void handle_pairing_successful() {
+
+		logi("handle_pairing_successful() :: Start");
+		String pairedDeviceName = preferences.getString(PREFERENCES_NAME_KEY, "None");
+
+		// Edit the saved preferences
+		if ((!pairedDeviceName.equals("None") && !pairedDeviceName.equals(deviceName))
+			|| (pairedDeviceName.equals("None"))) {
+
+			// TODO: Should we disconnect by calling removeBond from old BLE device??
+			SharedPreferences.Editor editor = preferences.edit();
+			editor.putString(PREFERENCES_NAME_KEY, deviceName);
+			editor.putString(PREFERENCES_ADDRESS_KEY, mSelectedDevice.getAddress());
+			editor.commit();
+		}
+
+		pairingStatus.setText("micro:bit found");
+		pairingMessage.setText("Starting reprogramming");
+
+		devicesButton.setText("Connected to " + deviceName);
+		devicesButton.setEnabled(false);
+
+		final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+		dialog.setIcon(R.drawable.ic_action_about);
+		dialog.setTitle("micro:bit found")
+			.setMessage(getString(R.string.pairing_success_message_1))
+			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialoginterface, int i) {
+					startFlashing();
+				}
+			}).show();
+	}
+
+	private volatile boolean deviceFound = false;
+
+	private void scanningFailed() {
+
+		logi("scanningFailed() :: scanning Failed to find a matching device");
+		if (deviceFound) {
+			return;
+		}
+
+		scanLeDevice(false);
+		devicesButton = (Button) findViewById(R.id.devicesButton);
+		if (state != STATE_DEVICE_PAIRED) {
+			state = STATE_READY_TO_SCAN;
+
+			// Close the Scanning Dialog
+			handle_pairing_failed();
+		}
+	}
+
+	private void scanLeDevice(final boolean enable) {
+
+		logi("scanLeDevice() :: enable = " + enable);
+		if (enable) {
+			// Stops scanning after a pre-defined scan period.
+			mScanning = true;
+			scanFailedCallback = new Runnable() {
+				@Override
+				public void run() {
+					mScanning = false;
+					mBluetoothAdapter.stopLeScan(mLeScanCallback);
+					scanningFailed();
+				}
+			};
+
+			display_spinner_dialog();
+			mHandler.postDelayed(scanFailedCallback, SCAN_PERIOD);
+			deviceFound = false;
+			mBluetoothAdapter.startLeScan(mLeScanCallback);
+		} else {
+			mScanning = false;
+			mHandler.removeCallbacks(scanFailedCallback);
+			scanFailedCallback = null;
+			mBluetoothAdapter.stopLeScan(mLeScanCallback);
+			pairingProgressDialog.dismiss();
+		}
+	}
+
+	// Device scan callback.
+	private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
+
+		@Override
+		public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+
+			logi("mLeScanCallback.onLeScan() :: Start");
+			if (device == null) {
+				return;
+			}
+
+			if ((deviceName.isEmpty()) || (device.getName() == null)) {
+				logi("mLeScanCallback.onLeScan() ::   Cannot Compare");
+			} else {
+				String s = device.getName().toLowerCase();
+				if (deviceName.toLowerCase().equals(s)) {
+					//  || (s.contains(deviceCode) && s.contains("microbit"))
+
+					logi("mLeScanCallback.onLeScan() ::   deviceName == " + deviceName.toLowerCase());
+					logi("mLeScanCallback.onLeScan() ::   device.getName() == " + device.getName().toLowerCase());
+
+					//UPDATE THE UI TO INDICATE PAIRED DEVICE (add string to
+					state = STATE_DEVICE_DISCOVERED;
+
+					// Stop scanning as device is found.
+					deviceFound = true;
+					scanLeDevice(false);
+
+					//DO BLUETOOTHY THINGS HERE!!!!
+					logi("mLeScanCallback.onLeScan() ::   Matching DEVICE FOUND, Pairing");
+					int bondState = device.getBondState();
+					mSelectedDevice = device;
+					handle_pairing_successful();
+
+				} else {
+					logi("mLeScanCallback.onLeScan() ::   non-matching - deviceName == " + deviceName.toLowerCase());
+					logi("mLeScanCallback.onLeScan() ::   non-matching found - device.getName() == " + device.getName().toLowerCase());
+				}
+			}
+		}
+	};
 
 	protected void startFlashingExisting() {
 
@@ -355,6 +461,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		service.putExtra(DfuService.EXTRA_DEVICE_NAME, existing_device_name);
 		service.putExtra(DfuService.EXTRA_FILE_MIME_TYPE, DfuService.MIME_TYPE_OCTET_STREAM);
 		//service.putExtra(DfuService.EXTRA_FILE_TYPE, mFileType);
+
 		service.putExtra(DfuService.EXTRA_FILE_PATH, FlashSectionFragment.BINARY_FILE_NAME); // a path or URI must be provided.
 		//service.putExtra(DfuService.EXTRA_FILE_URI, mFileStreamUri);
 		// Init packet is required by Bootloader/DFU from SDK 7.0+ if HEX or BIN file is given above.
@@ -366,8 +473,6 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		service.putExtra("com.samsung.resultReceiver", resultReceiver);
 		service.putExtra("com.samsung.runonly.phase", 1);
 
-
-		//   Toast.makeText(MBApp.getContext(), "Starting service", Toast.LENGTH_SHORT).show();
 		startService(service);
 	}
 
@@ -389,141 +494,8 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		service.putExtra("com.samsung.resultReceiver", resultReceiver);
 		service.putExtra("com.samsung.runonly.phase", 1);
 
-		//   Toast.makeText(MBApp.getContext(), "Starting service", Toast.LENGTH_SHORT).show();
 		startService(service);
 	}
-
-	private void handle_pairing_successful() {
-		String pairedDeviceName = preferences.getString(PREFERENCES_NAME_KEY, "None");
-		// Edit the saved preferences
-		if ((!pairedDeviceName.equals("None") && !pairedDeviceName.equals(deviceName))
-			|| (pairedDeviceName.equals("None"))) {
-			// TODO: Should we disconnect by calling removeBond from old BLE device??
-			SharedPreferences.Editor editor = preferences.edit();
-			editor.putString(PREFERENCES_NAME_KEY, deviceName);
-			editor.putString(PREFERENCES_ADDRESS_KEY, mSelectedDevice.getAddress());
-			editor.commit();
-		}
-		pairingStatus.setText("micro:bit found");
-		pairingMessage.setText("Starting reprogramming");
-
-		devicesButton.setText("Connected to " + deviceName);
-		devicesButton.setEnabled(false);
-		mHandler.removeCallbacks(scanFailedCallback);
-		pairingProgressDialog.dismiss();
-
-		final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-		dialog.setIcon(R.drawable.ic_action_about);
-		dialog.setTitle("micro:bit found")
-			.setMessage(getString(R.string.pairing_success_message_1))
-			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialoginterface, int i) {
-					//     Toast.makeText(MBApp.getContext(), "Starting to Flash", Toast.LENGTH_SHORT).show();
-					startFlashing();
-				}
-			}).show();
-
-	}
-
-	private void scanningFailed() {
-		Log.d("Microbit", "scanning Failed to find a matching device");
-
-		scanLeDevice(false);
-		devicesButton = (Button) findViewById(R.id.devicesButton);
-		if (state != STATE_DEVICE_PAIRED) {
-
-			state = STATE_READY_TO_SCAN;
-			// Close the Scanning Dialog
-			handle_pairing_failed();
-
-		}
-	}
-
-	private void scanLeDevice(final boolean enable) {
-
-		Log.d("Microbit", "scanLeDevice DEVICE");
-
-		if (enable) {
-			// Stops scanning after a pre-defined scan period.
-			scanFailedCallback = new Runnable() {
-				@Override
-				public void run() {
-					mScanning = false;
-					mBluetoothAdapter.stopLeScan(mLeScanCallback);
-					scanningFailed();
-					//invalidateOptionsMenu();
-				}
-			};
-
-			display_spinner_dialog();
-			mHandler.postDelayed(scanFailedCallback, SCAN_PERIOD);
-
-			mScanning = true;
-			mBluetoothAdapter.startLeScan(mLeScanCallback);
-		} else {
-			mScanning = false;
-			mBluetoothAdapter.stopLeScan(mLeScanCallback);
-
-			//Button text occurs in state handler function
-		}
-		//invalidateOptionsMenu();
-	}
-
-	// Device scan callback.
-	private BluetoothAdapter.LeScanCallback mLeScanCallback =
-		new BluetoothAdapter.LeScanCallback() {
-
-			@Override
-			public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
-
-				Log.d("Microbit", "scanLeDevice DEVICE FOUND");
-
-				if (device == null) {
-					return;
-				}
-
-				if ((deviceName.isEmpty()) || (device.getName() == null)) {
-					Log.d("Microbit", "Cannot Compare");
-				} else {
-					String s = device.getName().toLowerCase();
-					if (deviceName.toLowerCase().equals(s)) {
-						//  || (s.contains(deviceCode) && s.contains("microbit"))
-
-						Log.d("Microbit", " deviceName == " + deviceName.toLowerCase());
-						Log.d("Microbit", " device.getName() == " + device.getName().toLowerCase());
-
-						//UPDATE THE UI TO INDICATE PAIRED DEVICE (add string to
-						state = STATE_DEVICE_DISCOVERED;
-
-						// Stop scanning as device is found.
-						scanLeDevice(false);
-
-						//DO BLUETOOTHY THINGS HERE!!!!
-						Log.d("Microbit", "Matching DEVICE FOUND, Pairing");
-						int bondState = device.getBondState();
-						mSelectedDevice = device;
-						handle_pairing_successful();
-
-					} else {
-						Log.d("Microbit", " deviceName == " + deviceName.toLowerCase());
-						Log.d("Microbit", " device.getName() == " + device.getName().toLowerCase());
-					}
-				}
-
-
-
-                    /*
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mLeDeviceListAdapter.addDevice(device);
-                            mLeDeviceListAdapter.notifyDataSetChanged();
-                        }
-                    });
-                    */
-			}
-		};
-
 
 	class DFUResultReceiver extends BroadcastReceiver {
 		private ProgressDialog flashSpinnerDialog;
@@ -535,7 +507,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String message = "Broadcast intent detected " + intent.getAction();
-			Log.i("Microbit", message);
+			logi("DFUResultReceiver.onReceive :: " + message);
 			if (intent.getAction() == DfuService.BROADCAST_PROGRESS) {
 				if (!dialogInitDone) {
 					flashSpinnerDialog = new ProgressDialog(MBApp.getContext());
@@ -547,7 +519,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 					dialogInitDone = true;
 				}
 				int state = intent.getIntExtra(DfuService.EXTRA_DATA, 0);
-				Log.i("Microbit", "state -- " + state);
+				logi("DFUResultReceiver.onReceive :: state -- " + state);
 
 				if (state < 0) {
 					switch (state) {
@@ -558,6 +530,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 								// finish();
 								LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
 							}
+
 							isCompleted = true;
 							inInit = false;
 							inProgress = false;
@@ -567,9 +540,12 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 							{
 								String error_message = "Flashing Error Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
 									+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]";
-								Log.e("Microbit", error_message);
-								if (flashSpinnerDialog != null)
+
+								logi(error_message);
+								if (flashSpinnerDialog != null) {
 									flashSpinnerDialog.dismiss();
+								}
+
 								alertView(error_message, R.string.flashing_failed_title);
 								LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
 							}
@@ -580,6 +556,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 								flashSpinnerDialog.setMessage("Initialising the connection");
 								flashSpinnerDialog.show();
 							}
+
 							inInit = true;
 							isCompleted = false;
 							break;
@@ -595,15 +572,18 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 						flashSpinnerDialog.show();
 						inProgress = true;
 					}
+
 					flashSpinnerDialog.setProgress(state);
 				}
 			} else if (intent.getAction() == DfuService.BROADCAST_ERROR) {
 				String error_message = broadcastGetErrorMessage(intent.getIntExtra(DfuService.EXTRA_DATA, 0));
 
-				Log.e("Microbit", "Flashing ERROR!!  Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
+				logi("DFUResultReceiver.onReceive() :: Flashing ERROR!!  Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
 					+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
+
 				if (flashSpinnerDialog != null)
 					flashSpinnerDialog.dismiss();
+
 				alertView(error_message, R.string.flashing_failed_title);
 			}
 		}
@@ -698,6 +678,9 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter1);
 	}
 
+	/**
+	 *
+	 */
 	ResultReceiver resultReceiver = new ResultReceiver(new Handler()) {
 
 		@Override
@@ -707,20 +690,17 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 
 			if ((phase & 0x01) != 0) {
 				if ((phase & 0x0ff00) == 0) {
-					Log.d("microbit", "Phase 1 complete recieved ");
+					logi("resultReceiver.onReceiveResult() :: Phase 1 complete recieved ");
 					handle_phase1_complete();
 
-					//      Toast.makeText(MBApp.getContext(), R.string.phase1_complete_ok, Toast.LENGTH_SHORT).show();
 				} else {
-					Log.d("microbit", "Phase 1 not complete recieved ");
+					logi("resultReceiver.onReceiveResult() :: Phase 1 not complete recieved ");
 					alertView("micro:bit not in correct state", R.string.flashing_failed_title);
-					//     Toast.makeText(MBApp.getContext(), R.string.phase1_complete_not_ok, Toast.LENGTH_SHORT).show();
 				}
 			}
 
 			if ((phase & 0x02) != 0) {
-				Log.d("microbit", "Phase 2 complete recieved ");
-				//    Toast.makeText(MBApp.getContext(), R.string.phase2_complete_ok, Toast.LENGTH_SHORT).show();
+				logi("resultReceiver.onReceiveResult() :: Phase 2 complete recieved ");
 			}
 
 			super.onReceiveResult(resultCode, resultData);
