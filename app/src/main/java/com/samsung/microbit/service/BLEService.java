@@ -21,7 +21,9 @@ import android.widget.Toast;
 
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.plugin.AlertPlugin;
+import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
+import com.samsung.microbit.ui.MainActivity;
 
 import java.util.UUID;
 
@@ -38,7 +40,7 @@ public class BLEService extends BLEBaseService {
 	public static final String MESSAGE_NAME = "uBIT_BUTTON_PRESS";
 
 	protected String TAG = "BLEService";
-	protected boolean debug = false;
+	protected boolean debug = true;
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -180,7 +182,12 @@ public class BLEService extends BLEBaseService {
 				mIsRemoteControlPlay = !mIsRemoteControlPlay;
 				cmd = new CmdArg(mIsRemoteControlPlay ? RemoteControlPlugin.PLAY : RemoteControlPlugin.PAUSE, "");
 				break;
+
 			case 0x012:
+				msgService = PluginService.CAMERA;
+				cmd = new CmdArg(CameraPlugin.LAUNCH_CAMERA_FOR_PIC, "");
+				break;
+
 			case 0x014:
 			case 0x018:
 				cmd = new CmdArg(AlertPlugin.FINDPHONE, "");
@@ -190,7 +197,12 @@ public class BLEService extends BLEBaseService {
 				msgService = PluginService.REMOTE_CONTROL;
 				cmd = new CmdArg(RemoteControlPlugin.NEXT_TRACK, "");
 				break;
+
 			case 0x032:
+				msgService = PluginService.CAMERA;
+				cmd = new CmdArg(CameraPlugin.TAKE_PIC, "");
+				break;
+
 			case 0x034:
 			case 0x038:
 				cmd = new CmdArg(AlertPlugin.VIBRATE, "500");
@@ -235,6 +247,7 @@ public class BLEService extends BLEBaseService {
 
 		Intent mIntent = new Intent();
 		mIntent.setAction("com.samsung.microbit.service.PluginService");
+		mIntent = MainActivity.createExplicitFromImplicitIntent(getApplicationContext(), mIntent);
 		bindService(mIntent, serviceConnectionPluginService, Context.BIND_AUTO_CREATE);
 	}
 

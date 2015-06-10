@@ -29,7 +29,7 @@ public abstract class BLEBaseService extends Service {
 	protected String deviceAddress;
 
 	protected String TAG = "BLEBaseService";
-	protected boolean debug = false;
+	protected boolean debug = true;
 
 	protected void logi(String message) {
 		if (debug) {
