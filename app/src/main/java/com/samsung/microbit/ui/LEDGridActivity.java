@@ -297,7 +297,6 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 	}
 
 	//BLUETOOTH CODE
-
 	private void handle_pairing_failed() {
 
 		logi("handle_pairing_failed() :: Start");
@@ -326,28 +325,40 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		pairingMessage.setText("Enter the pattern on your micro:bit");
 	}
 
+
 	private void handle_pairing_successful() {
 
 		logi("handle_pairing_successful() :: Start");
-		String pairedDeviceName = preferences.getString(PREFERENCES_NAME_KEY, "None");
 
-		// Edit the saved preferences
-		if ((!pairedDeviceName.equals("None") && !pairedDeviceName.equals(deviceName))
-			|| (pairedDeviceName.equals("None"))) {
 
-			// TODO: Should we disconnect by calling removeBond from old BLE device??
-			SharedPreferences.Editor editor = preferences.edit();
-			editor.putString(PREFERENCES_NAME_KEY, deviceName);
-			editor.putString(PREFERENCES_ADDRESS_KEY, mSelectedDevice.getAddress());
-			editor.commit();
-		}
+		mHandler.post(new Runnable() {
+			@Override
+			public void run() {
 
-		pairingStatus.setText("micro:bit found");
-		pairingMessage.setText("Starting reprogramming");
+				String pairedDeviceName = preferences.getString(PREFERENCES_NAME_KEY, "None");
 
-		devicesButton.setText("Connected to " + deviceName);
-		devicesButton.setEnabled(false);
+				// Edit the saved preferences
+				if ((!pairedDeviceName.equals("None") && !pairedDeviceName.equals(deviceName))
+					|| (pairedDeviceName.equals("None"))) {
 
+					// TODO: Should we disconnect by calling removeBond from old BLE device??
+					SharedPreferences.Editor editor = preferences.edit();
+					editor.putString(PREFERENCES_NAME_KEY, deviceName);
+					editor.putString(PREFERENCES_ADDRESS_KEY, mSelectedDevice.getAddress());
+					editor.commit();
+				}
+
+				pairingStatus.setText("micro:bit found");
+				pairingMessage.setText("Starting reprogramming");
+
+				devicesButton.setText("Connected to " + deviceName);
+				devicesButton.setEnabled(false);
+				startFlashingExisting();
+			}
+		});
+
+
+		/*
 		final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
 		dialog.setIcon(R.drawable.ic_action_about);
 		dialog.setTitle("micro:bit found")
@@ -357,6 +368,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 					startFlashing();
 				}
 			}).show();
+		*/
 	}
 
 	private volatile boolean deviceFound = false;
@@ -439,7 +451,6 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 					int bondState = device.getBondState();
 					mSelectedDevice = device;
 					handle_pairing_successful();
-
 				} else {
 					logi("mLeScanCallback.onLeScan() ::   non-matching - deviceName == " + deviceName.toLowerCase());
 					logi("mLeScanCallback.onLeScan() ::   non-matching found - device.getName() == " + device.getName().toLowerCase());
@@ -450,6 +461,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 
 	protected void startFlashingExisting() {
 
+		logi("startFlashingExisting() ::   Start");
 		pairingStatus.setText("micro:bit found");
 		pairingMessage.setText("Starting reprogramming");
 
