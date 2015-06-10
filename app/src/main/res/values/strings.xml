@@ -34,7 +34,7 @@
     <string name="error_bluetooth_not_enabled">Bluetooth not enabled.</string>
     <string name="devices_bluetooth_not_enabled">Click to enable Bluetooth.</string>
     <string name="devices_initiate_process">Click to start.</string>
-    <string name="devices_find_microbit">Enter pattern then click to find Microbit.</string>
+    <string name="devices_find_microbit">Search</string>
     <string name="devices_generate_code">Click to generate code.</string>
     <string name="devices_scanning">Looking for Microbit, click to stop.</string>
     <string name="devices_ble_unsupported">BLE Not supported on your device</string>
@@ -61,9 +61,7 @@
     <string name="intro_message">
         <![CDATA[
 
-
             Camera enabled!
-
 
         ]]>
     </string>
