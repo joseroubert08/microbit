@@ -36,6 +36,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.plugin.CameraPlugin;
@@ -45,97 +46,113 @@ import com.samsung.microbit.service.PluginService;
  * Created by t.maestri on 09/06/2015.
  */
 public class CameraActivity_OldAPI extends Activity {
-    private static final String TAG = "microbit_camera_act";
-    CameraPreview preview;
-    Button buttonClick;
-    Camera camera;
-    Activity act;
-    Context ctx;
 
-    public static void sendReplyCommand(int mbsService, CmdArg cmd) {
-        if(PluginService.mClientMessenger != null) {
-            Message msg = Message.obtain(null, mbsService);
-            Bundle bundle = new Bundle();
-            bundle.putInt("cmd", cmd.getCMD());
-            bundle.putString("value", cmd.getValue());
-            msg.setData(bundle);
+	CameraPreview preview;
+	Button buttonClick;
+	Camera camera;
+	Activity act;
+	Context ctx;
+	private BroadcastReceiver mMessageReceiver;
 
-            try {
-                PluginService.mClientMessenger.send(msg);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+	private static final String TAG = "CameraActivity_OldAPI";
+	private boolean debug = true;
 
-    private int getFrontFacingCamera() {
-        int cameraCount = 0;
-        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
-        cameraCount = Camera.getNumberOfCameras();
-        for (int camIdx = 0; camIdx < cameraCount; camIdx++) {
-            Camera.getCameraInfo(camIdx, cameraInfo);
-            if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                return camIdx;
-            }
-        }
-        return -1;
-    }
+	void logi(String message) {
+		if (debug) {
+			Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+		}
+	}
 
-    @Override
-    public void onCreate(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
-        ctx = this;
-        act = this;
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        setContentView(R.layout.camera_old_api);
+	public static void sendReplyCommand(int mbsService, CmdArg cmd) {
 
-        preview = new CameraPreview(this, (SurfaceView)findViewById(R.id.surfaceView));
-        preview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        ((FrameLayout) findViewById(R.id.camera_preview_layout)).addView(preview);
-        preview.setKeepScreenOn(true);
+		if (PluginService.mClientMessenger != null) {
+			Message msg = Message.obtain(null, mbsService);
+			Bundle bundle = new Bundle();
+			bundle.putInt("cmd", cmd.getCMD());
+			bundle.putString("value", cmd.getValue());
+			msg.setData(bundle);
 
-        preview.setOnClickListener(new OnClickListener() {
+			try {
+				PluginService.mClientMessenger.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
-            @Override
-            public void onClick(View v) {
-                camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-            }
-        });
+	private int getFrontFacingCamera() {
+		int cameraCount = 0;
+		Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+		cameraCount = Camera.getNumberOfCameras();
+		for (int camIdx = 0; camIdx < cameraCount; camIdx++) {
+			Camera.getCameraInfo(camIdx, cameraInfo);
+			if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+				return camIdx;
+			}
+		}
+		return -1;
+	}
 
-        buttonClick = (Button) findViewById(R.id.picture);
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
 
-        buttonClick.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-            }
-        });
+		logi("onCreate() :: Start");
+		super.onCreate(savedInstanceState);
 
-        buttonClick.setOnLongClickListener(new OnLongClickListener(){
-            @Override
-            public boolean onLongClick(View arg0) {
-                camera.autoFocus(new AutoFocusCallback(){
-                    @Override
-                    public void onAutoFocus(boolean arg0, Camera arg1) {
-                        //TODO Is there anything we have to do after autofocus?
-                    }
-                });
-                return true;
-            }
-        });
-    }
+		ctx = this;
+		act = this;
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		setContentView(R.layout.camera_old_api);
+		preview = new CameraPreview(this, (SurfaceView) findViewById(R.id.surfaceView));
+		preview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+		((FrameLayout) findViewById(R.id.camera_preview_layout)).addView(preview);
+		preview.setKeepScreenOn(true);
+		preview.setOnClickListener(new OnClickListener() {
 
-    private BroadcastReceiver mMessageReceiver= new BroadcastReceiver() {
+			@Override
+			public void onClick(View v) {
+				camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+			}
+		});
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals("TAKE_PIC")) {
-                //TODO Complete with the correct code
-                buttonClick.callOnClick();
-            }
-        }
-    };
+		buttonClick = (Button) findViewById(R.id.picture);
+		buttonClick.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+			}
+		});
+
+		buttonClick.setOnLongClickListener(new OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View arg0) {
+				camera.autoFocus(new AutoFocusCallback() {
+					@Override
+					public void onAutoFocus(boolean arg0, Camera arg1) {
+						//TODO Is there anything we have to do after autofocus?
+					}
+				});
+				return true;
+			}
+		});
+
+		mMessageReceiver = new BroadcastReceiver() {
+
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				Log.i("CameraActivity_OldAPI", "mMessageReceiver.onReceive() :: Start");
+
+				if (intent.getAction().equals("TAKE_PIC")) {
+					//TODO Complete with the correct code
+					buttonClick.callOnClick();
+				}
+			}
+		};
+
+		logi("onCreate() :: Done");
+	}
+
 
 //    public int getCameraDisplayOrientation(int cameraId, android.hardware.Camera camera)
 //    {
@@ -174,121 +191,127 @@ public class CameraActivity_OldAPI extends Activity {
 //        return result;
 //    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+	@Override
+	protected void onResume() {
+		logi("onCreate() :: onResume");
 
-        int camIdx = getFrontFacingCamera();
-        try{
-            camera = Camera.open(camIdx);
-            //int mRotation = getCameraDisplayOrientation(camIdx,camera);
-            Camera.Parameters parameters = camera.getParameters();
-            parameters.setRotation(270); //set rotation to save the picture
-            camera.setParameters(parameters);
-            camera.setDisplayOrientation(90);
-            camera.startPreview();
-            preview.setCamera(camera);
-            LocalBroadcastManager.getInstance(this).registerReceiver(
-                    mMessageReceiver, new IntentFilter("TAKE_PIC"));
-        } catch (RuntimeException ex){
-            Toast.makeText(ctx, getString(R.string.camera_not_found), Toast.LENGTH_LONG).show();
-        }
-    }
+		super.onResume();
+		int camIdx = getFrontFacingCamera();
+		try {
+			camera = Camera.open(camIdx);
+			//int mRotation = getCameraDisplayOrientation(camIdx,camera);
+			Camera.Parameters parameters = camera.getParameters();
+			parameters.setRotation(270); //set rotation to save the picture
+			camera.setParameters(parameters);
+			camera.setDisplayOrientation(90);
+			camera.startPreview();
+			preview.setCamera(camera);
+			//LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("TAKE_PIC"));
 
-    @Override
-    protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(
-                mMessageReceiver);
-        if(camera != null) {
-            camera.stopPreview();
-            preview.setCamera(null);
-            camera.release();
-            camera = null;
-        }
-        super.onPause();
-    }
+			this.registerReceiver(mMessageReceiver, new IntentFilter("TAKE_PIC"));
 
-    private void resetCam() {
-        camera.startPreview();
-        preview.setCamera(camera);
-    }
+			logi("onCreate() :: onResume # ");
+		} catch (RuntimeException ex) {
+			Toast.makeText(ctx, getString(R.string.camera_not_found), Toast.LENGTH_LONG).show();
+		}
+	}
 
-    private void refreshGallery(File file) {
-        Intent mediaScanIntent = new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        mediaScanIntent.setData(Uri.fromFile(file));
-        sendBroadcast(mediaScanIntent);
-    }
+	@Override
+	protected void onPause() {
 
-    //TODO Add Sound here
-    ShutterCallback shutterCallback = new ShutterCallback() {
-        public void onShutter() {
-            //			 Log.d(TAG, "onShutter'd");
-        }
-    };
+		logi("onCreate() :: onPause");
+		this.unregisterReceiver(
+			mMessageReceiver);
+		if (camera != null) {
+			camera.stopPreview();
+			preview.setCamera(null);
+			camera.release();
+			camera = null;
+		}
+		super.onPause();
+	}
 
-    PictureCallback rawCallback = new PictureCallback() {
-        public void onPictureTaken(byte[] data, Camera camera) {
-            //			 Log.d(TAG, "onPictureTaken - raw");
-        }
-    };
+	private void resetCam() {
+		camera.startPreview();
+		preview.setCamera(camera);
+	}
 
-    PictureCallback jpegCallback = new PictureCallback() {
-        public void onPictureTaken(byte[] data, Camera camera) {
-            new SaveImageTask().execute(data);
-            resetCam();
-            finish();
-            Log.d(TAG, "onPictureTaken - jpeg");
-        }
-    };
+	private void refreshGallery(File file) {
+		Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+		mediaScanIntent.setData(Uri.fromFile(file));
+		sendBroadcast(mediaScanIntent);
+	}
 
-    @Override
-    protected void onStart() {
-        //Informing microbit that the camera is active now
-        CmdArg cmd = new CmdArg(0,"Camera on");
-        CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);
-        Log.d(TAG, "Sent message CameraOn to microbit");
-        super.onStart();
-    }
+	//TODO Add Sound here
+	ShutterCallback shutterCallback = new ShutterCallback() {
+		public void onShutter() {
+			//			 Log.d(TAG, "onShutter'd");
+		}
+	};
 
-    @Override
-    protected void onDestroy() {
-        //Informing microbit that the camera is active now
-        CmdArg cmd = new CmdArg(0,"Camera off");
-        CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);
-        super.onDestroy();
-    }
+	PictureCallback rawCallback = new PictureCallback() {
+		public void onPictureTaken(byte[] data, Camera camera) {
+			//			 Log.d(TAG, "onPictureTaken - raw");
+		}
+	};
 
-    private class SaveImageTask extends AsyncTask<byte[], Void, Void> {
+	PictureCallback jpegCallback = new PictureCallback() {
+		public void onPictureTaken(byte[] data, Camera camera) {
+			new SaveImageTask().execute(data);
+			resetCam();
+			finish();
+			Log.d(TAG, "onPictureTaken - jpeg");
+		}
+	};
 
-        @Override
-        protected Void doInBackground(byte[]... data) {
-            FileOutputStream outStream = null;
+	@Override
+	protected void onStart() {
+		//Informing microbit that the camera is active now
+		CmdArg cmd = new CmdArg(0, "Camera on");
+		CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);
+		Log.d(TAG, "Sent message CameraOn to microbit");
+		super.onStart();
+	}
 
-            // Write to SD Card
-            try {
-                File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+	@Override
+	protected void onDestroy() {
+		//Informing microbit that the camera is active now
+		CmdArg cmd = new CmdArg(0, "Camera off");
+		CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);
+		super.onDestroy();
+	}
 
-                //TODO defining the file name
-                String fileName = String.format("microbit_%d.jpg", System.currentTimeMillis());
-                File outFile = new File(dir, fileName);
+	private class SaveImageTask extends AsyncTask<byte[], Void, Void> {
 
-                outStream = new FileOutputStream(outFile);
-                outStream.write(data[0]);
-                outStream.flush();
-                outStream.close();
+		@Override
+		protected Void doInBackground(byte[]... data) {
+			FileOutputStream outStream = null;
 
-                refreshGallery(outFile);
+			// Write to SD Card
+			try {
+				File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
 
-                CmdArg cmd = new CmdArg(0,"Camera picture saved");
-                CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-            }
-            return null;
-        }
+				//TODO defining the file name
+				String fileName = String.format("microbit_%d.jpg", System.currentTimeMillis());
+				File outFile = new File(dir, fileName);
 
-    }
+				outStream = new FileOutputStream(outFile);
+				outStream.write(data[0]);
+				outStream.flush();
+				outStream.close();
+
+				refreshGallery(outFile);
+
+				CmdArg cmd = new CmdArg(0, "Camera picture saved");
+				CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+			}
+			return null;
+		}
+
+	}
 }
