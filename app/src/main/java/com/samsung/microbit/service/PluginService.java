@@ -100,7 +100,7 @@ public class PluginService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		logi("onStartCommand() ## start");
-		Toast.makeText(this, "Plugin Service Started", Toast.LENGTH_SHORT).show();
+		//Toast.makeText(this, "Plugin Service Started", Toast.LENGTH_SHORT).show();
 		return START_STICKY;
 	}
 
