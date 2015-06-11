@@ -16,14 +16,14 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.os.ResultReceiver;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.plugin.AlertPlugin;
+import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
+import com.samsung.microbit.ui.MainActivity;
 
 import java.util.UUID;
 
@@ -51,11 +51,14 @@ public class BLEService extends BLEBaseService {
 		//ResultReceiver resultReceiver = (ResultReceiver) intent.getParcelableExtra("com.samsung.resultReceiver");
 		//resultReceiver.send(1, null);
 
-		connect();
-		discoverServices();
-		registerNotifications(true);
+		if(connect() == 0) {
+			if(discoverServices() == 0) {
+				registerNotifications(true);
+			}
+		}
+
 		connectWithServer();
-		Toast.makeText(this, TAG + " Started", Toast.LENGTH_SHORT).show();
+		//Toast.makeText(this, TAG + " Started", Toast.LENGTH_SHORT).show();
 		return rc;
 	}
 
@@ -67,13 +70,38 @@ public class BLEService extends BLEBaseService {
 	public void registerNotifications(boolean enable) {
 
 		BluetoothGattService button1s = getService(BUTTON_1_SERVICE);
+		if (button1s == null) {
+			return;
+		}
+
 		BluetoothGattCharacteristic button1c = button1s.getCharacteristic(BUTTON_1_CHARACTERISTIC);
+		if (button1c == null) {
+			return;
+		}
+
 		BluetoothGattDescriptor button1d = button1c.getDescriptor(CALLBACK_DESCRIPTOR);
+		if (button1d == null) {
+			return;
+		}
+
 		enableCharacteristicNotification(button1c, button1d, enable);
 
+
 		BluetoothGattService button2s = getService(BUTTON_2_SERVICE);
+		if (button2s == null) {
+			return;
+		}
+
 		BluetoothGattCharacteristic button2c = button2s.getCharacteristic(BUTTON_2_CHARACTERISTIC);
+		if (button2c == null) {
+			return;
+		}
+
 		BluetoothGattDescriptor button2d = button2c.getDescriptor(CALLBACK_DESCRIPTOR);
+		if (button2d == null) {
+			return;
+		}
+
 		enableCharacteristicNotification(button2c, button2d, enable);
 	}
 
@@ -154,7 +182,12 @@ public class BLEService extends BLEBaseService {
 				mIsRemoteControlPlay = !mIsRemoteControlPlay;
 				cmd = new CmdArg(mIsRemoteControlPlay ? RemoteControlPlugin.PLAY : RemoteControlPlugin.PAUSE, "");
 				break;
+
 			case 0x012:
+				msgService = PluginService.CAMERA;
+				cmd = new CmdArg(CameraPlugin.LAUNCH_CAMERA_FOR_PIC, "");
+				break;
+
 			case 0x014:
 			case 0x018:
 				cmd = new CmdArg(AlertPlugin.FINDPHONE, "");
@@ -164,7 +197,12 @@ public class BLEService extends BLEBaseService {
 				msgService = PluginService.REMOTE_CONTROL;
 				cmd = new CmdArg(RemoteControlPlugin.NEXT_TRACK, "");
 				break;
+
 			case 0x032:
+				msgService = PluginService.CAMERA;
+				cmd = new CmdArg(CameraPlugin.TAKE_PIC, "");
+				break;
+
 			case 0x034:
 			case 0x038:
 				cmd = new CmdArg(AlertPlugin.VIBRATE, "500");
@@ -209,6 +247,7 @@ public class BLEService extends BLEBaseService {
 
 		Intent mIntent = new Intent();
 		mIntent.setAction("com.samsung.microbit.service.PluginService");
+		mIntent = MainActivity.createExplicitFromImplicitIntent(getApplicationContext(), mIntent);
 		bindService(mIntent, serviceConnectionPluginService, Context.BIND_AUTO_CREATE);
 	}
 

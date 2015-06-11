@@ -11,9 +11,7 @@ import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.samsung.microbit.plugin.BLEManager;
 import com.samsung.microbit.plugin.CharacteristicChangeListener;
