@@ -12,6 +12,7 @@ import java.lang.Integer;
 import java.util.HashMap;
 import java.util.UUID;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
@@ -47,7 +48,6 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
 	private static final int FILE_IO_ERROR = -2;
 	private static final int FAILED = -3;
 	private View rootView;
-	private Button flashSearchButton = null;
 
 	private ListView programList = null;
 	final ArrayList<String> list = new ArrayList<String>();
@@ -55,7 +55,7 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
 	private Boolean isBLuetoothEnabled = false;
 	private BluetoothAdapter mBluetoothAdapter = null;
 	private String fileNameToFlash = null;
-
+	final private int REQUEST_BT_ENABLE=1;
 	private static SharedPreferences preferences;
 	private static final String PREFERENCES_NAME_KEY = "PairedDeviceName";
 	private static final String PREFERENCES_ADDRESS_KEY = "PairedDeviceAddress";
@@ -75,6 +75,21 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
 		findProgramsAndPopulate();
 	}
 
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+		Log.d("Microbit", "onActivityResult");
+
+		// User chose not to enable Bluetooth.
+		if (requestCode == REQUEST_BT_ENABLE && resultCode == Activity.RESULT_CANCELED) {
+			Toast.makeText(getActivity(), "You must enable Bluetooth to continue", Toast.LENGTH_LONG).show();
+		} else {
+			isBLuetoothEnabled = true;
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+
 	private void checkMicroBitAttached() {
 		//Open Bluetooth connection and check if MicroBit it attached
 		// Use this check to determine whether BLE is supported on the device. Then
@@ -91,7 +106,7 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
 			isBLuetoothEnabled = true;
 		} else {
 			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-			startActivityForResult(enableBtIntent, 1);
+			startActivityForResult(enableBtIntent, REQUEST_BT_ENABLE);
 		}
 	}
 

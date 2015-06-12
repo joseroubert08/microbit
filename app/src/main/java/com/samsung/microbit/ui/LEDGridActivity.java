@@ -353,7 +353,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 
 				devicesButton.setText("Connected to " + deviceName);
 				devicesButton.setEnabled(false);
-				startFlashingExisting();
+				startFlashing();
 			}
 		});
 
@@ -459,6 +459,8 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		}
 	};
 
+	/* This function is used to flash program into the previously linked micro:bit
+	 */
 	protected void startFlashingExisting() {
 
 		logi("startFlashingExisting() ::   Start");
@@ -488,6 +490,9 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		startService(service);
 	}
 
+	/* This function is used to flash program into the new micro:bit identified
+	 * by the pattern entered on LED Grid display
+	 */
 	protected void startFlashing() {
 
 		final Intent service = new Intent(this, DfuService.class);
