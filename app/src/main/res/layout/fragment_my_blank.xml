@@ -23,7 +23,7 @@
 	<TextView
 		android:layout_width="356dp"
 		android:layout_height="408dp"
-		android:text="@string/hello_blank_fragment"
+		android:text="Hello blank fragment"
 		android:layout_gravity="center"/>
 
 

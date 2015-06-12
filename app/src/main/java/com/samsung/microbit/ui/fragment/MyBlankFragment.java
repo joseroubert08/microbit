@@ -1,20 +1,19 @@
 package com.samsung.microbit.ui.fragment;
 
-import android.app.Activity;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
-import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.net.Uri;
 import android.os.Bundle;
 
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.os.ResultReceiver;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -26,11 +25,11 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.samsung.microbit.R;
+import com.samsung.microbit.model.CmdArg;
+import com.samsung.microbit.plugin.AlertPlugin;
+import com.samsung.microbit.plugin.RemoteControlPlugin;
 import com.samsung.microbit.service.BLEService;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import com.samsung.microbit.service.PluginService;
 
 public class MyBlankFragment extends Fragment {
 
@@ -38,20 +37,13 @@ public class MyBlankFragment extends Fragment {
 	private Button initButton;
 	private Button runTestCodeButton;
 
-
 	private BLEService bleService;
 	private boolean isBound;
 
+
 	static final String TAG = "MyBlankFragment";
 	private boolean debug = false;
-
-	public static final UUID button1Service = UUID.fromString("0000a000-0000-1000-8000-00805f9b34fb");
-	public static final UUID button2Service = UUID.fromString("0000b000-0000-1000-8000-00805f9b34fb");
-
-	public static final UUID button1Characteristic = UUID.fromString("0000a001-0000-1000-8000-00805f9b34fb");
-	public static final UUID button2Characteristic = UUID.fromString("0000b001-0000-1000-8000-00805f9b34fb");
-
-	UUID callBackDescriptor = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+	private boolean mIsRemoteControlPlay = false;
 
 	void logi(String message) {
 		if (debug) {
@@ -79,39 +71,60 @@ public class MyBlankFragment extends Fragment {
 		logi("MyBlankFragment()");
 	}
 
-	BroadcastReceiver btn5rxer;
-	BroadcastReceiver btn15rxer;
+	BroadcastReceiver btnReceiver;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		if (btn5rxer == null) {
-			Log.i("Main", "### registering receiver");
-			btn5rxer = new BroadcastReceiver() {
+		if (btnReceiver == null) {
+			Log.i(TAG, "### registering receiver");
+			btnReceiver = new BroadcastReceiver() {
 				@Override
 				public void onReceive(Context context, Intent intent) {
-					Log.i("Main", "### uBit Button detected for 5");
+					int buttonPressed = intent.getIntExtra("buttonPressed", 0);
+					if (buttonPressed == 0) {
+						return;
+					}
+
+					if((buttonPressed  & 0x010) == 0) {
+						return;
+					}
+
+					Log.i(TAG, "### uBit Button detected for button = " + buttonPressed);
+					int msgService = PluginService.ALERT;
+					CmdArg cmd = null;
+					switch (buttonPressed) {
+						case 0x011:
+							msgService = PluginService.REMOTE_CONTROL;
+							mIsRemoteControlPlay = !mIsRemoteControlPlay;
+							cmd = new CmdArg(mIsRemoteControlPlay ? RemoteControlPlugin.PLAY : RemoteControlPlugin.PAUSE, "");
+							break;
+						case 0x012:
+						case 0x014:
+						case 0x018:
+							cmd = new CmdArg(AlertPlugin.FINDPHONE, "");
+							break;
+
+						case 0x031:
+							msgService = PluginService.REMOTE_CONTROL;
+							cmd = new CmdArg(RemoteControlPlugin.NEXT_TRACK, "");
+							break;
+						case 0x032:
+						case 0x034:
+						case 0x038:
+							cmd = new CmdArg(AlertPlugin.VIBRATE, "500");
+							break;
+					}
+
+					if (cmd != null) {
+						sendCommand(msgService, cmd);
+					}
 				}
 			};
 
 			IntentFilter intentFilter = new IntentFilter();
-			intentFilter.addAction(BLEService.messageName + 5);
-			LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(btn5rxer, intentFilter);
-		}
-
-
-		if (btn15rxer == null) {
-			Log.i("Main", "### registering receiver");
-			btn15rxer = new BroadcastReceiver() {
-				@Override
-				public void onReceive(Context context, Intent intent) {
-					Log.i("Main", "### uBit Button detected for 15");
-				}
-			};
-
-			IntentFilter intentFilter = new IntentFilter();
-			intentFilter.addAction(BLEService.messageName + 15);
-			LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(btn15rxer, intentFilter);
+			intentFilter.addAction(BLEService.MESSAGE_NAME);
+			LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(btnReceiver, intentFilter);
 		}
 
 		// Inflate the layout for this fragment
@@ -134,13 +147,18 @@ public class MyBlankFragment extends Fragment {
 			}
 		});
 
+		if (messageHandler == null) {
+			connectWithServer();
+		}
+
 		return rootView;
 	}
 
 	@Override
 	public void onDestroy() {
-		super.onDestroy();
 		doUnbindService();
+		super.onDestroy();
+
 		//if (updateReceiver != null) {
 		//	getActivity().unregisterReceiver(updateReceiver);
 		//}
@@ -154,7 +172,6 @@ public class MyBlankFragment extends Fragment {
 		serviceIntent.putExtra("DEVICE_ADDRESS", "F7:61:FB:87:A2:46");
 		serviceIntent.putExtra("com.samsung.resultReceiver", resultReceiver);
 		getActivity().startService(serviceIntent);
-
 		logi("### initButtonClicked() :: service start called");
 		initButton.setEnabled(false);
 	}
@@ -184,7 +201,14 @@ public class MyBlankFragment extends Fragment {
 		if (isBound) {
 
 			getActivity().unbindService(serviceConnection);
+			serviceConnection = null;
 			isBound = false;
+		}
+
+		if (isBoundToPluginService) {
+			getActivity().unbindService(serviceConnectionPluginService);
+			serviceConnectionPluginService = null;
+			isBoundToPluginService = false;
 		}
 	}
 
@@ -192,44 +216,91 @@ public class MyBlankFragment extends Fragment {
 		logi("runTestCodeButton() :: start");
 
 		runTestCodeButton.setEnabled(false);
-
 		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 
-
-				int i = bleService.connect();
-				logi("runTestCodeButton() :: i=" + i);
-				if (i != 0) {
-					return;
-				}
-
-				i = bleService.discoverServices();
-				List<BluetoothGattService> services = bleService.getServices();
-				if (services == null) {
-					logi("runTestCodeButton() :: discoverServices services=null");
-				}
-
-				Iterator<BluetoothGattService> sitr = services.iterator();
-				while (sitr.hasNext()) {
-					BluetoothGattService s = sitr.next();
-					logi("runTestCodeButton() :: discoverServices s = " + s.getUuid().toString());
-				}
-
-				BluetoothGattService button1s = bleService.getService(button1Service);
-				BluetoothGattCharacteristic button1c = button1s.getCharacteristic(button1Characteristic);
-				BluetoothGattDescriptor button1d = button1c.getDescriptor(callBackDescriptor);
-				bleService.enableCharacteristicNotification(button1c, button1d, true);
-
-				BluetoothGattService button2s = bleService.getService(button2Service);
-				BluetoothGattCharacteristic button2c = button2s.getCharacteristic(button2Characteristic);
-				BluetoothGattDescriptor button2d = button2c.getDescriptor(callBackDescriptor);
-				bleService.enableCharacteristicNotification(button2c, button2d, true);
-
+				bleService.connect();
+				bleService.discoverServices();
+				bleService.registerNotifications(true);
+				showToast("Notifications registered. Ready");
 			}
 		}).start();
 	}
 
+	void showToast(final String message) {
+
+		getActivity().runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+			}
+		});
+	}
+
+	// ######################################################################
+	private Messenger messengerPluginService = null;
+	private Messenger mClientMessenger = null;
+	private ServiceConnection serviceConnectionPluginService = null;
+	private IncomingHandler messageHandler = null;
+	private HandlerThread messageHandlerThread = null;
+	private boolean isBoundToPluginService = false;
+
+
+	class IncomingHandler extends Handler {
+		public IncomingHandler(HandlerThread thr) {
+			super(thr.getLooper());
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+		}
+	}
+
+	public void connectWithServer() {
+		messageHandlerThread = new HandlerThread("BLEReceiverThread");
+		messageHandlerThread.start();
+		messageHandler = new IncomingHandler(messageHandlerThread);
+		mClientMessenger = new Messenger(messageHandler);
+
+		serviceConnectionPluginService = new ServiceConnection() {
+			@Override
+			public void onServiceConnected(ComponentName name, IBinder service) {
+				isBoundToPluginService = true;
+				messengerPluginService = new Messenger(service);
+			}
+
+			@Override
+			public void onServiceDisconnected(ComponentName name) {
+				isBoundToPluginService = false;
+				serviceConnectionPluginService = null;
+			}
+		};
+
+		Intent mIntent = new Intent();
+		mIntent.setAction("com.samsung.microbit.service.PluginService");
+		getActivity().bindService(mIntent, serviceConnectionPluginService, Context.BIND_AUTO_CREATE);
+	}
+
+	public void sendCommand(int mbsService, CmdArg cmd) {
+		if (messengerPluginService != null) {
+			Message msg = Message.obtain(null, mbsService);
+			Bundle bundle = new Bundle();
+			bundle.putInt("cmd", cmd.getCMD());
+			bundle.putString("value", cmd.getValue());
+			msg.setData(bundle);
+			msg.replyTo = mClientMessenger;
+			try {
+				messengerPluginService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	// ######################################################################
 
 }

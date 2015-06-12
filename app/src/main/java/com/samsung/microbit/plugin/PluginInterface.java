@@ -67,7 +67,7 @@ public class PluginInterface  extends CordovaPlugin {
 
             //TODO: this call should be removed eventually.
             //just there to simulate sending microbit event to JS
-            simulateMicrobitEvent();
+            //simulateMicrobitEvent();
 
             return true;
         }

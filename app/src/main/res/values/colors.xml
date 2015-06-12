@@ -1,5 +1,7 @@
 <resources>
 
     <color name="black_overlay">#66000000</color>
+    <color name="actionMenuTitleTextColor">#00000000</color>
+    <color name="actionMenuTextColor">#0F0F0FF0</color>
 
 </resources>

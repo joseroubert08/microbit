@@ -32,52 +32,52 @@ import java.util.TimerTask;
  */
 public class FeedbackPlugin {
 
-    private static Context mContext = null;
-    private static BroadcastReceiver mReceiver = null;
+	private static Context mContext = null;
+	private static BroadcastReceiver mReceiver = null;
 
-    //Feedback plugin action
-    public static final int DISPLAY = 0;
+	//Feedback plugin action
+	public static final int DISPLAY = 0;
 
-    public static void pluginEntry(Context ctx, CmdArg cmd) {
-        mContext = ctx;
-        switch (cmd.getCMD()) {
-            case DISPLAY:
-                registerScreenOnOffIntent();
-                break;
-        }
-    }
+	public static void pluginEntry(Context ctx, CmdArg cmd) {
+		mContext = ctx;
+		switch (cmd.getCMD()) {
+			case DISPLAY:
+				registerScreenOnOffIntent();
+				break;
+		}
+	}
 
-    public static void sendReplyCommand(int mbsService, CmdArg cmd) {
-        if(PluginService.mClientMessenger != null) {
-            Message msg = Message.obtain(null, mbsService);
-            Bundle bundle = new Bundle();
-            bundle.putInt("cmd", cmd.getCMD());
-            bundle.putString("value", cmd.getValue());
-            msg.setData(bundle);
+	public static void sendReplyCommand(int mbsService, CmdArg cmd) {
+		if (PluginService.mClientMessenger != null) {
+			Message msg = Message.obtain(null, mbsService);
+			Bundle bundle = new Bundle();
+			bundle.putInt("cmd", cmd.getCMD());
+			bundle.putString("value", cmd.getValue());
+			msg.setData(bundle);
 
-            try {
-                PluginService.mClientMessenger.send(msg);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+			try {
+				PluginService.mClientMessenger.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
-    private static void registerScreenOnOffIntent() {
-        if(mReceiver == null) {
-            final IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
-            filter.addAction(Intent.ACTION_SCREEN_OFF);
-            mReceiver = new Monitor();
-            mContext.registerReceiver(mReceiver, filter);
+	private static void registerScreenOnOffIntent() {
+		if (mReceiver == null) {
+			final IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+			filter.addAction(Intent.ACTION_SCREEN_OFF);
+			mReceiver = new Monitor();
+			mContext.registerReceiver(mReceiver, filter);
 
-            CmdArg cmd = new CmdArg(0,"Registered Screen On/Off event.");
-            FeedbackPlugin.sendReplyCommand(PluginService.FEEDBACK, cmd);
-        } else { //TODO - When and where to unresgister????
-            mContext.unregisterReceiver(mReceiver);
-            mReceiver = null;
+			CmdArg cmd = new CmdArg(0, "Registered Screen On/Off event.");
+			FeedbackPlugin.sendReplyCommand(PluginService.FEEDBACK, cmd);
+		} else { //TODO - When and where to unresgister????
+			mContext.unregisterReceiver(mReceiver);
+			mReceiver = null;
 
-            CmdArg cmd = new CmdArg(0,"Unregistered Screen On/Off event.");
-            FeedbackPlugin.sendReplyCommand(PluginService.FEEDBACK, cmd);
-        }
-    }
+			CmdArg cmd = new CmdArg(0, "Unregistered Screen On/Off event.");
+			FeedbackPlugin.sendReplyCommand(PluginService.FEEDBACK, cmd);
+		}
+	}
 }

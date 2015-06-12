@@ -22,6 +22,10 @@
     <string name="device_details">Device_details</string>
     <string name="dummy_section_text">Section %1d is just a dummy section.</string>
     <string name="ble_not_supported">BLE is not supported</string>
+	<string name="phase1_complete_ok">Phase 1 completed. press button 1 followed by button on screen</string>
+	<string name="phase2_complete_ok">Phase 2 completed. Device should be flashed</string>
+	<string name="phase1_complete_not_ok">Device not found or in right mode or connection error</string>
+
     <string name="label_data">Data:</string>
     <string name="label_device_address">Device address:</string>
     <string name="label_state">State:</string>
@@ -29,8 +33,10 @@
     <string name="connected">Connected</string>
     <string name="disconnected">Disconnected</string>
     <string name="title_devices">MicroBit Device Scan</string>
+    <string name="title_activity_ledgrid">Find MicroBit</string>
     <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
     <string name="microbit_not_found">Microbit not found. Please search.</string>
+    <string name="microbit_found">Use existing micro:bit?</string>
     <string name="error_bluetooth_not_enabled">Bluetooth not enabled.</string>
     <string name="devices_bluetooth_not_enabled">Click to enable Bluetooth.</string>
     <string name="devices_initiate_process">Click to start.</string>
@@ -42,10 +48,16 @@
     <string name="unknown_characteristic">Unknown characteristic</string>
     <string name="unknown_service">Unknown service</string>
     <string name="pairing_failed_message">No Microbit displaying the pattern you entered could be found. Please enter the pattern displayed on your Microbit and try again.</string>
-    <string name="pairing_failed_title">Pairing Unsuccesful</string>
-    <string name="pairing_success_message_1">You have successfully paired with Microbit \ </string>
-    <string name="pairing_success_message_2"> \  Please press both buttons on the Microbit now.</string>
-    <string name="pairing_success_title">Pairing Succesful</string>
+    <string name="pairing_failed_title">Linking Unsuccesful</string>
+    <string name="pairing_success_message_1">You have successfully linked with micro:bit </string>
+    <string name="pairing_success_title">micro:bit found</string>
+    <string name="run_code_button_name">Continue to Flash</string>
+    <string name="flashing_failed_not_found">Flashing Failed!Cannot read the file</string>
+    <string name="flashing_failed_io_error">Flashing Failed! Cannot find the file</string>
+    <string name="flashing_failed_message">Flashing Failed! No Programs Found</string>
+    <string name="flashing_failed_title">Flashing Unsuccesful</string>
+    <string name="flashing_success_message">You have successfully downloaded program to BBC Microbit</string>
+    <string name="flashing_success_title">Flashing Succesful</string>
 
     <!-- Menu items -->
     <string name="menu_connect">Connect</string>
@@ -65,6 +77,7 @@
 
         ]]>
     </string>
+    <string name="camera_not_found">Camera Not Found</string>
 
     <string name="title_activity_about_us">about_us</string>
     <string name="back_button">Take me Back</string>
