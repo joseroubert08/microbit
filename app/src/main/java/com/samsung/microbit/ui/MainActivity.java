@@ -114,8 +114,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		startService(intent);
 
 		Intent bleIntent = new Intent(this, BLEService.class);
-		//bleIntent.putExtra("DEVICE_ADDRESS", "F7:61:FB:87:A2:46");
-		bleIntent.putExtra("DEVICE_ADDRESS", "DE:E2:2F:23:D6:F5");
+		bleIntent.putExtra("DEVICE_ADDRESS", "F7:61:FB:87:A2:46");
+		//bleIntent.putExtra("DEVICE_ADDRESS", "DE:E2:2F:23:D6:F5");
 		startService(bleIntent);
 	}
 

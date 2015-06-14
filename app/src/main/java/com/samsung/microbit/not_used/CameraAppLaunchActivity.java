@@ -1,4 +1,4 @@
-package com.samsung.microbit.activity;
+package com.samsung.microbit.not_used;
 
 import android.app.Activity;
 import android.content.Intent;
