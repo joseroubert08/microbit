@@ -89,7 +89,8 @@ public class CameraPlugin {
 	private static void launchCameraForVideo() {
         //TODO: remove Toast
         Toast.makeText(context, "Camera Activity Started", Toast.LENGTH_SHORT).show();
-        Intent mIntent = new Intent(context,CameraActivity.class);
+        Intent mIntent = new Intent(context, CameraActivity_OldAPI.class);
+//        Intent mIntent = new Intent(context,CameraActivity.class);
         mIntent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_VIDEO");
         mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(mIntent);
