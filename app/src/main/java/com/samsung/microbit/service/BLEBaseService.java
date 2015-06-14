@@ -15,6 +15,7 @@ import android.util.Log;
 
 import com.samsung.microbit.plugin.BLEManager;
 import com.samsung.microbit.plugin.CharacteristicChangeListener;
+import com.samsung.microbit.plugin.UnexpectedConnectionEventListener;
 
 import java.util.List;
 import java.util.UUID;
@@ -95,21 +96,32 @@ public abstract class BLEBaseService extends Service {
 
 			logi("onStartCommand() :: initialize(deviceAddress) = OK");
 			if (bleManager == null) {
-				bleManager = new BLEManager(getApplicationContext(), bluetoothDevice, new CharacteristicChangeListener() {
-					@Override
-					public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+				bleManager = new BLEManager(getApplicationContext(), bluetoothDevice,
+					new CharacteristicChangeListener() {
+						@Override
+						public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 
-						handleCharacteristicChanged(gatt, characteristic);
-					}
-				});
+							logi("CharacteristicChangeListener.onCharacteristicChanged()");
+							handleCharacteristicChanged(gatt, characteristic);
+						}
+					},
+					new UnexpectedConnectionEventListener() {
+						@Override
+						public void handleConnectionEvent(int event) {
+							logi("CharacteristicChangeListener.onCharacteristicChanged()");
+							handleUnexpectedConnectionEvent(event);
+						}
+					});
 			}
 		}
 
 		return START_STICKY;
-		//return START_REDELIVER_INTENT;
 	}
 
 	protected void handleCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+	}
+
+	protected void handleUnexpectedConnectionEvent(int event) {
 	}
 
 	@Override
