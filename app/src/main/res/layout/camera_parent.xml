@@ -4,6 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/container"
-    tools:context="com.samsung.microbit.activity.CameraActivity">
+    tools:context="com.samsung.microbit.not_used.CameraActivity">
 
 </FrameLayout>

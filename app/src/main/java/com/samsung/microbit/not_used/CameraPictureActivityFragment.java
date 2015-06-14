@@ -1,4 +1,4 @@
-package com.samsung.microbit.ui.fragment;
+package com.samsung.microbit.not_used;
 
 import android.app.Activity;
 import android.app.AlertDialog;

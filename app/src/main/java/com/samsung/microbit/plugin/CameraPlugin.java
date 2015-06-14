@@ -5,12 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.RemoteException;
-import android.util.Log;
 import android.widget.Toast;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.samsung.microbit.MBApp;
-import com.samsung.microbit.activity.CameraActivity;
 import com.samsung.microbit.activity.CameraActivity_OldAPI;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.service.PluginService;
@@ -26,6 +23,7 @@ public class CameraPlugin {
     public static final int TAKE_PIC = 2;
     public static final int REC_VIDEO_START = 3;
     public static final int REC_VIDEO_STOP = 4;
+
 
     public static void pluginEntry(Context ctx, CmdArg cmd) {
 

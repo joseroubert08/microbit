@@ -1,4 +1,4 @@
-package com.samsung.microbit.activity;
+package com.samsung.microbit.not_used;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -11,8 +11,6 @@ import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.service.PluginService;
-import com.samsung.microbit.ui.fragment.CameraPictureActivityFragment;
-import com.samsung.microbit.ui.fragment.CameraVideoActivityFragment;
 
 /**
  * Created by t.maestri on 19/05/2015.

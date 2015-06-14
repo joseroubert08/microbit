@@ -42,6 +42,8 @@ import com.samsung.microbit.service.PluginService;
  */
 public class CameraActivity_OldAPI extends Activity {
 
+	private static boolean mInstanceActive = false;
+
 	private CameraPreview mPreview;
 	private Button mButtonClick;
 	private Camera mCamera;
