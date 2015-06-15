@@ -74,8 +74,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		actionBar.setIcon(R.drawable.ic_launcher);
 		actionBar.setDisplayShowHomeEnabled(true);
 
-		actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#0C4DA2")));
-		actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#0C4DA2")));
+		actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#444444")));
+		actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#777777")));
 
 		// Specify that we will be displaying tabs in the action bar.
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -115,6 +115,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 		Intent bleIntent = new Intent(this, BLEService.class);
 		bleIntent.putExtra("DEVICE_ADDRESS", "F7:61:FB:87:A2:46");
+		//bleIntent.putExtra("DEVICE_ADDRESS", "DE:E2:2F:23:D6:F5");
 		startService(bleIntent);
 	}
 
@@ -165,6 +166,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			case R.id.samsung_logo:
 				return true;
 		}
+
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -256,12 +258,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		public static final String ARG_SECTION_NUMBER = "section_number";
 
 		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-								 Bundle savedInstanceState) {
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
 			View rootView = inflater.inflate(R.layout.fragment_section_dummy, container, false);
 			Bundle args = getArguments();
-			((TextView) rootView.findViewById(android.R.id.text1)).setText(
-				getString(R.string.dummy_section_text, args.getInt(ARG_SECTION_NUMBER)));
+			((TextView) rootView.findViewById(android.R.id.text1)).setText(getString(R.string.dummy_section_text, args.getInt(ARG_SECTION_NUMBER)));
 
 			return rootView;
 		}

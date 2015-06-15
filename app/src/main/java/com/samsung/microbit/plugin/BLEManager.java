@@ -56,9 +56,10 @@ public class BLEManager {
 
 	protected final Object locker = new Object();
 	protected CharacteristicChangeListener characteristicChangeListener;
+	protected UnexpectedConnectionEventListener unexpectedDisconnectionListener;
 
 	static final String TAG = "BLEManager";
-	private boolean debug = false;
+	private boolean debug = true;
 
 	void logi(String message) {
 		if (debug) {
@@ -66,17 +67,21 @@ public class BLEManager {
 		}
 	}
 
-	public BLEManager(Context context, BluetoothDevice bluetoothDevice) {
-		logi("BLEManager(,) :: start");
-		this.context = context;
-		this.bluetoothDevice = bluetoothDevice;
-	}
-
-	public BLEManager(Context context, BluetoothDevice bluetoothDevice, CharacteristicChangeListener characteristicChangeListener) {
+	public BLEManager(Context context, BluetoothDevice bluetoothDevice, UnexpectedConnectionEventListener unexpectedDisconnectionListener) {
 		logi("BLEManager(,,) :: start");
 		this.context = context;
 		this.bluetoothDevice = bluetoothDevice;
+		this.unexpectedDisconnectionListener = unexpectedDisconnectionListener;
+	}
+
+	public BLEManager(Context context, BluetoothDevice bluetoothDevice, CharacteristicChangeListener characteristicChangeListener,
+					  UnexpectedConnectionEventListener unexpectedDisconnectionListener) {
+
+		logi("BLEManager(,,,) :: start");
+		this.context = context;
+		this.bluetoothDevice = bluetoothDevice;
 		this.characteristicChangeListener = characteristicChangeListener;
+		this.unexpectedDisconnectionListener = unexpectedDisconnectionListener;
 	}
 
 	public void setBluetoothDevice(BluetoothDevice bluetoothDevice) {
@@ -516,7 +521,9 @@ public class BLEManager {
 					BLEManager.this.error = error;
 					locker.notify();
 				} else {
+					logi("onConnectionStateChange() :: inBleOp != OP_CONNECT");
 					bleState = state;
+					unexpectedDisconnectionListener.handleConnectionEvent(bleState);
 				}
 			}
 		}
@@ -690,3 +697,4 @@ public class BLEManager {
 		*/
 	};
 }
+

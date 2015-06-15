@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.plugin.AlertPlugin;
+import com.samsung.microbit.plugin.BLEManager;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
 import com.samsung.microbit.ui.MainActivity;
@@ -46,19 +47,13 @@ public class BLEService extends BLEBaseService {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
 		int rc = super.onStartCommand(intent, flags, startId);
-
-		// Notify the called we have initialisd.
-		//ResultReceiver resultReceiver = (ResultReceiver) intent.getParcelableExtra("com.samsung.resultReceiver");
-		//resultReceiver.send(1, null);
-
-		if(connect() == 0) {
-			if(discoverServices() == 0) {
+		if (connect() == 0) {
+			if (discoverServices() == 0) {
 				registerNotifications(true);
 			}
 		}
 
 		connectWithServer();
-		//Toast.makeText(this, TAG + " Started", Toast.LENGTH_SHORT).show();
 		return rc;
 	}
 
@@ -122,6 +117,16 @@ public class BLEService extends BLEBaseService {
 
 		logi("onCharacteristicChanged value = " + value);
 		sendMessage(value);
+	}
+
+	@Override
+	protected void handleUnexpectedConnectionEvent(int event) {
+		logi("handleDisconnection() :: event = " + event);
+		if ((event & BLEManager.BLE_CONNECTED) != 0) {
+			logi("handleDisconnection() :: BLE_CONNECTED");
+		} else if (event == BLEManager.BLE_DISCONNECTED) {
+			logi("handleDisconnection() :: BLE_DISCONNECTED");
+		}
 	}
 
 	/*
