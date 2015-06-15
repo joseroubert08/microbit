@@ -5,11 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.RemoteException;
-import android.util.Log;
 import android.widget.Toast;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.samsung.microbit.activity.CameraActivity;
 import com.samsung.microbit.activity.CameraActivity_OldAPI;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.service.PluginService;
@@ -25,6 +23,7 @@ public class CameraPlugin {
     public static final int TAKE_PIC = 2;
     public static final int REC_VIDEO_START = 3;
     public static final int REC_VIDEO_STOP = 4;
+
 
     public static void pluginEntry(Context ctx, CmdArg cmd) {
 
@@ -71,27 +70,28 @@ public class CameraPlugin {
     private static void launchCameraForPic() {
         //TODO: remove Toast
         Toast.makeText(context, "Camera Activity Started", Toast.LENGTH_SHORT).show();
-        Intent mIntent = new Intent(context,CameraActivity_OldAPI.class);
+        Intent mIntent = new Intent(context, CameraActivity_OldAPI.class);
 //        Intent mIntent = new Intent(context,CameraActivity.class);
         mIntent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_PIC");
         mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(mIntent);
     }
 
-    private static void launchCameraForVideo() {
+	private static void takePic() {
+		//TODO: remove Toast
+		Toast.makeText(context, "Take Pic Start", Toast.LENGTH_SHORT).show();
+		Intent intent = new Intent("TAKE_PIC");
+		context.sendBroadcast(intent);
+	}
+
+	private static void launchCameraForVideo() {
         //TODO: remove Toast
         Toast.makeText(context, "Camera Activity Started", Toast.LENGTH_SHORT).show();
-        Intent mIntent = new Intent(context,CameraActivity.class);
+        Intent mIntent = new Intent(context, CameraActivity_OldAPI.class);
+//        Intent mIntent = new Intent(context,CameraActivity.class);
         mIntent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_VIDEO");
         mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(mIntent);
-    }
-
-    private static void takePic() {
-        //TODO: remove Toast
-        Toast.makeText(context, "Take Pic Start", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent("TAKE_PIC");
-        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
     private static void recVideoStart() {
