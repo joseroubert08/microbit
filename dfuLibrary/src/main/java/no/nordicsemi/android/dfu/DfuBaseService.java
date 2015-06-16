@@ -1339,10 +1339,7 @@ public abstract class DfuBaseService extends IntentService {
 		if (rc == 0) {
 			waitUntilDisconnected();
 
-			//sleep(2500);
 			refreshDeviceCache(gatt, true);
-			//sleep(2500);
-
 			mError = 0;
 			gattConnect(gatt);
 

@@ -122,6 +122,11 @@ public class BLEManager {
 			inBleOp = OP_NOOP;
 			callbackCompleted = false;
 
+			if (gatt != null) {
+				logi("reset() :: gatt != null");
+				gatt.close();
+			}
+
 			if (fullReset) {
 				gatt = null;
 			}
@@ -130,7 +135,7 @@ public class BLEManager {
 		}
 	}
 
-	public int connect() {
+	public int connect(boolean autoReconnect) {
 
 		logi("connect() :: start");
 		int rc = BLE_ERROR_NOOP;
@@ -143,7 +148,7 @@ public class BLEManager {
 
 				inBleOp = OP_CONNECT;
 				try {
-					gatt = bluetoothDevice.connectGatt(context, false, bluetoothGattCallback);
+					gatt = bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback);
 					if (gatt != null) {
 						error = 0;
 						locker.wait(BLE_WAIT_TIMEOUT);
@@ -303,6 +308,7 @@ public class BLEManager {
 				inBleOp = OP_NOOP;
 			}
 
+			logi("discoverServices() :: end : rc = " + rc);
 			return rc;
 		}
 	}
