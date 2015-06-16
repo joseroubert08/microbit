@@ -3,7 +3,6 @@ package com.samsung.microbit.ui;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.app.SearchManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -13,29 +12,27 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.ResultReceiver;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.model.PreferencesInteraction;
+import com.samsung.microbit.model.Utils;
+import com.samsung.microbit.plugin.BLEManager;
+import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.DfuService;
 import com.samsung.microbit.ui.fragment.FlashSectionFragment;
 
@@ -54,17 +51,16 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 	private static final int STATE_PHASE1_COMPLETE = 6;
 	private ImageAdapter imgAdapter;
 	private GridView devicesGridview = null;
+
 	private Button devicesButton = null;
 	private TextView pairingStatus = null;
 	private TextView pairingMessage = null;
+
 	final ArrayList<String> list = new ArrayList<String>();
 
 	private String deviceName = "";
 	private String deviceCode = "";
 
-	private static SharedPreferences preferences;
-	private static final String PREFERENCES_NAME_KEY = "PairedDeviceName";
-	private static final String PREFERENCES_ADDRESS_KEY = "PairedDeviceAddress";
 	private Handler mHandler;
 	private Runnable scanFailedCallback;
 	private boolean mScanning;
@@ -78,6 +74,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 	private Boolean use_existing_device;
 	private String existing_device_name;
 	private String existing_device_address;
+	private boolean isForFlashing;
 
 	protected String TAG = "LEDGridActivity";
 	protected boolean debug = true;
@@ -124,14 +121,21 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 
 		pairingStatus = (TextView) findViewById(R.id.connectingStatus);
 		pairingMessage = (TextView) findViewById(R.id.connectingMessage);
-		file_to_be_downloaded = getIntent().getStringExtra("download_file");
-		use_existing_device = getIntent().getBooleanExtra("use_existing_device", false);
-		existing_device_name = getIntent().getStringExtra("existing_device_name");
-		existing_device_address = getIntent().getStringExtra("existing_device_address");
-		pairingMessage.setText("Flashing program [" + file_to_be_downloaded + "]");
+
+		isForFlashing = getIntent().getBooleanExtra("isForFlashing", true);
+		if (isForFlashing) {
+			pairingStatus.setVisibility(View.VISIBLE);
+			use_existing_device = getIntent().getBooleanExtra("use_existing_device", false);
+			file_to_be_downloaded = getIntent().getStringExtra("download_file");
+			existing_device_name = getIntent().getStringExtra("existing_device_name");
+			existing_device_address = getIntent().getStringExtra("existing_device_address");
+			pairingMessage.setText("Flashing program [" + file_to_be_downloaded + "]");
+		} else {
+			pairingStatus.setVisibility(View.INVISIBLE);
+			pairingMessage.setText(R.string.pattern_to_pair);
+		}
 
 		mHandler = new Handler();
-
 		final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 		mBluetoothAdapter = bluetoothManager.getAdapter();
 
@@ -143,9 +147,13 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		}
 
 		getActionBar().setTitle("Find microbit");
-		if (use_existing_device == true) {
-			displayLEDGridView();
-			startFlashingExisting();
+		if (isForFlashing) {
+			if (use_existing_device == true) {
+				displayLEDGridView();
+				startFlashingExisting();
+			} else {
+				displayLEDGridView();
+			}
 		} else {
 			displayLEDGridView();
 		}
@@ -251,11 +259,8 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		logi("displayLEDGridView() :: Start");
 
 		imgAdapter = new ImageAdapter(this);
-		preferences = MBApp.getContext().getSharedPreferences("Microbit_PairedDevices", Context.MODE_PRIVATE);
-
 		devicesGridview = (GridView) findViewById(R.id.devicesLEDGridView);
 		devicesGridview.setAdapter(imgAdapter);
-
 		devicesGridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 				ImageView imageview = (ImageView) v;
@@ -266,8 +271,8 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 	}
 
 	private void displayLEDGridViewConnected() {
-		logi("displayLEDGridViewConnected() :: Start");
 
+		logi("displayLEDGridViewConnected() :: Start");
 		devicesGridview = (GridView) findViewById(R.id.devicesLEDGridView);
 		imgAdapter.displayTick();
 		devicesGridview.setAdapter(imgAdapter);
@@ -300,14 +305,25 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 	private void handle_pairing_failed() {
 
 		logi("handle_pairing_failed() :: Start");
-		SharedPreferences.Editor editor = preferences.edit();
-		String pairedDeviceName = preferences.getString(PREFERENCES_NAME_KEY, "None");
-		logi("handle_pairing_failed() :: PairedDevice" + pairedDeviceName);
-		if (!pairedDeviceName.equals("None")) {
-			// Edit the saved preferences
-			editor.remove(PREFERENCES_NAME_KEY);
-			editor.commit();
-		}
+
+		Utils.getInstance().preferencesInteraction(this, new PreferencesInteraction() {
+			@Override
+			public void interAct(SharedPreferences preferences) {
+
+				logi("handle_pairing_failed().interAct() :: ");
+				/*
+				SharedPreferences.Editor editor = preferences.edit();
+				String pairedDeviceName = preferences.getString(Utils.PREFERENCES_NAME_KEY, "None");
+				logi("handle_pairing_failed() :: PairedDevice" + pairedDeviceName);
+				if (!pairedDeviceName.equals("None")) {
+					// Edit the saved preferences
+					editor.remove(Utils.PREFERENCES_NAME_KEY);
+					editor.commit();
+				}
+				*/
+			}
+		});
+
 
 		final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
 		dialog.setIcon(R.drawable.ic_action_about);
@@ -329,46 +345,55 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 	private void handle_pairing_successful() {
 
 		logi("handle_pairing_successful() :: Start");
-
-
 		mHandler.post(new Runnable() {
+
+			String pairedDeviceName;
+
 			@Override
 			public void run() {
 
-				String pairedDeviceName = preferences.getString(PREFERENCES_NAME_KEY, "None");
+				Utils.getInstance().preferencesInteraction(LEDGridActivity.this, new PreferencesInteraction() {
+					@Override
+					public void interAct(SharedPreferences preferences) {
 
-				// Edit the saved preferences
-				if ((!pairedDeviceName.equals("None") && !pairedDeviceName.equals(deviceName))
-					|| (pairedDeviceName.equals("None"))) {
+						pairedDeviceName = preferences.getString(Utils.PREFERENCES_NAME_KEY, "None");
 
-					// TODO: Should we disconnect by calling removeBond from old BLE device??
-					SharedPreferences.Editor editor = preferences.edit();
-					editor.putString(PREFERENCES_NAME_KEY, deviceName);
-					editor.putString(PREFERENCES_ADDRESS_KEY, mSelectedDevice.getAddress());
-					editor.commit();
-				}
+						// Edit the saved preferences
+						if ((!pairedDeviceName.equals("None") && !pairedDeviceName.equals(deviceName))
+							|| (pairedDeviceName.equals("None"))) {
+
+							logi("handle_pairing_successful() :: Updating SharedPreferences");
+							// TODO: Should we disconnect by calling removeBond from old BLE device??
+
+							logi("handle_pairing_successful() :: deviceName = " + deviceName);
+							logi("handle_pairing_successful() :: mSelectedDevice.getAddress() " + mSelectedDevice.getAddress());
+
+							SharedPreferences.Editor editor = preferences.edit();
+							editor.putString(Utils.PREFERENCES_NAME_KEY, deviceName);
+							editor.putString(Utils.PREFERENCES_ADDRESS_KEY, mSelectedDevice.getAddress());
+							editor.commit();
+						}
+					}
+				});
+
 
 				pairingStatus.setText("micro:bit found");
 				pairingMessage.setText("Starting reprogramming");
 
 				devicesButton.setText("Connected to " + deviceName);
 				devicesButton.setEnabled(false);
-				startFlashing();
+				if (isForFlashing) {
+					startFlashing();
+				} else {
+					logi("handle_pairing_successful() :: sending intent to BLEService.class");
+					Intent intent = new Intent(LEDGridActivity.this, BLEService.class);
+					intent.putExtra("DEVICE_ACTIVITY", "PAIRED");
+					startService(intent);
+					finish();
+				}
+
 			}
 		});
-
-
-		/*
-		final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-		dialog.setIcon(R.drawable.ic_action_about);
-		dialog.setTitle("micro:bit found")
-			.setMessage(getString(R.string.pairing_success_message_1))
-			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialoginterface, int i) {
-					startFlashing();
-				}
-			}).show();
-		*/
 	}
 
 	private volatile boolean deviceFound = false;
@@ -433,8 +458,8 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 				logi("mLeScanCallback.onLeScan() ::   Cannot Compare");
 			} else {
 				String s = device.getName().toLowerCase();
-				if (deviceName.toLowerCase().equals(s)) {
-					//  || (s.contains(deviceCode) && s.contains("microbit"))
+				if (deviceName.toLowerCase().equals(s)
+					|| (s.contains(deviceCode.toLowerCase()) && s.contains("microbit"))) {
 
 					logi("mLeScanCallback.onLeScan() ::   deviceName == " + deviceName.toLowerCase());
 					logi("mLeScanCallback.onLeScan() ::   device.getName() == " + device.getName().toLowerCase());
@@ -448,7 +473,6 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 
 					//DO BLUETOOTHY THINGS HERE!!!!
 					logi("mLeScanCallback.onLeScan() ::   Matching DEVICE FOUND, Pairing");
-					int bondState = device.getBondState();
 					mSelectedDevice = device;
 					handle_pairing_successful();
 				} else {
@@ -483,10 +507,8 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		//service.putExtra(DfuService.EXTRA_INIT_FILE_PATH, mInitFilePath);
 		//service.putExtra(DfuService.EXTRA_INIT_FILE_URI, mInitFileStreamUri);
 		service.putExtra(DfuService.EXTRA_KEEP_BOND, false);
-
 		service.putExtra("com.samsung.resultReceiver", resultReceiver);
 		service.putExtra("com.samsung.runonly.phase", 1);
-
 		startService(service);
 	}
 
@@ -501,16 +523,15 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		service.putExtra(DfuService.EXTRA_FILE_MIME_TYPE, DfuService.MIME_TYPE_OCTET_STREAM);
 		//service.putExtra(DfuService.EXTRA_FILE_TYPE, mFileType);
 		service.putExtra(DfuService.EXTRA_FILE_PATH, FlashSectionFragment.BINARY_FILE_NAME); // a path or URI must be provided.
+
 		//service.putExtra(DfuService.EXTRA_FILE_URI, mFileStreamUri);
 		// Init packet is required by Bootloader/DFU from SDK 7.0+ if HEX or BIN file is given above.
 		// In case of a ZIP file, the init packet (a DAT file) must be included inside the ZIP file.
 		//service.putExtra(DfuService.EXTRA_INIT_FILE_PATH, mInitFilePath);
 		//service.putExtra(DfuService.EXTRA_INIT_FILE_URI, mInitFileStreamUri);
 		service.putExtra(DfuService.EXTRA_KEEP_BOND, false);
-
 		service.putExtra("com.samsung.resultReceiver", resultReceiver);
 		service.putExtra("com.samsung.runonly.phase", 1);
-
 		startService(service);
 	}
 

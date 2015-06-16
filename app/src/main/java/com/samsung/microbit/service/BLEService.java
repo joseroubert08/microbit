@@ -1,5 +1,7 @@
 package com.samsung.microbit.service;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
@@ -8,6 +10,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,14 +19,20 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
+import com.samsung.microbit.model.PreferencesInteraction;
+import com.samsung.microbit.model.Utils;
 import com.samsung.microbit.plugin.AlertPlugin;
 import com.samsung.microbit.plugin.BLEManager;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
+import com.samsung.microbit.ui.DevicePairingActivity;
+import com.samsung.microbit.ui.LEDGridActivity;
 import com.samsung.microbit.ui.MainActivity;
 
 import java.util.UUID;
@@ -43,17 +52,65 @@ public class BLEService extends BLEBaseService {
 	protected String TAG = "BLEService";
 	protected boolean debug = true;
 
+	NotificationManager notifyMgr;
+	int notificationId = 1010;
+
+	protected String getDeviceAddress() {
+
+		logi("getDeviceAddress()");
+		final String[] pairedDeviceName = new String[1];
+		Utils.getInstance().preferencesInteraction(this, new PreferencesInteraction() {
+			@Override
+			public void interAct(SharedPreferences preferences) {
+				String s = preferences.getString(Utils.PREFERENCES_ADDRESS_KEY, null);
+				logi("getDeviceAddress() :: s = " + s);
+				pairedDeviceName[0] = s;
+			}
+		});
+
+		if (pairedDeviceName[0] == null) {
+			setNotification(true);
+		}
+
+		return pairedDeviceName[0];
+	}
+
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
+		logi("onStartCommand()");
+		boolean success = true;
 		int rc = super.onStartCommand(intent, flags, startId);
 		if (connect() == 0) {
+			logi("onStartCommand() :: connect() == 0");
 			if (discoverServices() == 0) {
-				registerNotifications(true);
+
+				logi("onStartCommand() :: discoverServices() == 0");
+				if (registerNotifications(true)) {
+					setNotification(false);
+				} else {
+					success = false;
+				}
+			} else {
+				success = false;
+				logi("onStartCommand() :: discoverServices() != 0");
+			}
+		} else {
+			success = false;
+		}
+
+		if (success) {
+			if (serviceConnectionPluginService == null) {
+				logi("onStartCommand() :: serviceConnectionPluginService == null");
+				connectWithServer();
+			}
+		} else {
+			if (bleManager != null) {
+				bleManager.reset(true);
 			}
 		}
 
-		connectWithServer();
+
 		return rc;
 	}
 
@@ -62,21 +119,22 @@ public class BLEService extends BLEBaseService {
 		Log.i(TAG, "onDestroy called");
 	}
 
-	public void registerNotifications(boolean enable) {
+	public boolean registerNotifications(boolean enable) {
 
+		logi("registerNotifications()");
 		BluetoothGattService button1s = getService(BUTTON_1_SERVICE);
 		if (button1s == null) {
-			return;
+			return false;
 		}
 
 		BluetoothGattCharacteristic button1c = button1s.getCharacteristic(BUTTON_1_CHARACTERISTIC);
 		if (button1c == null) {
-			return;
+			return false;
 		}
 
 		BluetoothGattDescriptor button1d = button1c.getDescriptor(CALLBACK_DESCRIPTOR);
 		if (button1d == null) {
-			return;
+			return false;
 		}
 
 		enableCharacteristicNotification(button1c, button1d, enable);
@@ -84,20 +142,22 @@ public class BLEService extends BLEBaseService {
 
 		BluetoothGattService button2s = getService(BUTTON_2_SERVICE);
 		if (button2s == null) {
-			return;
+			return false;
 		}
 
 		BluetoothGattCharacteristic button2c = button2s.getCharacteristic(BUTTON_2_CHARACTERISTIC);
 		if (button2c == null) {
-			return;
+			return false;
 		}
 
 		BluetoothGattDescriptor button2d = button2c.getDescriptor(CALLBACK_DESCRIPTOR);
 		if (button2d == null) {
-			return;
+			return false;
 		}
 
 		enableCharacteristicNotification(button2c, button2d, enable);
+		logi("registerNotifications() : done");
+		return true;
 	}
 
 	@Override
@@ -107,7 +167,6 @@ public class BLEService extends BLEBaseService {
 		if (value == 0) {
 			return;
 		}
-
 
 		// Bit 5 (1)==button down (0)==button up
 		// bit 6 (1)==button 2.
@@ -121,29 +180,47 @@ public class BLEService extends BLEBaseService {
 
 	@Override
 	protected void handleUnexpectedConnectionEvent(int event) {
+
 		logi("handleDisconnection() :: event = " + event);
 		if ((event & BLEManager.BLE_CONNECTED) != 0) {
-			logi("handleDisconnection() :: BLE_CONNECTED");
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					logi("handleDisconnection() :: BLE_CONNECTED");
+					discoverServices();
+					registerNotifications(true);
+					setNotification(false);
+				}
+			}).start();
+
 		} else if (event == BLEManager.BLE_DISCONNECTED) {
 			logi("handleDisconnection() :: BLE_DISCONNECTED");
+			setNotification(true);
 		}
 	}
 
-	/*
-	private void sendMessage(int buttonNumber) {
+	private void setNotification(boolean enable) {
 
-		Log.i(TAG, "sendMessage");
-		final Intent intent = new Intent();
-		intent.setAction(MESSAGE_NAME);
-		intent.putExtra("buttonPressed", buttonNumber);
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-			}
-		}).start();
+		logi("setNotification() :: enable = " + enable);
+		NotificationManager notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		int notificationId = 001;
+		if (enable) {
+			NotificationCompat.Builder mBuilder =
+				new NotificationCompat.Builder(this)
+					.setSmallIcon(R.drawable.un_connected)
+					.setContentTitle("Micro:bit companion")
+					.setContentText("No micro:bit connected");
+
+			Intent resultIntent = new Intent(this, LEDGridActivity.class);
+			resultIntent.putExtra("isForFlashing", false);
+			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			mBuilder.setContentIntent(resultPendingIntent);
+
+			notifyMgr.notify(notificationId, mBuilder.build());
+		} else {
+			notifyMgr.cancel(notificationId);
+		}
 	}
-	*/
 
 	@Override
 	public IBinder onBind(Intent intent) {
