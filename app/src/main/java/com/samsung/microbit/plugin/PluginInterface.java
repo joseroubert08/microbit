@@ -100,6 +100,9 @@ public class PluginInterface  extends CordovaPlugin {
             case PluginService.CAMERA:
                 CameraPlugin.pluginEntry(webView.getContext(), new CmdArg(action, value));
                 break;
+            case PluginService.FILE:
+                FilePlugin.pluginEntry(webView.getContext(), new CmdArg(action, value));
+                break;
         }
         //execute result callback if specified in JS side
         if (callbackContext != null) {

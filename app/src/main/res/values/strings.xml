@@ -86,5 +86,12 @@
     <string name="title_activity_about_us">about_us</string>
     <string name="back_button">Take me Back</string>
     <string name="about_us"> That\'s All !! Happy Coding </string>
+
+    <!-- Alert plugin -->
+    <string name="vibrating_via_microbit">Vibrating via Microbit!</string>
+    <string name="findphone_via_microbit">Find my phone alert via Microbit!</string>
+    <string name="ringtone_via_microbit">Playing ringtone via Microbit!</string>
+    <string name="sound_via_microbit">Playing sound via Microbit!</string>
+    <string name="alert">Alert...</string>
     
 </resources>
