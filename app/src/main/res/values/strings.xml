@@ -86,5 +86,9 @@
     <string name="title_activity_about_us">about_us</string>
     <string name="back_button">Take me Back</string>
     <string name="about_us"> That\'s All !! Happy Coding </string>
+    <string name="title_activity_launcher">LauncherActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
     
 </resources>
