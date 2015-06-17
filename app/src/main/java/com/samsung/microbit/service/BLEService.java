@@ -21,7 +21,6 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
@@ -31,7 +30,6 @@ import com.samsung.microbit.plugin.AlertPlugin;
 import com.samsung.microbit.plugin.BLEManager;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
-import com.samsung.microbit.ui.DevicePairingActivity;
 import com.samsung.microbit.ui.LEDGridActivity;
 import com.samsung.microbit.ui.MainActivity;
 
@@ -55,6 +53,19 @@ public class BLEService extends BLEBaseService {
 	NotificationManager notifyMgr;
 	int notificationId = 1010;
 
+	@Override
+	public IBinder onBind(Intent intent) {
+		return mBinder;
+	}
+
+	private final IBinder mBinder = new LocalBinder();
+
+	public class LocalBinder extends Binder {
+		public BLEService getService() {
+			return BLEService.this;
+		}
+	}
+
 	protected String getDeviceAddress() {
 
 		logi("getDeviceAddress()");
@@ -75,17 +86,15 @@ public class BLEService extends BLEBaseService {
 		return pairedDeviceName[0];
 	}
 
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
+	protected void startupConnection() {
 
-		logi("onStartCommand()");
+		logi("startupConnection()");
 		boolean success = true;
-		int rc = super.onStartCommand(intent, flags, startId);
 		if (connect() == 0) {
-			logi("onStartCommand() :: connect() == 0");
+			logi("startupConnection() :: connect() == 0");
 			if (discoverServices() == 0) {
 
-				logi("onStartCommand() :: discoverServices() == 0");
+				logi("startupConnection() :: discoverServices() == 0");
 				if (registerNotifications(true)) {
 					setNotification(false);
 				} else {
@@ -93,7 +102,7 @@ public class BLEService extends BLEBaseService {
 				}
 			} else {
 				success = false;
-				logi("onStartCommand() :: discoverServices() != 0");
+				logi("startupConnection() :: discoverServices() != 0");
 			}
 		} else {
 			success = false;
@@ -101,7 +110,7 @@ public class BLEService extends BLEBaseService {
 
 		if (success) {
 			if (serviceConnectionPluginService == null) {
-				logi("onStartCommand() :: serviceConnectionPluginService == null");
+				logi("startupConnection() :: serviceConnectionPluginService == null");
 				connectWithServer();
 			}
 		} else {
@@ -110,8 +119,7 @@ public class BLEService extends BLEBaseService {
 			}
 		}
 
-
-		return rc;
+		logi("startupConnection() :: end");
 	}
 
 	@Override
@@ -211,27 +219,13 @@ public class BLEService extends BLEBaseService {
 					.setContentTitle("Micro:bit companion")
 					.setContentText("No micro:bit connected");
 
-			Intent resultIntent = new Intent(this, LEDGridActivity.class);
-			resultIntent.putExtra("isForFlashing", false);
-			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			Intent intent = new Intent(this, LEDGridActivity.class);
+			intent.putExtra(LEDGridActivity.INTENT_IS_FOR_FLASHING, false);
+			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			mBuilder.setContentIntent(resultPendingIntent);
-
 			notifyMgr.notify(notificationId, mBuilder.build());
 		} else {
 			notifyMgr.cancel(notificationId);
-		}
-	}
-
-	@Override
-	public IBinder onBind(Intent intent) {
-		return mBinder;
-	}
-
-	private final IBinder mBinder = new LocalBinder();
-
-	public class LocalBinder extends Binder {
-		public BLEService getService() {
-			return BLEService.this;
 		}
 	}
 
@@ -328,7 +322,7 @@ public class BLEService extends BLEBaseService {
 		};
 
 		Intent mIntent = new Intent();
-		mIntent.setAction("com.samsung.microbit.service.PluginService");
+		mIntent.setAction(PluginService.class.getName());
 		mIntent = MainActivity.createExplicitFromImplicitIntent(getApplicationContext(), mIntent);
 		bindService(mIntent, serviceConnectionPluginService, Context.BIND_AUTO_CREATE);
 	}
@@ -337,8 +331,8 @@ public class BLEService extends BLEBaseService {
 		if (messengerPluginService != null) {
 			Message msg = Message.obtain(null, mbsService);
 			Bundle bundle = new Bundle();
-			bundle.putInt("cmd", cmd.getCMD());
-			bundle.putString("value", cmd.getValue());
+			bundle.putInt(PluginService.BUNDLE_DATA, cmd.getCMD());
+			bundle.putString(PluginService.BUNDLE_VALUE, cmd.getValue());
 			msg.setData(bundle);
 			msg.replyTo = mClientMessenger;
 			try {

@@ -190,7 +190,6 @@ public class BLEManager {
 		return rc;
 	}
 
-
 	private int gattConnect() {
 
 		logi("gattConnect() :: start");
@@ -480,8 +479,7 @@ public class BLEManager {
 		@Override
 		public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
 
-			logi("BluetoothGattCallback.onConnectionStateChange() :: start status = " + status + " newState = " + newState);
-			//super.onConnectionStateChange(gatt, status, newState);
+			super.onConnectionStateChange(gatt, status, newState);
 
 			int state;
 			int error = 0;
@@ -497,9 +495,11 @@ public class BLEManager {
 			}
 
 			synchronized (locker) {
+				logi("BluetoothGattCallback.onConnectionStateChange() :: start : status = " + status + " newState = " + newState);
 
 				if (inBleOp == OP_CONNECT) {
 
+					logi("BluetoothGattCallback.onConnectionStateChange() :: inBleOp == OP_CONNECT");
 					if (state != (bleState & BLE_CONNECTED)) {
 						bleState = state;
 					}
@@ -512,17 +512,22 @@ public class BLEManager {
 					bleState = state;
 					unexpectedDisconnectionListener.handleConnectionEvent(bleState);
 				}
+
+				logi("BluetoothGattCallback.onConnectionStateChange() :: end");
 			}
+
 		}
 
 		@Override
 		public void onServicesDiscovered(BluetoothGatt gatt, int status) {
 
-			logi("BluetoothGattCallback.onServicesDiscovered() :: start : status = " + status);
-			//super.onServicesDiscovered(gatt, status);
+			super.onServicesDiscovered(gatt, status);
 			int state = BLE_SERVICES_DISCOVERED;
 			synchronized (locker) {
+				logi("BluetoothGattCallback.onServicesDiscovered() :: start : status = " + status);
+
 				if (inBleOp == OP_DISCOVER_SERVICES) {
+					logi("BluetoothGattCallback.onServicesDiscovered() :: inBleOp == OP_DISCOVER_SERVICES");
 					if (status == BluetoothGatt.GATT_SUCCESS) {
 						bleState |= state;
 
@@ -533,16 +538,20 @@ public class BLEManager {
 					callbackCompleted = true;
 					locker.notify();
 				}
+
+				logi("BluetoothGattCallback.onServicesDiscovered() :: end");
 			}
 		}
 
 		@Override
 		public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
 
-			logi("BluetoothGattCallback.onCharacteristicRead() :: start : status = " + status);
-			//super.onCharacteristicRead(gatt, characteristic, status);
+			super.onCharacteristicRead(gatt, characteristic, status);
 			synchronized (locker) {
+				logi("BluetoothGattCallback.onCharacteristicRead() :: start : status = " + status);
+
 				if (inBleOp == OP_READ_CHARACTERISTIC) {
+					logi("BluetoothGattCallback.onCharacteristicRead() :: inBleOp == OP_READ_CHARACTERISTIC");
 					if (status == BluetoothGatt.GATT_SUCCESS) {
 						error = BLE_ERROR_OK;
 					} else {
@@ -553,16 +562,20 @@ public class BLEManager {
 					callbackCompleted = true;
 					locker.notify();
 				}
+
+				logi("BluetoothGattCallback.onCharacteristicRead() :: end");
 			}
 		}
 
 		@Override
 		public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
 
-			logi("BluetoothGattCallback.onCharacteristicWrite() :: start : status = " + status);
-			//super.onCharacteristicWrite(gatt, characteristic, status);
+			super.onCharacteristicWrite(gatt, characteristic, status);
 			synchronized (locker) {
+				logi("BluetoothGattCallback.onCharacteristicWrite() :: start : status = " + status);
+
 				if (inBleOp == OP_WRITE_CHARACTERISTIC) {
+					logi("BluetoothGattCallback.onCharacteristicWrite() :: inBleOp == OP_WRITE_CHARACTERISTIC");
 					if (status == BluetoothGatt.GATT_SUCCESS) {
 						error = BLE_ERROR_OK;
 					} else {
@@ -573,6 +586,8 @@ public class BLEManager {
 					callbackCompleted = true;
 					locker.notify();
 				}
+
+				logi("BluetoothGattCallback.onCharacteristicWrite() :: end");
 			}
 		}
 
@@ -582,15 +597,18 @@ public class BLEManager {
 			logi("BluetoothGattCallback.onCharacteristicChanged() :: start");
 			super.onCharacteristicChanged(gatt, characteristic);
 			characteristicChangeListener.onCharacteristicChanged(gatt, characteristic);
+			logi("BluetoothGattCallback.onCharacteristicChanged() :: end");
 		}
 
 		@Override
 		public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
 
-			logi("BluetoothGattCallback.onDescriptorRead() :: start : status = " + status);
-			//super.onDescriptorRead(gatt, descriptor, status);
+			super.onDescriptorRead(gatt, descriptor, status);
 			synchronized (locker) {
+				logi("BluetoothGattCallback.onDescriptorRead() :: start : status = " + status);
+
 				if (inBleOp == OP_READ_DESCRIPTOR) {
+					logi("BluetoothGattCallback.onDescriptorRead() :: inBleOp == OP_READ_DESCRIPTOR");
 					if (status == BluetoothGatt.GATT_SUCCESS) {
 						error = BLE_ERROR_OK;
 					} else {
@@ -601,16 +619,20 @@ public class BLEManager {
 					callbackCompleted = true;
 					locker.notify();
 				}
+
+				logi("BluetoothGattCallback.onDescriptorRead() :: end");
 			}
 		}
 
 		@Override
 		public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
 
-			logi("BluetoothGattCallback.onDescriptorWrite() :: start : status = " + status);
-			//super.onDescriptorWrite(gatt, descriptor, status);
+			super.onDescriptorWrite(gatt, descriptor, status);
 			synchronized (locker) {
+				logi("BluetoothGattCallback.onDescriptorWrite() :: start : status = " + status);
+
 				if (inBleOp == OP_WRITE_DESCRIPTOR) {
+					logi("BluetoothGattCallback.onDescriptorWrite() :: inBleOp == OP_WRITE_DESCRIPTOR");
 					if (status == BluetoothGatt.GATT_SUCCESS) {
 						error = BLE_ERROR_OK;
 					} else {
@@ -621,16 +643,17 @@ public class BLEManager {
 					callbackCompleted = true;
 					locker.notify();
 				}
+
+				logi("BluetoothGattCallback.onDescriptorWrite() :: end");
 			}
 		}
 
-		/*
 		@Override
 		public void onReliableWriteCompleted(BluetoothGatt gatt, int status) {
 
-			logi("BluetoothGattCallback.onReliableWriteCompleted() :: start");
-			//super.onReliableWriteCompleted(gatt, status);
+			super.onReliableWriteCompleted(gatt, status);
 			synchronized (locker) {
+				logi("BluetoothGattCallback.onReliableWriteCompleted() :: start");
 
 				if (status == BluetoothGatt.GATT_SUCCESS) {
 					error = BLE_ERROR_OK;
@@ -640,18 +663,20 @@ public class BLEManager {
 
 				callbackCompleted = true;
 				locker.notify();
+
+				logi("BluetoothGattCallback.onReliableWriteCompleted() :: end");
 			}
 		}
-		*/
 
-		/*
 		@Override
 		public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
 
-			logi("BluetoothGattCallback.onReadRemoteRssi() :: start");
-			//super.onReadRemoteRssi(gatt, rssi, status);
+			super.onReadRemoteRssi(gatt, rssi, status);
 			synchronized (locker) {
+				logi("BluetoothGattCallback.onReadRemoteRssi() :: start");
+
 				if (inBleOp == OP_READ_REMOTE_RSSI) {
+					logi("BluetoothGattCallback.onReadRemoteRssi() :: inBleOp == OP_READ_REMOTE_RSSI");
 					if (status == BluetoothGatt.GATT_SUCCESS) {
 						error = BLE_ERROR_OK;
 					} else {
@@ -662,25 +687,27 @@ public class BLEManager {
 					callbackCompleted = true;
 					locker.notify();
 				}
+
+				logi("BluetoothGattCallback.onMtuChanged() :: end");
 			}
 		}
-		*/
 
-		/*
 		@Override
 		public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
 
-			logi("BluetoothGattCallback.onMtuChanged() :: start");
-			//super.onMtuChanged(gatt, mtu, status);
+			super.onMtuChanged(gatt, mtu, status);
 			synchronized (locker) {
+				logi("BluetoothGattCallback.onMtuChanged() :: start");
+
 				if (status == BluetoothGatt.GATT_SUCCESS) {
 					error = BLE_ERROR_OK;
 				} else {
 					error = BLE_ERROR_FAIL;
 				}
+
+				logi("BluetoothGattCallback.onMtuChanged() :: end");
 			}
 		}
-		*/
 	};
 }
 
