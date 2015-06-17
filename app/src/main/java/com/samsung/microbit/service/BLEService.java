@@ -28,6 +28,7 @@ import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.PreferencesInteraction;
 import com.samsung.microbit.model.Utils;
 import com.samsung.microbit.plugin.AlertPlugin;
+import com.samsung.microbit.plugin.AudioPlugin;
 import com.samsung.microbit.plugin.BLEManager;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
@@ -258,6 +259,9 @@ public class BLEService extends BLEBaseService {
 		Log.i(TAG, "### uBit Button detected for button = " + buttonPressed);
 		int msgService = PluginService.ALERT;
 		CmdArg cmd = null;
+		//convention
+		//0x1X: button 1 pressed on nordic, where X is the program id
+		//0x3X: button 2 pressed on nordic, where X is the program id
 		switch (buttonPressed) {
 			case 0x011:
 				msgService = PluginService.REMOTE_CONTROL;
@@ -270,7 +274,10 @@ public class BLEService extends BLEBaseService {
 				cmd = new CmdArg(CameraPlugin.LAUNCH_CAMERA_FOR_PIC, "");
 				break;
 
-			case 0x014:
+			case 0x014://Audio demo: button '1' used for launching audio activity
+				msgService = PluginService.AUDIO;
+				cmd = new CmdArg(AudioPlugin.LAUNCH, "");
+				break;
 			case 0x018:
 				cmd = new CmdArg(AlertPlugin.FINDPHONE, "");
 				break;
@@ -285,7 +292,11 @@ public class BLEService extends BLEBaseService {
 				cmd = new CmdArg(CameraPlugin.TAKE_PIC, "");
 				break;
 
-			case 0x034:
+			case 0x034://Audio demo: button '2' used for start/stop recording
+				msgService = PluginService.AUDIO;
+				cmd = new CmdArg(AudioPlugin.TOOGLE_RECORD, "");
+				break;
+
 			case 0x038:
 				cmd = new CmdArg(AlertPlugin.VIBRATE, "500");
 				break;
