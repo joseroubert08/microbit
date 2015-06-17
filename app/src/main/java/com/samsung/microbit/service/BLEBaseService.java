@@ -76,7 +76,11 @@ public abstract class BLEBaseService extends Service {
 
 		logi("onStartCommand()");
 
-		boolean resetBleGatt = intent.getBooleanExtra(INTENT_RESET_BLE_GATT, false);
+		boolean resetBleGatt = (bleManager != null);
+		if (intent != null) {
+			resetBleGatt = intent.getBooleanExtra(INTENT_RESET_BLE_GATT, false);
+		}
+
 		if (!resetBleGatt) {
 			this.deviceAddress = getDeviceAddress();
 			logi("onStartCommand() :: deviceAddress = " + deviceAddress);
@@ -85,8 +89,10 @@ public abstract class BLEBaseService extends Service {
 				startupConnection();
 			}
 		} else {
-			bleManager.reset(true);
-			bleManager = null;
+			if (bleManager != null) {
+				bleManager.reset(true);
+				bleManager = null;
+			}
 		}
 
 		logi("onStartCommand() :: end");
