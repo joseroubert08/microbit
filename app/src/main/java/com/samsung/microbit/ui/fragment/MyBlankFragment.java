@@ -45,6 +45,8 @@ public class MyBlankFragment extends Fragment {
 	private boolean debug = false;
 	private boolean mIsRemoteControlPlay = false;
 
+	private BroadcastReceiver btnReceiver;
+
 	void logi(String message) {
 		if (debug) {
 			Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
@@ -71,8 +73,6 @@ public class MyBlankFragment extends Fragment {
 		logi("MyBlankFragment()");
 	}
 
-	BroadcastReceiver btnReceiver;
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -86,7 +86,7 @@ public class MyBlankFragment extends Fragment {
 						return;
 					}
 
-					if((buttonPressed  & 0x010) == 0) {
+					if ((buttonPressed & 0x010) == 0) {
 						return;
 					}
 
@@ -158,10 +158,6 @@ public class MyBlankFragment extends Fragment {
 	public void onDestroy() {
 		doUnbindService();
 		super.onDestroy();
-
-		//if (updateReceiver != null) {
-		//	getActivity().unregisterReceiver(updateReceiver);
-		//}
 	}
 
 	void initButtonClicked() {
@@ -213,6 +209,7 @@ public class MyBlankFragment extends Fragment {
 	}
 
 	void runTestCodeButton() {
+		// just a test method for blank fragment to call
 		logi("runTestCodeButton() :: start");
 
 		runTestCodeButton.setEnabled(false);

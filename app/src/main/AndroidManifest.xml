@@ -91,6 +91,20 @@
 				android:value="com.samsung.microbit.ui.DeviceScanActivity"/>
 		</activity>
 		<activity
+			android:name=".ui.AudioRecorderActivity"
+			android:theme="@android:style/Theme.Holo"
+			android:label="Audio Recorder">
+			<intent-filter>
+				<action android:name="com.samsung.microbit.ui.AudioRecorderActivity.action.LAUNCH"/>
+			</intent-filter>
+			<intent-filter>
+				<action android:name="com.samsung.microbit.ui.AudioRecorderActivity.action.START_RECORD"/>
+			</intent-filter>
+			<intent-filter>
+				<action android:name="com.samsung.microbit.ui.AudioRecorderActivity.action.STOP_RECORD"/>
+			</intent-filter>
+		</activity>
+		<activity
 			android:name=".activity.CameraActivity_OldAPI"
 			android:label="Camera Microbit"
 			android:screenOrientation="portrait"

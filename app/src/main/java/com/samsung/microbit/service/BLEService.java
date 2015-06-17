@@ -21,17 +21,16 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.PreferencesInteraction;
 import com.samsung.microbit.model.Utils;
 import com.samsung.microbit.plugin.AlertPlugin;
+import com.samsung.microbit.plugin.AudioPlugin;
 import com.samsung.microbit.plugin.BLEManager;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
-import com.samsung.microbit.ui.DevicePairingActivity;
 import com.samsung.microbit.ui.LEDGridActivity;
 import com.samsung.microbit.ui.MainActivity;
 
@@ -55,6 +54,19 @@ public class BLEService extends BLEBaseService {
 	NotificationManager notifyMgr;
 	int notificationId = 1010;
 
+	@Override
+	public IBinder onBind(Intent intent) {
+		return mBinder;
+	}
+
+	private final IBinder mBinder = new LocalBinder();
+
+	public class LocalBinder extends Binder {
+		public BLEService getService() {
+			return BLEService.this;
+		}
+	}
+
 	protected String getDeviceAddress() {
 
 		logi("getDeviceAddress()");
@@ -75,17 +87,15 @@ public class BLEService extends BLEBaseService {
 		return pairedDeviceName[0];
 	}
 
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
+	protected void startupConnection() {
 
-		logi("onStartCommand()");
+		logi("startupConnection()");
 		boolean success = true;
-		int rc = super.onStartCommand(intent, flags, startId);
 		if (connect() == 0) {
-			logi("onStartCommand() :: connect() == 0");
+			logi("startupConnection() :: connect() == 0");
 			if (discoverServices() == 0) {
 
-				logi("onStartCommand() :: discoverServices() == 0");
+				logi("startupConnection() :: discoverServices() == 0");
 				if (registerNotifications(true)) {
 					setNotification(false);
 				} else {
@@ -93,7 +103,7 @@ public class BLEService extends BLEBaseService {
 				}
 			} else {
 				success = false;
-				logi("onStartCommand() :: discoverServices() != 0");
+				logi("startupConnection() :: discoverServices() != 0");
 			}
 		} else {
 			success = false;
@@ -101,7 +111,7 @@ public class BLEService extends BLEBaseService {
 
 		if (success) {
 			if (serviceConnectionPluginService == null) {
-				logi("onStartCommand() :: serviceConnectionPluginService == null");
+				logi("startupConnection() :: serviceConnectionPluginService == null");
 				connectWithServer();
 			}
 		} else {
@@ -110,8 +120,7 @@ public class BLEService extends BLEBaseService {
 			}
 		}
 
-
-		return rc;
+		logi("startupConnection() :: end");
 	}
 
 	@Override
@@ -211,27 +220,13 @@ public class BLEService extends BLEBaseService {
 					.setContentTitle("Micro:bit companion")
 					.setContentText("No micro:bit connected");
 
-			Intent resultIntent = new Intent(this, LEDGridActivity.class);
-			resultIntent.putExtra("isForFlashing", false);
-			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			Intent intent = new Intent(this, LEDGridActivity.class);
+			intent.putExtra(LEDGridActivity.INTENT_IS_FOR_FLASHING, false);
+			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			mBuilder.setContentIntent(resultPendingIntent);
-
 			notifyMgr.notify(notificationId, mBuilder.build());
 		} else {
 			notifyMgr.cancel(notificationId);
-		}
-	}
-
-	@Override
-	public IBinder onBind(Intent intent) {
-		return mBinder;
-	}
-
-	private final IBinder mBinder = new LocalBinder();
-
-	public class LocalBinder extends Binder {
-		public BLEService getService() {
-			return BLEService.this;
 		}
 	}
 
@@ -258,6 +253,9 @@ public class BLEService extends BLEBaseService {
 		Log.i(TAG, "### uBit Button detected for button = " + buttonPressed);
 		int msgService = PluginService.ALERT;
 		CmdArg cmd = null;
+		//convention
+		//0x1X: button 1 pressed on nordic, where X is the program id
+		//0x3X: button 2 pressed on nordic, where X is the program id
 		switch (buttonPressed) {
 			case 0x011:
 				msgService = PluginService.REMOTE_CONTROL;
@@ -270,7 +268,10 @@ public class BLEService extends BLEBaseService {
 				cmd = new CmdArg(CameraPlugin.LAUNCH_CAMERA_FOR_PIC, "");
 				break;
 
-			case 0x014:
+			case 0x014://Audio demo: button '1' used for launching audio activity
+				msgService = PluginService.AUDIO;
+				cmd = new CmdArg(AudioPlugin.LAUNCH, "");
+				break;
 			case 0x018:
 				cmd = new CmdArg(AlertPlugin.FINDPHONE, "");
 				break;
@@ -285,7 +286,11 @@ public class BLEService extends BLEBaseService {
 				cmd = new CmdArg(CameraPlugin.TAKE_PIC, "");
 				break;
 
-			case 0x034:
+			case 0x034://Audio demo: button '2' used for start/stop recording
+				msgService = PluginService.AUDIO;
+				cmd = new CmdArg(AudioPlugin.TOOGLE_RECORD, "");
+				break;
+
 			case 0x038:
 				cmd = new CmdArg(AlertPlugin.VIBRATE, "500");
 				break;
@@ -328,7 +333,7 @@ public class BLEService extends BLEBaseService {
 		};
 
 		Intent mIntent = new Intent();
-		mIntent.setAction("com.samsung.microbit.service.PluginService");
+		mIntent.setAction(PluginService.class.getName());
 		mIntent = MainActivity.createExplicitFromImplicitIntent(getApplicationContext(), mIntent);
 		bindService(mIntent, serviceConnectionPluginService, Context.BIND_AUTO_CREATE);
 	}
@@ -337,8 +342,8 @@ public class BLEService extends BLEBaseService {
 		if (messengerPluginService != null) {
 			Message msg = Message.obtain(null, mbsService);
 			Bundle bundle = new Bundle();
-			bundle.putInt("cmd", cmd.getCMD());
-			bundle.putString("value", cmd.getValue());
+			bundle.putInt(PluginService.BUNDLE_DATA, cmd.getCMD());
+			bundle.putString(PluginService.BUNDLE_VALUE, cmd.getValue());
 			msg.setData(bundle);
 			msg.replyTo = mClientMessenger;
 			try {

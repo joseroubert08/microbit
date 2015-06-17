@@ -26,6 +26,10 @@ import com.samsung.microbit.plugin.CameraPlugin;
  */
 public class PluginService extends Service {
 
+	public static final String BUNDLE_DATA = "data";
+	public static final String BUNDLE_VALUE = "value";
+
+
 	static final String TAG = "PluginService";
 	private boolean debug = false;
 
@@ -58,10 +62,10 @@ public class PluginService extends Service {
 			logi("handleMessage()");
 			Bundle data = msg.getData();
 			mClientMessenger = msg.replyTo;
-			CmdArg cmd = new CmdArg(data.getInt("cmd"), data.getString("value"));
+			CmdArg cmd = new CmdArg(data.getInt(BUNDLE_DATA), data.getString(BUNDLE_VALUE));
 
 			logi("handleMessage() ## msg.what = " + msg.what);
-			logi("handleMessage() ## data.getInt=" + data.getInt("cmd") + " data.getString=" + data.getString("value"));
+			logi("handleMessage() ## data.getInt=" + data.getInt(BUNDLE_DATA) + " data.getString=" + data.getString(BUNDLE_VALUE));
 
 			switch (msg.what) {
 				case ALERT:

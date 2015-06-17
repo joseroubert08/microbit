@@ -4,9 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.samsung.microbit.MBApp;
-import com.samsung.microbit.service.BLEService;
-
 public class Utils {
 
 	public static final String PREFERENCES_KEY = "Microbit_PairedDevices";
@@ -54,5 +51,51 @@ public class Utils {
 			logi("preferencesInteraction()");
 			interAction.interAct(getPreferences(ctx));
 		}
+	}
+
+
+	// bit position to value mask
+	public static int getBitMask(int x) {
+		return (0x01 << x);
+	}
+
+	// multiple bit positions to value mask
+	public static int getBitMask(int[] x) {
+		int rc = 0;
+		for (int i = 0; i < x.length; i++) {
+			rc |= getBitMask(x[i]);
+		}
+
+		return rc;
+	}
+
+	public int setBit(int v, int x) {
+		v |= getBitMask(x);
+		return v;
+	}
+
+	public int setBits(int v, int[] x) {
+		v |= getBitMask(x);
+		return v;
+	}
+
+	public static int clearBit(int v, int x) {
+		v &= ~getBitMask(x);
+		return v;
+	}
+
+	public static int clearBits(int v, int[] x) {
+		v &= ~getBitMask(x);
+		return v;
+	}
+
+	public static int maskBit(int v, int x) {
+		v &= getBitMask(x);
+		return v;
+	}
+
+	public static int maskBits(int v, int[] x) {
+		v &= getBitMask(x);
+		return v;
 	}
 }
