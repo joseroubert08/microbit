@@ -113,6 +113,9 @@ public abstract class DfuBaseService extends IntentService {
 	//private static final boolean DEBUG = BuildConfig.DEBUG;
 	private static final boolean DEBUG = false;
 
+	public static final String INTENT_RESULT_RECEIVER = "com.samsung.resultReceiver";
+	public static final String INTENT_REQUESTED_PHASE = "com.samsung.runonly.phase";
+
 	/**
 	 * The address of the device to update.
 	 */
@@ -1168,12 +1171,12 @@ public abstract class DfuBaseService extends IntentService {
 
 		int rc = 0;
 		if ((phase & 0x01) != 0) {
-			resultReceiver = (ResultReceiver) intent.getParcelableExtra("com.samsung.resultReceiver");
+			resultReceiver = (ResultReceiver) intent.getParcelableExtra(INTENT_REQUESTED_PHASE);
 			rc = phase1(intent);
 		}
 
 		if ((phase & 0x02) != 0) {
-			resultReceiver = (ResultReceiver) intent.getParcelableExtra("com.samsung.resultReceiver");
+			resultReceiver = (ResultReceiver) intent.getParcelableExtra(INTENT_RESULT_RECEIVER);
 			rc = phase2(intent);
 		}
 
@@ -3048,18 +3051,18 @@ public abstract class DfuBaseService extends IntentService {
 		intent.putExtra(EXTRA_DEVICE_NAME, deviceName);
 		intent.putExtra(EXTRA_PROGRESS, progress); // this may contains ERROR_CONNECTION_MASK bit!
 		final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-	//	builder.setContentIntent(pendingIntent);
+		//	builder.setContentIntent(pendingIntent);
 
 		// Add Abort action to the notification
 		if (progress != PROGRESS_ABORTED && progress != PROGRESS_COMPLETED && progress < ERROR_MASK) {
 			final Intent abortIntent = new Intent(BROADCAST_ACTION);
 			abortIntent.putExtra(EXTRA_ACTION, ACTION_ABORT);
 			final PendingIntent pendingAbortIntent = PendingIntent.getBroadcast(this, 1, abortIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-	//		builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
+			//		builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
 		}
 
 		final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-	//	manager.notify(NOTIFICATION_ID, builder.build());
+		//	manager.notify(NOTIFICATION_ID, builder.build());
 	}
 
 	/**

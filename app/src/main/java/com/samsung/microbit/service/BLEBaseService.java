@@ -10,7 +10,6 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.samsung.microbit.plugin.BLEManager;
@@ -26,6 +25,8 @@ public abstract class BLEBaseService extends Service {
 	BluetoothManager bluetoothManager;
 	BluetoothAdapter bluetoothAdapter;
 	BluetoothDevice bluetoothDevice;
+
+	public static final String INTENT_RESET_BLE_GATT = "resetBleGatt";
 
 	protected String deviceAddress;
 
@@ -74,16 +75,29 @@ public abstract class BLEBaseService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
 		logi("onStartCommand()");
-		this.deviceAddress = getDeviceAddress();
-		logi("onStartCommand() :: deviceAddress = " + deviceAddress);
-		setupBLE();
+
+		boolean resetBleGatt = intent.getBooleanExtra(INTENT_RESET_BLE_GATT, false);
+		if (!resetBleGatt) {
+			this.deviceAddress = getDeviceAddress();
+			logi("onStartCommand() :: deviceAddress = " + deviceAddress);
+			if (this.deviceAddress != null) {
+				setupBLE();
+				startupConnection();
+			}
+		} else {
+			bleManager.reset(true);
+			bleManager = null;
+		}
+
+		logi("onStartCommand() :: end");
 		return START_STICKY;
 	}
 
-	protected void setupBLE() {
+
+	private void setupBLE() {
 
 		logi("setupBLE()");
-		if(bleManager != null) {
+		if (bleManager != null) {
 			// reconnect to another device TODO ???
 			bluetoothDevice = null;
 		}
@@ -114,6 +128,8 @@ public abstract class BLEBaseService extends Service {
 			}
 		}
 	}
+
+	protected abstract void startupConnection();
 
 	protected abstract String getDeviceAddress();
 

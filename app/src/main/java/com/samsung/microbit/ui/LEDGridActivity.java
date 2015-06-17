@@ -40,6 +40,9 @@ import java.util.ArrayList;
 
 public class LEDGridActivity extends Activity implements View.OnClickListener {
 
+
+	public static final String INTENT_IS_FOR_FLASHING = "isForFlashing";
+
 	private static final int NUM_LED_ELEMENTS = 25;
 	private int state = 0;
 	private static final int STATE_AWAITING_USER_INITIATION = 0;
@@ -122,7 +125,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		pairingStatus = (TextView) findViewById(R.id.connectingStatus);
 		pairingMessage = (TextView) findViewById(R.id.connectingMessage);
 
-		isForFlashing = getIntent().getBooleanExtra("isForFlashing", true);
+		isForFlashing = getIntent().getBooleanExtra(INTENT_IS_FOR_FLASHING, true);
 		if (isForFlashing) {
 			pairingStatus.setVisibility(View.VISIBLE);
 			use_existing_device = getIntent().getBooleanExtra("use_existing_device", false);
@@ -212,8 +215,8 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 				service.putExtra(DfuService.EXTRA_FILE_MIME_TYPE, DfuService.MIME_TYPE_OCTET_STREAM);
 				service.putExtra(DfuService.EXTRA_FILE_PATH, FlashSectionFragment.BINARY_FILE_NAME); // a path or URI must be provided.
 				service.putExtra(DfuService.EXTRA_KEEP_BOND, false);
-				service.putExtra("com.samsung.resultReceiver", resultReceiver);
-				service.putExtra("com.samsung.runonly.phase", 2);
+				service.putExtra(DfuService.INTENT_RESULT_RECEIVER, resultReceiver);
+				service.putExtra(DfuService.INTENT_REQUESTED_PHASE, 2);
 
 				startService(service);
 				break;
@@ -387,7 +390,6 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 				} else {
 					logi("handle_pairing_successful() :: sending intent to BLEService.class");
 					Intent intent = new Intent(LEDGridActivity.this, BLEService.class);
-					intent.putExtra("DEVICE_ACTIVITY", "PAIRED");
 					startService(intent);
 					finish();
 				}
@@ -507,8 +509,8 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		//service.putExtra(DfuService.EXTRA_INIT_FILE_PATH, mInitFilePath);
 		//service.putExtra(DfuService.EXTRA_INIT_FILE_URI, mInitFileStreamUri);
 		service.putExtra(DfuService.EXTRA_KEEP_BOND, false);
-		service.putExtra("com.samsung.resultReceiver", resultReceiver);
-		service.putExtra("com.samsung.runonly.phase", 1);
+		service.putExtra(DfuService.INTENT_RESULT_RECEIVER, resultReceiver);
+		service.putExtra(DfuService.INTENT_REQUESTED_PHASE, 1);
 		startService(service);
 	}
 
@@ -530,8 +532,8 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		//service.putExtra(DfuService.EXTRA_INIT_FILE_PATH, mInitFilePath);
 		//service.putExtra(DfuService.EXTRA_INIT_FILE_URI, mInitFileStreamUri);
 		service.putExtra(DfuService.EXTRA_KEEP_BOND, false);
-		service.putExtra("com.samsung.resultReceiver", resultReceiver);
-		service.putExtra("com.samsung.runonly.phase", 1);
+		service.putExtra(DfuService.INTENT_RESULT_RECEIVER, resultReceiver);
+		service.putExtra(DfuService.INTENT_REQUESTED_PHASE, 1);
 		startService(service);
 	}
 

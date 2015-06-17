@@ -24,15 +24,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
+import com.samsung.microbit.R;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.fragment.CodeSectionFragment;
-import com.samsung.microbit.ui.fragment.DevicesFragment;
 import com.samsung.microbit.ui.fragment.FlashSectionFragment;
-import com.samsung.microbit.ui.fragment.HelpSectionFragment;
-import com.samsung.microbit.R;
-import com.samsung.microbit.ui.fragment.JSSimulatorFragment;
-import com.samsung.microbit.ui.fragment.MyBlankFragment;
 
 import java.util.List;
 
@@ -114,8 +110,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		startService(intent);
 
 		Intent bleIntent = new Intent(this, BLEService.class);
-		bleIntent.putExtra("DEVICE_ADDRESS", "F7:61:FB:87:A2:46");
-		//bleIntent.putExtra("DEVICE_ADDRESS", "DE:E2:2F:23:D6:F5");
 		startService(bleIntent);
 	}
 
