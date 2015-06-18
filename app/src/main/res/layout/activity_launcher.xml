@@ -109,6 +109,7 @@
         <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="fill_parent"
+            android:clickable="true"
             android:layout_height="80dp"
             android:text="Connect to your micro:bit"
             android:paddingLeft="20dp"
@@ -157,6 +158,7 @@
         <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="fill_parent"
+            android:clickable="true"
             android:layout_height="80dp"
             android:text="0 saved projects"
             android:paddingLeft="20dp"

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.samsung.microbit.R;
 import com.samsung.microbit.ui.fragment.CodeSectionFragment;
@@ -21,7 +22,8 @@ public class LauncherActivity extends Activity implements  View.OnClickListener 
     final String loginURL = "https://stage.microbit.co.uk/oauth/dialog?response_type=token&client_id=webapp&redirect_uri=https%3A%2F%2Fstage.microbit.co.uk%2Fapp%2F%23list%3Ainstalled-scripts&identity_provider=&state=0.47333144595053633";
 
 
-    Button loginButton = null ;
+    Button connectButton = null ;
+    Button projectsButton = null ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +34,10 @@ public class LauncherActivity extends Activity implements  View.OnClickListener 
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_launcher);
 
-        //Populate variables
-        loginButton = (Button) findViewById(R.id.loginButton);
+        connectButton = (Button) findViewById(R.id.connectButton);
+        projectsButton = (Button) findViewById(R.id.projectsButton);
+        connectButton.setOnClickListener(this);
+        projectsButton.setOnClickListener(this);
 
     }
 
@@ -42,12 +46,12 @@ public class LauncherActivity extends Activity implements  View.OnClickListener 
     public void onClick(View v) {
 
         switch (v.getId()){
+            case R.id.connectButton:
+                Toast.makeText(this, "Connect button clicked", Toast.LENGTH_LONG).show();
+                break;
 
-            case R.id.loginButton:
-                break;
-            case R.id.registerButton:
-                break;
-            case R.id.programList:
+            case R.id.projectsButton:
+                Toast.makeText(this, "Program list clicked", Toast.LENGTH_LONG).show();
                 break;
         }
 
