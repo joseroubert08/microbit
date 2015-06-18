@@ -1,15 +1,27 @@
 package com.samsung.microbit.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 
 import com.samsung.microbit.R;
+import com.samsung.microbit.ui.fragment.CodeSectionFragment;
 
 public class LauncherActivity extends Activity {
+
+
+    final String liveMainPageURL = "https://microbit:bitbug42@live.microbit.co.uk/" ;
+    final String stageMainPageURL = "https://microbit:bitbug42@stage.microbit.co.uk/" ;
+    final String loginURL = "https://stage.microbit.co.uk/oauth/dialog?response_type=token&client_id=webapp&redirect_uri=https%3A%2F%2Fstage.microbit.co.uk%2Fapp%2F%23list%3Ainstalled-scripts&identity_provider=&state=0.47333144595053633";
+
+
+    Button loginButton = null ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,10 +30,18 @@ public class LauncherActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-
         setContentView(R.layout.activity_launcher);
+
+        //Populate variables
+        loginButton = (Button) findViewById(R.id.loginButton);
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                //startActivity(new Intent(this, CodeSectionFragment.class));
+            }
+        });
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
