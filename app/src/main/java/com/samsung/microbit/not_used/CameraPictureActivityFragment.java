@@ -60,7 +60,7 @@ import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.service.PluginService;
-import com.samsung.microbit.ui.CameraView;
+import com.samsung.microbit.ui.view.CameraView;
 
 /**
  * Created by t.maestri on 19/05/2015.

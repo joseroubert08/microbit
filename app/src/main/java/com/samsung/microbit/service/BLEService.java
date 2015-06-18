@@ -28,11 +28,11 @@ import com.samsung.microbit.model.PreferencesInteraction;
 import com.samsung.microbit.model.Utils;
 import com.samsung.microbit.plugin.AlertPlugin;
 import com.samsung.microbit.plugin.AudioPlugin;
-import com.samsung.microbit.plugin.BLEManager;
+import com.samsung.microbit.model.BLEManager;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
-import com.samsung.microbit.ui.LEDGridActivity;
-import com.samsung.microbit.ui.MainActivity;
+import com.samsung.microbit.ui.activity.LEDGridActivity;
+import com.samsung.microbit.ui.activity.MainActivity;
 
 import java.util.UUID;
 

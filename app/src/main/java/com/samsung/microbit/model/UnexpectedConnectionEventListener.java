@@ -1,4 +1,4 @@
-package com.samsung.microbit.plugin;
+package com.samsung.microbit.model;
 
 public interface UnexpectedConnectionEventListener {
 
