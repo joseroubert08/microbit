@@ -1,4 +1,4 @@
-package com.samsung.microbit.ui;
+package com.samsung.microbit.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
