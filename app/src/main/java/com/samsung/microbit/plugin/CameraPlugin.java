@@ -8,7 +8,7 @@ import android.os.RemoteException;
 import android.widget.Toast;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.samsung.microbit.activity.CameraActivity_OldAPI;
+import com.samsung.microbit.ui.activity.CameraActivity_OldAPI;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.service.PluginService;
 

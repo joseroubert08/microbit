@@ -42,7 +42,7 @@ import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.service.PluginService;
-import com.samsung.microbit.ui.CameraView;
+import com.samsung.microbit.ui.view.CameraView;
 
 import java.io.File;
 import java.io.IOException;

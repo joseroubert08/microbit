@@ -1,4 +1,4 @@
-package com.samsung.microbit.ui;
+package com.samsung.microbit.ui.activity;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
@@ -155,7 +155,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		switch (item.getItemId()) {
 			case R.id.about_menu:
 		   /*     Intent intent = new Intent(this, AboutUsActivity.class);
-                startActivity(intent);*/
+				startActivity(intent);*/
 				return true;
 			case R.id.samsung_logo:
 				return true;
@@ -193,18 +193,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					// The first section of the app is the most interesting -- it offers
 					// a launchpad into the other demonstrations in this example application.
 					return new CodeSectionFragment();
+
 				case 1:
 					return new FlashSectionFragment();
-                /*
-                case 2:
-                    return new DevicesFragment();
+				/*
 				case 3:
 					return new MyBlankFragment();
 				*/
-                /*
-                case 3:
-                    return new JSSimulatorFragment();
-                */
+
 				default:
 					// The other sections of the app are dummy placeholders.
 					Fragment fragment = new DummySectionFragment();
@@ -225,18 +221,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			switch (position) {
 				case 0:
 					return "Let's Code";
+
 				case 1:
 					return "Run Code";
+
                 /*
-                case 2:
-                    return "Pairing";
 				case 3:
 					return "Blank Test Fragment";
 				*/
-        		/*
-        		case 3:
-                    return "JS Simulator";
-                */
+
 				default:
 					return "New section";
 			}

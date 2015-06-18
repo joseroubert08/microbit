@@ -1,4 +1,4 @@
-package com.samsung.microbit.activity;
+package com.samsung.microbit.ui.view;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,7 +25,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     List<Size> mSupportedPreviewSizes;
     Camera mCamera;
 
-    CameraPreview(Context context, Camera camera) {
+    public CameraPreview(Context context, Camera camera) {
         super(context);
 
         setCamera(camera);

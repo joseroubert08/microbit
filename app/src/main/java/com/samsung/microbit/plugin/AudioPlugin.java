@@ -6,11 +6,9 @@ import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
-import android.view.Gravity;
-import android.widget.Toast;
 
 import com.samsung.microbit.model.CmdArg;
-import com.samsung.microbit.ui.AudioRecorderActivity;
+import com.samsung.microbit.ui.activity.AudioRecorderActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,9 +22,9 @@ public class AudioPlugin
 {
     private static Context context = null;
 
-    public static final String INTENT_ACTION_LAUNCH = "com.samsung.microbit.ui.AudioRecorderActivity.action.LAUNCH";
-    public static final String INTENT_ACTION_START_RECORD = "com.samsung.microbit.ui.AudioRecorderActivity.action.START_RECORD";
-    public static final String INTENT_ACTION_STOP_RECORD = "com.samsung.microbit.ui.AudioRecorderActivity.action.STOP_RECORD";
+    public static final String INTENT_ACTION_LAUNCH = "com.samsung.microbit.ui.activity.AudioRecorderActivity.action.LAUNCH";
+    public static final String INTENT_ACTION_START_RECORD = "com.samsung.microbit.ui.activity.AudioRecorderActivity.action.START_RECORD";
+    public static final String INTENT_ACTION_STOP_RECORD = "com.samsung.microbit.ui.activity.AudioRecorderActivity.action.STOP_RECORD";
 
     //Audio plugin action
     public static final int STOP = 0;
