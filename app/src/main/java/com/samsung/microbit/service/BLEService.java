@@ -1,5 +1,7 @@
 package com.samsung.microbit.service;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
@@ -8,6 +10,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,15 +19,20 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
+import com.samsung.microbit.model.PreferencesInteraction;
+import com.samsung.microbit.model.Utils;
 import com.samsung.microbit.plugin.AlertPlugin;
-import com.samsung.microbit.plugin.BLEManager;
+import com.samsung.microbit.plugin.AudioPlugin;
+import com.samsung.microbit.model.BLEManager;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
-import com.samsung.microbit.ui.MainActivity;
+import com.samsung.microbit.ui.activity.LEDGridActivity;
+import com.samsung.microbit.ui.activity.MainActivity;
 
 import java.util.UUID;
 
@@ -43,18 +51,77 @@ public class BLEService extends BLEBaseService {
 	protected String TAG = "BLEService";
 	protected boolean debug = true;
 
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
+	NotificationManager notifyMgr;
+	int notificationId = 1010;
 
-		int rc = super.onStartCommand(intent, flags, startId);
+	@Override
+	public IBinder onBind(Intent intent) {
+		return mBinder;
+	}
+
+	private final IBinder mBinder = new LocalBinder();
+
+	public class LocalBinder extends Binder {
+		public BLEService getService() {
+			return BLEService.this;
+		}
+	}
+
+	protected String getDeviceAddress() {
+
+		logi("getDeviceAddress()");
+		final String[] pairedDeviceName = new String[1];
+		Utils.getInstance().preferencesInteraction(this, new PreferencesInteraction() {
+			@Override
+			public void interAct(SharedPreferences preferences) {
+				String s = preferences.getString(Utils.PREFERENCES_ADDRESS_KEY, null);
+				logi("getDeviceAddress() :: s = " + s);
+				pairedDeviceName[0] = s;
+			}
+		});
+
+		if (pairedDeviceName[0] == null) {
+			setNotification(false);
+		}
+
+		return pairedDeviceName[0];
+	}
+
+	protected void startupConnection() {
+
+		logi("startupConnection()");
+		boolean success = true;
 		if (connect() == 0) {
+			logi("startupConnection() :: connect() == 0");
 			if (discoverServices() == 0) {
-				registerNotifications(true);
+
+				logi("startupConnection() :: discoverServices() == 0");
+				if (registerNotifications(true)) {
+					setNotification(true);
+				} else {
+					success = false;
+				}
+			} else {
+				success = false;
+				logi("startupConnection() :: discoverServices() != 0");
+			}
+		} else {
+			success = false;
+		}
+
+		if (success) {
+			if (serviceConnectionPluginService == null) {
+				logi("startupConnection() :: serviceConnectionPluginService == null");
+				connectWithServer();
+			}
+		} else {
+			if (bleManager != null) {
+				bleManager.reset(true);
+				setNotification(false);
 			}
 		}
 
-		connectWithServer();
-		return rc;
+		logi("startupConnection() :: end");
 	}
 
 	@Override
@@ -62,21 +129,22 @@ public class BLEService extends BLEBaseService {
 		Log.i(TAG, "onDestroy called");
 	}
 
-	public void registerNotifications(boolean enable) {
+	public boolean registerNotifications(boolean enable) {
 
+		logi("registerNotifications()");
 		BluetoothGattService button1s = getService(BUTTON_1_SERVICE);
 		if (button1s == null) {
-			return;
+			return false;
 		}
 
 		BluetoothGattCharacteristic button1c = button1s.getCharacteristic(BUTTON_1_CHARACTERISTIC);
 		if (button1c == null) {
-			return;
+			return false;
 		}
 
 		BluetoothGattDescriptor button1d = button1c.getDescriptor(CALLBACK_DESCRIPTOR);
 		if (button1d == null) {
-			return;
+			return false;
 		}
 
 		enableCharacteristicNotification(button1c, button1d, enable);
@@ -84,20 +152,22 @@ public class BLEService extends BLEBaseService {
 
 		BluetoothGattService button2s = getService(BUTTON_2_SERVICE);
 		if (button2s == null) {
-			return;
+			return false;
 		}
 
 		BluetoothGattCharacteristic button2c = button2s.getCharacteristic(BUTTON_2_CHARACTERISTIC);
 		if (button2c == null) {
-			return;
+			return false;
 		}
 
 		BluetoothGattDescriptor button2d = button2c.getDescriptor(CALLBACK_DESCRIPTOR);
 		if (button2d == null) {
-			return;
+			return false;
 		}
 
 		enableCharacteristicNotification(button2c, button2d, enable);
+		logi("registerNotifications() : done");
+		return true;
 	}
 
 	@Override
@@ -107,7 +177,6 @@ public class BLEService extends BLEBaseService {
 		if (value == 0) {
 			return;
 		}
-
 
 		// Bit 5 (1)==button down (0)==button up
 		// bit 6 (1)==button 2.
@@ -121,40 +190,70 @@ public class BLEService extends BLEBaseService {
 
 	@Override
 	protected void handleUnexpectedConnectionEvent(int event) {
+
 		logi("handleDisconnection() :: event = " + event);
 		if ((event & BLEManager.BLE_CONNECTED) != 0) {
-			logi("handleDisconnection() :: BLE_CONNECTED");
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					logi("handleDisconnection() :: BLE_CONNECTED");
+					discoverServices();
+					registerNotifications(true);
+					setNotification(true);
+				}
+			}).start();
+
 		} else if (event == BLEManager.BLE_DISCONNECTED) {
 			logi("handleDisconnection() :: BLE_DISCONNECTED");
+			setNotification(false);
 		}
 	}
 
-	/*
-	private void sendMessage(int buttonNumber) {
+	private void setNotification(boolean isConnected) {
 
-		Log.i(TAG, "sendMessage");
-		final Intent intent = new Intent();
-		intent.setAction(MESSAGE_NAME);
-		intent.putExtra("buttonPressed", buttonNumber);
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+		logi("setNotification() :: isConnected = " + isConnected);
+		NotificationManager notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		int notificationId = 1001;
+		if (!isConnected) {
+			logi("setNotification() :: !isConnected");
+			if (bluetoothAdapter != null) {
+				if (!bluetoothAdapter.isEnabled()) {
+
+					logi("setNotification() :: !bluetoothAdapter.isEnabled()");
+					if (bleManager != null) {
+						bleManager.reset(true);
+					}
+
+					bleManager = null;
+					bluetoothDevice = null;
+				}
 			}
-		}).start();
-	}
-	*/
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return mBinder;
-	}
+			NotificationCompat.Builder mBuilder =
+				new NotificationCompat.Builder(this)
+					.setSmallIcon(R.drawable.ble_connection_off)
+					.setContentTitle("Micro:bit companion")
+					.setOngoing(true)
+					.setContentText("micro:bit Disconnected");
 
-	private final IBinder mBinder = new LocalBinder();
+			Intent intent = new Intent(this, LEDGridActivity.class);
+			intent.putExtra(LEDGridActivity.INTENT_IS_FOR_FLASHING, false);
+			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			mBuilder.setContentIntent(resultPendingIntent);
+			notifyMgr.notify(notificationId, mBuilder.build());
+		} else {
+			NotificationCompat.Builder mBuilder =
+				new NotificationCompat.Builder(this)
+					.setSmallIcon(R.drawable.ble_connection_on)
+					.setContentTitle("Micro:bit companion")
+					.setOngoing(true)
+					.setContentText("micro:bit Connected");
 
-	public class LocalBinder extends Binder {
-		public BLEService getService() {
-			return BLEService.this;
+			Intent intent = new Intent(this, LEDGridActivity.class);
+			intent.putExtra(LEDGridActivity.INTENT_IS_FOR_FLASHING, false);
+			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			mBuilder.setContentIntent(resultPendingIntent);
+			notifyMgr.notify(notificationId, mBuilder.build());
 		}
 	}
 
@@ -181,6 +280,9 @@ public class BLEService extends BLEBaseService {
 		Log.i(TAG, "### uBit Button detected for button = " + buttonPressed);
 		int msgService = PluginService.ALERT;
 		CmdArg cmd = null;
+		//convention
+		//0x1X: button 1 pressed on nordic, where X is the program id
+		//0x3X: button 2 pressed on nordic, where X is the program id
 		switch (buttonPressed) {
 			case 0x011:
 				msgService = PluginService.REMOTE_CONTROL;
@@ -193,7 +295,10 @@ public class BLEService extends BLEBaseService {
 				cmd = new CmdArg(CameraPlugin.LAUNCH_CAMERA_FOR_PIC, "");
 				break;
 
-			case 0x014:
+			case 0x014://Audio demo: button '1' used for launching audio activity
+				msgService = PluginService.AUDIO;
+				cmd = new CmdArg(AudioPlugin.LAUNCH, "");
+				break;
 			case 0x018:
 				cmd = new CmdArg(AlertPlugin.FINDPHONE, "");
 				break;
@@ -208,7 +313,11 @@ public class BLEService extends BLEBaseService {
 				cmd = new CmdArg(CameraPlugin.TAKE_PIC, "");
 				break;
 
-			case 0x034:
+			case 0x034://Audio demo: button '2' used for start/stop recording
+				msgService = PluginService.AUDIO;
+				cmd = new CmdArg(AudioPlugin.TOOGLE_RECORD, "");
+				break;
+
 			case 0x038:
 				cmd = new CmdArg(AlertPlugin.VIBRATE, "500");
 				break;
@@ -251,7 +360,7 @@ public class BLEService extends BLEBaseService {
 		};
 
 		Intent mIntent = new Intent();
-		mIntent.setAction("com.samsung.microbit.service.PluginService");
+		mIntent.setAction(PluginService.class.getName());
 		mIntent = MainActivity.createExplicitFromImplicitIntent(getApplicationContext(), mIntent);
 		bindService(mIntent, serviceConnectionPluginService, Context.BIND_AUTO_CREATE);
 	}
@@ -260,8 +369,8 @@ public class BLEService extends BLEBaseService {
 		if (messengerPluginService != null) {
 			Message msg = Message.obtain(null, mbsService);
 			Bundle bundle = new Bundle();
-			bundle.putInt("cmd", cmd.getCMD());
-			bundle.putString("value", cmd.getValue());
+			bundle.putInt(PluginService.BUNDLE_DATA, cmd.getCMD());
+			bundle.putString(PluginService.BUNDLE_VALUE, cmd.getValue());
 			msg.setData(bundle);
 			msg.replyTo = mClientMessenger;
 			try {

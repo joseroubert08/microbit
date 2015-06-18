@@ -10,12 +10,11 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.samsung.microbit.plugin.BLEManager;
-import com.samsung.microbit.plugin.CharacteristicChangeListener;
-import com.samsung.microbit.plugin.UnexpectedConnectionEventListener;
+import com.samsung.microbit.model.BLEManager;
+import com.samsung.microbit.model.CharacteristicChangeListener;
+import com.samsung.microbit.model.UnexpectedConnectionEventListener;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,6 +25,8 @@ public abstract class BLEBaseService extends Service {
 	BluetoothManager bluetoothManager;
 	BluetoothAdapter bluetoothAdapter;
 	BluetoothDevice bluetoothDevice;
+
+	public static final String INTENT_RESET_BLE_GATT = "resetBleGatt";
 
 	protected String deviceAddress;
 
@@ -45,57 +46,73 @@ public abstract class BLEBaseService extends Service {
 
 	private boolean initialize() {
 
+		boolean rc = true;
 		logi("initialize() :: remoteDevice = " + deviceAddress);
-		if (bluetoothManager == null) {
+		if (rc && bluetoothManager == null) {
 			bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-			if (bluetoothManager == null) {
-				return false;
-			}
+			rc = (bluetoothManager != null) ? true : false;
 		}
 
-		if (bluetoothAdapter == null) {
+		if (rc && (bluetoothAdapter == null)) {
 			bluetoothAdapter = bluetoothManager.getAdapter();
-			if (bluetoothAdapter == null) {
-				return false;
+			rc = (bluetoothAdapter != null) ? true : false;
+		}
+
+		if (rc && (bluetoothDevice == null)) {
+			if (deviceAddress != null) {
+				bluetoothDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
+				rc = (bluetoothAdapter != null) ? true : false;
+			} else {
+				rc = false;
 			}
 		}
 
-		if (bluetoothDevice == null) {
-			bluetoothDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
-			if (bluetoothDevice == null) {
-				return false;
-			}
-		}
-
-		logi("initialize() :: complete");
-		return true;
+		logi("initialize() :: complete rc = " + rc);
+		return rc;
 	}
-
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
-		String deviceAddress;
+		logi("onStartCommand()");
 
-		SharedPreferences preferences = getApplicationContext().getSharedPreferences("myAppPrefs", Context.MODE_PRIVATE);
-
+		boolean resetBleGatt = (bleManager != null);
 		if (intent != null) {
-			logi("onStartCommand() :: Received start id " + startId + ": " + intent);
-			deviceAddress = intent.getStringExtra("DEVICE_ADDRESS");
-			this.deviceAddress = deviceAddress;
-			SharedPreferences.Editor editor = preferences.edit();
-			editor.putString(this.getClass().getName() + ".deviceAddress", deviceAddress);
-			editor.commit();
+			resetBleGatt = intent.getBooleanExtra(INTENT_RESET_BLE_GATT, false);
+		}
 
+		if (!resetBleGatt) {
+			this.deviceAddress = getDeviceAddress();
+			logi("onStartCommand() :: deviceAddress = " + deviceAddress);
+			if (this.deviceAddress != null) {
+				setupBLE();
+				startupConnection();
+			}
 		} else {
-			deviceAddress = preferences.getString(this.getClass().getName() + ".deviceAddress", null);
-			this.deviceAddress = deviceAddress;
+			if (bleManager != null) {
+				bleManager.reset(true);
+				bleManager = null;
+			}
+		}
+
+		logi("onStartCommand() :: end");
+		return START_STICKY;
+	}
+
+
+	private void setupBLE() {
+
+		logi("setupBLE()");
+		if (bleManager != null) {
+			// reconnect to another device TODO ???
+			bluetoothDevice = null;
 		}
 
 		if (initialize()) {
-
-			logi("onStartCommand() :: initialize(deviceAddress) = OK");
 			if (bleManager == null) {
+				/*
+				 * First time setup
+				 */
 				bleManager = new BLEManager(getApplicationContext(), bluetoothDevice,
 					new CharacteristicChangeListener() {
 						@Override
@@ -112,36 +129,41 @@ public abstract class BLEBaseService extends Service {
 							handleUnexpectedConnectionEvent(event);
 						}
 					});
+			} else {
+				// reconect or change of device TODO
 			}
 		}
-
-		return START_STICKY;
 	}
 
-	protected void handleCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-	}
+	protected abstract void startupConnection();
 
-	protected void handleUnexpectedConnectionEvent(int event) {
-	}
+	protected abstract String getDeviceAddress();
+
+	protected abstract void handleCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic);
+
+	protected abstract void handleUnexpectedConnectionEvent(int event);
 
 	@Override
 	public void onDestroy() {
 		Log.i(TAG, "onDestroy called");
-
-		//if (bleManager != null) {
-		//	bleManager.disconnect();
-		//	bleManager = null;
-		//}
 	}
 
 	public BluetoothGattService getService(UUID uuid) {
 
-		return bleManager.getService(uuid);
+		if (bleManager != null) {
+			return bleManager.getService(uuid);
+		}
+
+		return null;
 	}
 
 	public List<BluetoothGattService> getServices() {
 
-		return bleManager.getServices();
+		if (bleManager != null) {
+			return bleManager.getServices();
+		}
+
+		return null;
 	}
 
 	int interpretCode(int rc, int goodCode) {
@@ -188,72 +210,124 @@ public abstract class BLEBaseService extends Service {
 	}
 
 	public int getError() {
-		return bleManager.getError();
+
+		int rc = 99;
+		if (bleManager != null) {
+			rc = bleManager.getError();
+		}
+
+		return rc;
 	}
 
 	public int getBleState() {
-		return bleManager.getBleState();
+
+		int rc = 99;
+		if (bleManager != null) {
+			rc = bleManager.getBleState();
+		}
+
+		return rc;
 	}
 
 	public int connect() {
 
-		int rc = bleManager.connect();
-		rc = interpretCode(rc, BLEManager.BLE_CONNECTED);
+		int rc = 99;
+		if (bleManager != null) {
+			rc = bleManager.connect(true);
+			rc = interpretCode(rc, BLEManager.BLE_CONNECTED);
+		}
+
 		return rc;
 	}
 
 	public int disconnect() {
 
-		int rc = bleManager.disconnect();
-		rc = interpretCode(rc, BLEManager.BLE_CONNECTED);
+		int rc = 99;
+		if (bleManager != null) {
+			rc = bleManager.disconnect();
+			rc = interpretCode(rc, BLEManager.BLE_CONNECTED);
+		}
+
 		return rc;
 	}
 
 	public int waitDisconnect() {
 
-		int rc = bleManager.waitDisconnect();
-		rc = interpretCode(rc, BLEManager.BLE_CONNECTED);
+		int rc = 99;
+		if (bleManager != null) {
+			rc = bleManager.waitDisconnect();
+			rc = interpretCode(rc, BLEManager.BLE_CONNECTED);
+		}
+
 		return rc;
 	}
 
 	public int discoverServices() {
-		int rc = bleManager.discoverServices();
-		rc = interpretCode(rc, BLEManager.BLE_SERVICES_DISCOVERED);
+
+		int rc = 99;
+		if (bleManager != null) {
+			logi("discoverServices() :: bleManager != null");
+			rc = bleManager.discoverServices();
+			rc = interpretCode(rc, BLEManager.BLE_SERVICES_DISCOVERED);
+		}
+
 		return rc;
 	}
 
 	public int enableCharacteristicNotification(BluetoothGattCharacteristic characteristic, BluetoothGattDescriptor descriptor, boolean enable) {
-		return bleManager.enableCharacteristicNotification(characteristic, descriptor, enable);
+
+		int rc = 99;
+		if (bleManager != null) {
+			rc = bleManager.enableCharacteristicNotification(characteristic, descriptor, enable);
+		}
+
+		return rc;
+
 	}
 
 	public int writeDescriptor(BluetoothGattDescriptor descriptor) {
 
-		int rc = bleManager.writeDescriptor(descriptor);
-		rc = interpretCode(rc);
+		int rc = 99;
+		if (bleManager != null) {
+			rc = bleManager.writeDescriptor(descriptor);
+			rc = interpretCode(rc);
+		}
+
 		return rc;
 	}
 
 	public BluetoothGattDescriptor readDescriptor(BluetoothGattDescriptor descriptor) {
-		int rc = bleManager.readDescriptor(descriptor);
-		rc = interpretCode(rc);
-		if (rc == 0) {
-			return bleManager.getLastDescriptor();
+
+		if (bleManager != null) {
+			int rc = bleManager.readDescriptor(descriptor);
+			rc = interpretCode(rc);
+			if (rc == 0) {
+				return bleManager.getLastDescriptor();
+			}
 		}
 
 		return null;
 	}
 
 	public int writeCharacteristic(BluetoothGattCharacteristic characteristic) {
-		int rc = bleManager.writeCharacteristic(characteristic);
-		rc = interpretCode(rc);
+
+		int rc = 99;
+		if (bleManager != null) {
+			bleManager.writeCharacteristic(characteristic);
+			rc = interpretCode(rc);
+		}
+
 		return rc;
 	}
 
 	public BluetoothGattCharacteristic readCharacteristic(BluetoothGattCharacteristic characteristic) {
-		int rc = bleManager.readCharacteristic(characteristic);
-		rc = interpretCode(rc);
-		if (rc == 0) {
-			return bleManager.getLastCharacteristic();
+
+		if (bleManager != null) {
+			int rc = bleManager.readCharacteristic(characteristic);
+			rc = interpretCode(rc);
+			if (rc == 0) {
+				return bleManager.getLastCharacteristic();
+			}
 		}
 
 		return null;
