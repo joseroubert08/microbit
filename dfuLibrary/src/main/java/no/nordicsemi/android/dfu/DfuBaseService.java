@@ -1166,17 +1166,15 @@ public abstract class DfuBaseService extends IntentService {
 	@Override
 	protected void onHandleIntent(final Intent intent) {
 
-		int phase = intent.getIntExtra("com.samsung.runonly.phase", 0) & 0x03;
-		ResultReceiver resultReceiver = null;
+		int phase = intent.getIntExtra(INTENT_REQUESTED_PHASE, 0) & 0x03;
+		ResultReceiver resultReceiver = (ResultReceiver) intent.getParcelableExtra(INTENT_RESULT_RECEIVER);;
 
 		int rc = 0;
 		if ((phase & 0x01) != 0) {
-			resultReceiver = (ResultReceiver) intent.getParcelableExtra(INTENT_REQUESTED_PHASE);
 			rc = phase1(intent);
 		}
 
 		if ((phase & 0x02) != 0) {
-			resultReceiver = (ResultReceiver) intent.getParcelableExtra(INTENT_RESULT_RECEIVER);
 			rc = phase2(intent);
 		}
 
