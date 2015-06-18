@@ -81,7 +81,7 @@ public class BLEService extends BLEBaseService {
 		});
 
 		if (pairedDeviceName[0] == null) {
-			setNotification(true);
+			setNotification(false);
 		}
 
 		return pairedDeviceName[0];
@@ -97,7 +97,7 @@ public class BLEService extends BLEBaseService {
 
 				logi("startupConnection() :: discoverServices() == 0");
 				if (registerNotifications(true)) {
-					setNotification(false);
+					setNotification(true);
 				} else {
 					success = false;
 				}
@@ -117,6 +117,7 @@ public class BLEService extends BLEBaseService {
 		} else {
 			if (bleManager != null) {
 				bleManager.reset(true);
+				setNotification(false);
 			}
 		}
 
@@ -198,27 +199,42 @@ public class BLEService extends BLEBaseService {
 					logi("handleDisconnection() :: BLE_CONNECTED");
 					discoverServices();
 					registerNotifications(true);
-					setNotification(false);
+					setNotification(true);
 				}
 			}).start();
 
 		} else if (event == BLEManager.BLE_DISCONNECTED) {
 			logi("handleDisconnection() :: BLE_DISCONNECTED");
-			setNotification(true);
+			setNotification(false);
 		}
 	}
 
-	private void setNotification(boolean enable) {
+	private void setNotification(boolean isConnected) {
 
-		logi("setNotification() :: enable = " + enable);
+		logi("setNotification() :: isConnected = " + isConnected);
 		NotificationManager notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		int notificationId = 001;
-		if (enable) {
+		int notificationId = 1001;
+		if (!isConnected) {
+			logi("setNotification() :: !isConnected");
+			if (bluetoothAdapter != null) {
+				if (!bluetoothAdapter.isEnabled()) {
+
+					logi("setNotification() :: !bluetoothAdapter.isEnabled()");
+					if (bleManager != null) {
+						bleManager.reset(true);
+					}
+
+					bleManager = null;
+					bluetoothDevice = null;
+				}
+			}
+
 			NotificationCompat.Builder mBuilder =
 				new NotificationCompat.Builder(this)
-					.setSmallIcon(R.drawable.un_connected)
+					.setSmallIcon(R.drawable.ble_connection_off)
 					.setContentTitle("Micro:bit companion")
-					.setContentText("No micro:bit connected");
+					.setOngoing(true)
+					.setContentText("micro:bit Disconnected");
 
 			Intent intent = new Intent(this, LEDGridActivity.class);
 			intent.putExtra(LEDGridActivity.INTENT_IS_FOR_FLASHING, false);
@@ -226,7 +242,18 @@ public class BLEService extends BLEBaseService {
 			mBuilder.setContentIntent(resultPendingIntent);
 			notifyMgr.notify(notificationId, mBuilder.build());
 		} else {
-			notifyMgr.cancel(notificationId);
+			NotificationCompat.Builder mBuilder =
+				new NotificationCompat.Builder(this)
+					.setSmallIcon(R.drawable.ble_connection_on)
+					.setContentTitle("Micro:bit companion")
+					.setOngoing(true)
+					.setContentText("micro:bit Connected");
+
+			Intent intent = new Intent(this, LEDGridActivity.class);
+			intent.putExtra(LEDGridActivity.INTENT_IS_FOR_FLASHING, false);
+			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			mBuilder.setContentIntent(resultPendingIntent);
+			notifyMgr.notify(notificationId, mBuilder.build());
 		}
 	}
 
