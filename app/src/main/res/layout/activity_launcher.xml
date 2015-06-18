@@ -18,7 +18,7 @@
 
     <!--
         Account screen
-    -->
+
     <FrameLayout
         android:layout_width="2000dp"
         android:layout_height="110dp"
@@ -76,7 +76,7 @@
             android:layout_gravity="right|center_vertical" />
 
     </FrameLayout>
-
+    -->
     <!--
          Connection screen
      -->
@@ -86,7 +86,7 @@
         android:layout_height="110dp"
         android:layout_marginTop="30dp"
         android:id="@+id/connectionFrame"
-        android:layout_below="@+id/accountFrame" >
+        android:layout_below="@+id/frontLogo" >
         <ImageView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

@@ -109,12 +109,6 @@
             android:process=":BLEService" >
         </service>
 
-        <activity
-            android:name=".ui.activity.SignInActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_sign_in"
-            android:theme="@style/FullscreenTheme" >
-        </activity>
     </application>
 
 </manifest>

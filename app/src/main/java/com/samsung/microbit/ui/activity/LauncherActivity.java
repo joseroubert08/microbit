@@ -13,7 +13,7 @@ import android.widget.Button;
 import com.samsung.microbit.R;
 import com.samsung.microbit.ui.fragment.CodeSectionFragment;
 
-public class LauncherActivity extends Activity {
+public class LauncherActivity extends Activity implements  View.OnClickListener {
 
 
     final String liveMainPageURL = "https://microbit:bitbug42@live.microbit.co.uk/" ;
@@ -34,14 +34,24 @@ public class LauncherActivity extends Activity {
 
         //Populate variables
         loginButton = (Button) findViewById(R.id.loginButton);
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                //startActivity(new Intent(this, CodeSectionFragment.class));
-            }
-        });
+
     }
 
 
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()){
+
+            case R.id.loginButton:
+                break;
+            case R.id.registerButton:
+                break;
+            case R.id.programList:
+                break;
+        }
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
