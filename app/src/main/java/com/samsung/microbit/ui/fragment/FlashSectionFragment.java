@@ -1,17 +1,5 @@
 package com.samsung.microbit.ui.fragment;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.lang.Integer;
-import java.util.HashMap;
-import java.util.UUID;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -27,19 +15,25 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.samsung.microbit.R;
-import com.samsung.microbit.ui.DeviceScanActivity;
-import com.samsung.microbit.ui.LEDGridActivity;
+import com.samsung.microbit.ui.activity.LEDGridActivity;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class FlashSectionFragment extends Fragment implements OnItemClickListener {
 
@@ -155,39 +149,6 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
 		return rootView;
 	}
 
-	public void flashCode() {
-		File file = new File(BINARY_FILE_NAME);
-		if (file.exists()) {
-			Intent intent = new Intent(getActivity(), DeviceScanActivity.class);
-			startActivity(intent);
-		} else {
-			Toast.makeText(getActivity(), "Create the binary file first by clicking one file below", Toast.LENGTH_LONG).show();
-		}
-	}
-
-    /*
-	@Override
-	public void onClick(View v) {
-
-		boolean test = true;
-		Log.d("FlashSectionFragment", "onClick");
-		switch (v.getId()) {
-			case R.id.searchButton:
-				File file = new File(BINARY_FILE_NAME);
-				if (file.exists()) {
-					// Intent intent = new Intent(getActivity(), DeviceScanActivity.class);
-			 		Intent intent = new Intent(getActivity(), LEDGridActivity.class); //DeviceScanActivity.class);
-					intent.putExtra("download_file", fileNameToFlash);
-					startActivity(intent);
-				} else {
-					Toast.makeText(getActivity(), "Create the binary file first by clicking one file below", Toast.LENGTH_LONG).show();
-				}
-
-				break;
-		}
-	}
-    */
-
 	private void prepareToFlash(boolean useExistingDevice) {
 		int retValue = PrepareFile(fileNameToFlash);
 
@@ -199,7 +160,7 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
 
 				//Toast.makeText(getActivity(), "Name == " + pairedDeviceName + " Address == " + pairedDeviceAddress, Toast.LENGTH_LONG).show();
 
-				Intent intent = new Intent(getActivity(), LEDGridActivity.class); //DeviceScanActivity.class);
+				Intent intent = new Intent(getActivity(), LEDGridActivity.class);
 				intent.putExtra("download_file", fileNameToFlash);
 				intent.putExtra("use_existing_device", useExistingDevice);
 				intent.putExtra("existing_device_name", pairedDeviceName);

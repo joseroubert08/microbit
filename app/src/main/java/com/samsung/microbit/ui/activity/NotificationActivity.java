@@ -1,10 +1,11 @@
-package com.samsung.microbit.ui;
+package com.samsung.microbit.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.samsung.microbit.MBApp;
+import com.samsung.microbit.ui.activity.MainActivity;
 
 public class NotificationActivity extends Activity {
     @Override

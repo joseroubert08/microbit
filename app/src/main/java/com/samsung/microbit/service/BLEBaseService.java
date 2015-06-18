@@ -12,9 +12,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.samsung.microbit.plugin.BLEManager;
-import com.samsung.microbit.plugin.CharacteristicChangeListener;
-import com.samsung.microbit.plugin.UnexpectedConnectionEventListener;
+import com.samsung.microbit.model.BLEManager;
+import com.samsung.microbit.model.CharacteristicChangeListener;
+import com.samsung.microbit.model.UnexpectedConnectionEventListener;
 
 import java.util.List;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package com.samsung.microbit.ui;
+package com.samsung.microbit.ui.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;

@@ -1,4 +1,4 @@
-package com.samsung.microbit.ui;
+package com.samsung.microbit.ui.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -31,9 +31,9 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.PreferencesInteraction;
 import com.samsung.microbit.model.Utils;
-import com.samsung.microbit.plugin.BLEManager;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.DfuService;
+import com.samsung.microbit.ui.ImageAdapter;
 import com.samsung.microbit.ui.fragment.FlashSectionFragment;
 
 import java.util.ArrayList;

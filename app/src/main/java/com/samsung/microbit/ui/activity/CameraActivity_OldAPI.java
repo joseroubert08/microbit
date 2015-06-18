@@ -1,4 +1,4 @@
-package com.samsung.microbit.activity;
+package com.samsung.microbit.ui.activity;
 
 
 import java.io.File;
@@ -36,6 +36,7 @@ import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.service.PluginService;
+import com.samsung.microbit.ui.view.CameraPreview;
 
 /**
  * Created by t.maestri on 09/06/2015.
@@ -181,6 +182,7 @@ public class CameraActivity_OldAPI extends Activity {
 		}else if(intent.getAction().contains("OPEN_FOR_VIDEO")) {
 			mVideo = true;
 		}
+
 		mPreview = new CameraPreview(this, mCamera);
 		((FrameLayout) findViewById(R.id.surfaceView)).addView(mPreview);
 
