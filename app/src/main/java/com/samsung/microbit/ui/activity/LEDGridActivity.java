@@ -111,6 +111,25 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		super.onCreate(savedInstanceState);
 		MBApp.setContext(this);
 
+		final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+		mBluetoothAdapter = bluetoothManager.getAdapter();
+		isForFlashing = getIntent().getBooleanExtra(INTENT_IS_FOR_FLASHING, true);
+
+		// Checks if Bluetooth is supported on the device.
+		if (mBluetoothAdapter == null) {
+			Toast.makeText(this.getApplicationContext(), R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
+			finish();
+			return;
+		}
+
+		if(!isForFlashing && !mBluetoothAdapter.isEnabled()) {
+			Toast.makeText(this.getApplicationContext(), R.string.error_bluetooth_not_enabled, Toast.LENGTH_SHORT).show();
+			finish();
+			return;
+		}
+
+		mHandler = new Handler();
+
 		// requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_ledgrid);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, list);
@@ -125,7 +144,6 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		pairingStatus = (TextView) findViewById(R.id.connectingStatus);
 		pairingMessage = (TextView) findViewById(R.id.connectingMessage);
 
-		isForFlashing = getIntent().getBooleanExtra(INTENT_IS_FOR_FLASHING, true);
 		if (isForFlashing) {
 			pairingStatus.setVisibility(View.VISIBLE);
 			use_existing_device = getIntent().getBooleanExtra("use_existing_device", false);
@@ -136,17 +154,6 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		} else {
 			pairingStatus.setVisibility(View.INVISIBLE);
 			pairingMessage.setText(R.string.pattern_to_pair);
-		}
-
-		mHandler = new Handler();
-		final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-		mBluetoothAdapter = bluetoothManager.getAdapter();
-
-		// Checks if Bluetooth is supported on the device.
-		if (mBluetoothAdapter == null) {
-			Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
-			finish();
-			return;
 		}
 
 		getActionBar().setTitle("Find microbit");
