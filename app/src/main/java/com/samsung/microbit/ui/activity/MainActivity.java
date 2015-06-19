@@ -43,7 +43,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	AppSectionsPagerAdapter mAppSectionsPagerAdapter;
 
 	/**
-	 * The {@link ViewPager} that will display the three primary sections of the app, one at a
+	 * The {@link ViewPager} that will display the three primary sections of the app,one at a
 	 * time.
 	 */
 	ViewPager mViewPager;
