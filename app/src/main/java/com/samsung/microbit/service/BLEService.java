@@ -24,6 +24,7 @@ import android.util.Log;
 
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
+import com.samsung.microbit.model.IPCMessageManager;
 import com.samsung.microbit.model.PreferencesInteraction;
 import com.samsung.microbit.model.Utils;
 import com.samsung.microbit.plugin.AlertPlugin;
@@ -110,10 +111,7 @@ public class BLEService extends BLEBaseService {
 		}
 
 		if (success) {
-			if (serviceConnectionPluginService == null) {
-				logi("startupConnection() :: serviceConnectionPluginService == null");
-				connectWithServer();
-			}
+			connectWithServer();
 		} else {
 			if (bleManager != null) {
 				bleManager.reset(true);
@@ -258,14 +256,25 @@ public class BLEService extends BLEBaseService {
 	}
 
 	// ######################################################################
-
 	private boolean mIsRemoteControlPlay = false;
-	private Messenger messengerPluginService = null;
-	private Messenger mClientMessenger = null;
-	private ServiceConnection serviceConnectionPluginService = null;
-	private IncomingHandler messageHandler = null;
-	private HandlerThread messageHandlerThread = null;
-	private boolean isBoundToPluginService = false;
+
+	public void connectWithServer() {
+
+		logi("connectWithServer()");
+		if (IPCMessageManager.getInstance() == null) {
+
+
+			logi("connectWithServer() :: IPCMessageManager.getInstance() == null");
+			IPCMessageManager inst = IPCMessageManager.getInstance("BLEReceiverThread", new Handler() {
+
+				@Override
+				public void handleMessage(Message msg) {
+					super.handleMessage(msg);
+				}
+
+			});
+		}
+	}
 
 	void sendMessage(int buttonPressed) {
 
@@ -328,58 +337,23 @@ public class BLEService extends BLEBaseService {
 		}
 	}
 
-	class IncomingHandler extends Handler {
-		public IncomingHandler(HandlerThread thr) {
-			super(thr.getLooper());
-		}
-
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-		}
-	}
-
-	public void connectWithServer() {
-		messageHandlerThread = new HandlerThread("BLEReceiverThread");
-		messageHandlerThread.start();
-		messageHandler = new IncomingHandler(messageHandlerThread);
-		mClientMessenger = new Messenger(messageHandler);
-
-		serviceConnectionPluginService = new ServiceConnection() {
-			@Override
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				isBoundToPluginService = true;
-				messengerPluginService = new Messenger(service);
-			}
-
-			@Override
-			public void onServiceDisconnected(ComponentName name) {
-				isBoundToPluginService = false;
-				serviceConnectionPluginService = null;
-			}
-		};
-
-		Intent mIntent = new Intent();
-		mIntent.setAction(PluginService.class.getName());
-		mIntent = MainActivity.createExplicitFromImplicitIntent(getApplicationContext(), mIntent);
-		bindService(mIntent, serviceConnectionPluginService, Context.BIND_AUTO_CREATE);
-	}
-
 	public void sendCommand(int mbsService, CmdArg cmd) {
-		if (messengerPluginService != null) {
-			Message msg = Message.obtain(null, mbsService);
-			Bundle bundle = new Bundle();
-			bundle.putInt(PluginService.BUNDLE_DATA, cmd.getCMD());
-			bundle.putString(PluginService.BUNDLE_VALUE, cmd.getValue());
-			msg.setData(bundle);
-			msg.replyTo = mClientMessenger;
-			try {
-				messengerPluginService.send(msg);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+
+		logi("sendCommand()");
+		IPCMessageManager inst = IPCMessageManager.getInstance();
+		if (!inst.isConnected(PluginService.class)) {
+			inst.configureServerConnection(PluginService.class, this);
+		}
+
+		Message msg = Message.obtain(null, mbsService);
+		Bundle bundle = new Bundle();
+		bundle.putInt(PluginService.BUNDLE_DATA, cmd.getCMD());
+		bundle.putString(PluginService.BUNDLE_VALUE, cmd.getValue());
+		msg.setData(bundle);
+		try {
+			inst.sendMessage(PluginService.class, msg);
+		} catch (RemoteException e) {
+			e.printStackTrace();
 		}
 	}
-
-	// ######################################################################
 }
