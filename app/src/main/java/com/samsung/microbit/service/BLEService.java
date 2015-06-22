@@ -6,33 +6,28 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
-import com.samsung.microbit.model.PreferencesInteraction;
-import com.samsung.microbit.model.Utils;
+import com.samsung.microbit.core.IPCMessageManager;
+import com.samsung.microbit.core.PreferencesInteraction;
+import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.plugin.AlertPlugin;
 import com.samsung.microbit.plugin.AudioPlugin;
-import com.samsung.microbit.model.BLEManager;
+import com.samsung.microbit.core.BLEManager;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
 import com.samsung.microbit.ui.activity.LEDGridActivity;
-import com.samsung.microbit.ui.activity.MainActivity;
 
 import java.util.UUID;
 
@@ -81,7 +76,7 @@ public class BLEService extends BLEBaseService {
 		});
 
 		if (pairedDeviceName[0] == null) {
-			setNotification(true);
+			setNotification(false);
 		}
 
 		return pairedDeviceName[0];
@@ -97,7 +92,7 @@ public class BLEService extends BLEBaseService {
 
 				logi("startupConnection() :: discoverServices() == 0");
 				if (registerNotifications(true)) {
-					setNotification(false);
+					setNotification(true);
 				} else {
 					success = false;
 				}
@@ -110,13 +105,11 @@ public class BLEService extends BLEBaseService {
 		}
 
 		if (success) {
-			if (serviceConnectionPluginService == null) {
-				logi("startupConnection() :: serviceConnectionPluginService == null");
-				connectWithServer();
-			}
+			connectWithServer();
 		} else {
 			if (bleManager != null) {
 				bleManager.reset(true);
+				setNotification(false);
 			}
 		}
 
@@ -198,27 +191,42 @@ public class BLEService extends BLEBaseService {
 					logi("handleDisconnection() :: BLE_CONNECTED");
 					discoverServices();
 					registerNotifications(true);
-					setNotification(false);
+					setNotification(true);
 				}
 			}).start();
 
 		} else if (event == BLEManager.BLE_DISCONNECTED) {
 			logi("handleDisconnection() :: BLE_DISCONNECTED");
-			setNotification(true);
+			setNotification(false);
 		}
 	}
 
-	private void setNotification(boolean enable) {
+	private void setNotification(boolean isConnected) {
 
-		logi("setNotification() :: enable = " + enable);
+		logi("setNotification() :: isConnected = " + isConnected);
 		NotificationManager notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		int notificationId = 001;
-		if (enable) {
+		int notificationId = 1001;
+		if (!isConnected) {
+			logi("setNotification() :: !isConnected");
+			if (bluetoothAdapter != null) {
+				if (!bluetoothAdapter.isEnabled()) {
+
+					logi("setNotification() :: !bluetoothAdapter.isEnabled()");
+					if (bleManager != null) {
+						bleManager.reset(true);
+					}
+
+					bleManager = null;
+					bluetoothDevice = null;
+				}
+			}
+
 			NotificationCompat.Builder mBuilder =
 				new NotificationCompat.Builder(this)
-					.setSmallIcon(R.drawable.un_connected)
+					.setSmallIcon(R.drawable.ble_connection_off)
 					.setContentTitle("Micro:bit companion")
-					.setContentText("No micro:bit connected");
+					.setOngoing(true)
+					.setContentText("micro:bit Disconnected");
 
 			Intent intent = new Intent(this, LEDGridActivity.class);
 			intent.putExtra(LEDGridActivity.INTENT_IS_FOR_FLASHING, false);
@@ -226,19 +234,41 @@ public class BLEService extends BLEBaseService {
 			mBuilder.setContentIntent(resultPendingIntent);
 			notifyMgr.notify(notificationId, mBuilder.build());
 		} else {
-			notifyMgr.cancel(notificationId);
+			NotificationCompat.Builder mBuilder =
+				new NotificationCompat.Builder(this)
+					.setSmallIcon(R.drawable.ble_connection_on)
+					.setContentTitle("Micro:bit companion")
+					.setOngoing(true)
+					.setContentText("micro:bit Connected");
+
+			Intent intent = new Intent(this, LEDGridActivity.class);
+			intent.putExtra(LEDGridActivity.INTENT_IS_FOR_FLASHING, false);
+			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			mBuilder.setContentIntent(resultPendingIntent);
+			notifyMgr.notify(notificationId, mBuilder.build());
 		}
 	}
 
 	// ######################################################################
-
 	private boolean mIsRemoteControlPlay = false;
-	private Messenger messengerPluginService = null;
-	private Messenger mClientMessenger = null;
-	private ServiceConnection serviceConnectionPluginService = null;
-	private IncomingHandler messageHandler = null;
-	private HandlerThread messageHandlerThread = null;
-	private boolean isBoundToPluginService = false;
+
+	public void connectWithServer() {
+
+		logi("connectWithServer()");
+		if (IPCMessageManager.getInstance() == null) {
+
+
+			logi("connectWithServer() :: IPCMessageManager.getInstance() == null");
+			IPCMessageManager inst = IPCMessageManager.getInstance("BLEReceiverThread", new Handler() {
+
+				@Override
+				public void handleMessage(Message msg) {
+					super.handleMessage(msg);
+				}
+
+			});
+		}
+	}
 
 	void sendMessage(int buttonPressed) {
 
@@ -301,58 +331,23 @@ public class BLEService extends BLEBaseService {
 		}
 	}
 
-	class IncomingHandler extends Handler {
-		public IncomingHandler(HandlerThread thr) {
-			super(thr.getLooper());
-		}
-
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-		}
-	}
-
-	public void connectWithServer() {
-		messageHandlerThread = new HandlerThread("BLEReceiverThread");
-		messageHandlerThread.start();
-		messageHandler = new IncomingHandler(messageHandlerThread);
-		mClientMessenger = new Messenger(messageHandler);
-
-		serviceConnectionPluginService = new ServiceConnection() {
-			@Override
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				isBoundToPluginService = true;
-				messengerPluginService = new Messenger(service);
-			}
-
-			@Override
-			public void onServiceDisconnected(ComponentName name) {
-				isBoundToPluginService = false;
-				serviceConnectionPluginService = null;
-			}
-		};
-
-		Intent mIntent = new Intent();
-		mIntent.setAction(PluginService.class.getName());
-		mIntent = MainActivity.createExplicitFromImplicitIntent(getApplicationContext(), mIntent);
-		bindService(mIntent, serviceConnectionPluginService, Context.BIND_AUTO_CREATE);
-	}
-
 	public void sendCommand(int mbsService, CmdArg cmd) {
-		if (messengerPluginService != null) {
-			Message msg = Message.obtain(null, mbsService);
-			Bundle bundle = new Bundle();
-			bundle.putInt(PluginService.BUNDLE_DATA, cmd.getCMD());
-			bundle.putString(PluginService.BUNDLE_VALUE, cmd.getValue());
-			msg.setData(bundle);
-			msg.replyTo = mClientMessenger;
-			try {
-				messengerPluginService.send(msg);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+
+		logi("sendCommand()");
+		IPCMessageManager inst = IPCMessageManager.getInstance();
+		if (!inst.isConnected(PluginService.class)) {
+			inst.configureServerConnection(PluginService.class, this);
+		}
+
+		Message msg = Message.obtain(null, mbsService);
+		Bundle bundle = new Bundle();
+		bundle.putInt(PluginService.BUNDLE_DATA, cmd.getCMD());
+		bundle.putString(PluginService.BUNDLE_VALUE, cmd.getValue());
+		msg.setData(bundle);
+		try {
+			inst.sendMessage(PluginService.class, msg);
+		} catch (RemoteException e) {
+			e.printStackTrace();
 		}
 	}
-
-	// ######################################################################
 }

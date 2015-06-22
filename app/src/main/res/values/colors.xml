@@ -4,4 +4,7 @@
     <color name="actionMenuTitleTextColor">#00000000</color>
     <color name="actionMenuTextColor">#0F0F0FF0</color>
 
+    <color name="divider_color">#ff000000</color>
+    <color name="black_font_color">#ff000000</color>
+    <color name="white_font_color">#ffffff</color>
 </resources>

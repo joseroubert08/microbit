@@ -34,6 +34,7 @@
     <string name="disconnected">Disconnected</string>
     <string name="title_devices">MicroBit Device Scan</string>
     <string name="title_activity_ledgrid">Find MicroBit</string>
+    <string name="title_activity_connect">Connect</string>
     <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
     <string name="microbit_not_found">Microbit not found. Please search.</string>
     <string name="microbit_found">Use existing micro:bit?</string>
@@ -94,5 +95,18 @@
     <string name="title_activity_sign_in">SignInActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-    
+
+    <!-- Alert plugin -->
+    <string name="vibrating_via_microbit">Vibrating via Microbit!</string>
+    <string name="findphone_via_microbit">Find my phone alert via Microbit!</string>
+    <string name="ringtone_via_microbit">Playing ringtone via Microbit!</string>
+    <string name="sound_via_microbit">Playing sound via Microbit!</string>
+    <string name="alert">Alert...</string>
+
+    <!-- Connec Acitivity -->
+    <string name="previous_devices">Previous devices</string>
+    <string name="new_devices">Connect to a new device</string>
+    <string name="name_device">Name this device</string>
+    <string name="connect">Connect</string>
+
 </resources>

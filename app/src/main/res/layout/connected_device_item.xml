@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <Button
+        android:id="@+id/deviceName"
+        android:layout_width="350dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:textColor="@color/black_font_color"
+        android:background="@drawable/white_btn"/>
+
+    <ImageButton
+        android:id="@+id/connectBtn"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/connected"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:background="@drawable/green_btn"
+        android:layout_toRightOf="@id/deviceName"/>
+
+    <ImageButton
+        android:id="@+id/deleteBtn"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/delete"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:background="@drawable/red_btn"
+        android:layout_toRightOf="@id/connectBtn"/>
+
+</RelativeLayout>

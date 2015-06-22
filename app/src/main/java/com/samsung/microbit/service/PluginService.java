@@ -7,14 +7,15 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.samsung.microbit.model.CmdArg;
+import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.plugin.AlertPlugin;
 import com.samsung.microbit.plugin.AudioPlugin;
 import com.samsung.microbit.plugin.FeedbackPlugin;
+import com.samsung.microbit.plugin.FilePlugin;
 import com.samsung.microbit.plugin.InformationPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
 import com.samsung.microbit.plugin.TelephonyPlugin;
@@ -38,8 +39,11 @@ public class PluginService extends Service {
 		}
 	}
 
-	Messenger mMessenger = new Messenger(new IncomingHandler());
 	public static Messenger mClientMessenger = null;
+
+	public PluginService() {
+		IPCMessageManager inst = IPCMessageManager.getInstance("PluginReceiverThread", new IncomingHandler());
+	}
 
 	//MBS Services
 	public static final int ALERT = 0;
@@ -49,6 +53,7 @@ public class PluginService extends Service {
 	public static final int REMOTE_CONTROL = 4;
 	public static final int TELEPHONY = 5;
 	public static final int CAMERA = 6;
+	public static final int FILE = 7;
 
 	/**
 	 * Handler of incoming messages from BLEListener.
@@ -95,6 +100,10 @@ public class PluginService extends Service {
 					CameraPlugin.pluginEntry(PluginService.this, cmd);
 					break;
 
+				case FILE:
+					FilePlugin.pluginEntry(PluginService.this, cmd);
+					break;
+
 				default:
 					super.handleMessage(msg);
 			}
@@ -104,13 +113,13 @@ public class PluginService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		logi("onStartCommand() ## start");
-		//Toast.makeText(this, "Plugin Service Started", Toast.LENGTH_SHORT).show();
 		return START_STICKY;
 	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		return mMessenger.getBinder();
+
+		return IPCMessageManager.getInstance().getClientMessenger().getBinder();
 	}
 
 	@Override
