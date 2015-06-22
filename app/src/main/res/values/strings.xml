@@ -69,6 +69,7 @@
     <string name="menu_disconnect">Disconnect</string>
     <string name="menu_scan">Scan</string>
     <string name="menu_stop">Stop</string>
+    <string name="action_settings">Settings</string>
 
     <!-- Camera items -->
     <string name="picture">Picture</string>
@@ -87,14 +88,6 @@
     <string name="title_activity_about_us">about_us</string>
     <string name="back_button">Take me Back</string>
     <string name="about_us"> That\'s All !! Happy Coding </string>
-    <string name="title_activity_launcher">LauncherActivity</string>
-
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-
-    <string name="title_activity_sign_in">SignInActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
 
     <!-- Alert plugin -->
     <string name="vibrating_via_microbit">Vibrating via Microbit!</string>
@@ -108,5 +101,8 @@
     <string name="new_devices">Connect to a new device</string>
     <string name="name_device">Name this device</string>
     <string name="connect">Connect</string>
+
+    <string name="your_projects">Your projects</string>
+    <string name="start_new_project">Start a new project</string>
 
 </resources>

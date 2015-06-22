@@ -5,4 +5,5 @@
 
     <dimen name="widget_margin">5dp</dimen>
     <dimen name="content_margin">16dp</dimen>
+    <dimen name="home_content_margin">100dp</dimen>
 </resources>
