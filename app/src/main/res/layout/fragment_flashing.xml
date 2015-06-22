@@ -39,11 +39,12 @@
 
 	<ImageButton
 		android:id="@+id/ok_cancel_button"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
+		android:layout_width="80dp"
+		android:layout_height="80dp"
 		android:layout_below="@+id/progressBar"
 		android:layout_centerHorizontal="true"
 		android:layout_marginTop="15dp"
-		android:background="@drawable/cancel_button"
+		android:background="@drawable/red_circle_btn"
+		android:src="@drawable/cross"
 		android:clickable="true"/>
 </RelativeLayout>
