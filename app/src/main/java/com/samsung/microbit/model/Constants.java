@@ -14,58 +14,62 @@ public class Constants {
 	public static final int REMOTE_CONTROL_VOLUMEUP = 7;
 	public static final int REMOTE_CONTROL_VOLUMEDOWN = 8;
 
-	public static final int CAMERA_LAUNCH_PHOTO_MODE = 0;
-	public static final int CAMERA_LAUNCH_VIDEO_MODE = 1;
-	public static final int CAMERA_TAKE_PHOTO = 2;
-	public static final int CAMERA_START_VIDEO_CAPTURE = 3;
-	public static final int CAMERA_STOP_VIDEO_CAPTURE = 4;
+	public static final int CAMERA_LAUNCH_PHOTO_MODE = 100+0;
+	public static final int CAMERA_LAUNCH_VIDEO_MODE = 100+1;
+	public static final int CAMERA_TAKE_PHOTO = 100+2;
+	public static final int CAMERA_START_VIDEO_CAPTURE = 100+3;
+	public static final int CAMERA_STOP_VIDEO_CAPTURE = 100+4;
+	public static final int CAMERA_STOP_PHOTO_MODE = 100+5;
+	public static final int CAMERA_STOP_VIDEO_MODE = 100+6;
+	public static final int CAMERA_TOGGLE_FRONT_REAR = 100+7;
 
-	public static final int AUDIO_RECORDER_LAUNCH = 0;
-	public static final int AUDIO_RECORDER_START_CAPTURE = 1;
-	public static final int AUDIO_RECORDER_STOP_CAPTURE = 2;
+	public static final int AUDIO_RECORDER_LAUNCH = 200+0;
+	public static final int AUDIO_RECORDER_START_CAPTURE = 200+1;
+	public static final int AUDIO_RECORDER_STOP_CAPTURE = 200+2;
+	public static final int AUDIO_RECORDER_STOP = 200+3;
 
-	public static final int ALERT_DISPLAY_TOAST = 0;
-	public static final int ALERT_VIBRATE = 1;
-	public static final int ALERT_PLAY_SOUND = 2;
-	public static final int ALERT_PLAY_RINGTONE = 3;
-	public static final int FIND_MY_PHONE = 4;
+	public static final int ALERT_DISPLAY_TOAST = 300+0;
+	public static final int ALERT_VIBRATE = 300+1;
+	public static final int ALERT_PLAY_SOUND = 300+2;
+	public static final int ALERT_PLAY_RINGTONE = 300+3;
+	public static final int FIND_MY_PHONE = 300+4;
 
-	public static final int ALARM_SOUND = 0;
-	public static final int SOUND_TBD_1 = 1;
-	public static final int SOUND_TBD_2 = 2;
-	public static final int SOUND_TBD_3 = 3;
-	public static final int SOUND_TBD_4 = 4;
-	public static final int SOUND_TBD_5 = 5;
+	public static final int ALARM_SOUND = 400+0;
+	public static final int SOUND_TBD_1 = 400+1;
+	public static final int SOUND_TBD_2 = 400+2;
+	public static final int SOUND_TBD_3 = 400+3;
+	public static final int SOUND_TBD_4 = 400+4;
+	public static final int SOUND_TBD_5 = 400+5;
 
-	public static final int BUTTON_A_UP = 0;
-	public static final int BUTTON_A_DOWN = 1;
-	public static final int BUTTON_B_UP = 2;
-	public static final int BUTTON_B_DOWN = 3;
-	public static final int BUTTON_A_LONG_PRESS = 4;
-	public static final int BUTTON_B_LONG_PRESS = 5;
-	public static final int BOTH_BUTTONS_PRESSED = 6;
+	public static final int BUTTON_A_UP = 500+0;
+	public static final int BUTTON_A_DOWN = 500+1;
+	public static final int BUTTON_B_UP = 500+2;
+	public static final int BUTTON_B_DOWN = 500+3;
+	public static final int BUTTON_A_LONG_PRESS = 500+4;
+	public static final int BUTTON_B_LONG_PRESS = 500+5;
+	public static final int BOTH_BUTTONS_PRESSED = 500+6;
 
-	public static final int SIGNAL_STRENGTH_NO_BAR = 0;
-	public static final int SIGNAL_STRENGTH_ONE_BAR = 1;
-	public static final int SIGNAL_STRENGTH_TWO_BAR = 2;
-	public static final int SIGNAL_STRENGTH_THREE_BAR = 3;
-	public static final int SIGNAL_STRENGTH_FOUR_BAR = 4;
+	public static final int SIGNAL_STRENGTH_NO_BAR = 600+0;
+	public static final int SIGNAL_STRENGTH_ONE_BAR = 600+1;
+	public static final int SIGNAL_STRENGTH_TWO_BAR = 600+2;
+	public static final int SIGNAL_STRENGTH_THREE_BAR = 600+3;
+	public static final int SIGNAL_STRENGTH_FOUR_BAR = 600+4;
 
-	public static final int DEVICE_ORIENTATION_LANDSCAPE = 0;
-	public static final int DEVICE_ORIENTATION_PORTRAIT = 1;
+	public static final int DEVICE_ORIENTATION_LANDSCAPE = 700+0;
+	public static final int DEVICE_ORIENTATION_PORTRAIT = 700+1;
 
-	public static final int DEVICE_GESTURE_NONE = 0;
-	public static final int DEVICE_GESTURE_DEVICE_SHAKEN = 1;
+	public static final int DEVICE_GESTURE_NONE = 800+0;
+	public static final int DEVICE_GESTURE_DEVICE_SHAKEN = 800+1;
 
-	public static final int DEVICE_DISPLAY_OFF = 0;
-	public static final int DEVICE_DISPLAY_ON = 1;
+	public static final int DEVICE_DISPLAY_OFF = 900+0;
+	public static final int DEVICE_DISPLAY_ON = 900+1;
 
-	public static final int BUTTON_UP = 0;
-	public static final int BUTTON_DOWN = 1;
-	public static final int BUTTON_RIGHT = 2;
-	public static final int BUTTON_LEFT = 3;
-	public static final int BUTTON_A = 4;
-	public static final int BUTTON_B = 5;
+	public static final int BUTTON_UP = 1000+0;
+	public static final int BUTTON_DOWN = 1000+1;
+	public static final int BUTTON_RIGHT = 1000+2;
+	public static final int BUTTON_LEFT = 1000+3;
+	public static final int BUTTON_A = 1000+4;
+	public static final int BUTTON_B = 1000+5;
 
 	// Registration ID's
 	public static final int REG_TELEPHONY = 0x01;    // 0x00000001;
