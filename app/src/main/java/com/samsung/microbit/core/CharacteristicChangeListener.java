@@ -1,4 +1,4 @@
-package com.samsung.microbit.model;
+package com.samsung.microbit.core;
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;

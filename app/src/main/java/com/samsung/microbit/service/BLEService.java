@@ -6,34 +6,28 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
-import com.samsung.microbit.model.IPCMessageManager;
-import com.samsung.microbit.model.PreferencesInteraction;
-import com.samsung.microbit.model.Utils;
+import com.samsung.microbit.core.IPCMessageManager;
+import com.samsung.microbit.core.PreferencesInteraction;
+import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.plugin.AlertPlugin;
 import com.samsung.microbit.plugin.AudioPlugin;
-import com.samsung.microbit.model.BLEManager;
+import com.samsung.microbit.core.BLEManager;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
 import com.samsung.microbit.ui.activity.LEDGridActivity;
-import com.samsung.microbit.ui.activity.MainActivity;
 
 import java.util.UUID;
 

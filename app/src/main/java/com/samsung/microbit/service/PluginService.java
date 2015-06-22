@@ -7,12 +7,11 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.samsung.microbit.model.CmdArg;
-import com.samsung.microbit.model.IPCMessageManager;
+import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.plugin.AlertPlugin;
 import com.samsung.microbit.plugin.AudioPlugin;
 import com.samsung.microbit.plugin.FeedbackPlugin;

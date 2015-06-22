@@ -1,4 +1,4 @@
-package com.samsung.microbit.plugin;
+package com.samsung.microbit.core;
 
 import android.content.res.Configuration;
 import android.util.Log;
@@ -6,6 +6,14 @@ import android.view.Gravity;
 import android.widget.Toast;
 
 import com.samsung.microbit.model.CmdArg;
+import com.samsung.microbit.plugin.AlertPlugin;
+import com.samsung.microbit.plugin.AudioPlugin;
+import com.samsung.microbit.plugin.CameraPlugin;
+import com.samsung.microbit.plugin.FeedbackPlugin;
+import com.samsung.microbit.plugin.FilePlugin;
+import com.samsung.microbit.plugin.InformationPlugin;
+import com.samsung.microbit.plugin.RemoteControlPlugin;
+import com.samsung.microbit.plugin.TelephonyPlugin;
 import com.samsung.microbit.service.PluginService;
 
 import org.apache.cordova.CallbackContext;

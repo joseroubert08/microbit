@@ -11,7 +11,7 @@ import com.samsung.microbit.service.PluginService;
 /**
  * Created by kkulendiran on 11/05/2015.
  */
-public class Monitor extends BroadcastReceiver{
+public class BroadcastMonitor extends BroadcastReceiver{
 
     @Override
     public void onReceive(final Context context, final Intent intent) {

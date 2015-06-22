@@ -29,8 +29,8 @@ import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.model.PreferencesInteraction;
-import com.samsung.microbit.model.Utils;
+import com.samsung.microbit.core.PreferencesInteraction;
+import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.DfuService;
 import com.samsung.microbit.ui.ImageAdapter;
