@@ -33,7 +33,7 @@ import com.samsung.microbit.core.PreferencesInteraction;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.DfuService;
-import com.samsung.microbit.ui.ImageAdapter;
+import com.samsung.microbit.ui.adapter.ImageAdapter;
 import com.samsung.microbit.ui.fragment.FlashSectionFragment;
 
 import java.util.ArrayList;

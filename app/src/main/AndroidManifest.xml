@@ -48,8 +48,7 @@
 
 		<activity
 			android:name=".ui.activity.MainActivity"
-			android:label="@string/app_name"
-			android:screenOrientation="portrait">
+			android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 
@@ -65,6 +64,13 @@
 			android:name=".ui.activity.LEDGridActivity"
 			android:label="@string/title_activity_ledgrid"
 			android:parentActivityName=".ui.activity.MainActivity">
+		</activity>
+
+		<activity
+			android:name=".ui.activity.ConnectActivity"
+			android:label="@string/title_activity_connect"
+			android:parentActivityName=".ui.activity.MainActivity"
+			android:windowSoftInputMode="adjustPan">
 		</activity>
 
 		<activity

@@ -34,6 +34,7 @@
     <string name="disconnected">Disconnected</string>
     <string name="title_devices">MicroBit Device Scan</string>
     <string name="title_activity_ledgrid">Find MicroBit</string>
+    <string name="title_activity_connect">Connect</string>
     <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
     <string name="microbit_not_found">Microbit not found. Please search.</string>
     <string name="microbit_found">Use existing micro:bit?</string>
@@ -93,5 +94,11 @@
     <string name="ringtone_via_microbit">Playing ringtone via Microbit!</string>
     <string name="sound_via_microbit">Playing sound via Microbit!</string>
     <string name="alert">Alert...</string>
-    
+
+    <!-- Connec Acitivity -->
+    <string name="previous_devices">Previous devices</string>
+    <string name="new_devices">Connect to a new device</string>
+    <string name="name_device">Name this device</string>
+    <string name="connect">Connect</string>
+
 </resources>

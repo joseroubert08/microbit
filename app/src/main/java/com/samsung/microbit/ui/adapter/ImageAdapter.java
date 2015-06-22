@@ -1,4 +1,4 @@
-package com.samsung.microbit.ui;
+package com.samsung.microbit.ui.adapter;
 
 import android.content.Context;
 import android.view.View;
