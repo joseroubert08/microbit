@@ -169,4 +169,6 @@ public class Constants {
 		u = new UUID(msb, u.getLeastSignificantBits());
 		return u;
 	}
+
+	public static String URL = "URL";
 }
