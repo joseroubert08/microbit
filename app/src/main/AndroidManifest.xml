@@ -72,6 +72,13 @@
 			android:windowSoftInputMode="adjustPan">
 		</activity>
 
+        <activity
+            android:name=".ui.activity.GamepadActivity"
+            android:label="@string/title_activity_gamepad"
+            android:screenOrientation="landscape"
+            android:parentActivityName=".ui.activity.MainActivity" >
+        </activity>
+
 		<activity
 			android:name=".ui.activity.AudioRecorderActivity"
 			android:label="Audio Recorder"

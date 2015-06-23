@@ -3,14 +3,14 @@
     <item android:state_pressed="true" >
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="oval">
-            <solid android:color="@color/gamepad_button_green_down"/>
+            <solid android:color="@color/gamepad_button_yellow_down"/>
             <stroke android:width="2dp" android:color="#fff" />
         </shape>
     </item>
     <item>
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="oval">
-            <solid android:color="@color/gamepad_button_green_up"/>
+            <solid android:color="@color/gamepad_button_yellow_up"/>
             <stroke android:width="2dp" android:color="#fff" />
         </shape>
     </item>
