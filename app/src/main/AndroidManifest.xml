@@ -80,6 +80,12 @@
         </activity>
 
 		<activity
+			android:name=".ui.activity.WebViewActivity"
+			android:parentActivityName=".ui.activity.MainActivity"
+			android:windowSoftInputMode="adjustPan">
+		</activity>
+
+		<activity
 			android:name=".ui.activity.AudioRecorderActivity"
 			android:label="Audio Recorder"
 			android:theme="@android:style/Theme.Holo">

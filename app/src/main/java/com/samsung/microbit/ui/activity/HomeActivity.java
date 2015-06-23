@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.model.Constants;
 
 public class HomeActivity extends Activity {
     @Override
@@ -22,7 +23,7 @@ public class HomeActivity extends Activity {
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
-        
+
         //Remove title bar
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -40,6 +41,10 @@ public class HomeActivity extends Activity {
     public void onBtnClicked(View v){
         if(v.getId() == R.id.addDevice){
             Intent intent = new Intent(this, ConnectActivity.class);
+            startActivity(intent);
+        } else if(v.getId() == R.id.startNewProject){
+            Intent intent = new Intent(this, WebViewActivity.class);
+            intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
             startActivity(intent);
         }
     }
