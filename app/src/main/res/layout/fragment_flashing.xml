@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				xmlns:tools="http://schemas.android.com/tools"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:alpha="1.0">
+
+	<ImageView
+		android:id="@+id/imageView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerHorizontal="true"
+		android:layout_marginTop="40dp"
+		android:background="#ff75bdff"
+		android:src="@drawable/microbit2"/>
+
+	<TextView
+		android:id="@+id/currentStatus"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/imageView"
+		android:layout_centerHorizontal="true"
+		android:layout_marginTop="15dp"
+		android:text="Sending project..."
+		android:textSize="14pt"/>
+
+	<ProgressBar
+		android:id="@+id/progressBar"
+		style="@android:style/Widget.ProgressBar.Horizontal"
+		android:layout_width="400dp"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/currentStatus"
+		android:layout_centerHorizontal="true"
+		android:layout_marginTop="15dp"
+		android:indeterminate="false"
+		android:max="100"
+		android:progress="0"
+		android:progressDrawable="@drawable/green_progress_bar"/>
+
+	<ImageButton
+		android:id="@+id/ok_cancel_button"
+		android:layout_width="80dp"
+		android:layout_height="80dp"
+		android:layout_below="@+id/progressBar"
+		android:layout_centerHorizontal="true"
+		android:layout_marginTop="15dp"
+		android:background="@drawable/red_circle_btn"
+		android:src="@drawable/cross"
+		android:clickable="true"/>
+</RelativeLayout>
