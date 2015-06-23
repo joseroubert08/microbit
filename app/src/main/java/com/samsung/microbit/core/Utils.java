@@ -2,7 +2,12 @@ package com.samsung.microbit.core;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.util.Log;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Utils {
 
@@ -51,6 +56,44 @@ public class Utils {
 			logi("preferencesInteraction()");
 			interAction.interAct(getPreferences(ctx));
 		}
+	}
+
+	final public static String BINARY_FILE_NAME = "/sdcard/output.bin";
+
+	public static int findProgramsAndPopulate(HashMap<String, String> prettyFileNameMap, ArrayList<String> list) {
+		File sdcardDownloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+		Log.d("MicroBit", "Searching files in " + sdcardDownloads.getAbsolutePath());
+
+		int totalPrograms = 0;
+		if (sdcardDownloads.exists()) {
+			File files[] = sdcardDownloads.listFiles();
+			for (int i = 0; i < files.length; i++) {
+				String fileName = files[i].getName();
+				if (fileName.endsWith(".hex")) {
+
+					//Beautify the filename
+					String parsedFileName;
+
+					int dot = fileName.lastIndexOf(".");
+					parsedFileName = fileName.substring(0, dot);
+					parsedFileName = parsedFileName.replace('_', ' ');
+
+					if (prettyFileNameMap != null)
+					    prettyFileNameMap.put(parsedFileName, fileName);
+
+					if (list != null)
+					    list.add(parsedFileName);
+					++totalPrograms;
+				}
+			}
+		}
+
+		if (totalPrograms == 0) {
+			if (list != null)
+				list.add("No programs found !");
+		}
+
+		return totalPrograms;
 	}
 
 
