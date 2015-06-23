@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import 	android.os.SystemClock;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -29,6 +31,7 @@ import android.view.View.OnLongClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -46,7 +49,7 @@ public class CameraActivity_OldAPI extends Activity {
 	private static boolean mInstanceActive = false;
 
 	private CameraPreview mPreview;
-	private Button mButtonClick;
+	private ImageButton mButtonClick;
 	private Camera mCamera;
 	private BroadcastReceiver mMessageReceiver;
 	private boolean mVideo = false;
@@ -78,7 +81,8 @@ public class CameraActivity_OldAPI extends Activity {
 
 	private void setButtonForPicture() {
 
-		mButtonClick.setText(R.string.picture);
+		mButtonClick.setBackgroundResource(R.mipmap.camera_icon);
+		mButtonClick.invalidate();
 		mButtonClick.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
@@ -117,7 +121,8 @@ public class CameraActivity_OldAPI extends Activity {
 
 	private void setButtonForVideo() {
 
-		mButtonClick.setText(R.string.record);
+		mButtonClick.setBackgroundResource(R.mipmap.start_record_icon);
+		mButtonClick.invalidate();
 		mButtonClick.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				if (mIsRecording) {
@@ -134,7 +139,8 @@ public class CameraActivity_OldAPI extends Activity {
 						finish();
 					}
 
-					mButtonClick.setText(R.string.stop);
+					mButtonClick.setBackgroundResource(R.mipmap.stop_record_icon);
+					mButtonClick.invalidate();
 
 					//TODO Check that is true
 					// work on UiThread for better performance
@@ -177,18 +183,21 @@ public class CameraActivity_OldAPI extends Activity {
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.camera_old_api);
 		Intent intent = getIntent();
+		Log.d(TAG,"Tom Intent " + intent);
 		if(intent.getAction().contains("OPEN_FOR_PIC")) {
 			mVideo = false;
 		}else if(intent.getAction().contains("OPEN_FOR_VIDEO")) {
 			mVideo = true;
 		}
 
+		Log.d(TAG,"Tom mVideo " + mVideo);
+
 		mPreview = new CameraPreview(this, mCamera);
 		((FrameLayout) findViewById(R.id.surfaceView)).addView(mPreview);
 
 		mPreview.setKeepScreenOn(true);
 
-		mButtonClick = (Button) findViewById(R.id.picture);
+		mButtonClick = (ImageButton) findViewById(R.id.picture);
 
 
 		if(mVideo) {
@@ -207,8 +216,10 @@ public class CameraActivity_OldAPI extends Activity {
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				Log.i("CameraActivity_OldAPI", "mMessageReceiver.onReceive() :: Start");
-
-				if (!mVideo && intent.getAction().equals("TAKE_PIC")) {
+				if(intent.getAction().equals("CLOSE")){
+					finish();
+				}
+				else if(!mVideo && intent.getAction().equals("TAKE_PIC")) {
 					mButtonClick.callOnClick();
 				}
 				else if(mVideo && !mIsRecording && intent.getAction().equals("START_VIDEO")) {
@@ -292,6 +303,8 @@ public class CameraActivity_OldAPI extends Activity {
 				this.registerReceiver(mMessageReceiver, new IntentFilter("TAKE_PIC"));
 			}
 
+			this.registerReceiver(mMessageReceiver, new IntentFilter("CLOSE"));
+
 			logi("onCreate() :: onResume # ");
 		} catch (RuntimeException ex) {
 			Toast.makeText(this, getString(R.string.camera_not_found), Toast.LENGTH_LONG).show();
@@ -342,8 +355,11 @@ public class CameraActivity_OldAPI extends Activity {
 	PictureCallback jpegCallback = new PictureCallback() {
 		public void onPictureTaken(byte[] data, Camera camera) {
 			new SaveImageTask().execute(data);
+			mPreview.setBackgroundColor(0Xffffffff);
+			SystemClock.sleep(500);
+			mPreview.setBackgroundColor(0X00000000);
 			resetCam();
-			finish();
+//			finish();
 			Log.d(TAG, "onPictureTaken - jpeg");
 		}
 	};
