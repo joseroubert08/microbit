@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="fill_parent"
+    android:background="#00AAAAAA"
+    android:layout_height="fill_parent"
+    android:paddingTop="100dp"
+    android:paddingBottom="150dp"
+    android:paddingLeft="250dp"
+    android:paddingRight="250dp"
+    >
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:id="@+id/imageIcon"
+        android:src="@drawable/ic_launcher"
+        android:scaleType="fitCenter"
+        android:layout_weight="1"
+        android:layout_margin="10dp"
+        android:layout_gravity="center" />
+
+    <TextView
+        android:id="@+id/titleTxt"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="Title"
+        android:textSize="50sp" />
+
+    <TextView
+        android:id="@+id/messageTxt"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:textAlignment="center"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="Message"
+        android:textSize="30sp"
+        />
+
+    <ViewSwitcher
+        android:id="@+id/switcher"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <ImageButton
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="fill_parent"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:id="@+id/imageButtonCancel"
+                android:src="@drawable/cancel_button"
+                android:background="@null"
+                />
+
+            <ImageButton
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="fill_parent"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:id="@+id/imageButtonOk"
+                android:src="@drawable/ok_button"
+                android:background="@null"
+                />
+        </LinearLayout>
+
+        <ImageButton
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:id="@+id/imageButton"
+            android:src="@drawable/ok_button"
+            android:background="@null"
+        />
+
+    </ViewSwitcher>
+</LinearLayout>
