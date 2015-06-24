@@ -7,6 +7,8 @@ package com.samsung.microbit.ui.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.Html;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,11 +27,17 @@ import java.util.List;
 public class ConnectedDeviceAdapter extends BaseAdapter {
 
     private List<ConnectedDevice> mListConnectedDevice;
+    private Context parentActivity;
 
-    public ConnectedDeviceAdapter(List<ConnectedDevice> list) {
+    public ConnectedDeviceAdapter(Context context, List<ConnectedDevice> list) {
         mListConnectedDevice = list;
+        parentActivity=context;
     }
 
+    public void updateAdapter(List<ConnectedDevice> list)
+    {
+        mListConnectedDevice = list;
+    }
     @Override
     public int getCount() {
         return mListConnectedDevice.size();
@@ -61,18 +69,30 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
         ImageButton deleteBtn = (ImageButton)convertView.findViewById(R.id.deleteBtn);
 
         // set name and pattern
-        if(entry.getName() == null) {
+        if(entry.getPattern() == null) {
             deviceName.setEnabled(false);
             connectBtn.setEnabled(false);
             deleteBtn.setEnabled(false);
         }
         else {
-            deviceName.setText(entry.getName());
+            String styledText = "<font color='blue'><big>"+entry.getName()+"</big> </font><br/>"
+                    + "<font color='blue'><small>("+entry.getPattern() + ")</small> </font>";
+            deviceName.setText(Html.fromHtml(styledText));
+            deviceName.setGravity(Gravity.LEFT);
+            deviceName.setEnabled(false);
 
             if(!entry.getStatus()) {
                 connectBtn.setImageResource(R.drawable.disconnected);
                 connectBtn.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.red_btn));
+            } else {
+                connectBtn.setImageResource(R.drawable.connected);
+                connectBtn.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.green_btn));
             }
+            deviceName.setTag(pos);
+            connectBtn.setTag(pos);
+            deleteBtn.setTag(pos);
+            connectBtn.setOnClickListener((View.OnClickListener)parentActivity);
+            deleteBtn.setOnClickListener((View.OnClickListener) parentActivity);
         }
 
         return convertView;
