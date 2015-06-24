@@ -14,10 +14,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.samsung.microbit"
-    android:versionCode="1"
-    android:versionName="1.0" >
+<manifest
+	package="com.samsung.microbit"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:versionCode="1"
+	android:versionName="1.0">
 
 	<uses-sdk android:minSdkVersion="19"/>
 
@@ -47,13 +48,18 @@
 
 		<activity
 			android:name=".ui.activity.HomeActivity"
-			android:label="@string/app_name">
+			android:label="@string/app_name"
+			android:screenOrientation="userLandscape">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
-
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
 		</activity>
+
+		<activity
+			android:name=".ui.activity.ProjectActivity"
+			android:label="@string/app_name"
+			android:parentActivityName=".ui.activity.MainActivity"/>
 
 		<activity
 			android:name=".ui.activity.NotificationActivity"
@@ -72,12 +78,12 @@
 			android:windowSoftInputMode="adjustPan">
 		</activity>
 
-        <activity
-            android:name=".ui.activity.GamepadActivity"
-            android:label="@string/title_activity_gamepad"
-            android:screenOrientation="landscape"
-            android:parentActivityName=".ui.activity.MainActivity" >
-        </activity>
+		<activity
+			android:name=".ui.activity.GamepadActivity"
+			android:label="@string/title_activity_gamepad"
+			android:parentActivityName=".ui.activity.MainActivity"
+			android:screenOrientation="landscape">
+		</activity>
 
 		<activity
 			android:name=".ui.activity.WebViewActivity"
