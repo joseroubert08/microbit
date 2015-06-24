@@ -60,7 +60,7 @@ public class HomeActivity extends Activity {
     {
         TextView connectBarTitle = (TextView) findViewById(R.id.title);
         SharedPreferences p = Utils.getInstance().getPreferences(this);
-        connectBarTitle.setText(p.getString(Utils.PREFERENCES_NAME_KEY, "Connect to your Micro:Bit"));
+        connectBarTitle.setText("Connect to " + p.getString(Utils.PREFERENCES_NAME_KEY, "your Micro:Bit"));
     }
 
     private final void updateProjectBarProjects()
