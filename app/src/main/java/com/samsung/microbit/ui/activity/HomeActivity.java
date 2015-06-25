@@ -55,6 +55,10 @@ public class HomeActivity extends Activity {
             intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
             startActivity(intent);
         }
+        else if(v.getId() == R.id.numOfProjects) {
+            Intent intent = new Intent(this, ProjectActivity.class);
+            startActivity(intent);
+        }
     }
 
     private final void updateConnectBarTitle()

@@ -26,7 +26,8 @@ How to use:
 PopUp.show(context,
         "Accept Audio Recording?\nClick Yes to allow", //message
         "Privacy", //title
-        R.drawable.microphone_on, //image icon res id
+        R.drawable.microphone_on, //image icon res id (pass 0 to use default icon)
+		0, //image icon background res id (pass 0 if there is no background)
         PopUp.TYPE_CHOICE, //type of popup.
         new View.OnClickListener(){
             @Override
@@ -69,7 +70,10 @@ public class PopUp {
         current_type = TYPE_MAX; // reset current type to none
     }
 
-    public static void show(Context context, String message, String title, int imageResId, int type,
+    //pass 0 to imageResId to use default exclamation icon
+    //pass 0 to imageBackgroundResId if no background needed for icon
+    public static void show(Context context, String message, String title,
+                            int imageResId, int imageBackgroundResId, int type,
                             View.OnClickListener okListener, View.OnClickListener cancelListener)
     {
         //if blocking popup is already displayed, do not show another popup
@@ -84,7 +88,12 @@ public class PopUp {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View popUpView = inflater.inflate(R.layout.dialog_popup, null);
         ImageView imageView = (ImageView)popUpView.findViewById(R.id.imageIcon);
-        imageView.setImageResource(imageResId);
+        if (imageResId != 0) {
+            imageView.setImageResource(imageResId);
+        }
+        if (imageBackgroundResId != 0) {
+            imageView.setBackgroundResource(imageBackgroundResId);
+        }
         TextView titleTextView = (TextView)popUpView.findViewById(R.id.titleTxt);
         titleTextView.setText(title);
         TextView messageTextView = (TextView)popUpView.findViewById(R.id.messageTxt);

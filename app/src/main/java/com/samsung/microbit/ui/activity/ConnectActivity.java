@@ -403,6 +403,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
                 "We cannot find that Micro:Bit\nPlease try again", //message
                 "Error", //title
                 R.drawable.exclamation, //image icon res id
+                0,
                 PopUp.TYPE_ALERT, //type of popup.
                 new View.OnClickListener() {
                     @Override

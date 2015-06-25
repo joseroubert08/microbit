@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
+import com.samsung.microbit.ui.PopUp;
 
 import java.io.IOException;
 import java.util.Timer;
@@ -45,7 +46,11 @@ public class AlertPlugin {
 		context = ctx;
 		switch (cmd.getCMD()) {
 			case TOAST:
-				showToast(cmd.getValue());
+				PopUp.show(context,
+						cmd.getValue(),
+						"Message from Micro:Bit",
+						0, 0,
+						PopUp.TYPE_ALERT, null, null);
 				break;
 
 			case VIBRATE:
@@ -61,6 +66,11 @@ public class AlertPlugin {
 				break;
 
 			case FINDPHONE:
+				PopUp.show(context,
+						context.getString(R.string.findphone_via_microbit),
+						"Message from Micro:Bit",
+						0, 0,
+						PopUp.TYPE_ALERT, null, null);
 				findPhone();
 				break;
 
@@ -138,7 +148,6 @@ public class AlertPlugin {
 	}
 
 	private static void findPhone() {
-		showDialog(context.getString(R.string.findphone_via_microbit));
 		Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 		Ringtone r = RingtoneManager.getRingtone(context, ringtone);
 		int duration = getDuration(ringtone);
@@ -146,7 +155,6 @@ public class AlertPlugin {
 		r.play();
 		Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 		v.vibrate(duration);
-		dialogTimer(duration);
 	}
 
 	private static void vibrate(int duration) {
