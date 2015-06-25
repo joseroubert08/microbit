@@ -9,6 +9,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.HttpAuthHandler;
+import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
@@ -21,6 +23,7 @@ import org.apache.cordova.CordovaChromeClient;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.CordovaWebViewClient;
 import org.apache.cordova.LOG;
 
 import java.util.concurrent.ExecutorService;
@@ -49,6 +52,41 @@ public class CodeSectionFragment extends Fragment implements CordovaInterface {
     }
 
 
+	private class myWebViewClient extends CordovaWebViewClient {
+
+		public myWebViewClient(CordovaInterface cordova) {
+			super(cordova);
+		}
+		public myWebViewClient(CordovaInterface cordova, CordovaWebView view){
+			super(cordova,view);
+		}
+		public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
+			LOG.d(TAG, "onReceivedHttpAuthRequest");
+			final WebView mView = view;
+			final HttpAuthHandler mHandler = handler;
+
+			mHandler.proceed("microbit", "bitbug42");
+		}
+	}
+
+	private class myWebViewChromeClient extends CordovaChromeClient{
+
+		public myWebViewChromeClient(CordovaInterface cordova) {
+			super(cordova);
+		}
+		public void onProgressChanged(WebView view, int newProgress) {
+			LOG.d(TAG, "onProgressChanged");
+            CodeSectionFragment.this.setValue(newProgress);
+			super.onProgressChanged(view, newProgress);
+		}
+
+		@Override
+		public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+			LOG.d(TAG, "onJsAlert");
+			return super.onJsAlert(view, url, message, result);
+		}
+	}
+
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
@@ -61,15 +99,11 @@ public class CodeSectionFragment extends Fragment implements CordovaInterface {
         touchDevelopProgress.setMax(100);
 		loadingText = (TextView) rootView.findViewById(R.id.loadingText);
         //Load URL now
-        touchDevelopView.loadUrl("https://microbit:bitbug42@live.microbit.co.uk/");
+        touchDevelopView.loadUrl("https://live.microbit.co.uk/app/?fota=1");
 
-        touchDevelopView.setWebChromeClient(new CordovaChromeClient(this) {
-            public void onProgressChanged(WebView view, int newProgress) {
-                LOG.d(TAG, "onProgressChanged");
-                CodeSectionFragment.this.setValue(newProgress);
-                super.onProgressChanged(view, newProgress);
-            }
-        });
+
+        touchDevelopView.setWebChromeClient(new myWebViewChromeClient(this));
+        touchDevelopView.setWebViewClient( new myWebViewClient(this,touchDevelopView));
 
     	return rootView;
     }
