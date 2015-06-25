@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_height="wrap_content"
+android:id="@+id/connectSearchView"
+android:layout_toRightOf="@id/prevDeviceView"
+android:layout_width="0dp"
+android:layout_weight="1"
+android:visibility="gone">
+
+<TextView
+    android:id="@+id/connectSearchTitle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/connectSearchingTitle"
+    android:textSize="30sp"
+    android:textColor="@color/black_font_color"/>
+
+<RelativeLayout
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:id="@+id/connectSearchImage"
+    android:layout_below="@id/connectSearchTitle"
+    android:layout_marginTop="@dimen/content_margin"
+    android:background="#fff">
+
+    <ImageButton
+        android:id="@+id/cancel_search_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/red_circle_btn"
+        android:src="@drawable/cross"
+        android:clickable="true"/>
+
+</RelativeLayout>
+
+
+
+</RelativeLayout>

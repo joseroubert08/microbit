@@ -43,13 +43,21 @@ public class PopUp {
     static private Dialog dialog = null;
     static public final int TYPE_CHOICE = 0;//2 buttons type
     static public final int TYPE_ALERT = 1;//1 button type
+    static public final int TYPE_MAX = 2;
+
+    static public int current_type = TYPE_MAX;
 
     static private View.OnClickListener defaultListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            dialog.dismiss();
+            PopUp.hide();
         }
     };
+
+    public static boolean isBlockingPopUpDisplayed()
+    {
+        return current_type == TYPE_CHOICE;
+    }
 
     public static void hide()
     {
@@ -57,12 +65,21 @@ public class PopUp {
             return;
 
         dialog.dismiss();
+        dialog = null;
+        current_type = TYPE_MAX; // reset current type to none
     }
 
-    //TODO: manage stack of popup?
     public static void show(Context context, String message, String title, int imageResId, int type,
                             View.OnClickListener okListener, View.OnClickListener cancelListener)
     {
+        //if blocking popup is already displayed, do not show another popup
+        if (current_type == TYPE_CHOICE)
+            return;
+
+        PopUp.hide();
+
+        current_type = type;
+
         dialog = new Dialog(context, R.style.PopUpDialog);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View popUpView = inflater.inflate(R.layout.dialog_popup, null);

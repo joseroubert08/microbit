@@ -11,6 +11,7 @@
         android:layout_marginTop="@dimen/content_margin">
     <ImageButton
         android:id="@+id/homeBtn"
+        android:onClick="onHomeBtnClicked"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:src="@drawable/home"
@@ -77,74 +78,12 @@
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"/>
 
-        <RelativeLayout
-            android:layout_height="wrap_content"
-            android:id="@+id/newDeviceView"
-            android:layout_toRightOf="@id/prevDeviceView"
-            android:layout_width="0dp"
-            android:layout_weight="1">
+        <include layout="@layout/view_pairing_start"/>
+        <include layout="@layout/view_pairing_tip"/>
+        <include layout="@layout/view_pairing_pattern"/>
+        <include layout="@layout/view_pairing_searching"/>
 
-            <TextView
-                android:id="@+id/newDeviceTxt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/new_devices"
-                android:textSize="30sp"
-                android:textColor="@color/black_font_color"/>
 
-            <RelativeLayout
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_below="@id/newDeviceTxt"
-                android:layout_marginTop="@dimen/content_margin"
-                android:background="#fff">
-
-                <GridView
-                    android:id="@+id/gridview"
-                    android:layout_width="260dp"
-                    android:layout_height="260dp"
-                    android:numColumns="5"
-                    android:verticalSpacing="2dp"
-                    android:horizontalSpacing="2dp"
-                    android:gravity="center"
-                    android:layout_margin="@dimen/content_margin" />
-
-                <TextView
-                    android:id="@+id/nameNewTxt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/name_device"
-                    android:layout_toRightOf="@id/gridview"
-                    android:textSize="25sp"
-                    android:layout_marginTop="@dimen/content_margin"
-                    android:textColor="@color/black_font_color"/>
-                
-                <EditText
-                    android:id="@+id/nameNewEdit"
-                    android:layout_marginTop="@dimen/widget_margin"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/nameNewTxt"
-                    android:layout_toRightOf="@id/gridview"
-                    android:lines="3"
-                    android:background="@drawable/edit_box"
-                    android:layout_marginRight="@dimen/content_margin"
-                    android:textColor="@color/black_font_color"/>
-
-                <Button
-                    android:layout_width="fill_parent"
-                    android:layout_height="80dp"
-                    android:layout_marginTop="@dimen/widget_margin"
-                    android:background="@drawable/green_btn"
-                    android:layout_below="@id/nameNewEdit"
-                    android:layout_toRightOf="@id/gridview"
-                    android:text="@string/connect"
-                    android:textColor="#fff"
-                    android:layout_marginRight="@dimen/content_margin"/>
-
-            </RelativeLayout>
-
-        </RelativeLayout>
 
     </LinearLayout>
 

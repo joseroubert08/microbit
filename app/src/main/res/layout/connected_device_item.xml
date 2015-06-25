@@ -18,10 +18,10 @@
         android:id="@+id/connectBtn"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:src="@drawable/connected"
+        android:src="@drawable/disconnected"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_marginLeft="@dimen/activity_vertical_margin"
-        android:background="@drawable/green_btn"
+        android:background="@drawable/red_btn"
         android:layout_toRightOf="@id/deviceName"/>
 
     <ImageButton
