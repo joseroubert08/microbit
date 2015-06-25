@@ -4,10 +4,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.webkit.HttpAuthHandler;
+import android.webkit.JsResult;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -22,6 +27,7 @@ import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaWebViewClient;
+import org.apache.cordova.LOG;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,10 +35,49 @@ import java.util.concurrent.Executors;
 public class WebViewActivity extends Activity implements CordovaInterface {
 
     private CordovaWebView touchDevelopView = null;
-    private ProgressBar progress = null;
+    private ProgressBar touchDevelopProgress = null;
     private TextView loadingTxt = null;
     private final ExecutorService threadPool = Executors.newCachedThreadPool();
+    private CordovaPlugin activityResultCallback;
 
+    String TAG = "WebViewActivity";
+
+
+
+    private class myWebViewClient extends CordovaWebViewClient{
+
+        public myWebViewClient(CordovaInterface cordova) {
+            super(cordova);
+        }
+        public myWebViewClient(CordovaInterface cordova, CordovaWebView view){
+            super(cordova,view);
+        }
+        public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
+            LOG.d(TAG, "onReceivedHttpAuthRequest");
+            final WebView mView = view;
+            final HttpAuthHandler mHandler = handler;
+
+            mHandler.proceed("microbit", "bitbug42");
+        }
+    }
+
+    private class myWebViewChromeClient extends CordovaChromeClient{
+
+        public myWebViewChromeClient(CordovaInterface cordova) {
+            super(cordova);
+        }
+        public void onProgressChanged(WebView view, int newProgress) {
+            LOG.d(TAG, "onProgressChanged");
+            WebViewActivity.this.setValue(newProgress);
+            super.onProgressChanged(view, newProgress);
+        }
+
+        @Override
+        public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+            LOG.d(TAG, "onJsAlert");
+            return super.onJsAlert(view, url, message, result);
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,13 +90,16 @@ public class WebViewActivity extends Activity implements CordovaInterface {
         setContentView(R.layout.activity_webview);
 
         touchDevelopView = (CordovaWebView) findViewById(R.id.touchDevelopView);
-        touchDevelopView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        touchDevelopView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        touchDevelopView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        touchDevelopView.getSettings().setJavaScriptEnabled(true);
+
         Config.init(this);
 
         loadingTxt = (TextView) findViewById(R.id.loadingTxt);
 
-        progress = (ProgressBar) findViewById(R.id.progressBar);
-        progress.setMax(100);
+        touchDevelopProgress = (ProgressBar) findViewById(R.id.progressBar);
+        touchDevelopProgress.setMax(100);
 
         Intent intent = getIntent();
         String url = intent.getStringExtra(Constants.URL);
@@ -62,17 +110,8 @@ public class WebViewActivity extends Activity implements CordovaInterface {
         } else {
             touchDevelopView.loadUrl(url);
         }
-
-        touchDevelopView.setWebChromeClient(new CordovaChromeClient(this) {
-            public void onProgressChanged(WebView view, int newProgress) {
-                WebViewActivity.this.setValue(newProgress);
-                super.onProgressChanged(view, newProgress);
-            }
-        });
-
-        touchDevelopView.setWebViewClient(new CordovaWebViewClient(this, touchDevelopView) {
-
-        });
+        touchDevelopView.setWebChromeClient(new myWebViewChromeClient(this));
+        touchDevelopView.setWebViewClient( new myWebViewClient(this,touchDevelopView));
 
         touchDevelopView.setVisibility(View.INVISIBLE);
     }
@@ -91,11 +130,11 @@ public class WebViewActivity extends Activity implements CordovaInterface {
             loadingTxt.setVisibility(View.GONE);
             touchDevelopView.setVisibility(View.VISIBLE);
         }
-        this.progress.setProgress(progress);
+        this.touchDevelopProgress.setProgress(progress);
     }
 
     @Override
-    public void startActivityForResult(CordovaPlugin cordovaPlugin, Intent intent, int i) {
+    public void startActivityForResult(CordovaPlugin command, Intent intent, int requestCode) {
 
     }
 
@@ -110,7 +149,17 @@ public class WebViewActivity extends Activity implements CordovaInterface {
     }
 
     @Override
-    public Object onMessage(String s, Object o) {
+    public Object onMessage(String id, Object data) {
+
+        LOG.d(TAG, "onMessage(" + id + "," + data + ")");
+        switch(id){
+            case "spinner":
+                if (touchDevelopProgress != null ){
+                    touchDevelopProgress.setVisibility(View.INVISIBLE);
+                    //loadingText.setVisibility(View.INVISIBLE);
+                }
+                break;
+        }
         return null;
     }
 
