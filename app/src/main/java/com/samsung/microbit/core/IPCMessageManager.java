@@ -12,7 +12,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.samsung.microbit.ui.activity.MainActivity;
+import com.samsung.microbit.ui.activity.HomeActivity;
 
 import java.util.HashMap;
 
@@ -98,7 +98,7 @@ public final class IPCMessageManager {
 		logi("configureServerConnection()");
 		Intent intent = new Intent();
 		intent.setAction(serviceClass.getName());
-		intent = MainActivity.createExplicitFromImplicitIntent(context.getApplicationContext(), intent);
+		intent = HomeActivity.createExplicitFromImplicitIntent(context.getApplicationContext(), intent);
 		context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 	}
 

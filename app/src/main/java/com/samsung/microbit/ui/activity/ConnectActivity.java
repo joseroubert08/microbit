@@ -498,8 +498,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
 
     @Override
     protected void onDestroy() {
-
-
+        super.onDestroy();
     }
 
 
