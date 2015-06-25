@@ -73,13 +73,13 @@ android:visibility="gone">
             android:id="@+id/ok_name_button"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_marginTop="@dimen/widget_margin"
+            android:layout_marginTop="15dp"
             android:background="@drawable/ok_button"
             android:clickable="true"
             android:layout_centerVertical="true"
             android:layout_below="@id/nameNewEdit"
             android:layout_toRightOf="@id/cancel_name_button"
-            android:layout_marginStart="57dp"
+            android:layout_marginStart="90dp"
             android:visibility="invisible"/>
 
     </RelativeLayout>
