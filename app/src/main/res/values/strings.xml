@@ -18,7 +18,7 @@
     <string name="app_name">Companion</string>
     <string name="poweredBy">Powered by\r\n SAMSUNG</string>
 
-    <string name="touchDevURLNew">https://live.microbit.co.uk/</string>
+    <string name="touchDevURLNew">https://live.microbit.co.uk/?fota=1</string>
 
     <string name="search_BLE_activity">Search Microbit</string>
     <string name="device_details">Device_details</string>
@@ -116,4 +116,7 @@
     <string name="new_project">New Project</string>
     <string name="loading_page_msg">Please wait. Page is loading...</string>
 
+    <!-- Popup message -->
+    <string name="delete_project_message">Are you sure you want to want to remove this project?\r\nIt will be removed from this app but will still be available within your Micro:Bit account.</string>
+    <string name="delete_project_title">Delete project?</string>
 </resources>

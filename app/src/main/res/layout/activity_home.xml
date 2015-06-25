@@ -78,7 +78,8 @@
             android:layout_margin="@dimen/widget_margin"
             android:textColor="@color/black_font_color"
             android:background="@drawable/white_btn"
-            android:layout_toRightOf="@id/projects"/>
+            android:layout_toRightOf="@id/projects"
+            android:onClick="onBtnClicked"/>
 
         <Button
             android:id="@+id/startNewProject"

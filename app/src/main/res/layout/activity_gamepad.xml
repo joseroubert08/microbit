@@ -10,18 +10,19 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/content_margin">
     <ImageButton
-        android:id="@+id/homeBtn"
+        android:id="@+id/gamepadHomeBtn"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:src="@drawable/home"
-        android:background="@drawable/green_btn"/>
+        android:background="@drawable/green_btn"
+        android:onClick="onBtnClicked"/>
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/gamepad"
-        android:layout_toRightOf="@id/homeBtn"
+        android:layout_toRightOf="@id/gamepadHomeBtn"
         android:textSize="40sp"
         android:textColor="@color/white_font_color"
         android:layout_marginLeft="@dimen/content_margin"
@@ -63,7 +64,8 @@
                 android:layout_marginTop="0dp"
                 android:layout_marginLeft="125dp"
                 android:src="@drawable/gamepad_up_button"
-                android:background="@drawable/green_circle_btn"/>
+                android:background="@drawable/green_circle_btn"
+                android:onClick="onBtnClicked"/>
 
             <ImageButton
                 android:id="@+id/gamepadLeftButton"
@@ -72,7 +74,8 @@
                 android:layout_marginTop="125dp"
                 android:layout_marginLeft="0dp"
                 android:src="@drawable/gamepad_left_button"
-                android:background="@drawable/green_circle_btn"/>
+                android:background="@drawable/green_circle_btn"
+                android:onClick="onBtnClicked"/>
 
             <ImageButton
                 android:id="@+id/gamepadRightButton"
@@ -81,7 +84,8 @@
                 android:layout_marginTop="125dp"
                 android:layout_marginLeft="250dp"
                 android:src="@drawable/gamepad_right_button"
-                android:background="@drawable/green_circle_btn"/>
+                android:background="@drawable/green_circle_btn"
+                android:onClick="onBtnClicked"/>
 
             <ImageButton
                 android:id="@+id/gamepadDownButton"
@@ -90,7 +94,8 @@
                 android:layout_marginTop="250dp"
                 android:layout_marginLeft="125dp"
                 android:src="@drawable/gamepad_down_button"
-                android:background="@drawable/green_circle_btn"/>
+                android:background="@drawable/green_circle_btn"
+                android:onClick="onBtnClicked"/>
 
         </RelativeLayout>
 
@@ -110,7 +115,8 @@
                 android:layout_marginTop="0dp"
                 android:layout_marginLeft="250dp"
                 android:src="@drawable/gamepad_a_button"
-                android:background="@drawable/green_circle_btn"/>
+                android:background="@drawable/green_circle_btn"
+                android:onClick="onBtnClicked"/>
 
             <ImageButton
                 android:id="@+id/gamepadBButton"
@@ -119,7 +125,8 @@
                 android:layout_marginTop="125dp"
                 android:layout_marginLeft="125dp"
                 android:src="@drawable/gamepad_b_button"
-                android:background="@drawable/purple_circle_btn"/>
+                android:background="@drawable/purple_circle_btn"
+                android:onClick="onBtnClicked"/>
 
             <ImageButton
                 android:id="@+id/gamepadCButton"
@@ -128,7 +135,8 @@
                 android:layout_marginTop="125dp"
                 android:layout_marginLeft="375dp"
                 android:src="@drawable/gamepad_c_button"
-                android:background="@drawable/blue_circle_btn"/>
+                android:background="@drawable/blue_circle_btn"
+                android:onClick="onBtnClicked"/>
 
             <ImageButton
                 android:id="@+id/gamepadDButton"
@@ -137,7 +145,8 @@
                 android:layout_marginTop="250dp"
                 android:layout_marginLeft="250dp"
                 android:src="@drawable/gamepad_d_button"
-                android:background="@drawable/yellow_circle_btn"/>
+                android:background="@drawable/yellow_circle_btn"
+                android:onClick="onBtnClicked"/>
 
 
         </RelativeLayout>

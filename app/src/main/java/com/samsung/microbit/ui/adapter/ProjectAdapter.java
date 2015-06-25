@@ -17,6 +17,7 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.Project;
 import com.samsung.microbit.ui.activity.ProjectActivity;
+import com.samsung.microbit.ui.PopUp;
 
 import java.util.List;
 
@@ -55,7 +56,18 @@ public class ProjectAdapter extends BaseAdapter {
 	private View.OnClickListener deleteBtnClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			Toast.makeText(MBApp.getContext(), "deleteBtn Clicked: " + v.getTag(), Toast.LENGTH_SHORT).show();
+			PopUp.show(MBApp.getContext(),
+					MBApp.getContext().getString(R.string.delete_project_message),
+					MBApp.getContext().getString(R.string.delete_project_title),
+					R.drawable.delete, R.drawable.red_btn,
+					PopUp.TYPE_CHOICE, 
+					new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							PopUp.hide();
+							Toast.makeText(MBApp.getContext(), "Project deleted", Toast.LENGTH_SHORT).show();
+						}
+					}, null);
 		}
 	};
 
