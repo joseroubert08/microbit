@@ -46,7 +46,7 @@ public class ProjectActivity extends Activity {
 
 		projectListView = (ListView) findViewById(R.id.project_list_view);
 		populateDummyData();
-		projectAdapter = new ProjectAdapter(projectList);
+		projectAdapter = new ProjectAdapter(this, projectList);
 		projectListView.setAdapter(projectAdapter);
 	}
 
@@ -63,8 +63,9 @@ public class ProjectActivity extends Activity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-/*
+
 		//noinspection SimplifiableIfStatement
+		/*
 		if (id == R.id.action_settings) {
 			return true;
 		} else if (id == R.id.load_fragment) {
@@ -103,7 +104,8 @@ public class ProjectActivity extends Activity {
 				fragment.changeMeaning();
 			}
 		}
-*/
+		*/
+
 		return super.onOptionsItemSelected(item);
 	}
 
