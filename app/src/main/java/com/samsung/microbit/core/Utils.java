@@ -107,6 +107,11 @@ public class Utils {
 	public static ConnectedDevice getPairedMicrobit(Context ctx)
 	{
 		SharedPreferences pairedDevicePref = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
+
+		if(pairedDevice == null){
+			pairedDevice = new ConnectedDevice();
+		}
+
 		if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
 			String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
 			Gson gson = new Gson();
@@ -121,9 +126,14 @@ public class Utils {
 	{
 		SharedPreferences pairedDevicePref = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
 		SharedPreferences.Editor editor = pairedDevicePref.edit();
-		Gson gson = new Gson();
-		String jsonActiveDevice = gson.toJson(newDevice);
-		editor.putString(PREFERENCES_PAIREDDEV_KEY,jsonActiveDevice);
+		if(newDevice == null)
+		{
+			editor.clear();
+		} else {
+			Gson gson = new Gson();
+			String jsonActiveDevice = gson.toJson(newDevice);
+			editor.putString(PREFERENCES_PAIREDDEV_KEY, jsonActiveDevice);
+		}
 		editor.commit();
 		isChanged = true;
 	}

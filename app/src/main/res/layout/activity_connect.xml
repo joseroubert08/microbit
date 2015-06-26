@@ -67,7 +67,8 @@
                 android:layout_weight="1"
                 android:layout_below="@id/prevDeviceTxt"
                 android:divider="@android:color/transparent"
-                android:dividerHeight="5dp"/>
+                android:dividerHeight="5dp"
+                android:clickable="false"/>
 
         </RelativeLayout>
 
