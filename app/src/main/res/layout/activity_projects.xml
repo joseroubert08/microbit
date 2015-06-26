@@ -1,0 +1,143 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools" android:layout_width="fill_parent"
+	android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+	android:paddingRight="@dimen/activity_horizontal_margin"
+	tools:context=".MainActivity"
+	android:background="@drawable/bg">
+
+	<RelativeLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="@dimen/content_margin">
+
+		<ImageButton
+			android:id="@+id/homeBtn"
+			android:onClick="onClick"
+			android:layout_width="100dp"
+			android:layout_height="100dp"
+			android:src="@drawable/home"
+			android:background="@drawable/green_btn"/>
+
+		<TextView
+			android:id="@+id/title"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/projects"
+			android:layout_toRightOf="@id/homeBtn"
+			android:textSize="40sp"
+			android:textColor="@color/white_font_color"
+			android:layout_marginLeft="@dimen/content_margin"
+			android:layout_centerVertical="true"/>
+
+	</RelativeLayout>
+
+	<ImageView
+		android:id="@+id/bbcLogo"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:src="@drawable/microbit"
+		android:layout_centerHorizontal="true"/>
+
+	<RelativeLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="@dimen/content_margin"
+		android:layout_alignParentEnd="true">
+
+		<TextView
+			android:id="@+id/connectedIndicatorText"
+			android:layout_width="200dp"
+			android:layout_height="100dp"
+			android:background="@drawable/project_text_box"
+			android:editable="false"/>
+
+		<ImageButton
+			android:id="@+id/connectedIndicatorIcon"
+			android:layout_width="100dp"
+			android:layout_height="100dp"
+			android:layout_toRightOf="@id/connectedIndicatorText"
+			android:background="@drawable/project_connect_btn"
+			android:src="@drawable/connected"/>
+
+	</RelativeLayout>
+
+	<RelativeLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:layout_below="@id/bbcLogo"
+		android:layout_marginTop="@dimen/content_margin">
+
+		<LinearLayout
+			android:id="@+id/mainContentView"
+			android:layout_width="830dp"
+			android:layout_height="400dp"
+			android:orientation="horizontal"
+			android:layout_gravity="center_vertical"
+			android:background="@drawable/white_bg">
+
+				<ListView
+					android:id="@+id/projectListView"
+					android:layout_width="fill_parent"
+					android:layout_height="fill_parent"
+					android:layout_weight="1"
+					android:divider="@android:color/transparent"
+					android:dividerHeight="5dp"/>
+
+				<TextView
+					android:id="@android:id/empty"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
+					android:gravity="center"
+					android:textSize="@dimen/button_text_size"
+					android:textColor="@color/black_font_color"
+					android:text="@string/no_projects" />
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/main_right"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentEnd="true"
+			android:orientation="vertical">
+
+			<Button
+				android:id="@+id/createProject"
+				android:layout_width="fill_parent"
+				android:layout_height="@dimen/button_height"
+				android:layout_marginBottom="8dp"
+				android:background="@drawable/green_btn"
+				android:drawableRight="@drawable/light_bulb"
+				android:gravity="center_vertical|left"
+				android:text="@string/create_new_project"
+				android:onClick="onClick"
+				android:textSize="@dimen/button_text_size"/>
+
+			<Button
+				android:id="@+id/downloadExisting"
+				android:layout_width="fill_parent"
+				android:layout_height="@dimen/button_height"
+				android:background="@drawable/green_btn"
+				android:gravity="center_vertical|left"
+				android:text="@string/download_existing"
+				android:textSize="@dimen/button_text_size"/>
+		</LinearLayout>
+
+	</RelativeLayout>
+
+	<LinearLayout
+		android:id="@+id/popup_overlay"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_alignParentStart="true"
+		android:layout_alignParentTop="true"
+		android:background="#333333"
+		android:orientation="horizontal"
+		android:visibility="invisible">
+	</LinearLayout>
+
+	<include layout="@layout/view_footer"/>
+
+</RelativeLayout>

@@ -65,7 +65,7 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
 		//Search BLE devices here with proper flash support
 		checkMicroBitAttached();
 		//Populate program list for later use
-		Utils.findProgramsAndPopulate(prettyFileNameMap, list);
+		//Utils.findProgramsAndPopulate(prettyFileNameMap, list);
 	}
 
 

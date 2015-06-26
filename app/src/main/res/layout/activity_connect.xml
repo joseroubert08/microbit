@@ -67,7 +67,8 @@
                 android:layout_weight="1"
                 android:layout_below="@id/prevDeviceTxt"
                 android:divider="@android:color/transparent"
-                android:dividerHeight="5dp"/>
+                android:dividerHeight="5dp"
+                android:clickable="false"/>
 
         </RelativeLayout>
 
@@ -87,21 +88,7 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/connectors"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/connector"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true" />
-
-    <ImageView
-        android:id="@+id/samsungLogo"
-        android:layout_width="300dp"
-        android:layout_height="100dp"
-        android:src="@drawable/samsung"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true" />
+    <include layout="@layout/view_footer"/>
 
 </RelativeLayout>
 

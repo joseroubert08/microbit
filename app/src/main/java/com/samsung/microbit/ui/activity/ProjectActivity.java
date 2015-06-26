@@ -1,33 +1,38 @@
 package com.samsung.microbit.ui.activity;
 
 import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.Utils;
+import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.model.Project;
 import com.samsung.microbit.ui.adapter.ProjectAdapter;
 import com.samsung.microbit.ui.fragment.ProjectActivityPopupFragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
-public class ProjectActivity extends Activity {
+public class ProjectActivity extends Activity implements View.OnClickListener {
 
 	List<Project> projectList = new ArrayList<Project>();
 	ProjectAdapter projectAdapter;
 	private ListView projectListView;
+	private HashMap<String, String> prettyFileNameMap = new HashMap<String, String>();
+	private ArrayList<String> list = new ArrayList<String>();
 
 	ProjectActivityPopupFragment fragment;
 	LinearLayout popupOverlay;
@@ -35,19 +40,51 @@ public class ProjectActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		if(getResources().getBoolean(R.bool.portrait_only)){
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		} else {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		}
+
 		MBApp.setContext(this);
 
 		//Remove title bar
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.project_activity);
+		setContentView(R.layout.activity_projects);
 
-		LinearLayout mainContentView = (LinearLayout) findViewById(R.id.project_list);
+		LinearLayout mainContentView = (LinearLayout) findViewById(R.id.mainContentView);
 		mainContentView.getBackground().setAlpha(128);
 
-		projectListView = (ListView) findViewById(R.id.project_list_view);
-		populateDummyData();
+		projectListView = (ListView) findViewById(R.id.projectListView);
+		TextView emptyText = (TextView)findViewById(android.R.id.empty);
+		projectListView.setEmptyView(emptyText);
+
+		Utils.findProgramsAndPopulate(prettyFileNameMap, projectList);
+
 		projectAdapter = new ProjectAdapter(this, projectList);
 		projectListView.setAdapter(projectAdapter);
+	}
+
+	public void onHomeBtnClicked(View v){
+
+	}
+
+	public void onClick(final View v) {
+
+		switch (v.getId()) {
+			case R.id.createProject: {
+					Intent intent = new Intent(this, WebViewActivity.class);
+					intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
+					startActivity(intent);
+					finish();
+				}
+				break;
+			case R.id.homeBtn: {
+					finish();
+				}
+				break;
+		}
 	}
 
 	@Override
@@ -75,7 +112,7 @@ public class ProjectActivity extends Activity {
 				popupOverlay = (LinearLayout) findViewById(R.id.popup_overlay);
 				popupOverlay.getBackground().setAlpha(224);
 				popupOverlay.setOnTouchListener(new View.OnTouchListener() {
-					@Override
+					@OverridemainContentView
 					public boolean onTouch(View v, MotionEvent event) {
 						return true;
 					}
@@ -107,17 +144,5 @@ public class ProjectActivity extends Activity {
 		*/
 
 		return super.onOptionsItemSelected(item);
-	}
-
-	private void populateDummyData() {
-		projectList.clear();
-		projectList.add(new Project("My First project", "http://microbit.com/apps/1", false));
-		projectList.add(new Project("My Second project", "http://microbit.com/apps/2", false));
-		projectList.add(new Project("My Third project", "http://microbit.com/apps/3", true));
-		projectList.add(new Project("My Forth project", "http://microbit.com/apps/4", false));
-		projectList.add(new Project("My Forth project", "http://microbit.com/apps/4", false));
-		projectList.add(new Project("My Fifth project", "http://microbit.com/apps/4", false));
-		projectList.add(new Project("My Sixth project", "http://microbit.com/apps/4", false));
-		projectList.add(new Project("My Seventh project", "http://microbit.com/apps/4", false));
 	}
 }

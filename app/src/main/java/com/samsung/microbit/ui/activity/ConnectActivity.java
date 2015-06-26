@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -123,9 +124,15 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if(getResources().getBoolean(R.bool.portrait_only)){
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+
         MBApp.setContext(this);
 
-        //Remove title bar
+        //Remove title barproject_list
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.activity_connect);
@@ -226,7 +233,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
         }
         newDeviceCode = newDeviceName;
         newDeviceName = "BBC microbit [" + newDeviceName + "]";
-        Toast.makeText(this, "Pattern :"+newDeviceCode, Toast.LENGTH_SHORT).show();
+       // Toast.makeText(this, "Pattern :"+newDeviceCode, Toast.LENGTH_SHORT).show();
     }
 
     private void toggleLED(ImageView image, int pos) {
@@ -291,6 +298,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
                 break;
             case PAIRING_STATE_PATTERN_EMPTY:
                 findViewById(R.id.gridview).setEnabled(true);
+                findViewById(R.id.connectedDeviceList).setClickable(true);
                 newDeviceView.setVisibility(View.VISIBLE);
                 findViewById(R.id.ok_pattern_button).setVisibility(View.GONE);
                 findViewById(R.id.ok_name_button).setVisibility(View.GONE);
@@ -306,7 +314,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
                 break;
             case PAIRING_STATE_NEW_NAME:
                 findViewById(R.id.gridview).setEnabled(false);
-                lvConnectedDevice.setEnabled(false);
+                findViewById(R.id.connectedDeviceList).setClickable(false);
                 newDeviceView.setVisibility(View.VISIBLE);
                 findViewById(R.id.ok_pattern_button).setVisibility(View.GONE);
                 ((EditText)findViewById(R.id.nameNewEdit)).setText(" ");
@@ -392,9 +400,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
     }
 
     public void onHomeBtnClicked(View v){
-            Intent intent = new Intent(this, HomeActivity.class);
-            startActivity(intent);
-
+        finish();
     }
 
     private volatile boolean deviceFound = false;
@@ -475,12 +481,20 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
 
         ConnectedDevice currentDevice = Utils.getPairedMicrobit(MBApp.getContext());
 
-        if( ((currentDevice.mName!=null) && !currentDevice.mName.equals(prevDeviceArray[0].mName))
-            ||((currentDevice.mAddress!=null) &&  !currentDevice.mAddress.equals(prevDeviceArray[0].mAddress))
-            ||((currentDevice.mPattern!=null) &&  !currentDevice.mPattern.equals(prevDeviceArray[0].mPattern))
-            || !currentDevice.mStatus != prevDeviceArray[0].mStatus) {
+        if(currentDevice.mPattern != null) {
 
-            Utils.setPairedMicrobit(MBApp.getContext(), prevDeviceArray[0]);
+            if(prevDeviceArray[0] != null) {
+                if ((!currentDevice.mName.equals(prevDeviceArray[0].mName))
+                        || (!currentDevice.mAddress.equals(prevDeviceArray[0].mAddress))
+                        || (!currentDevice.mPattern.equals(prevDeviceArray[0].mPattern))
+                        || !currentDevice.mStatus != prevDeviceArray[0].mStatus) {
+
+                    Utils.setPairedMicrobit(MBApp.getContext(), prevDeviceArray[0]);
+                }
+            } else {
+                // Remove existing Microbit
+                Utils.setPairedMicrobit(MBApp.getContext(), null);
+            }
         }
     }
     void connectBluetoothDevice() {
@@ -622,7 +636,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
 
         for(int i=0; i<prevMicrobitList.size(); i++)
         {
-            if((prevDeviceArray[i] != null) && (prevDeviceArray[i].mPattern.equals(newMicrobit.mPattern)))
+            if((prevDeviceArray[i] !=null) && (prevDeviceArray[i].mPattern.equals(newMicrobit.mPattern)))
             {
                 return i;
             }

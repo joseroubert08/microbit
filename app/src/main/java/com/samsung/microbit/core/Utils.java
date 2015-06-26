@@ -1,17 +1,14 @@
 package com.samsung.microbit.core;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.os.Environment;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
+import com.samsung.microbit.model.Project;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,7 +44,7 @@ public class Utils {
 			synchronized (lock) {
 				if (instance == null) {
 					Utils u = new Utils();
-
+					pairedDevice = new ConnectedDevice();
 					instance = u;
 				}
 			}
@@ -58,6 +55,7 @@ public class Utils {
 
 	public SharedPreferences getPreferences(Context ctx) {
 
+		logi("getPreferences() :: ctx.getApplicationContext() = " + ctx.getApplicationContext());
 		SharedPreferences p = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
 		return p;
 	}
@@ -72,7 +70,7 @@ public class Utils {
 
 	final public static String BINARY_FILE_NAME = "/sdcard/output.bin";
 
-	public static int findProgramsAndPopulate(HashMap<String, String> prettyFileNameMap, ArrayList<String> list) {
+	public static int findProgramsAndPopulate(HashMap<String, String> prettyFileNameMap, List<Project> list) {
 		File sdcardDownloads = Constants.HEX_FILE_DIR;
 		Log.d("MicroBit", "Searching files in " + sdcardDownloads.getAbsolutePath());
 
@@ -94,27 +92,37 @@ public class Utils {
 						prettyFileNameMap.put(parsedFileName, fileName);
 
 					if (list != null)
-						list.add(parsedFileName);
+						list.add(new Project(parsedFileName, files[i].getAbsolutePath(), null, false));
 					++totalPrograms;
 				}
 			}
 		}
 
-		if (totalPrograms == 0) {
-			if (list != null)
-				list.add("No programs found !");
+		return totalPrograms;
+	}
+
+	public static boolean deleteFile(String filePath) {
+		File fdelete = new File(filePath);
+		if (fdelete.exists()) {
+			if (fdelete.delete()) {
+				Log.d("MicroBit", "file Deleted :" + filePath);
+				return true;
+			} else {
+				Log.d("MicroBit", "file not Deleted :" + filePath);
+			}
 		}
 
-		return totalPrograms;
+		return false;
 	}
 
 	public static ConnectedDevice getPairedMicrobit(Context ctx)
 	{
-		if(pairedDevice == null) {
+		SharedPreferences pairedDevicePref = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
+
+		if(pairedDevice == null){
 			pairedDevice = new ConnectedDevice();
 		}
 
-		SharedPreferences pairedDevicePref = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
 		if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
 			String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
 			Gson gson = new Gson();
@@ -129,9 +137,14 @@ public class Utils {
 	{
 		SharedPreferences pairedDevicePref = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
 		SharedPreferences.Editor editor = pairedDevicePref.edit();
-		Gson gson = new Gson();
-		String jsonActiveDevice = gson.toJson(newDevice);
-		editor.putString(PREFERENCES_PAIREDDEV_KEY,jsonActiveDevice);
+		if(newDevice == null)
+		{
+			editor.clear();
+		} else {
+			Gson gson = new Gson();
+			String jsonActiveDevice = gson.toJson(newDevice);
+			editor.putString(PREFERENCES_PAIREDDEV_KEY, jsonActiveDevice);
+		}
 		editor.commit();
 		isChanged = true;
 	}

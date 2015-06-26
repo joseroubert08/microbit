@@ -52,7 +52,7 @@
             android:id="@+id/ok_connect_button"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:background="@drawable/ok_button"
+            android:background="@drawable/popup_ok_button"
             android:clickable="true"
             android:layout_marginLeft="85dp"
             android:layout_marginBottom="@dimen/content_margin"

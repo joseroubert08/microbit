@@ -89,7 +89,7 @@ public class CameraActivity_OldAPI extends Activity {
 
 	private void setButtonForPicture() {
 
-		mButtonClick.setBackgroundResource(R.mipmap.camera_icon);
+		mButtonClick.setBackgroundResource(R.drawable.camera_icon);
 		mButtonClick.invalidate();
 		mButtonClick.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -130,7 +130,7 @@ public class CameraActivity_OldAPI extends Activity {
 
 	private void setButtonForVideo() {
 
-		mButtonClick.setBackgroundResource(R.mipmap.start_record_icon);
+		mButtonClick.setBackgroundResource(R.drawable.start_record_icon);
 		mButtonClick.invalidate();
 		mButtonClick.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -148,7 +148,7 @@ public class CameraActivity_OldAPI extends Activity {
 						finish();
 					}
 
-					mButtonClick.setBackgroundResource(R.mipmap.stop_record_icon);
+					mButtonClick.setBackgroundResource(R.drawable.stop_record_icon);
 					mButtonClick.invalidate();
 
 					//TODO Check that is true

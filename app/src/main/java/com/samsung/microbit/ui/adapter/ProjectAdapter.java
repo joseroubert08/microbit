@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.Project;
 import com.samsung.microbit.ui.activity.ProjectActivity;
 import com.samsung.microbit.ui.PopUp;
@@ -56,6 +57,9 @@ public class ProjectAdapter extends BaseAdapter {
 	private View.OnClickListener deleteBtnClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
+
+			final int pos = (int) v.getTag();
+
 			PopUp.show(MBApp.getContext(),
 					MBApp.getContext().getString(R.string.delete_project_message),
 					MBApp.getContext().getString(R.string.delete_project_title),
@@ -65,7 +69,11 @@ public class ProjectAdapter extends BaseAdapter {
 						@Override
 						public void onClick(View v) {
 							PopUp.hide();
-							Toast.makeText(MBApp.getContext(), "Project deleted", Toast.LENGTH_SHORT).show();
+							Project proj = projects.get(pos);
+							if(Utils.deleteFile(proj.filePath)) {
+								projects.remove(pos);
+								notifyDataSetChanged();
+							}
 						}
 					}, null);
 		}
@@ -119,9 +127,9 @@ public class ProjectAdapter extends BaseAdapter {
 		deleteBtn.setTag(position);
 		deleteBtn.setOnClickListener(deleteBtnClickListener);
 
-		appName.setText(p.getName());
+		appName.setText(p.name);
 		codeBtn.setText("Code");
-		if (p.isRunStatus()) {
+		if (p.runStatus) {
 			sendBtn.setText("Running");
 			Drawable myIcon = convertView.getResources().getDrawable(R.drawable.green_btn);
 			sendBtn.setBackground(myIcon);

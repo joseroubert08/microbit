@@ -119,4 +119,12 @@
     <!-- Popup message -->
     <string name="delete_project_message">Are you sure you want to want to remove this project?\r\nIt will be removed from this app but will still be available within your Micro:Bit account.</string>
     <string name="delete_project_title">Delete project?</string>
+
+    <string name="create_new_project">Create Project</string>
+    <string name="download_existing">Download Existing</string>
+    <string name="projects">Projects</string>
+    <string name="send">Send</string>
+    <string name="code">Code</string>
+    <string name="no_projects">No projects found!</string>
+
 </resources>
