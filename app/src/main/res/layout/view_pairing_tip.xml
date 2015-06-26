@@ -32,6 +32,7 @@
             android:textSize="25sp"
             android:id="@+id/connectTipTextview"
             android:layout_marginTop="@dimen/content_margin"
+            android:layout_marginLeft="@dimen/content_margin"
             android:textColor="@color/black_font_color"
             android:layout_toStartOf="@+id/microbit_tip_image">
 
@@ -53,7 +54,8 @@
             android:layout_height="80dp"
             android:background="@drawable/ok_button"
             android:clickable="true"
-            android:layout_marginStart="73dp"
+            android:layout_marginLeft="85dp"
+            android:layout_marginBottom="@dimen/content_margin"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true" />
 

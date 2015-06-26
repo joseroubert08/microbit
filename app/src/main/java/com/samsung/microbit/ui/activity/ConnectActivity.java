@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -161,6 +163,11 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
         findViewById(R.id.ok_name_button).setOnClickListener(this);
         findViewById(R.id.cancel_name_button).setOnClickListener(this);
         findViewById(R.id.cancel_search_button).setOnClickListener(this);
+
+        //Animation
+        WebView animation = (WebView) findViewById(R.id.animationwebView);
+        animation.setBackgroundColor(Color.TRANSPARENT);
+        animation.loadUrl("file:///android_asset/htmls/animation.html");
     }
 
     @Override
