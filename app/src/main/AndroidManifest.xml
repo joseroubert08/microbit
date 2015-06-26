@@ -112,7 +112,7 @@
 			android:configChanges="orientation|screenSize|keyboardHidden"
 			android:label="Camera Microbit"
 			android:launchMode="singleTask"
-			android:screenOrientation="portrait">
+			android:screenOrientation="landscape">
 			<intent-filter>
 				<action android:name="com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_PIC"/>
 			</intent-filter>
