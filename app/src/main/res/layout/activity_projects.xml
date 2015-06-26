@@ -46,10 +46,13 @@
 
 		<TextView
 			android:id="@+id/connectedIndicatorText"
-			android:layout_width="200dp"
+			android:layout_width="wrap_content"
+			android:maxWidth="300dp"
+			android:minWidth="200dp"
 			android:layout_height="100dp"
 			android:background="@drawable/project_text_box"
-			android:editable="false"/>
+			android:editable="false"
+			android:gravity="top"/>
 
 		<ImageButton
 			android:id="@+id/connectedIndicatorIcon"

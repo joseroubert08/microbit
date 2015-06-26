@@ -126,5 +126,7 @@
     <string name="send">Send</string>
     <string name="code">Code</string>
     <string name="no_projects">No projects found!</string>
+    <string name="connected_to">Connected to</string>
+    <string name="not_connected">Not Connected</string>
 
 </resources>

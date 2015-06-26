@@ -3,12 +3,20 @@ package com.samsung.microbit.ui.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -16,6 +24,7 @@ import android.widget.TextView;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.Utils;
+import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.model.Project;
 import com.samsung.microbit.ui.adapter.ProjectAdapter;
@@ -64,10 +73,31 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 		projectAdapter = new ProjectAdapter(this, projectList);
 		projectListView.setAdapter(projectAdapter);
+
+		TextView connectedIndicatorText = (TextView) findViewById(R.id.connectedIndicatorText);
+		ImageButton connectedIndicatorIcon = (ImageButton) findViewById(R.id.connectedIndicatorIcon);
+		setText(connectedIndicatorText, connectedIndicatorIcon);
 	}
 
-	public void onHomeBtnClicked(View v){
+	private void setText(TextView txt, ImageButton imgBtn) {
 
+		ConnectedDevice device =  Utils.getPairedMicrobit(this);
+		if(device.mName == null) {
+			imgBtn.setImageResource(R.drawable.disconnected);
+			imgBtn.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_disconnect_btn));
+			txt.setText(getString(R.string.not_connected));
+		} else {
+			int startIndex = getString(R.string.connected_to).length();
+			int endIndex = startIndex + device.mName.length() + device.mPattern.length() + 2;
+
+			Spannable span = new SpannableString(getString(R.string.connected_to) + "\n" + device.mName + "\n" + device.mPattern);
+			span.setSpan(new AbsoluteSizeSpan(20), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			span.setSpan(new ForegroundColorSpan(Color.BLACK), 0, startIndex,
+					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			span.setSpan(new ForegroundColorSpan(Color.BLUE), getString(R.string.connected_to).length(), endIndex,
+					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			txt.setText(span);
+		}
 	}
 
 	public void onClick(final View v) {
