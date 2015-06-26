@@ -24,10 +24,12 @@ android:visibility="gone">
     android:background="#fff">
 
     <WebView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:id="@+id/animationwebView"
-        android:layout_gravity="center_horizontal" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/content_margin"
+    />
 
     <ImageButton
         android:id="@+id/cancel_search_button"
