@@ -16,7 +16,7 @@ public class IPCService extends Service {
 	public static IPCService instance;
 
 	static final String TAG = "IPCService";
-	private boolean debug = true;
+	private boolean debug = false;
 
 	void logi(String message) {
 		if (debug) {
@@ -27,19 +27,6 @@ public class IPCService extends Service {
 	public IPCService() {
 		instance = this;
 		startIPCListener();
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-
-				try {
-					Thread.sleep(3000);
-					sendtoBLEService(0, null);
-					sendtoPluginService(0, null);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}).start();
 	}
 
 	@Override
@@ -76,6 +63,23 @@ public class IPCService extends Service {
 					handleIncomingMessage(msg);
 				}
 			});
+
+			/*
+			 * Make the initial connection to other processes
+			 */
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+
+					try {
+						Thread.sleep(3000);
+						sendtoBLEService(0, null);
+						sendtoPluginService(0, null);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}).start();
 		}
 	}
 

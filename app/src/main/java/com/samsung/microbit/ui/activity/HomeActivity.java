@@ -86,14 +86,9 @@ public class HomeActivity extends Activity {
 			Intent intent = new Intent(this, ConnectActivity.class);
 			startActivity(intent);
 		} else if (v.getId() == R.id.startNewProject) {
-
-			/*
 			Intent intent = new Intent(this, WebViewActivity.class);
 			intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
 			startActivity(intent);
-			*/
-			IPCService.instance.sendtoBLEService(1, null);
-
 		} else if (v.getId() == R.id.numOfProjects) {
 			Intent intent = new Intent(this, ProjectActivity.class);
 			startActivity(intent);

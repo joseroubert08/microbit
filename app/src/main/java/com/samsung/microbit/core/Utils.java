@@ -47,7 +47,7 @@ public class Utils {
 			synchronized (lock) {
 				if (instance == null) {
 					Utils u = new Utils();
-					pairedDevice = new ConnectedDevice();
+
 					instance = u;
 				}
 			}
@@ -58,7 +58,6 @@ public class Utils {
 
 	public SharedPreferences getPreferences(Context ctx) {
 
-		logi("getPreferences() :: ctx.getApplicationContext() = " + ctx.getApplicationContext());
 		SharedPreferences p = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
 		return p;
 	}
@@ -111,6 +110,10 @@ public class Utils {
 
 	public static ConnectedDevice getPairedMicrobit(Context ctx)
 	{
+		if(pairedDevice == null) {
+			pairedDevice = new ConnectedDevice();
+		}
+
 		SharedPreferences pairedDevicePref = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
 		if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
 			String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);

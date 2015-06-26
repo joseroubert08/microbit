@@ -59,7 +59,7 @@ public class BLEManager {
 	protected UnexpectedConnectionEventListener unexpectedDisconnectionListener;
 
 	static final String TAG = "BLEManager";
-	private boolean debug = true;
+	private boolean debug = false;
 
 	void logi(String message) {
 		if (debug) {

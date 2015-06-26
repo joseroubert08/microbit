@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.core.IPCMessageManager;
+import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.plugin.AlertPlugin;
 import com.samsung.microbit.plugin.AudioPlugin;
 import com.samsung.microbit.plugin.FeedbackPlugin;
@@ -44,19 +45,6 @@ public class PluginService extends Service {
 
 	public PluginService() {
 		startIPCListener();
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-
-				try {
-					Thread.sleep(3000);
-					sendtoIPCService(0, null);
-					sendtoBLEService(0, null);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}).start();
 	}
 
 	//MBS Services
@@ -72,59 +60,38 @@ public class PluginService extends Service {
 	/**
 	 * Handler of incoming messages from BLEListener.
 	 */
-	class IncomingHandler extends Handler {
-		@Override
-		public void handleMessage(Message msg) {
+	public void handleMessage(Message msg) {
 
-			logi("handleMessage()");
-			Bundle data = msg.getData();
-			mClientMessenger = msg.replyTo;
+		logi("handleMessage()");
+		Bundle data = msg.getData();
+		if (data.getString(BUNDLE_VALUE) == null) {
+			return;
+		}
 
-			if (data.getString(BUNDLE_VALUE) == null) {
-				return;
-			}
+		mClientMessenger = msg.replyTo;
+		CmdArg cmd = new CmdArg(data.getInt(BUNDLE_DATA), data.getString(BUNDLE_VALUE));
+		logi("handleMessage() ## msg.what = " + msg.what);
+		logi("handleMessage() ## data.getInt=" + data.getInt(BUNDLE_DATA) + " data.getString=" + data.getString(BUNDLE_VALUE));
+		switch (msg.what) {
 
-			CmdArg cmd = new CmdArg(data.getInt(BUNDLE_DATA), data.getString(BUNDLE_VALUE));
-			logi("handleMessage() ## msg.what = " + msg.what);
-			logi("handleMessage() ## data.getInt=" + data.getInt(BUNDLE_DATA) + " data.getString=" + data.getString(BUNDLE_VALUE));
+			case Constants.SAMSUNG_REMOTE_CONTROL_ID:
+				RemoteControlPlugin.pluginEntry(PluginService.this, cmd);
+				break;
 
-			switch (msg.what) {
-				case ALERT:
-					AlertPlugin.pluginEntry(PluginService.this, cmd);
-					break;
+			case Constants.SAMSUNG_ALERTS_ID:
+				AlertPlugin.pluginEntry(PluginService.this, cmd);
+				break;
 
-				case FEEDBACK:
-					FeedbackPlugin.pluginEntry(PluginService.this, cmd);
-					break;
+			case Constants.SAMSUNG_AUDIO_RECORDER_ID:
+				AudioPlugin.pluginEntry(PluginService.this, cmd);
+				break;
 
+			case Constants.SAMSUNG_CAMERA_ID:
+				CameraPlugin.pluginEntry(PluginService.this, cmd);
+				break;
 
-				case INFORMATION:
-					InformationPlugin.pluginEntry(PluginService.this, cmd);
-					break;
-
-				case AUDIO:
-					AudioPlugin.pluginEntry(PluginService.this, cmd);
-					break;
-
-				case REMOTE_CONTROL:
-					RemoteControlPlugin.pluginEntry(PluginService.this, cmd);
-					break;
-
-				case TELEPHONY:
-					TelephonyPlugin.pluginEntry(PluginService.this, cmd);
-					break;
-
-				case CAMERA:
-					CameraPlugin.pluginEntry(PluginService.this, cmd);
-					break;
-
-				case FILE:
-					FilePlugin.pluginEntry(PluginService.this, cmd);
-					break;
-
-				default:
-					super.handleMessage(msg);
-			}
+			default:
+				break;
 		}
 	}
 
@@ -161,6 +128,24 @@ public class PluginService extends Service {
 					handleIncomingMessage(msg);
 				}
 			});
+
+			/*
+			 * Make the initial connection to other processes
+			 */
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+
+					try {
+						Thread.sleep(3000);
+						sendtoBLEService(0, null);
+						sendtoIPCService(0, null);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}).start();
+
 		}
 	}
 
@@ -212,5 +197,6 @@ public class PluginService extends Service {
 
 	private void handleIncomingMessage(Message msg) {
 		logi("handleIncomingMessage() :: Start PluginService");
+		handleMessage(msg);
 	}
 }

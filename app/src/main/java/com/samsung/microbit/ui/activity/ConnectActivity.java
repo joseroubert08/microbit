@@ -622,7 +622,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
 
         for(int i=0; i<prevMicrobitList.size(); i++)
         {
-            if(prevDeviceArray[i].mPattern.equals(newMicrobit.mPattern))
+            if((prevDeviceArray[i] != null) && (prevDeviceArray[i].mPattern.equals(newMicrobit.mPattern)))
             {
                 return i;
             }

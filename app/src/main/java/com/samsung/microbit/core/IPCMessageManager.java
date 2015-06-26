@@ -48,7 +48,7 @@ public final class IPCMessageManager {
 	};
 
 	static final String TAG = "IPCMessageManager";
-	private boolean debug = true;
+	private boolean debug = false;
 
 	void logi(String message) {
 		if (debug) {
@@ -61,7 +61,6 @@ public final class IPCMessageManager {
 	}
 
 	public static IPCMessageManager getInstance() {
-
 		return instance;
 	}
 

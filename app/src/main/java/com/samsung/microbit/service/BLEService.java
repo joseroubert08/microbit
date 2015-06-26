@@ -15,12 +15,15 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.accessibility.AccessibilityEvent;
 
+import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.PreferencesInteraction;
 import com.samsung.microbit.core.Utils;
+import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.plugin.AlertPlugin;
 import com.samsung.microbit.plugin.AudioPlugin;
@@ -41,40 +44,18 @@ public class BLEService extends BLEBaseService {
 
 	public BLEService() {
 		startIPCListener();
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-
-				try {
-					Thread.sleep(3000);
-					sendtoIPCService(0, null);
-					sendtoPluginService(0, null);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}).start();
 	}
 
 	protected String getDeviceAddress() {
 
 		logi("getDeviceAddress()");
-		final String[] pairedDeviceName = new String[1];
-		Utils.getInstance().preferencesInteraction(this, new PreferencesInteraction() {
-			@Override
-			public void interAct(SharedPreferences preferences) {
-
-				String s = preferences.getString(Utils.PREFERENCES_ADDRESS_KEY, null);
-				logi("getDeviceAddress() :: s = " + s);
-				pairedDeviceName[0] = s;
-			}
-		});
-
-		if (pairedDeviceName[0] == null) {
+		ConnectedDevice currentDevice = Utils.getPairedMicrobit(this);
+		String pairedDeviceName = currentDevice.mAddress;
+		if (pairedDeviceName == null) {
 			setNotification(false);
 		}
 
-		return pairedDeviceName[0];
+		return pairedDeviceName;
 	}
 
 	protected void startupConnection() {
@@ -144,19 +125,13 @@ public class BLEService extends BLEBaseService {
 	protected void handleCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 
 		int value = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
-
 		int eventSrc = value & 0x0ffff;
-
 		if (eventSrc < 1001) {
 			return;
 		}
 
 		int event = (value >> 16) & 0x0ffff;
-		value = (eventSrc << 16) | event;
-
-		logi("onCharacteristicChanged eventSrc = " + eventSrc);
-		logi("onCharacteristicChanged event = " + event);
-		//sendMessage(value);
+		sendMessage(eventSrc, event);
 	}
 
 	@Override
@@ -231,61 +206,26 @@ public class BLEService extends BLEBaseService {
 	// ######################################################################
 	private boolean mIsRemoteControlPlay = false;
 
-	void sendMessage(int buttonPressed) {
 
-		if (buttonPressed == 0) {
-			return;
-		}
+	void sendMessage(int eventSrc, int event) {
 
-		if ((buttonPressed & 0x010) == 0) {
-			return;
-		}
-
-		Log.i(TAG, "### uBit Button detected for button = " + buttonPressed);
-		int msgService = PluginService.ALERT;
+		int msgService = 0;
 		CmdArg cmd = null;
-		//convention
-		//0x1X: button 1 pressed on nordic, where X is the program id
-		//0x3X: button 2 pressed on nordic, where X is the program id
+		switch (eventSrc) {
+			case Constants.SAMSUNG_REMOTE_CONTROL_ID:
+			case Constants.SAMSUNG_ALERTS_ID:
+			case Constants.SAMSUNG_AUDIO_RECORDER_ID:
+			case Constants.SAMSUNG_CAMERA_ID:
+				eventSrc = Constants.SAMSUNG_CAMERA_ID;
+				event = (event == Constants.SAMSUNG_REMOTE_CONTROL_EVT_FORWARD) ? Constants.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE : Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO;
 
-		switch (buttonPressed) {
-			case 0x011:
-				msgService = PluginService.REMOTE_CONTROL;
-				mIsRemoteControlPlay = !mIsRemoteControlPlay;
-				cmd = new CmdArg(mIsRemoteControlPlay ? RemoteControlPlugin.PLAY : RemoteControlPlugin.PAUSE, "");
-				break;
-
-			case 0x012:
-				msgService = PluginService.CAMERA;
-				cmd = new CmdArg(CameraPlugin.LAUNCH_CAMERA_FOR_PIC, "");
+				msgService = eventSrc;
+				cmd = new CmdArg(event, "");
 				break;
 
-			case 0x014://Audio demo: button '1' used for launching audio activity
-				msgService = PluginService.AUDIO;
-				cmd = new CmdArg(AudioPlugin.LAUNCH, "");
-				break;
-			case 0x018:
-				cmd = new CmdArg(AlertPlugin.FINDPHONE, "");
-				break;
+			default:
+				return;
 
-			case 0x031:
-				msgService = PluginService.REMOTE_CONTROL;
-				cmd = new CmdArg(RemoteControlPlugin.NEXT_TRACK, "");
-				break;
-
-			case 0x032:
-				msgService = PluginService.CAMERA;
-				cmd = new CmdArg(CameraPlugin.TAKE_PIC, "");
-				break;
-
-			case 0x034://Audio demo: button '2' used for start/stop recording
-				msgService = PluginService.AUDIO;
-				cmd = new CmdArg(AudioPlugin.TOOGLE_RECORD, "");
-				break;
-
-			case 0x038:
-				cmd = new CmdArg(AlertPlugin.VIBRATE, "500");
-				break;
 		}
 
 		if (cmd != null) {
@@ -293,14 +233,8 @@ public class BLEService extends BLEBaseService {
 		}
 	}
 
-
 	/*
 	 * IPC Messenger handling
-	 */
-
-
-	/*
-	 * setup IPCMessageManager
 	 */
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -324,6 +258,23 @@ public class BLEService extends BLEBaseService {
 				}
 
 			});
+
+			/*
+			 * Make the initial connection to other processes
+			 */
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+
+					try {
+						Thread.sleep(3000);
+						sendtoIPCService(0, null);
+						sendtoPluginService(0, null);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}).start();
 		}
 	}
 
@@ -343,10 +294,10 @@ public class BLEService extends BLEBaseService {
 		Message msg = Message.obtain(null, mbsService);
 		Bundle bundle = new Bundle();
 
-		if(cmd == null && mbsService == 0) {
+		if (cmd == null && mbsService == 0) {
 			bundle.putString(IPCMessageManager.IPC_INIT_CALL, this.getClass().getName());
 		} else {
-			if(cmd != null) {
+			if (cmd != null) {
 				bundle.putInt(PluginService.BUNDLE_DATA, cmd.getCMD());
 				bundle.putString(PluginService.BUNDLE_VALUE, cmd.getValue());
 			}
