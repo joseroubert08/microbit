@@ -113,14 +113,14 @@ public class Constants {
 	/*
 	 * BLE UUID's for Service and Characteristic
 	 */
-	//public static final String BASE_UUID_STR = "00000000-0000-1000-8000-00805f9b34fb";
-	// public static final UUID BASE_UUID = UUID.fromString(BASE_UUID_STR);
+	public static final String BASE_UUID_STR = "00000000-0000-1000-8000-00805f9b34fb";
+	public static final UUID BASE_UUID = UUID.fromString(BASE_UUID_STR);
 
 	public static final String MICROBIT_BASE_UUID_STR = "e95d5be9-251d-470a-a062-fa1922dfa9a8";
 	public static final UUID MICROBIT_BASE_UUID = UUID.fromString(MICROBIT_BASE_UUID_STR);
 
 	// This descriptor is used for requesting notification
-	public static final UUID CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR = makeUUID(MICROBIT_BASE_UUID_STR, 0x02902);
+	public static final UUID CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR = makeUUID(BASE_UUID_STR, 0x02902);
 
 	public static final UUID SERVICE_GENERIC_ACCESS = makeUUID(MICROBIT_BASE_UUID_STR, 0x01800);
 	public static final UUID SGA_DEVICE_NAME = makeUUID(MICROBIT_BASE_UUID_STR, 0x02a00);
@@ -197,8 +197,8 @@ public class Constants {
 		long msb = u.getMostSignificantBits();
 		long mask = 0x0ffffL;
 		shortUUID &= mask;
-		msb &= ~(mask << 16);
-		msb |= (shortUUID << 16);
+		msb &= ~(mask << 32);
+		msb |= (shortUUID << 32);
 		u = new UUID(msb, u.getLeastSignificantBits());
 		return u;
 	}

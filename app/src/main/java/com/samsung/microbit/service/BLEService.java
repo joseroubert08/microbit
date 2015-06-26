@@ -22,6 +22,7 @@ import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.PreferencesInteraction;
 import com.samsung.microbit.core.Utils;
+import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.plugin.AlertPlugin;
 import com.samsung.microbit.plugin.AudioPlugin;
 import com.samsung.microbit.core.BLEManager;
@@ -32,14 +33,6 @@ import com.samsung.microbit.ui.activity.LEDGridActivity;
 import java.util.UUID;
 
 public class BLEService extends BLEBaseService {
-
-	public static final UUID BUTTON_1_SERVICE = UUID.fromString("0000a000-0000-1000-8000-00805f9b34fb");
-	public static final UUID BUTTON_2_SERVICE = UUID.fromString("0000b000-0000-1000-8000-00805f9b34fb");
-
-	public static final UUID BUTTON_1_CHARACTERISTIC = UUID.fromString("0000a001-0000-1000-8000-00805f9b34fb");
-	public static final UUID BUTTON_2_CHARACTERISTIC = UUID.fromString("0000b001-0000-1000-8000-00805f9b34fb");
-
-	public static final UUID CALLBACK_DESCRIPTOR = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
 	public static final String MESSAGE_NAME = "uBIT_BUTTON_PRESS";
 
@@ -124,40 +117,25 @@ public class BLEService extends BLEBaseService {
 	public boolean registerNotifications(boolean enable) {
 
 		logi("registerNotifications()");
-		BluetoothGattService button1s = getService(BUTTON_1_SERVICE);
+		BluetoothGattService button1s = getService(Constants.EVENT_SERVICE);
 		if (button1s == null) {
+			logi("registerNotifications() :: not found service " + Constants.EVENT_SERVICE.toString());
 			return false;
 		}
 
-		BluetoothGattCharacteristic button1c = button1s.getCharacteristic(BUTTON_1_CHARACTERISTIC);
+		BluetoothGattCharacteristic button1c = button1s.getCharacteristic(Constants.ES_CLIENT_EVENT);
 		if (button1c == null) {
+			logi("registerNotifications() :: not found Characteristic " + Constants.ES_CLIENT_EVENT.toString());
 			return false;
 		}
 
-		BluetoothGattDescriptor button1d = button1c.getDescriptor(CALLBACK_DESCRIPTOR);
+		BluetoothGattDescriptor button1d = button1c.getDescriptor(Constants.CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR);
 		if (button1d == null) {
+			logi("registerNotifications() :: not found descriptor " + Constants.CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR.toString());
 			return false;
 		}
 
 		enableCharacteristicNotification(button1c, button1d, enable);
-
-
-		BluetoothGattService button2s = getService(BUTTON_2_SERVICE);
-		if (button2s == null) {
-			return false;
-		}
-
-		BluetoothGattCharacteristic button2c = button2s.getCharacteristic(BUTTON_2_CHARACTERISTIC);
-		if (button2c == null) {
-			return false;
-		}
-
-		BluetoothGattDescriptor button2d = button2c.getDescriptor(CALLBACK_DESCRIPTOR);
-		if (button2d == null) {
-			return false;
-		}
-
-		enableCharacteristicNotification(button2c, button2d, enable);
 		logi("registerNotifications() : done");
 		return true;
 	}
@@ -165,19 +143,20 @@ public class BLEService extends BLEBaseService {
 	@Override
 	protected void handleCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 
-		int value = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-		if (value == 0) {
+		int value = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
+
+		int eventSrc = value & 0x0ffff;
+
+		if(eventSrc < 1001) {
 			return;
 		}
 
-		// Bit 5 (1)==button down (0)==button up
-		// bit 6 (1)==button 2.
-		if (BUTTON_2_CHARACTERISTIC.equals(characteristic.getUuid())) {
-			value |= 0x020;
-		}
+		int event = (value >> 16) & 0x0ffff;
+		value = (eventSrc << 16) | event;
 
-		logi("onCharacteristicChanged value = " + value);
-		sendMessage(value);
+		logi("onCharacteristicChanged eventSrc = " + eventSrc);
+		logi("onCharacteristicChanged event = " + event);
+		//sendMessage(value);
 	}
 
 	@Override
