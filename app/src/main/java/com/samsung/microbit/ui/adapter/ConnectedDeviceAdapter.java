@@ -75,8 +75,14 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
             deleteBtn.setEnabled(false);
         }
         else {
-            String styledText = "<font color='blue'><big>"+entry.mName+"</big> </font><br/>"
-                    + "<font color='blue'><small>("+entry.mPattern + ")</small> </font>";
+            String styledText;
+
+            if(entry.mName != null) {
+                styledText = "<font color='blue'><big>" + entry.mName + "</big> </font><br/>"
+                        + "<font color='blue'><small>(" + entry.mPattern + ")</small> </font>";
+            } else {
+                styledText = "<font color='blue'><big>" + entry.mPattern + "</big> </font>";
+            }
             deviceName.setText(Html.fromHtml(styledText));
             deviceName.setGravity(Gravity.LEFT);
             deviceName.setEnabled(false);

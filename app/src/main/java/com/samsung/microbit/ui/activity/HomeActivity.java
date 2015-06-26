@@ -96,7 +96,7 @@ public class HomeActivity extends Activity {
             String styledText = "<big><font color='blue'>"
                     + (connectedDevice.mName != null ? connectedDevice.mName : "")
                     + "</font>"
-                    + "<font color='blue'>(" + connectedDevice.mPattern + ")</font></big>";
+                    + "<font color='blue'> (" + connectedDevice.mPattern + ")</font></big>";
             addDeviceButton.setText(Html.fromHtml(styledText));
         } else {
             addDeviceButton.setText("Connect to your Micro:Bit");
@@ -104,7 +104,7 @@ public class HomeActivity extends Activity {
         addDeviceButton.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
 
         ImageButton connectButton = (ImageButton) findViewById(R.id.connectBtn);
-        if (connectedDevice.mStatus) {
+        if (connectedDevice.mPattern != null && connectedDevice.mStatus) {
             connectButton.setImageResource(R.drawable.connected);
             connectButton.setBackgroundColor(0XFF00FF00);
         } else {

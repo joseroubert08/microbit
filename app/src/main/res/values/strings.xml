@@ -103,7 +103,7 @@
     <string name="previous_devices">Previous devices</string>
     <string name="new_devices_pattern_null">Repeat the pattern below</string>
     <string name="new_devices">Connect to a new device</string>
-    <string name="name_device">Name this device</string>
+    <string name="name_device">Name device</string>
     <string name="connect">Connect</string>
     <string name="gamepad">Gamepad</string>
     <string name="connectNew">Connect to a new device</string>

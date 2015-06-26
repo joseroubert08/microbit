@@ -1,13 +1,11 @@
 package com.samsung.microbit.ui.activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -17,12 +15,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -318,6 +314,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
                 newDeviceView.setVisibility(View.VISIBLE);
                 findViewById(R.id.ok_pattern_button).setVisibility(View.GONE);
                 ((EditText)findViewById(R.id.nameNewEdit)).setText(" ");
+                ((TextView)findViewById(R.id.nameNewTxt)).setText(getString(R.string.name_device) +" " + newDeviceCode);
                 findViewById(R.id.nameNewTxt).setVisibility(View.VISIBLE);
                 findViewById(R.id.nameNewEdit).setVisibility(View.VISIBLE);
                 findViewById(R.id.ok_name_button).setVisibility(View.VISIBLE);
@@ -481,22 +478,12 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
 
         ConnectedDevice currentDevice = Utils.getPairedMicrobit(MBApp.getContext());
 
-        if(currentDevice.mPattern != null) {
-
-            if(prevDeviceArray[0] != null) {
-                if (!currentDevice.mAddress.equals(prevDeviceArray[0].mAddress)
-                        || (!currentDevice.mPattern.equals(prevDeviceArray[0].mPattern))
-                        || currentDevice.mStatus != prevDeviceArray[0].mStatus) {
-
-                    Utils.setPairedMicrobit(MBApp.getContext(), prevDeviceArray[0]);
-                }
-            } else {
-                // Remove existing Microbit
-                Utils.setPairedMicrobit(MBApp.getContext(), null);
-            }
-        }else {
-
+        if(prevDeviceArray[0] != null) {
             Utils.setPairedMicrobit(MBApp.getContext(), prevDeviceArray[0]);
+
+        } else {
+            // Remove existing Microbit
+                Utils.setPairedMicrobit(MBApp.getContext(), null);
         }
     }
     void connectBluetoothDevice() {
@@ -566,7 +553,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
                     deviceFound = true;
                     scanLeDevice(false);
 
-                     ConnectedDevice newDev = new ConnectedDevice(null, newDeviceCode, true, device.getAddress() );
+                     ConnectedDevice newDev = new ConnectedDevice(null, newDeviceCode.toUpperCase(), true, device.getAddress() );
                      handle_pairing_successful(newDev);
                 } else {
                     logi("mLeScanCallback.onLeScan() ::   non-matching - deviceName == " + newDeviceName.toLowerCase());
