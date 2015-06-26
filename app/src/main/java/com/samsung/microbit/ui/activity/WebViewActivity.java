@@ -19,6 +19,8 @@ import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.DownloadFilesTask;
+import com.samsung.microbit.core.DownloadManager;
 import com.samsung.microbit.model.Constants;
 
 import org.apache.cordova.Config;
@@ -29,6 +31,8 @@ import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaWebViewClient;
 import org.apache.cordova.LOG;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,8 +45,6 @@ public class WebViewActivity extends Activity implements CordovaInterface {
     private CordovaPlugin activityResultCallback;
 
     String TAG = "WebViewActivity";
-
-
 
     private class myWebViewClient extends CordovaWebViewClient{
 
@@ -58,6 +60,15 @@ public class WebViewActivity extends Activity implements CordovaInterface {
             final HttpAuthHandler mHandler = handler;
 
             mHandler.proceed("microbit", "bitbug42");
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            if (url.endsWith(".hex")) {
+                new DownloadFilesTask().execute(url);
+                return true;
+            }
+            return false;
         }
     }
 
