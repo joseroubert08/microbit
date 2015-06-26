@@ -1,13 +1,18 @@
 package com.samsung.microbit.core;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Utils {
 
@@ -79,10 +84,10 @@ public class Utils {
 					parsedFileName = parsedFileName.replace('_', ' ');
 
 					if (prettyFileNameMap != null)
-					    prettyFileNameMap.put(parsedFileName, fileName);
+						prettyFileNameMap.put(parsedFileName, fileName);
 
 					if (list != null)
-					    list.add(parsedFileName);
+						list.add(parsedFileName);
 					++totalPrograms;
 				}
 			}

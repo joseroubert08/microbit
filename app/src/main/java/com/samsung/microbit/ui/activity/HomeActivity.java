@@ -9,6 +9,9 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -18,98 +21,99 @@ import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.Constants;
+import com.samsung.microbit.service.BLEService;
+import com.samsung.microbit.service.IPCService;
+import com.samsung.microbit.service.PluginService;
 
 import java.util.List;
+import java.util.logging.Handler;
 
 public class HomeActivity extends Activity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
-        if(getResources().getBoolean(R.bool.portrait_only)){
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
 
-        //Remove title bar
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+	protected String TAG = "BLEBaseService";
+	protected boolean debug = true;
 
-        MBApp.setContext(this);
+	protected void logi(String message) {
+		if (debug) {
+			Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+		}
+	}
 
-        setContentView(R.layout.activity_home);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-        RelativeLayout connectBarView = (RelativeLayout) findViewById(R.id.connectBarView);
-        connectBarView.getBackground().setAlpha(128);
+		if (getResources().getBoolean(R.bool.portrait_only)) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		} else {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		}
 
-        updateConnectBarTitle();
+		//Remove title bar
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        RelativeLayout projectBarView = (RelativeLayout) findViewById(R.id.projectBarView);
-        projectBarView.getBackground().setAlpha(128);
+		MBApp.setContext(this);
 
-        updateProjectBarProjects();
-    }
+		setContentView(R.layout.activity_home);
 
-    public void onBtnClicked(View v){
-        if(v.getId() == R.id.addDevice){
-            Intent intent = new Intent(this, ConnectActivity.class);
-            startActivity(intent);
-        } else if(v.getId() == R.id.startNewProject){
-            Intent intent = new Intent(this, WebViewActivity.class);
-            intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
-            startActivity(intent);
-        }
-        else if(v.getId() == R.id.numOfProjects) {
-            Intent intent = new Intent(this, ProjectActivity.class);
-            startActivity(intent);
-        }
-    }
+		RelativeLayout connectBarView = (RelativeLayout) findViewById(R.id.connectBarView);
+		connectBarView.getBackground().setAlpha(128);
 
-    private final void updateConnectBarTitle()
-    {
-        Button addDeviceButton = (Button) findViewById(R.id.addDevice);
-        SharedPreferences p = Utils.getInstance().getPreferences(this);
-        addDeviceButton.setText(p.getString(Utils.PREFERENCES_NAME_KEY, "Connect to your Micro:Bit"));
-    }
+		updateConnectBarTitle();
 
-    private final void updateProjectBarProjects()
-    {
-        Button numOfProjects = (Button) findViewById(R.id.numOfProjects);
-        numOfProjects.setText(Integer.toString(Utils.findProgramsAndPopulate(null, null)) + " saved projects");
-    }
+		RelativeLayout projectBarView = (RelativeLayout) findViewById(R.id.projectBarView);
+		projectBarView.getBackground().setAlpha(128);
 
-    public void onResume() {
-        super.onResume();
+		updateProjectBarProjects();
 
-        updateConnectBarTitle();
-        updateProjectBarProjects();
-    }
+		// Start the other services - local service to handle IPC in the main process
+		Intent ipcIntent = new Intent(this, IPCService.class);
+		startService(ipcIntent);
 
-    public static Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {
-        // Retrieve all services that can match the given intent
-        PackageManager pm = context.getPackageManager();
-        List<ResolveInfo> resolveInfo = pm.queryIntentServices(implicitIntent, 0);
+		Intent bleIntent = new Intent(this, BLEService.class);
+		startService(bleIntent);
 
-        // Make sure only one match was found
-        if (resolveInfo == null || resolveInfo.size() != 1) {
-            return null;
-        }
+		Intent intent = new Intent(this, PluginService.class);
+		startService(intent);
+	}
 
-        // Get component info and create ComponentName
-        ResolveInfo serviceInfo = resolveInfo.get(0);
-        String packageName = serviceInfo.serviceInfo.packageName;
-        String className = serviceInfo.serviceInfo.name;
-        ComponentName component = new ComponentName(packageName, className);
+	public void onBtnClicked(View v) {
+		if (v.getId() == R.id.addDevice) {
+			Intent intent = new Intent(this, ConnectActivity.class);
+			startActivity(intent);
+		} else if (v.getId() == R.id.startNewProject) {
 
-        // Create a new intent. Use the old one for extras and such reuse
-        Intent explicitIntent = new Intent(implicitIntent);
+			/*
+			Intent intent = new Intent(this, WebViewActivity.class);
+			intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
+			startActivity(intent);
+			*/
+			IPCService.instance.sendtoBLEService(1, null);
 
-        // Set the component to be explicit
-        explicitIntent.setComponent(component);
+		} else if (v.getId() == R.id.numOfProjects) {
+			Intent intent = new Intent(this, ProjectActivity.class);
+			startActivity(intent);
+		}
+	}
 
-        return explicitIntent;
-    }
+	private final void updateConnectBarTitle() {
+		Button addDeviceButton = (Button) findViewById(R.id.addDevice);
+		SharedPreferences p = Utils.getInstance().getPreferences(this);
+		addDeviceButton.setText(p.getString(Utils.PREFERENCES_NAME_KEY, "Connect to your Micro:Bit"));
+	}
 
+	private final void updateProjectBarProjects() {
+		Button numOfProjects = (Button) findViewById(R.id.numOfProjects);
+		numOfProjects.setText(Integer.toString(Utils.findProgramsAndPopulate(null, null)) + " saved projects");
+	}
+
+	public void onResume() {
+		super.onResume();
+		updateConnectBarTitle();
+		updateProjectBarProjects();
+	}
 }

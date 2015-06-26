@@ -8,7 +8,6 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -30,8 +29,6 @@ import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
 import com.samsung.microbit.ui.activity.LEDGridActivity;
 
-import java.util.UUID;
-
 public class BLEService extends BLEBaseService {
 
 	public static final String MESSAGE_NAME = "uBIT_BUTTON_PRESS";
@@ -42,17 +39,21 @@ public class BLEService extends BLEBaseService {
 	NotificationManager notifyMgr;
 	int notificationId = 1010;
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return mBinder;
-	}
+	public BLEService() {
+		startIPCListener();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
 
-	private final IBinder mBinder = new LocalBinder();
-
-	public class LocalBinder extends Binder {
-		public BLEService getService() {
-			return BLEService.this;
-		}
+				try {
+					Thread.sleep(3000);
+					sendtoIPCService(0, null);
+					sendtoPluginService(0, null);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
 	}
 
 	protected String getDeviceAddress() {
@@ -62,6 +63,7 @@ public class BLEService extends BLEBaseService {
 		Utils.getInstance().preferencesInteraction(this, new PreferencesInteraction() {
 			@Override
 			public void interAct(SharedPreferences preferences) {
+
 				String s = preferences.getString(Utils.PREFERENCES_ADDRESS_KEY, null);
 				logi("getDeviceAddress() :: s = " + s);
 				pairedDeviceName[0] = s;
@@ -97,9 +99,7 @@ public class BLEService extends BLEBaseService {
 			success = false;
 		}
 
-		if (success) {
-			connectWithServer();
-		} else {
+		if (!success) {
 			if (bleManager != null) {
 				bleManager.reset(true);
 				setNotification(false);
@@ -147,7 +147,7 @@ public class BLEService extends BLEBaseService {
 
 		int eventSrc = value & 0x0ffff;
 
-		if(eventSrc < 1001) {
+		if (eventSrc < 1001) {
 			return;
 		}
 
@@ -231,24 +231,6 @@ public class BLEService extends BLEBaseService {
 	// ######################################################################
 	private boolean mIsRemoteControlPlay = false;
 
-	public void connectWithServer() {
-
-		logi("connectWithServer()");
-		if (IPCMessageManager.getInstance() == null) {
-
-
-			logi("connectWithServer() :: IPCMessageManager.getInstance() == null");
-			IPCMessageManager inst = IPCMessageManager.getInstance("BLEReceiverThread", new Handler() {
-
-				@Override
-				public void handleMessage(Message msg) {
-					super.handleMessage(msg);
-				}
-
-			});
-		}
-	}
-
 	void sendMessage(int buttonPressed) {
 
 		if (buttonPressed == 0) {
@@ -265,6 +247,7 @@ public class BLEService extends BLEBaseService {
 		//convention
 		//0x1X: button 1 pressed on nordic, where X is the program id
 		//0x3X: button 2 pressed on nordic, where X is the program id
+
 		switch (buttonPressed) {
 			case 0x011:
 				msgService = PluginService.REMOTE_CONTROL;
@@ -306,25 +289,95 @@ public class BLEService extends BLEBaseService {
 		}
 
 		if (cmd != null) {
-			sendCommand(msgService, cmd);
+			sendtoPluginService(msgService, cmd);
 		}
 	}
 
-	public void sendCommand(int mbsService, CmdArg cmd) {
 
-		logi("sendCommand()");
+	/*
+	 * IPC Messenger handling
+	 */
+
+
+	/*
+	 * setup IPCMessageManager
+	 */
+	@Override
+	public IBinder onBind(Intent intent) {
+
+		return IPCMessageManager.getInstance().getClientMessenger().getBinder();
+	}
+
+	public void startIPCListener() {
+
+		logi("startIPCListener()");
+		if (IPCMessageManager.getInstance() == null) {
+
+
+			logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
+			IPCMessageManager inst = IPCMessageManager.getInstance("BLEServiceReceiver", new Handler() {
+
+				@Override
+				public void handleMessage(Message msg) {
+					logi("startIPCListener().handleMessage");
+					handleIncomingMessage(msg);
+				}
+
+			});
+		}
+	}
+
+	private void handleIncomingMessage(Message msg) {
+		logi("handleIncomingMessage() :: Start BLEService");
+	}
+
+	public void sendtoPluginService(int mbsService, CmdArg cmd) {
+
+		logi("sendtoPluginService()");
+		Class destService = PluginService.class;
 		IPCMessageManager inst = IPCMessageManager.getInstance();
-		if (!inst.isConnected(PluginService.class)) {
-			inst.configureServerConnection(PluginService.class, this);
+		if (!inst.isConnected(destService)) {
+			inst.configureServerConnection(destService, this);
 		}
 
 		Message msg = Message.obtain(null, mbsService);
 		Bundle bundle = new Bundle();
-		bundle.putInt(PluginService.BUNDLE_DATA, cmd.getCMD());
-		bundle.putString(PluginService.BUNDLE_VALUE, cmd.getValue());
+
+		if(cmd == null && mbsService == 0) {
+			bundle.putString(IPCMessageManager.IPC_INIT_CALL, this.getClass().getName());
+		} else {
+			if(cmd != null) {
+				bundle.putInt(PluginService.BUNDLE_DATA, cmd.getCMD());
+				bundle.putString(PluginService.BUNDLE_VALUE, cmd.getValue());
+			}
+		}
+
 		msg.setData(bundle);
 		try {
-			inst.sendMessage(PluginService.class, msg);
+			inst.sendMessage(destService, msg);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void sendtoIPCService(int mbsService, CmdArg cmd) {
+
+		logi("sendtoIPCService()");
+		Class destService = IPCService.class;
+		IPCMessageManager inst = IPCMessageManager.getInstance();
+		if (!inst.isConnected(destService)) {
+			inst.configureServerConnection(destService, this);
+		}
+
+		Message msg = Message.obtain(null, mbsService);
+		Bundle bundle = new Bundle();
+		if (cmd == null && mbsService == 0) {
+			bundle.putString(IPCMessageManager.IPC_INIT_CALL, this.getClass().getName());
+		}
+
+		msg.setData(bundle);
+		try {
+			inst.sendMessage(destService, msg);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}

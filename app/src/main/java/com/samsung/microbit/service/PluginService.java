@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -31,7 +32,7 @@ public class PluginService extends Service {
 
 
 	static final String TAG = "PluginService";
-	private boolean debug = false;
+	private boolean debug = true;
 
 	void logi(String message) {
 		if (debug) {
@@ -42,7 +43,20 @@ public class PluginService extends Service {
 	public static Messenger mClientMessenger = null;
 
 	public PluginService() {
-		IPCMessageManager inst = IPCMessageManager.getInstance("PluginReceiverThread", new IncomingHandler());
+		startIPCListener();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+
+				try {
+					Thread.sleep(3000);
+					sendtoIPCService(0, null);
+					sendtoBLEService(0, null);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
 	}
 
 	//MBS Services
@@ -65,8 +79,12 @@ public class PluginService extends Service {
 			logi("handleMessage()");
 			Bundle data = msg.getData();
 			mClientMessenger = msg.replyTo;
-			CmdArg cmd = new CmdArg(data.getInt(BUNDLE_DATA), data.getString(BUNDLE_VALUE));
 
+			if (data.getString(BUNDLE_VALUE) == null) {
+				return;
+			}
+
+			CmdArg cmd = new CmdArg(data.getInt(BUNDLE_DATA), data.getString(BUNDLE_VALUE));
 			logi("handleMessage() ## msg.what = " + msg.what);
 			logi("handleMessage() ## data.getInt=" + data.getInt(BUNDLE_DATA) + " data.getString=" + data.getString(BUNDLE_VALUE));
 
@@ -117,13 +135,82 @@ public class PluginService extends Service {
 	}
 
 	@Override
+	public void onDestroy() {
+		Toast.makeText(this, "Plugin Service Destroyed", Toast.LENGTH_SHORT).show();
+	}
+
+	/*
+	 * IPC Messenger handling
+	 */
+
+	@Override
 	public IBinder onBind(Intent intent) {
 
 		return IPCMessageManager.getInstance().getClientMessenger().getBinder();
 	}
 
-	@Override
-	public void onDestroy() {
-		Toast.makeText(this, "Plugin Service Destroyed", Toast.LENGTH_SHORT).show();
+	public void startIPCListener() {
+
+		logi("startIPCListener()");
+		if (IPCMessageManager.getInstance() == null) {
+			logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
+			IPCMessageManager inst = IPCMessageManager.getInstance("PluginServiceReceiver", new android.os.Handler() {
+				@Override
+				public void handleMessage(Message msg) {
+					logi("startIPCListener().handleMessage");
+					handleIncomingMessage(msg);
+				}
+			});
+		}
+	}
+
+	public void sendtoBLEService(int mbsService, CmdArg cmd) {
+
+		logi("sendtoBLEService()");
+		Class destService = BLEService.class;
+		IPCMessageManager inst = IPCMessageManager.getInstance();
+		if (!inst.isConnected(destService)) {
+			inst.configureServerConnection(destService, this);
+		}
+
+		Message msg = Message.obtain(null, mbsService);
+		Bundle bundle = new Bundle();
+		if (cmd == null && mbsService == 0) {
+			bundle.putString(IPCMessageManager.IPC_INIT_CALL, this.getClass().getName());
+		}
+
+		msg.setData(bundle);
+		try {
+			inst.sendMessage(destService, msg);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void sendtoIPCService(int mbsService, CmdArg cmd) {
+
+		logi("sendtoIPCService()");
+		Class destService = IPCService.class;
+		IPCMessageManager inst = IPCMessageManager.getInstance();
+		if (!inst.isConnected(destService)) {
+			inst.configureServerConnection(destService, this);
+		}
+
+		Message msg = Message.obtain(null, mbsService);
+		Bundle bundle = new Bundle();
+		if (cmd == null && mbsService == 0) {
+			bundle.putString(IPCMessageManager.IPC_INIT_CALL, this.getClass().getName());
+		}
+
+		msg.setData(bundle);
+		try {
+			inst.sendMessage(destService, msg);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void handleIncomingMessage(Message msg) {
+		logi("handleIncomingMessage() :: Start PluginService");
 	}
 }
