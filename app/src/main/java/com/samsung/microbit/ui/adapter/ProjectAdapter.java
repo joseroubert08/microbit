@@ -30,13 +30,17 @@ public class ProjectAdapter extends BaseAdapter {
 	private View.OnClickListener appNameClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
+			//TODO AFTER DEMO EDIT PROJECT NAME
+			/*
 			Toast.makeText(MBApp.getContext(), "AppName Clicked: " + v.getTag(), Toast.LENGTH_SHORT).show();
+
 			final EditText ed = (EditText) v.getTag(R.id.textedit);
 			//v.setVisibility(View.INVISIBLE);
 			ed.setVisibility(View.VISIBLE);
 			ed.requestFocus();
 			InputMethodManager imm = (InputMethodManager) projectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.showSoftInput(ed, InputMethodManager.SHOW_IMPLICIT);
+			*/
 		}
 	};
 
