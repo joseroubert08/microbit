@@ -484,10 +484,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
         if(currentDevice.mPattern != null) {
 
             if(prevDeviceArray[0] != null) {
-                if ((!currentDevice.mName.equals(prevDeviceArray[0].mName))
-                        || (!currentDevice.mAddress.equals(prevDeviceArray[0].mAddress))
+                if (!currentDevice.mAddress.equals(prevDeviceArray[0].mAddress)
                         || (!currentDevice.mPattern.equals(prevDeviceArray[0].mPattern))
-                        || !currentDevice.mStatus != prevDeviceArray[0].mStatus) {
+                        || currentDevice.mStatus != prevDeviceArray[0].mStatus) {
 
                     Utils.setPairedMicrobit(MBApp.getContext(), prevDeviceArray[0]);
                 }
@@ -495,6 +494,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
                 // Remove existing Microbit
                 Utils.setPairedMicrobit(MBApp.getContext(), null);
             }
+        }else {
+
+            Utils.setPairedMicrobit(MBApp.getContext(), prevDeviceArray[0]);
         }
     }
     void connectBluetoothDevice() {

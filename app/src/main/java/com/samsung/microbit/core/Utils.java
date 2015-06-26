@@ -21,7 +21,7 @@ public class Utils {
 	public static final String PREFERENCES_NAME_KEY = "PairedDeviceName";  // To be removed
 	public static final String PREFERENCES_ADDRESS_KEY = "PairedDeviceAddress"; // To be removed
 	public static final String PREFERENCES_PAIREDDEV_KEY = "PairedDeviceDevice";
-	private static ConnectedDevice pairedDevice;
+	private static ConnectedDevice pairedDevice = new ConnectedDevice();
 	private static boolean		isChanged;
 
 	private static final Object lock = new Object();
