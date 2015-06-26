@@ -7,6 +7,8 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.samsung.microbit.model.ConnectedDevice;
+import com.samsung.microbit.model.Constants;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,7 +69,7 @@ public class Utils {
 	final public static String BINARY_FILE_NAME = "/sdcard/output.bin";
 
 	public static int findProgramsAndPopulate(HashMap<String, String> prettyFileNameMap, ArrayList<String> list) {
-		File sdcardDownloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+		File sdcardDownloads = Constants.HEX_FILE_DIR;
 		Log.d("MicroBit", "Searching files in " + sdcardDownloads.getAbsolutePath());
 
 		int totalPrograms = 0;
