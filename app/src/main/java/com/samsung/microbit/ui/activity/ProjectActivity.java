@@ -1,13 +1,10 @@
 package com.samsung.microbit.ui.activity;
 
 import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
@@ -23,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ProjectActivity extends Activity {
+public class ProjectActivity extends Activity implements View.OnClickListener {
 
 	List<Project> projectList = new ArrayList<Project>();
 	ProjectAdapter projectAdapter;
@@ -39,15 +36,32 @@ public class ProjectActivity extends Activity {
 
 		//Remove title bar
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.project_activity);
+		setContentView(R.layout.activity_projects);
 
-		LinearLayout mainContentView = (LinearLayout) findViewById(R.id.project_list);
+		LinearLayout mainContentView = (LinearLayout) findViewById(R.id.mainContentView);
 		mainContentView.getBackground().setAlpha(128);
 
-		projectListView = (ListView) findViewById(R.id.project_list_view);
+		projectListView = (ListView) findViewById(R.id.projectListView);
 		populateDummyData();
 		projectAdapter = new ProjectAdapter(this, projectList);
 		projectListView.setAdapter(projectAdapter);
+	}
+
+	public void onHomeBtnClicked(View v){
+
+	}
+
+	public void onClick(final View v) {
+
+		switch (v.getId()) {
+			case R.id.createProject:
+				break;
+			case R.id.homeBtn:
+				Intent intent = new Intent(this, HomeActivity.class);
+				startActivity(intent);
+				finish();
+				break;
+		}
 	}
 
 	@Override
@@ -75,7 +89,7 @@ public class ProjectActivity extends Activity {
 				popupOverlay = (LinearLayout) findViewById(R.id.popup_overlay);
 				popupOverlay.getBackground().setAlpha(224);
 				popupOverlay.setOnTouchListener(new View.OnTouchListener() {
-					@Override
+					@OverridemainContentView
 					public boolean onTouch(View v, MotionEvent event) {
 						return true;
 					}

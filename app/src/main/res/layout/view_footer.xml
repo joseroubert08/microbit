@@ -1,0 +1,25 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_weight="1"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/connectors"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/connector"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true" />
+
+    <ImageView
+        android:id="@+id/samsungLogo"
+        android:layout_width="300dp"
+        android:layout_height="100dp"
+        android:src="@drawable/samsung"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true" />
+
+</RelativeLayout>
+
+

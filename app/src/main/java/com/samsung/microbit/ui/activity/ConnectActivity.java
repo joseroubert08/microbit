@@ -125,7 +125,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
 
         MBApp.setContext(this);
 
-        //Remove title bar
+        //Remove title barproject_list
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.activity_connect);
@@ -392,9 +392,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
     }
 
     public void onHomeBtnClicked(View v){
-            Intent intent = new Intent(this, HomeActivity.class);
-            startActivity(intent);
-
+         Intent intent = new Intent(this, HomeActivity.class);
+         startActivity(intent);
+         finish();
     }
 
     private volatile boolean deviceFound = false;
