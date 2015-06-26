@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.samsung.microbit.model.ConnectedDevice;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,8 +14,11 @@ import java.util.HashMap;
 public class Utils {
 
 	public static final String PREFERENCES_KEY = "Microbit_PairedDevices";
-	public static final String PREFERENCES_NAME_KEY = "PairedDeviceName";
-	public static final String PREFERENCES_ADDRESS_KEY = "PairedDeviceAddress";
+	public static final String PREFERENCES_NAME_KEY = "PairedDeviceName";  // To be removed
+	public static final String PREFERENCES_ADDRESS_KEY = "PairedDeviceAddress"; // To be removed
+	public static final String PREFERENCES_PAIREDDEV_KEY = "PairedDeviceDevice";
+	private static ConnectedDevice pairedDevice;
+	private static boolean		isChanged;
 
 	private static final Object lock = new Object();
 	private static Utils instance;
@@ -35,6 +40,7 @@ public class Utils {
 			synchronized (lock) {
 				if (instance == null) {
 					Utils u = new Utils();
+					pairedDevice = new ConnectedDevice();
 					instance = u;
 				}
 			}
@@ -96,6 +102,29 @@ public class Utils {
 		return totalPrograms;
 	}
 
+	public static ConnectedDevice getPairedMicrobit(Context ctx)
+	{
+		SharedPreferences pairedDevicePref = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
+		if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
+			String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
+			Gson gson = new Gson();
+			pairedDevice = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
+		}else {
+			pairedDevice.mPattern = null;
+			pairedDevice.mName = null;
+		}
+		return pairedDevice;
+	}
+	public static void setPairedMicrobit(Context ctx, ConnectedDevice newDevice)
+	{
+		SharedPreferences pairedDevicePref = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
+		SharedPreferences.Editor editor = pairedDevicePref.edit();
+		Gson gson = new Gson();
+		String jsonActiveDevice = gson.toJson(newDevice);
+		editor.putString(PREFERENCES_PAIREDDEV_KEY,jsonActiveDevice);
+		editor.commit();
+		isChanged = true;
+	}
 
 	// bit position to value mask
 	public static int getBitMask(int x) {

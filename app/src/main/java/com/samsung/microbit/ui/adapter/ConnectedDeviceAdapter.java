@@ -69,19 +69,19 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
         ImageButton deleteBtn = (ImageButton)convertView.findViewById(R.id.deleteBtn);
 
         // set name and pattern
-        if(entry.getPattern() == null) {
+        if(entry.mPattern == null) {
             deviceName.setEnabled(false);
             connectBtn.setEnabled(false);
             deleteBtn.setEnabled(false);
         }
         else {
-            String styledText = "<font color='blue'><big>"+entry.getName()+"</big> </font><br/>"
-                    + "<font color='blue'><small>("+entry.getPattern() + ")</small> </font>";
+            String styledText = "<font color='blue'><big>"+entry.mName+"</big> </font><br/>"
+                    + "<font color='blue'><small>("+entry.mPattern + ")</small> </font>";
             deviceName.setText(Html.fromHtml(styledText));
             deviceName.setGravity(Gravity.LEFT);
             deviceName.setEnabled(false);
 
-            if(!entry.getStatus()) {
+            if(!entry.mStatus) {
                 connectBtn.setImageResource(R.drawable.disconnected);
                 connectBtn.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.red_btn));
             } else {
