@@ -69,7 +69,7 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
         ImageButton deleteBtn = (ImageButton)convertView.findViewById(R.id.deleteBtn);
 
         // set name and pattern
-        if(entry.mPattern == null) {
+        if(entry == null || entry.mPattern == null) {
             deviceName.setEnabled(false);
             connectBtn.setEnabled(false);
             deleteBtn.setEnabled(false);
