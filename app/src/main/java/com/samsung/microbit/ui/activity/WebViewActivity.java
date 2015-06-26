@@ -129,8 +129,7 @@ public class WebViewActivity extends Activity implements CordovaInterface {
 
     public void onBtnClicked(View v){
         if(v.getId() == R.id.homeBtn){
-            Intent intent = new Intent(this, HomeActivity.class);
-            startActivity(intent);
+            finish();
         } else if(v.getId() == R.id.refreshBtn){
             touchDevelopView.reload();
         }

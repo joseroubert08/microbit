@@ -90,6 +90,7 @@
             android:textColor="@color/black_font_color"
             android:text="@string/start_new_project"
             android:layout_toRightOf="@id/numOfProjects"
+            android:textSize="@dimen/button_text_size"
             android:onClick="onBtnClicked"/>
 
     </RelativeLayout>

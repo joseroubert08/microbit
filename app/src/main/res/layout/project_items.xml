@@ -79,5 +79,5 @@
 		android:layout_toRightOf="@id/sendBtn"
 		android:background="@drawable/red_btn"
 		android:src="@drawable/delete"/>
-	
+
 </RelativeLayout>

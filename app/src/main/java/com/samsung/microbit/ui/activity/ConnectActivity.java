@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -122,6 +123,12 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(getResources().getBoolean(R.bool.portrait_only)){
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
 
         MBApp.setContext(this);
 
@@ -392,9 +399,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
     }
 
     public void onHomeBtnClicked(View v){
-         Intent intent = new Intent(this, HomeActivity.class);
-         startActivity(intent);
-         finish();
+        finish();
     }
 
     private volatile boolean deviceFound = false;

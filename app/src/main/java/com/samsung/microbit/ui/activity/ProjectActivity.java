@@ -2,6 +2,7 @@ package com.samsung.microbit.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,6 +13,7 @@ import android.widget.ListView;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.model.Project;
 import com.samsung.microbit.ui.adapter.ProjectAdapter;
 import com.samsung.microbit.ui.fragment.ProjectActivityPopupFragment;
@@ -32,6 +34,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		if(getResources().getBoolean(R.bool.portrait_only)){
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		} else {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		}
+
 		MBApp.setContext(this);
 
 		//Remove title bar
@@ -54,12 +63,16 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	public void onClick(final View v) {
 
 		switch (v.getId()) {
-			case R.id.createProject:
+			case R.id.createProject: {
+					Intent intent = new Intent(this, WebViewActivity.class);
+					intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
+					startActivity(intent);
+					finish();
+				}
 				break;
-			case R.id.homeBtn:
-				Intent intent = new Intent(this, HomeActivity.class);
-				startActivity(intent);
-				finish();
+			case R.id.homeBtn: {
+					finish();
+				}
 				break;
 		}
 	}
