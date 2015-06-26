@@ -8,10 +8,12 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
+import com.samsung.microbit.model.Project;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Utils {
 
@@ -68,7 +70,7 @@ public class Utils {
 
 	final public static String BINARY_FILE_NAME = "/sdcard/output.bin";
 
-	public static int findProgramsAndPopulate(HashMap<String, String> prettyFileNameMap, ArrayList<String> list) {
+	public static int findProgramsAndPopulate(HashMap<String, String> prettyFileNameMap, List<Project> list) {
 		File sdcardDownloads = Constants.HEX_FILE_DIR;
 		Log.d("MicroBit", "Searching files in " + sdcardDownloads.getAbsolutePath());
 
@@ -87,21 +89,30 @@ public class Utils {
 					parsedFileName = parsedFileName.replace('_', ' ');
 
 					if (prettyFileNameMap != null)
-					    prettyFileNameMap.put(parsedFileName, fileName);
+						prettyFileNameMap.put(parsedFileName, fileName);
 
 					if (list != null)
-					    list.add(parsedFileName);
+						list.add(new Project(parsedFileName, files[i].getAbsolutePath(), null, false));
 					++totalPrograms;
 				}
 			}
 		}
 
-		if (totalPrograms == 0) {
-			if (list != null)
-				list.add("No programs found !");
+		return totalPrograms;
+	}
+
+	public static boolean deleteFile(String filePath) {
+		File fdelete = new File(filePath);
+		if (fdelete.exists()) {
+			if (fdelete.delete()) {
+				Log.d("MicroBit", "file Deleted :" + filePath);
+				return true;
+			} else {
+				Log.d("MicroBit", "file not Deleted :" + filePath);
+			}
 		}
 
-		return totalPrograms;
+		return false;
 	}
 
 	public static ConnectedDevice getPairedMicrobit(Context ctx)

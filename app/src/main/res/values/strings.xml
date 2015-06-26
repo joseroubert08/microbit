@@ -125,5 +125,6 @@
     <string name="projects">Projects</string>
     <string name="send">Send</string>
     <string name="code">Code</string>
+    <string name="no_projects">No projects found!</string>
 
 </resources>

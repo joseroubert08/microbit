@@ -8,17 +8,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.model.Project;
 import com.samsung.microbit.ui.adapter.ProjectAdapter;
 import com.samsung.microbit.ui.fragment.ProjectActivityPopupFragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -27,6 +31,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	List<Project> projectList = new ArrayList<Project>();
 	ProjectAdapter projectAdapter;
 	private ListView projectListView;
+	private HashMap<String, String> prettyFileNameMap = new HashMap<String, String>();
+	private ArrayList<String> list = new ArrayList<String>();
 
 	ProjectActivityPopupFragment fragment;
 	LinearLayout popupOverlay;
@@ -51,7 +57,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		mainContentView.getBackground().setAlpha(128);
 
 		projectListView = (ListView) findViewById(R.id.projectListView);
-		populateDummyData();
+		TextView emptyText = (TextView)findViewById(android.R.id.empty);
+		projectListView.setEmptyView(emptyText);
+
+		Utils.findProgramsAndPopulate(prettyFileNameMap, projectList);
+
 		projectAdapter = new ProjectAdapter(this, projectList);
 		projectListView.setAdapter(projectAdapter);
 	}
@@ -134,17 +144,5 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		*/
 
 		return super.onOptionsItemSelected(item);
-	}
-
-	private void populateDummyData() {
-		projectList.clear();
-		projectList.add(new Project("My First project", "http://microbit.com/apps/1", false));
-		projectList.add(new Project("My Second project", "http://microbit.com/apps/2", false));
-		projectList.add(new Project("My Third project", "http://microbit.com/apps/3", true));
-		projectList.add(new Project("My Forth project", "http://microbit.com/apps/4", false));
-		projectList.add(new Project("My Forth project", "http://microbit.com/apps/4", false));
-		projectList.add(new Project("My Fifth project", "http://microbit.com/apps/4", false));
-		projectList.add(new Project("My Sixth project", "http://microbit.com/apps/4", false));
-		projectList.add(new Project("My Seventh project", "http://microbit.com/apps/4", false));
 	}
 }

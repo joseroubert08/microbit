@@ -2,6 +2,7 @@ package com.samsung.microbit.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.nfc.Tag;
@@ -92,6 +93,12 @@ public class WebViewActivity extends Activity implements CordovaInterface {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(getResources().getBoolean(R.bool.portrait_only)){
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
 
         //Remove title bar
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
