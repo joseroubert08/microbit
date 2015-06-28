@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.webkit.HttpAuthHandler;
+import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -88,6 +89,13 @@ public class WebViewActivity extends Activity implements CordovaInterface {
         public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
             LOG.d(TAG, "onJsAlert");
             return super.onJsAlert(view, url, message, result);
+        }
+
+        @Override
+        public boolean onJsPrompt(WebView view, String origin, String message, String defaultValue, JsPromptResult result){
+            //TODO 1. Why do I need to write all these functions?
+            //     2. Beautify this
+            return false;
         }
     }
     @Override
