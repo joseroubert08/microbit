@@ -286,6 +286,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
             case PAIRING_STATE_CONNECT_BUTTON:
                 connectButtonView.setVisibility(View.VISIBLE);
                 lvConnectedDevice.setEnabled(true);
+                Arrays.fill(deviceCodeArray, "0");
                 findViewById(R.id.gridview).setEnabled(true);
                 break;
             case PAIRING_STATE_TIP:
@@ -347,20 +348,27 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
             case R.id.ok_pattern_button:
                 state = PAIRING_STATE.PAIRING_STATE_SEARCHING;
                 generateName();
+                if (newDeviceCode.isEmpty()) {
+                    findViewById(R.id.ok_pattern_button).setVisibility(View.GONE);
+                    Toast.makeText(MBApp.getContext(), "Enter Valid Pattern", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 scanLeDevice(true);
                 displayConnectScreen(state);
 
                 break;
             case  R.id.ok_name_button:
                 String newname = ((EditText)findViewById(R.id.nameNewEdit)).getText().toString();
-                if(!newname.isEmpty()) {
+                if (newname.isEmpty() ||
+                    (newname.length() ==1 && newname.charAt(0) == ' ')) {
+                    Toast.makeText(MBApp.getContext(), "Enter Name ", Toast.LENGTH_SHORT).show();
+                } else {
                     prevDeviceArray[0].mName = newname;
                     changeMicrobitName(0, prevDeviceArray[0]);
                     state = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
                     displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                }
 
-                } else
-                    Toast.makeText(MBApp.getContext(), "Enter Name ", Toast.LENGTH_SHORT).show();
                 break;
             case  R.id.cancel_name_button:
                 displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
