@@ -50,44 +50,45 @@
         android:layout_width="match_parent"
         android:layout_height="0dp">
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:orientation="horizontal"
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_gravity="center_horizontal"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent">
 
             <ImageButton
-                android:layout_width="120dp"
-                android:layout_weight="1"
-                android:layout_height="fill_parent"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="150dp"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
                 android:id="@+id/imageButtonCancel"
-                android:src="@drawable/popup_cancel_button"
-                android:background="@null"
+                android:src="@drawable/cross"
+                android:background="@drawable/popup_cancel_button"
                 />
 
             <ImageButton
-                android:layout_width="120dp"
-                android:layout_weight="1"
-                android:layout_height="fill_parent"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="150dp"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
                 android:id="@+id/imageButtonOk"
-                android:src="@drawable/popup_ok_button"
-                android:background="@null"
+                android:src="@drawable/tick"
+                android:background="@drawable/popup_ok_button"
                 />
-        </LinearLayout>
+        </RelativeLayout>
 
         <ImageButton
-            android:layout_width="120dp"
-            android:layout_height="fill_parent"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:adjustViewBounds="true"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
             android:id="@+id/imageButton"
-            android:src="@drawable/popup_ok_button"
-            android:background="@null"
+            android:src="@drawable/tick"
+            android:background="@drawable/popup_ok_button"
         />
 
     </ViewSwitcher>
