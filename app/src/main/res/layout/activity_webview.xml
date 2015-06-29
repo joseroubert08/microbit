@@ -9,7 +9,8 @@
         android:layout_marginTop="@dimen/content_margin"
         android:layout_marginBottom="@dimen/content_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin">
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:clickable="true">
 
         <ImageButton
             android:id="@+id/homeBtn"
