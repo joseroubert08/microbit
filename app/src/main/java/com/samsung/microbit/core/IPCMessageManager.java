@@ -32,7 +32,7 @@ public final class IPCMessageManager {
 	public static final int IPC_FUNCTION_WRITE_CHARACTERISTIC = 4;
 
 	public static final int IPC_NOTIFICATION_GATT_CONNECTED = 4000;
-	public static final int IPC_NOTIFICATION_GATT_DIRCONNECTED = 4001;
+	public static final int IPC_NOTIFICATION_GATT_DISCONNECTED = 4001;
 	public static final int IPC_NOTIFICATION_CHARACTERISTIC_CHANGED = 4002;
 
 

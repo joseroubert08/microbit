@@ -22,11 +22,9 @@ import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
-import com.samsung.microbit.ui.activity.LEDGridActivity;
+import com.samsung.microbit.ui.activity.ConnectActivity;
 
 public class BLEService extends BLEBaseService {
-
-	public static final String MESSAGE_NAME = "uBIT_BUTTON_PRESS";
 
 	protected String TAG = "BLEService";
 	protected boolean debug = true;
@@ -174,11 +172,12 @@ public class BLEService extends BLEBaseService {
 					.setOngoing(true)
 					.setContentText("micro:bit Disconnected");
 
-			Intent intent = new Intent(this, LEDGridActivity.class);
-			intent.putExtra(LEDGridActivity.INTENT_IS_FOR_FLASHING, false);
+			Intent intent = new Intent(this, ConnectActivity.class);
 			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			mBuilder.setContentIntent(resultPendingIntent);
 			notifyMgr.notify(notificationId, mBuilder.build());
+			sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED, null);
+			sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED, null);
 		} else {
 			NotificationCompat.Builder mBuilder =
 				new NotificationCompat.Builder(this)
@@ -187,11 +186,13 @@ public class BLEService extends BLEBaseService {
 					.setOngoing(true)
 					.setContentText("micro:bit Connected");
 
-			Intent intent = new Intent(this, LEDGridActivity.class);
-			intent.putExtra(LEDGridActivity.INTENT_IS_FOR_FLASHING, false);
+
+			Intent intent = new Intent(this, ConnectActivity.class);
 			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			mBuilder.setContentIntent(resultPendingIntent);
 			notifyMgr.notify(notificationId, mBuilder.build());
+			sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null);
+			sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null);
 		}
 	}
 

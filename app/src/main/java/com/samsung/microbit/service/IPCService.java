@@ -19,6 +19,8 @@ public class IPCService extends Service {
 	public static final String INTENT_BLE_NOTIFICATION = "com.samsung.microbit.service.IPCService.INTENT_BLE_NOTIFICATION";
 	public static final String INTENT_MICROBIT_NOTIFICATION = "com.samsung.microbit.service.IPCService.INTENT_MICROBIT_NOTIFICATION";
 
+	public static final String NOTIFICATION_CAUSE = "com.samsung.microbit.service.IPCService.CAUSE";
+
 	static final String TAG = "IPCService";
 	private boolean debug = false;
 
@@ -136,6 +138,7 @@ public class IPCService extends Service {
 		if (msg.what == IPCMessageManager.ANDROID_MESSAGE) {
 			logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
 			Intent intent = new Intent(INTENT_BLE_NOTIFICATION);
+			intent.putExtra(NOTIFICATION_CAUSE, msg.arg1);
 			LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 		} else if (msg.what == IPCMessageManager.MICIROBIT_MESSAGE) {
 			logi("handleIncomingMessage() :: IPCMessageManager.MICIROBIT_MESSAGE msg.arg1 = " + msg.arg1);
