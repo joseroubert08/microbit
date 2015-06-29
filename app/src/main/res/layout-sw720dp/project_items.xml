@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				xmlns:app="http://schemas.android.com/apk/res-auto"
+				android:layout_width="fill_parent"
+				android:layout_height="fill_parent"
+				android:orientation="horizontal">
+
+	<RelativeLayout
+		android:id="@+id/appName"
+		android:layout_width="350dp"
+		android:layout_height="80dp"
+		android:layout_marginLeft="@dimen/activity_vertical_margin"
+		android:layout_marginTop="@dimen/activity_vertical_margin">
+
+		<Button
+			android:id="@+id/appNameButton"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:background="@drawable/white_btn"
+			android:drawableRight="@drawable/edit_project_name"
+			android:gravity="left|center_vertical"
+			android:textColor="@color/black_font_color"
+			android:textSize="12pt"/>
+
+		<EditText
+			android:id="@+id/appNameEdit"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:background="@drawable/white_btn"
+			android:gravity="left|center_vertical"
+			android:textColor="@color/black_font_color"
+			android:editable="true"
+			android:textSize="12pt"
+			android:visibility="invisible"/>
+	</RelativeLayout>
+
+	<Button
+		android:id="@+id/codeBtn"
+		android:layout_width="150dp"
+		android:layout_height="80dp"
+		android:layout_marginLeft="@dimen/activity_vertical_margin"
+		android:layout_marginTop="@dimen/activity_vertical_margin"
+		android:layout_toRightOf="@id/appName"
+		android:background="@drawable/green_btn"
+		android:drawableRight="@drawable/edit_project_code"
+		android:gravity="left|center_vertical"
+		android:text="@string/code"
+		android:textSize="12pt"/>
+
+	<Button
+		android:id="@+id/sendBtn"
+		android:layout_width="150dp"
+		android:layout_height="80dp"
+		android:layout_marginLeft="@dimen/activity_vertical_margin"
+		android:layout_marginTop="@dimen/activity_vertical_margin"
+		android:layout_toRightOf="@id/codeBtn"
+		android:background="@drawable/green_btn"
+		android:drawableRight="@drawable/microbit_send"
+		android:gravity="left|center_vertical"
+		android:text="@string/send"
+		android:textColor="@color/black_font_color"
+		android:textSize="12pt"/>
+
+	<ImageButton
+		android:id="@+id/deleteBtn"
+		android:layout_width="80dp"
+		android:layout_height="80dp"
+		android:layout_marginLeft="@dimen/activity_vertical_margin"
+		android:layout_marginTop="@dimen/activity_vertical_margin"
+		android:layout_toRightOf="@id/sendBtn"
+		android:background="@drawable/red_btn"
+		android:src="@drawable/delete"/>
+
+</RelativeLayout>

@@ -1,0 +1,102 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" android:layout_height="fill_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:background="@drawable/bg">
+
+    <ImageView
+        android:id="@+id/bbcLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/microbit"
+        android:layout_centerHorizontal="true"/>
+
+    <RelativeLayout
+        android:id="@+id/connectBarView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/home_content_margin"
+        android:layout_below="@id/bbcLogo"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/white_bg">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:text="@string/connect"
+            android:textSize="35sp"
+            android:textColor="@color/black_font_color"
+            android:layout_margin="@dimen/widget_margin"
+            android:layout_centerVertical="true"/>
+
+        <Button
+            android:id="@+id/addDevice"
+            android:layout_width="500dp"
+            android:layout_height="80dp"
+            android:layout_margin="@dimen/widget_margin"
+            android:textColor="@color/black_font_color"
+            android:background="@drawable/white_btn"
+            android:layout_toRightOf="@id/title"
+            android:drawableRight="@drawable/plus_add"
+            android:onClick="onBtnClicked"/>
+
+        <ImageButton
+            android:id="@+id/connectBtn"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/connected"
+            android:layout_margin="@dimen/widget_margin"
+            android:background="@drawable/white_btn"
+            android:layout_toRightOf="@id/addDevice"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/projectBarView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/content_margin"
+        android:layout_below="@id/connectBarView"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/white_bg">
+
+        <TextView
+            android:id="@+id/projects"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:text="@string/your_projects"
+            android:textSize="35sp"
+            android:textColor="@color/black_font_color"
+            android:layout_margin="@dimen/widget_margin"
+            android:layout_centerVertical="true"/>
+
+        <Button
+            android:id="@+id/numOfProjects"
+            android:layout_width="340dp"
+            android:layout_height="80dp"
+            android:layout_margin="@dimen/widget_margin"
+            android:textColor="@color/black_font_color"
+            android:background="@drawable/white_btn"
+            android:layout_toRightOf="@id/projects"
+            android:onClick="onBtnClicked"/>
+
+        <Button
+            android:id="@+id/startNewProject"
+            android:layout_width="240dp"
+            android:layout_height="80dp"
+            android:layout_margin="@dimen/widget_margin"
+            android:background="@drawable/yellow_btn"
+            android:textColor="@color/black_font_color"
+            android:text="@string/start_new_project"
+            android:layout_toRightOf="@id/numOfProjects"
+            android:textSize="@dimen/button_text_size"
+            android:onClick="onBtnClicked"/>
+
+    </RelativeLayout>
+
+    <include layout="@layout/view_footer"/>
+
+</RelativeLayout>
+
+
