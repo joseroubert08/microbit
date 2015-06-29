@@ -2,8 +2,6 @@ package com.samsung.microbit.model;
 
 import android.os.Environment;
 
-import com.samsung.microbit.MBApp;
-
 import java.io.File;
 import java.util.UUID;
 

@@ -7,7 +7,6 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -15,26 +14,17 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.view.accessibility.AccessibilityEvent;
 
-import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.model.CmdArg;
+import com.samsung.microbit.core.BLEManager;
 import com.samsung.microbit.core.IPCMessageManager;
-import com.samsung.microbit.core.PreferencesInteraction;
 import com.samsung.microbit.core.Utils;
+import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
-import com.samsung.microbit.plugin.AlertPlugin;
-import com.samsung.microbit.plugin.AudioPlugin;
-import com.samsung.microbit.core.BLEManager;
-import com.samsung.microbit.plugin.CameraPlugin;
-import com.samsung.microbit.plugin.RemoteControlPlugin;
-import com.samsung.microbit.ui.activity.LEDGridActivity;
+import com.samsung.microbit.ui.activity.ConnectActivity;
 
 public class BLEService extends BLEBaseService {
-
-	public static final String MESSAGE_NAME = "uBIT_BUTTON_PRESS";
 
 	protected String TAG = "BLEService";
 	protected boolean debug = true;
@@ -182,11 +172,12 @@ public class BLEService extends BLEBaseService {
 					.setOngoing(true)
 					.setContentText("micro:bit Disconnected");
 
-			Intent intent = new Intent(this, LEDGridActivity.class);
-			intent.putExtra(LEDGridActivity.INTENT_IS_FOR_FLASHING, false);
+			Intent intent = new Intent(this, ConnectActivity.class);
 			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			mBuilder.setContentIntent(resultPendingIntent);
 			notifyMgr.notify(notificationId, mBuilder.build());
+			sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED, null);
+			sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED, null);
 		} else {
 			NotificationCompat.Builder mBuilder =
 				new NotificationCompat.Builder(this)
@@ -195,11 +186,13 @@ public class BLEService extends BLEBaseService {
 					.setOngoing(true)
 					.setContentText("micro:bit Connected");
 
-			Intent intent = new Intent(this, LEDGridActivity.class);
-			intent.putExtra(LEDGridActivity.INTENT_IS_FOR_FLASHING, false);
+
+			Intent intent = new Intent(this, ConnectActivity.class);
 			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			mBuilder.setContentIntent(resultPendingIntent);
 			notifyMgr.notify(notificationId, mBuilder.build());
+			sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null);
+			sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null);
 		}
 	}
 
@@ -229,7 +222,7 @@ public class BLEService extends BLEBaseService {
 		}
 
 		if (cmd != null) {
-			sendtoPluginService(msgService, cmd);
+			sendtoPluginService(IPCMessageManager.MICIROBIT_MESSAGE, msgService, cmd);
 		}
 	}
 
@@ -268,8 +261,8 @@ public class BLEService extends BLEBaseService {
 
 					try {
 						Thread.sleep(3000);
-						sendtoIPCService(0, null);
-						sendtoPluginService(0, null);
+						sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null);
+						sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -278,29 +271,41 @@ public class BLEService extends BLEBaseService {
 		}
 	}
 
-	private void handleIncomingMessage(Message msg) {
-		logi("handleIncomingMessage() :: Start BLEService");
-	}
-
-	public void sendtoPluginService(int mbsService, CmdArg cmd) {
+	public void sendtoPluginService(int mbsService, int functionCode, CmdArg cmd) {
 
 		logi("sendtoPluginService()");
 		Class destService = PluginService.class;
+		sendIPCMessge(destService, mbsService, functionCode, cmd);
+	}
+
+	public void sendtoIPCService(int mbsService, int functionCode, CmdArg cmd) {
+
+		logi("sendtoIPCService()");
+		Class destService = IPCService.class;
+		sendIPCMessge(destService, mbsService, functionCode, cmd);
+	}
+
+	public void sendIPCMessge(Class destService, int mbsService, int functionCode, CmdArg cmd) {
+
+		logi("sendIPCMessge()");
 		IPCMessageManager inst = IPCMessageManager.getInstance();
 		if (!inst.isConnected(destService)) {
 			inst.configureServerConnection(destService, this);
 		}
 
 		Message msg = Message.obtain(null, mbsService);
+		msg.arg1 = functionCode;
 		Bundle bundle = new Bundle();
-
-		if (cmd == null && mbsService == 0) {
-			bundle.putString(IPCMessageManager.IPC_INIT_CALL, this.getClass().getName());
-		} else {
+		if (mbsService == IPCMessageManager.ANDROID_MESSAGE) {
+			logi("sendIPCMessge() :: IPCMessageManager.ANDROID_MESSAGE functionCode=" + functionCode);
+		} else if (mbsService == IPCMessageManager.MICIROBIT_MESSAGE) {
+			logi("sendIPCMessge() :: IPCMessageManager.MICIROBIT_MESSAGE functionCode=" + functionCode);
 			if (cmd != null) {
-				bundle.putInt(PluginService.BUNDLE_DATA, cmd.getCMD());
-				bundle.putString(PluginService.BUNDLE_VALUE, cmd.getValue());
+				bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
+				bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
 			}
+		} else {
+			return;
 		}
 
 		msg.setData(bundle);
@@ -311,26 +316,14 @@ public class BLEService extends BLEBaseService {
 		}
 	}
 
-	public void sendtoIPCService(int mbsService, CmdArg cmd) {
-
-		logi("sendtoIPCService()");
-		Class destService = IPCService.class;
-		IPCMessageManager inst = IPCMessageManager.getInstance();
-		if (!inst.isConnected(destService)) {
-			inst.configureServerConnection(destService, this);
-		}
-
-		Message msg = Message.obtain(null, mbsService);
-		Bundle bundle = new Bundle();
-		if (cmd == null && mbsService == 0) {
-			bundle.putString(IPCMessageManager.IPC_INIT_CALL, this.getClass().getName());
-		}
-
-		msg.setData(bundle);
-		try {
-			inst.sendMessage(destService, msg);
-		} catch (RemoteException e) {
-			e.printStackTrace();
+	private void handleIncomingMessage(Message msg) {
+		logi("handleIncomingMessage() :: Start BLEService");
+		if (msg.what == IPCMessageManager.ANDROID_MESSAGE) {
+			logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
+		} else if (msg.what == IPCMessageManager.MICIROBIT_MESSAGE) {
+			logi("handleIncomingMessage() :: IPCMessageManager.MICIROBIT_MESSAGE msg.arg1 = " + msg.arg1);
+		} else {
+			return;
 		}
 	}
 }

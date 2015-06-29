@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
+import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.ui.PopUp;
 
 import java.io.IOException;
@@ -30,13 +31,6 @@ public class AlertPlugin {
 	private static AlertDialog customDialog = null;
 	private static MediaPlayer mediaPlayer = null;
 
-	//Alert plugin action
-	public static final int TOAST = 0;
-	public static final int VIBRATE = 1;
-	public static final int SOUND = 2;
-	public static final int RINGTONE = 3;
-	public static final int FINDPHONE = 4;
-
 	//Sound file to play
 	public static final int ALARAM = 0;
 	public static final int TARDIS = 1;
@@ -45,7 +39,7 @@ public class AlertPlugin {
 	public static void pluginEntry(Context ctx, CmdArg cmd) {
 		context = ctx;
 		switch (cmd.getCMD()) {
-			case TOAST:
+			case Constants.SAMSUNG_ALERT_EVT_DISPLAY_TOAST:
 				PopUp.show(context,
 						cmd.getValue(),
 						"Message from Micro:Bit",
@@ -53,19 +47,19 @@ public class AlertPlugin {
 						PopUp.TYPE_ALERT, null, null);
 				break;
 
-			case VIBRATE:
+			case Constants.SAMSUNG_ALERT_EVT_VIBRATE:
 				vibrate(Integer.parseInt(cmd.getValue()));
 				break;
 
-			case SOUND:
+			case Constants.SAMSUNG_ALERT_EVT_PLAY_SOUND:
 				playSound(Integer.parseInt(cmd.getValue()));
 				break;
 
-			case RINGTONE:
+			case Constants.SAMSUNG_ALERT_EVT_PLAY_RINGTONE:
 				playRingTone();
 				break;
 
-			case FINDPHONE:
+			case Constants.SAMSUNG_ALERT_EVT_FIND_MY_PHONE:
 				PopUp.show(context,
 						context.getString(R.string.findphone_via_microbit),
 						"Message from Micro:Bit",
