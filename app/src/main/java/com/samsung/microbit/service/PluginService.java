@@ -183,15 +183,12 @@ public class PluginService extends Service {
 		}
 	}
 
-
 	private void handleIncomingMessage(Message msg) {
 		logi("handleIncomingMessage() :: Start PluginService");
 		if (msg.what == IPCMessageManager.ANDROID_MESSAGE) {
 			logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
 		} else if (msg.what == IPCMessageManager.MICIROBIT_MESSAGE) {
 			handleMessage(msg);
-		} else {
-			return;
 		}
 	}
 }

@@ -14,7 +14,7 @@ import com.samsung.microbit.model.CmdArg;
 
 public class IPCService extends Service {
 
-	public static IPCService instance;
+	private static IPCService instance;
 
 	public static final String INTENT_BLE_NOTIFICATION = "com.samsung.microbit.service.IPCService.INTENT_BLE_NOTIFICATION";
 	public static final String INTENT_MICROBIT_NOTIFICATION = "com.samsung.microbit.service.IPCService.INTENT_MICROBIT_NOTIFICATION";
@@ -35,6 +35,10 @@ public class IPCService extends Service {
 		startIPCListener();
 	}
 
+	public static IPCService getInstance(){
+		return instance;
+	}
+
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		logi("onStartCommand()");
@@ -44,8 +48,16 @@ public class IPCService extends Service {
 	/*
 	 * Business method
 	 */
-	public void sendBleData() {
-		sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, 1, null);
+	public void bleDisconnect() {
+		sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_DISCONNECT, null);
+	}
+
+	public void bleConnect() {
+		sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CONNECT, null);
+	}
+
+	public void bleReconnect() {
+		sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_RECONNECT, null);
 	}
 
 	/*
@@ -144,8 +156,6 @@ public class IPCService extends Service {
 			logi("handleIncomingMessage() :: IPCMessageManager.MICIROBIT_MESSAGE msg.arg1 = " + msg.arg1);
 			Intent intent = new Intent(INTENT_MICROBIT_NOTIFICATION);
 			LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-		} else {
-			return;
 		}
 	}
 }

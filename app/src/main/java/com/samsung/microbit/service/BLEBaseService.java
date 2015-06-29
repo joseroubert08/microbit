@@ -100,6 +100,7 @@ public abstract class BLEBaseService extends Service {
 	}
 
 
+
 	private void setupBLE() {
 
 		logi("setupBLE()");

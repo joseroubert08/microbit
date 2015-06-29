@@ -197,8 +197,6 @@ public class BLEService extends BLEBaseService {
 	}
 
 	// ######################################################################
-	private boolean mIsRemoteControlPlay = false;
-
 
 	void sendMessage(int eventSrc, int event) {
 
@@ -320,10 +318,23 @@ public class BLEService extends BLEBaseService {
 		logi("handleIncomingMessage() :: Start BLEService");
 		if (msg.what == IPCMessageManager.ANDROID_MESSAGE) {
 			logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
+			switch (msg.arg1) {
+				case IPCMessageManager.IPC_FUNCTION_CONNECT:
+					logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_CONNECT");
+					break;
+
+				case IPCMessageManager.IPC_FUNCTION_DISCONNECT:
+					logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_DISCONNECT");
+					break;
+
+				case IPCMessageManager.IPC_FUNCTION_RECONNECT:
+					logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_RECONNECT");
+					break;
+
+				default:
+			}
 		} else if (msg.what == IPCMessageManager.MICIROBIT_MESSAGE) {
 			logi("handleIncomingMessage() :: IPCMessageManager.MICIROBIT_MESSAGE msg.arg1 = " + msg.arg1);
-		} else {
-			return;
 		}
 	}
 }
