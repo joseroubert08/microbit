@@ -19,12 +19,26 @@ import java.util.List;
 
 public final class IPCMessageManager {
 
-	public static final String IPC_INIT_CALL = "init";
+	public static final String BUNDLE_DATA = "data";
+	public static final String BUNDLE_VALUE = "value";
+
+	public static final int ANDROID_MESSAGE = 1;
+	public static final int MICIROBIT_MESSAGE = 2;
+
+	public static final int IPC_FUNCTION_CODE_INIT = 0;
+	public static final int IPC_FUNCTION_DISCONNECT = 1;
+	public static final int IPC_FUNCTION_CONNECT = 2;
+	public static final int IPC_FUNCTION_RECONNECT = 3;
+	public static final int IPC_FUNCTION_WRITE_CHARACTERISTIC = 4;
+
+	public static final int IPC_NOTIFICATION_GATT_CONNECTED = 4000;
+	public static final int IPC_NOTIFICATION_GATT_DIRCONNECTED = 4001;
+	public static final int IPC_NOTIFICATION_CHARACTERISTIC_CHANGED = 4002;
+
 
 	private IncomingHandler incomingHandler = null;
 	private HandlerThread handlerThread = null;
 	private Messenger clientMessenger = null;
-
 
 	private static volatile IPCMessageManager instance;
 	private static final Object lock = new Object();
@@ -165,10 +179,11 @@ public final class IPCMessageManager {
 			logi("IncomingHandler.handleMessage()");
 			super.handleMessage(msg);
 
-			String s = msg.getData().getString(IPC_INIT_CALL);
-			if (s != null) {
-				logi("IncomingHandler.handleMessage() :: IPC_INIT_CALL = " + s);
-				return;
+			if (msg.what == ANDROID_MESSAGE) {
+				if (msg.arg1 == IPC_FUNCTION_CODE_INIT) {
+					logi("IncomingHandler.handleMessage() :: ANDROID_MESSAGE.IPC_FUNCTION_CODE_INIT");
+					return;
+				}
 			}
 
 			Handler c = null;
