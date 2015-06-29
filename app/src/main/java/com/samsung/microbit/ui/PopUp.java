@@ -2,10 +2,12 @@ package com.samsung.microbit.ui;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -55,6 +57,17 @@ public class PopUp {
         }
     };
 
+    static private Dialog.OnKeyListener keyListener = new Dialog.OnKeyListener() {
+        @Override
+        public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                PopUp.hide();
+                return true;
+            }
+            return false;
+        }
+    };
+
     public static boolean isBlockingPopUpDisplayed()
     {
         return current_type == TYPE_CHOICE;
@@ -85,6 +98,8 @@ public class PopUp {
         current_type = type;
 
         dialog = new Dialog(context, R.style.PopUpDialog);
+        dialog.setOnKeyListener(keyListener);
+
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View popUpView = inflater.inflate(R.layout.dialog_popup, null);
         ImageView imageView = (ImageView)popUpView.findViewById(R.id.imageIcon);
