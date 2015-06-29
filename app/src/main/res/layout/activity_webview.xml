@@ -70,7 +70,8 @@
             android:layout_height="fill_parent"
             android:id="@+id/touchDevelopView"
             android:background="#7CFC00"
-            android:longClickable="true"/>
+            android:longClickable="true"
+            android:windowSoftInputMode="adjustResize"/>
     </LinearLayout>
 
 </RelativeLayout>
