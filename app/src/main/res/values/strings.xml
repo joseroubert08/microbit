@@ -99,7 +99,7 @@
     <string name="sound_via_microbit">Playing sound via Microbit!</string>
     <string name="alert">Alert...</string>
 
-    <!-- Connec Acitivity -->
+    <!-- Connect Activity -->
     <string name="previous_devices">Previous devices</string>
     <string name="new_devices_pattern_null">Repeat the pattern below</string>
     <string name="new_devices">Connect to a new device</string>
@@ -110,6 +110,11 @@
     <string name="connectTipTitle">Get the pairing pattern</string>
     <string name="connectTipText">To start pairing with a device Please click the marked buttons on your Micro:Bit</string>
     <string name="connectSearchingTitle">Connecting...</string>
+    <!--Connect Popup messages -->
+    <string name="pairingErrorTitle">Error</string>
+    <string name="pairingErrorMessage">We cannot find that Micro:Bit\nPlease try again</string>
+    <string name="deleteMicrobitTitle">Delete Microbit?</string>
+    <string name="deleteMicrobitMessage">Are you sure you want to remove this device?</string>
 
     <string name="your_projects">Your projects</string>
     <string name="start_new_project">Start a new project</string>

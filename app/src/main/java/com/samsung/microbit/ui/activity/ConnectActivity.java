@@ -414,8 +414,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
                 if((state == PAIRING_STATE.PAIRING_STATE_NEW_NAME)  && (pos==0)) {
                     Toast.makeText(MBApp.getContext(), "Cancel rename and delete!!", Toast.LENGTH_SHORT).show();
                 } else {
+                    handleDeleteMicrobit(pos);
 
-                    removeMicrobit(pos);
                 }
                 break;
             default:
@@ -423,6 +423,24 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
                 break;
 
         }
+    }
+
+    private void handleDeleteMicrobit(final int pos)
+    {
+        PopUp.show(this,
+                getString(R.string.deleteMicrobitMessage), //message
+                getString(R.string.deleteMicrobitTitle), //title
+                R.drawable.delete, R.drawable.red_btn,
+                PopUp.TYPE_CHOICE, //type of popup.
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PopUp.hide();
+                        removeMicrobit(pos);
+                    }
+                },//override click listener for ok button
+                null);//pass null to use default listener
+
     }
 
     public void onHomeBtnClicked(View v){
@@ -451,8 +469,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
         displayConnectScreen(PAIRING_STATE.PAIRING_STATE_ERROR);
 
         PopUp.show(this,
-                "We cannot find that Micro:Bit\nPlease try again", //message
-                "Error", //title
+                getString(R.string.pairingErrorMessage), //message
+                getString(R.string.pairingErrorTitle), //title
                 R.drawable.exclamation, //image icon res id
                 0,
                 PopUp.TYPE_ALERT, //type of popup.
@@ -465,8 +483,6 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
                     }
                 },//override click listener for ok button
                 null);//pass null to use default listener
-
-
 
     }
     private void handle_pairing_successful(final ConnectedDevice newDev) {
