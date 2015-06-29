@@ -13,6 +13,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -173,6 +175,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
         WebView animation = (WebView) findViewById(R.id.animationwebView);
         animation.setBackgroundColor(Color.TRANSPARENT);
         animation.loadUrl("file:///android_asset/htmls/animation.html");
+
+
     }
 
     @Override
@@ -315,17 +319,34 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
                 newDeviceView.setVisibility(View.VISIBLE);
                 findViewById(R.id.ok_pattern_button).setVisibility(View.GONE);
                 ((EditText)findViewById(R.id.nameNewEdit)).setText(" ");
-                ((TextView)findViewById(R.id.nameNewTxt)).setText(getString(R.string.name_device) +" " + newDeviceCode);
+                ((TextView)findViewById(R.id.nameNewTxt)).setText(getString(R.string.name_device) + " " + newDeviceCode);
                 findViewById(R.id.nameNewTxt).setVisibility(View.VISIBLE);
-                findViewById(R.id.nameNewEdit).setVisibility(View.VISIBLE);
+                EditText editText = (EditText) findViewById(R.id.nameNewEdit);
+                editText.setVisibility(View.VISIBLE);
                 findViewById(R.id.ok_name_button).setVisibility(View.VISIBLE);
                 findViewById(R.id.cancel_name_button).setVisibility(View.VISIBLE);
+                findViewById(R.id.ok_name_button).setEnabled(false);
+                editText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        // lets supouse validation method is called validUrl()
+                        findViewById(R.id.ok_name_button).setEnabled(!editable.toString().isEmpty());
+                    }
+                });
                 break;
             case PAIRING_STATE_SEARCHING:
                 connectSearchView.setVisibility(View.VISIBLE);
                 break;
             case PAIRING_STATE_ERROR:
-                connectSearchView.setVisibility(View.VISIBLE);
+                connectSearchView.setVisibility(View.GONE);
                 newDeviceView.setVisibility(View.VISIBLE);
                 break;
         };
@@ -415,7 +436,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
         logi("handle_pairing_failed() :: Start");
 
         // dummy code to test addition of MBits
-       /*  if(debug) {
+        /* if(debug) {
             if (!newDeviceCode.equalsIgnoreCase("vuvuv")) {
 
                 state = PAIRING_STATE.PAIRING_STATE_NEW_NAME;
@@ -427,7 +448,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener  {
             }
         }*/
 
-        displayConnectScreen(PAIRING_STATE.PAIRING_STATE_NEW_NAME);
+        displayConnectScreen(PAIRING_STATE.PAIRING_STATE_ERROR);
 
         PopUp.show(this,
                 "We cannot find that Micro:Bit\nPlease try again", //message
