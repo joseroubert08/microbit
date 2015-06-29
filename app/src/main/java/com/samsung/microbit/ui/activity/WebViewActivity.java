@@ -1,13 +1,18 @@
 package com.samsung.microbit.ui.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.gesture.GestureOverlayView;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.webkit.HttpAuthHandler;
@@ -17,6 +22,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
@@ -43,10 +49,88 @@ public class WebViewActivity extends Activity implements CordovaInterface {
     private CordovaWebView touchDevelopView = null;
     private ProgressBar touchDevelopProgress = null;
     private TextView loadingTxt = null;
+    private RelativeLayout topBar = null;
     private final ExecutorService threadPool = Executors.newCachedThreadPool();
     private CordovaPlugin activityResultCallback;
+    GestureDetector gestureScanner;
+    private static final int SWIPE_THRESHOLD = 10;
+    private static final int SWIPE_VELOCITY_THRESHOLD = 10;
 
     String TAG = "WebViewActivity";
+
+    private class myGestureScanner implements GestureDetector.OnGestureListener{
+
+        @Override
+        public boolean onDown(MotionEvent motionEvent) {
+            return false;
+        }
+
+        @Override
+        public void onShowPress(MotionEvent motionEvent) {
+
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent motionEvent) {
+            return false;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+            return false;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent motionEvent) {
+
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float v, float v1) {
+
+            boolean result = false;
+            try {
+                float diffY = e2.getY() - e1.getY();
+                float diffX = e2.getX() - e1.getX();
+                if (Math.abs(diffX) > Math.abs(diffY)) {
+                    //Do nothing
+                } else {
+                    if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(v) > SWIPE_VELOCITY_THRESHOLD) {
+                        if (diffY > 0) {
+                            if(topBar.getVisibility() == View.GONE) {
+                                topBar.setVisibility(View.VISIBLE);
+                                topBar.animate()
+                                        .translationY(0)
+                                        .alpha(1.0f)
+                                        .setListener(new AnimatorListenerAdapter() {
+                                            @Override
+                                            public void onAnimationEnd(Animator animation) {
+                                                super.onAnimationEnd(animation);
+                                            }
+                                        });
+                            }
+                        } else {
+                            if(topBar.getVisibility() == View.VISIBLE) {
+                                topBar.animate()
+                                        .translationY(-topBar.getHeight())
+                                        .alpha(0.0f)
+                                        .setListener(new AnimatorListenerAdapter() {
+                                            @Override
+                                            public void onAnimationEnd(Animator animation) {
+                                                super.onAnimationEnd(animation);
+                                                topBar.setVisibility(View.GONE);
+                                            }
+                                        });
+                            }
+                        }
+                    }
+                }
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            return result;
+        }
+    }
 
     private class myWebViewClient extends CordovaWebViewClient{
 
@@ -123,9 +207,11 @@ public class WebViewActivity extends Activity implements CordovaInterface {
         Config.init(this);
 
         loadingTxt = (TextView) findViewById(R.id.loadingTxt);
+        topBar = (RelativeLayout) findViewById(R.id.topBar);
 
         touchDevelopProgress = (ProgressBar) findViewById(R.id.progressBar);
         touchDevelopProgress.setMax(100);
+        gestureScanner = new GestureDetector(new myGestureScanner());
 
         Intent intent = getIntent();
         String url = intent.getStringExtra(Constants.URL);
@@ -137,9 +223,38 @@ public class WebViewActivity extends Activity implements CordovaInterface {
             touchDevelopView.loadUrl(url);
         }
         touchDevelopView.setWebChromeClient(new myWebViewChromeClient(this));
-        touchDevelopView.setWebViewClient( new myWebViewClient(this,touchDevelopView));
+        touchDevelopView.setWebViewClient(new myWebViewClient(this, touchDevelopView));
 
         touchDevelopView.setVisibility(View.INVISIBLE);
+
+        topBar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent me) {
+                return gestureScanner.onTouchEvent(me);
+            }
+        });
+
+        touchDevelopView.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent me){
+                if(touchDevelopView.getScrollY() == 0 || touchDevelopView.getScrollY() == v.getMeasuredHeight()){
+                    return gestureScanner.onTouchEvent(me);
+                } else if(touchDevelopView.getScrollY() > 20) {
+                    if(topBar.getVisibility() == View.VISIBLE) {
+                        topBar.animate()
+                                .translationY(-topBar.getHeight())
+                                .alpha(0.0f)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        topBar.setVisibility(View.GONE);
+                                    }
+                                });
+                    }
+                }
+                return false;
+            }
+        });
     }
 
     public void onBtnClicked(View v){
