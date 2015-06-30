@@ -12,14 +12,6 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true" />
 
-    <ImageView
-        android:id="@+id/samsungLogo"
-        android:layout_width="300dp"
-        android:layout_height="100dp"
-        android:src="@drawable/samsung"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true" />
-
 </RelativeLayout>
 
 
