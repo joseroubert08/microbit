@@ -16,12 +16,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.content.LocalBroadcastManager;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -36,7 +36,6 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.service.BLEService;
@@ -236,7 +235,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				if (state != PAIRING_STATE.PAIRING_STATE_NEW_NAME) {
 
 					if ((findViewById(R.id.ok_pattern_button).getVisibility() != View.VISIBLE)
-						&& (findViewById(R.id.ok_name_button).getVisibility() != View.VISIBLE)) {
+							&& (findViewById(R.id.ok_name_button).getVisibility() != View.VISIBLE)) {
 						findViewById(R.id.ok_pattern_button).setVisibility(View.VISIBLE);
 						((TextView) findViewById(R.id.newDeviceTxt)).setText(R.string.new_devices);
 					}
@@ -351,24 +350,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				findViewById(R.id.nameNewTxt).setVisibility(View.VISIBLE);
 				EditText editText = (EditText) findViewById(R.id.nameNewEdit);
 				editText.setVisibility(View.VISIBLE);
+				editText.requestFocus();
 				findViewById(R.id.ok_name_button).setVisibility(View.VISIBLE);
 				findViewById(R.id.cancel_name_button).setVisibility(View.VISIBLE);
-				findViewById(R.id.ok_name_button).setEnabled(false);
-				editText.addTextChangedListener(new TextWatcher() {
-					@Override
-					public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-					}
-
-					@Override
-					public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-					}
-
-					@Override
-					public void afterTextChanged(Editable editable) {
-						// lets supouse validation method is called validUrl()
-						findViewById(R.id.ok_name_button).setEnabled(!editable.toString().isEmpty());
-					}
-				});
 				break;
 			case PAIRING_STATE_SEARCHING:
 				connectSearchView.setVisibility(View.VISIBLE);
@@ -408,11 +392,14 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 				break;
 			case R.id.ok_name_button:
-				String newname = ((EditText) findViewById(R.id.nameNewEdit)).getText().toString();
-				if (newname.isEmpty() ||
-					(newname.length() == 1 && newname.charAt(0) == ' ')) {
-					Toast.makeText(MBApp.getContext(), "Enter Name ", Toast.LENGTH_SHORT).show();
-				} else {
+				EditText editText = (EditText) findViewById(R.id.nameNewEdit);
+				String newname = editText.getText().toString().trim();
+				if (newname.isEmpty()) {
+					editText.setText("");
+					editText.setError(getString(R.string.name_empty_error));
+				}
+				else {
+					hideKeyboard();
 					prevDeviceArray[0].mName = newname;
 					changeMicrobitName(0, prevDeviceArray[0]);
 					state = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
@@ -475,6 +462,13 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	}
 
+	public void hideKeyboard() {
+		InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+		inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+				InputMethodManager.HIDE_NOT_ALWAYS);
+	}
+
 	public void onHomeBtnClicked(View v) {
 		finish();
 	}
@@ -519,7 +513,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	}
 
 	private void handle_pairing_successful(final ConnectedDevice newDev) {
-
+getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                            WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		if(debug) logi("handle_pairing_successful() :: Start");
 
 

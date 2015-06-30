@@ -6,7 +6,6 @@
         android:id="@+id/topBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/content_margin"
         android:layout_marginBottom="@dimen/content_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
@@ -17,6 +16,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:src="@drawable/home"
+            android:layout_marginTop="@dimen/content_margin"
             android:background="@drawable/green_btn"
             android:onClick="onBtnClicked"/>
 
@@ -33,6 +33,7 @@
             android:id="@+id/refreshBtn"
             android:layout_width="100dp"
             android:layout_height="100dp"
+            android:layout_marginTop="@dimen/content_margin"
             android:src="@drawable/refresh"
             android:background="@drawable/green_btn"
             android:onClick="onBtnClicked"

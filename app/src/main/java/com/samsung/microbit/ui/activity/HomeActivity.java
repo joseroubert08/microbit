@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -93,9 +94,6 @@ public class HomeActivity extends Activity {
 		} else {
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		}
-
-		//Remove title bar
-		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		MBApp.setContext(this);
 		/* *************************************************

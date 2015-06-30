@@ -8,7 +8,7 @@
     <color name="black_font_color">#ff000000</color>
     <color name="white_font_color">#ffffff</color>
 
-    <color name="ok_button_up">#ff00fc99</color>
+    <color name="ok_button_up">#ff02ec00</color>
     <color name="ok_button_down">#3A871F</color>
 
     <color name="cancel_button_up">#FF6666</color>
