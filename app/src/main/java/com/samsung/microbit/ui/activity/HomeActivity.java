@@ -85,6 +85,16 @@ public class HomeActivity extends Activity {
         } else if (v.getId() == R.id.numOfProjects) {
             Intent intent = new Intent(this, ProjectActivity.class);
             startActivity(intent);
+        } else if (v.getId() == R.id.connectBtn) {
+            updateConnectBarView();
+            ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
+            if (connectedDevice.mPattern != null) {
+                if (connectedDevice.mStatus) {
+                    IPCService.getInstance().bleDisconnect();
+                } else {
+                    IPCService.getInstance().bleConnect();
+                }
+            }
         }
     }
 
