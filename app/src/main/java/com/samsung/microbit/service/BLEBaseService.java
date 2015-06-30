@@ -43,16 +43,15 @@ public abstract class BLEBaseService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
-		if(debug) logi("onStartCommand()");
-		setupBLE();
+		if (debug) logi("onStartCommand()");
 		return START_STICKY;
 	}
 
 	protected boolean reset() {
 		boolean rc = false;
-		if(bleManager != null) {
+		if (bleManager != null) {
 			rc = bleManager.reset();
-			if(rc) {
+			if (rc) {
 				bleManager = null;
 			}
 		}
@@ -62,49 +61,50 @@ public abstract class BLEBaseService extends Service {
 
 	protected void setupBLE() {
 
-		if(debug) logi("setupBLE()");
+		if (debug) logi("setupBLE()");
+		//if (bleManager != null) {
+		//	return;
+		//}
+
 		this.deviceAddress = getDeviceAddress();
-		if(debug) logi("setupBLE() :: deviceAddress = " + deviceAddress);
-		if (this.deviceAddress == null) {
-			return;
-		}
+		if (debug) logi("setupBLE() :: deviceAddress = " + deviceAddress);
+		if (this.deviceAddress != null) {
+			bluetoothDevice = null;
+			if (initialize()) {
 
-		if (bleManager != null) {
-			return;
-		}
+				bleManager = new BLEManager(getApplicationContext(), bluetoothDevice,
+					new CharacteristicChangeListener() {
+						@Override
+						public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 
-		bluetoothDevice = null;
-		if (initialize()) {
-
-			bleManager = new BLEManager(getApplicationContext(), bluetoothDevice,
-				new CharacteristicChangeListener() {
-					@Override
-					public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-
-						if(debug) logi("setupBLE().CharacteristicChangeListener.onCharacteristicChanged()");
-						if (bleManager != null) {
-							handleCharacteristicChanged(gatt, characteristic);
+							if (debug) logi("setupBLE().CharacteristicChangeListener.onCharacteristicChanged()");
+							if (bleManager != null) {
+								handleCharacteristicChanged(gatt, characteristic);
+							}
 						}
-					}
-				},
-				new UnexpectedConnectionEventListener() {
-					@Override
-					public void handleConnectionEvent(int event) {
-						if(debug) logi("setupBLE().CharacteristicChangeListener.onCharacteristicChanged()");
-						if (bleManager != null) {
-							handleUnexpectedConnectionEvent(event);
+					},
+					new UnexpectedConnectionEventListener() {
+						@Override
+						public void handleConnectionEvent(int event) {
+							if (debug) logi("setupBLE().CharacteristicChangeListener.onCharacteristicChanged()");
+							if (bleManager != null) {
+								handleUnexpectedConnectionEvent(event);
+							}
 						}
-					}
-				});
+					});
 
-			startupConnection();
+				startupConnection();
+				return;
+			}
 		}
+
+		setNotification(false);
 	}
 
 	private boolean initialize() {
 
 		boolean rc = true;
-		if(debug) logi("initialize() :: remoteDevice = " + deviceAddress);
+		if (debug) logi("initialize() :: remoteDevice = " + deviceAddress);
 		if (rc && bluetoothManager == null) {
 			bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 			rc = (bluetoothManager != null) ? true : false;
@@ -124,7 +124,7 @@ public abstract class BLEBaseService extends Service {
 			}
 		}
 
-		if(debug) logi("initialize() :: complete rc = " + rc);
+		if (debug) logi("initialize() :: complete rc = " + rc);
 		return rc;
 	}
 
@@ -135,6 +135,8 @@ public abstract class BLEBaseService extends Service {
 	protected abstract void handleCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic);
 
 	protected abstract void handleUnexpectedConnectionEvent(int event);
+
+	protected abstract void setNotification(boolean isConnected);
 
 	@Override
 	public void onDestroy() {
@@ -259,7 +261,7 @@ public abstract class BLEBaseService extends Service {
 
 		int rc = 99;
 		if (bleManager != null) {
-			if(debug) logi("discoverServices() :: bleManager != null");
+			if (debug) logi("discoverServices() :: bleManager != null");
 			rc = bleManager.discoverServices();
 			rc = interpretCode(rc, BLEManager.BLE_SERVICES_DISCOVERED);
 		}

@@ -19,6 +19,7 @@ import java.util.List;
 
 public final class IPCMessageManager {
 
+	public static final long STARTUP_DELAY = 1000L;
 	public static final String BUNDLE_DATA = "data";
 	public static final String BUNDLE_VALUE = "value";
 

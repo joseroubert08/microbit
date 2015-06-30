@@ -1,9 +1,11 @@
 package com.samsung.microbit.ui.activity;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -11,6 +13,7 @@ import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
@@ -36,131 +39,165 @@ import java.util.List;
 import java.util.logging.Handler;
 
 public class HomeActivity extends Activity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
-        if (getResources().getBoolean(R.bool.portrait_only)) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
+	/* *************************************************
+	 * TODO setup to Handle BLE Notiifications
+	 */
+	IntentFilter broadcastIntentFilter;
+	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
-        //Remove title bar
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			handleBLENotification(context, intent);
+		}
+	};
 
-        MBApp.setContext(this);
+	protected String TAG = "HomeActivity";
+	protected boolean debug = true;
 
-        setContentView(R.layout.activity_home);
+	protected void logi(String message) {
+		if (debug) {
+			Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+		}
+	}
 
-        RelativeLayout connectBarView = (RelativeLayout) findViewById(R.id.connectBarView);
-        connectBarView.getBackground().setAlpha(128);
+	private void handleBLENotification(Context context, Intent intent) {
 
-        updateConnectBarView();
+		logi("handleBLENotification()");
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				updateConnectBarView();
+			}
+		});
 
-        RelativeLayout projectBarView = (RelativeLayout) findViewById(R.id.projectBarView);
-        projectBarView.getBackground().setAlpha(128);
+	}
 
-        updateProjectBarView();
+	// *************************************************    @Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-        // Start the other services - local service to handle IPC in the main process
-        Intent ipcIntent = new Intent(this, IPCService.class);
-        startService(ipcIntent);
+		if (getResources().getBoolean(R.bool.portrait_only)) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		} else {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		}
 
-        Intent bleIntent = new Intent(this, BLEService.class);
-        startService(bleIntent);
 
-        Intent intent = new Intent(this, PluginService.class);
-        startService(intent);
-    }
+		//Remove title bar
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-    public void onBtnClicked(View v) {
-        if (v.getId() == R.id.addDevice) {
-            Intent intent = new Intent(this, ConnectActivity.class);
-            startActivity(intent);
-        } else if (v.getId() == R.id.startNewProject) {
-            Intent intent = new Intent(this, WebViewActivity.class);
-            intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
-            startActivity(intent);
-        } else if (v.getId() == R.id.numOfProjects) {
-            Intent intent = new Intent(this, ProjectActivity.class);
-            startActivity(intent);
-        }
-    }
+		MBApp.setContext(this);
+		/* *************************************************
+		 * TODO setup to Handle BLE Notiification
+		 */
+		if (broadcastIntentFilter == null) {
+			broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
+			LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(broadcastReceiver, broadcastIntentFilter);
+		}
 
-    private final void updateConnectBarView() {
-        Button addDeviceButton = (Button) findViewById(R.id.addDevice);
-        ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
 
-        if (connectedDevice.mPattern != null) {
-            String styledText = "<big><font color='blue'>"
-                    + (connectedDevice.mName != null ? connectedDevice.mName : "")
-                    + "</font>"
-                    + "<font color='blue'> (" + connectedDevice.mPattern + ")</font></big>";
-            addDeviceButton.setText(Html.fromHtml(styledText));
-        } else {
-            addDeviceButton.setText("Connect to your Micro:Bit");
-        }
-        addDeviceButton.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+		setContentView(R.layout.activity_home);
 
-        ImageButton connectButton = (ImageButton) findViewById(R.id.connectBtn);
-        if (connectedDevice.mPattern != null && connectedDevice.mStatus) {
-            connectButton.setImageResource(R.drawable.connected);
-            connectButton.setBackgroundColor(0XFF00FF00);
-        } else {
-            connectButton.setImageResource(R.drawable.disconnected);
-            connectButton.setBackgroundColor(0XFFFF0000);
-        }
-    }
+		RelativeLayout connectBarView = (RelativeLayout) findViewById(R.id.connectBarView);
+		connectBarView.getBackground().setAlpha(128);
 
-    private final void updateProjectBarView() {
-        Button numOfProjects = (Button) findViewById(R.id.numOfProjects);
-        String styledText = "<big>"
-                + Integer.toString(Utils.findProgramsAndPopulate(null, null))
-                + " saved projects"
-                + "</big>";
-        numOfProjects.setText(Html.fromHtml(styledText));
-        numOfProjects.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
-    }
+		updateConnectBarView();
 
-    public void onResume() {
-        super.onResume();
+		RelativeLayout projectBarView = (RelativeLayout) findViewById(R.id.projectBarView);
+		projectBarView.getBackground().setAlpha(128);
 
-        updateConnectBarView();
-        updateProjectBarView();
-    }
+		updateProjectBarView();
 
-    public static Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {
-        // Retrieve all services that can match the given intent
-        PackageManager pm = context.getPackageManager();
-        List<ResolveInfo> resolveInfo = pm.queryIntentServices(implicitIntent, 0);
+		// Start the other services - local service to handle IPC in the main process
+		Intent ipcIntent = new Intent(this, IPCService.class);
+		startService(ipcIntent);
 
-        // Make sure only one match was found
-        if (resolveInfo == null || resolveInfo.size() != 1) {
-            return null;
-        }
+		Intent bleIntent = new Intent(this, BLEService.class);
+		startService(bleIntent);
 
-        // Get component info and create ComponentName
-        ResolveInfo serviceInfo = resolveInfo.get(0);
-        String packageName = serviceInfo.serviceInfo.packageName;
-        String className = serviceInfo.serviceInfo.name;
-        ComponentName component = new ComponentName(packageName, className);
+		Intent intent = new Intent(this, PluginService.class);
+		startService(intent);
+	}
 
-        // Create a new intent. Use the old one for extras and such reuse
-        Intent explicitIntent = new Intent(implicitIntent);
+	public void onBtnClicked(View v) {
+		if (v.getId() == R.id.addDevice) {
+			Intent intent = new Intent(this, ConnectActivity.class);
+			startActivity(intent);
+		} else if (v.getId() == R.id.startNewProject) {
+			Intent intent = new Intent(this, WebViewActivity.class);
+			intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
+			startActivity(intent);
+		} else if (v.getId() == R.id.numOfProjects) {
+			Intent intent = new Intent(this, ProjectActivity.class);
+			startActivity(intent);
+		}
+	}
 
-        // Set the component to be explicit
-        explicitIntent.setComponent(component);
+	private final void updateConnectBarView() {
+		Button addDeviceButton = (Button) findViewById(R.id.addDevice);
+		ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
 
-        return explicitIntent;
-    }
+		if (connectedDevice.mPattern != null) {
+			String styledText = "<big><font color='blue'>"
+				+ (connectedDevice.mName != null ? connectedDevice.mName : "")
+				+ "</font>"
+				+ "<font color='blue'> (" + connectedDevice.mPattern + ")</font></big>";
+			addDeviceButton.setText(Html.fromHtml(styledText));
+		} else {
+			addDeviceButton.setText("Connect to your Micro:Bit");
+		}
+		addDeviceButton.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
 
-    protected String TAG = "BLEBaseService";
-    protected boolean debug = true;
+		ImageButton connectButton = (ImageButton) findViewById(R.id.connectBtn);
+		if (connectedDevice.mPattern != null && connectedDevice.mStatus) {
+			connectButton.setImageResource(R.drawable.connected);
+			connectButton.setBackgroundColor(0XFF00FF00);
+		} else {
+			connectButton.setImageResource(R.drawable.disconnected);
+			connectButton.setBackgroundColor(0XFFFF0000);
+		}
+	}
 
-    protected void logi(String message) {
-        if (debug) {
-            Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
-        }
-    }
+	private final void updateProjectBarView() {
+		Button numOfProjects = (Button) findViewById(R.id.numOfProjects);
+		String styledText = "<big>"
+			+ Integer.toString(Utils.findProgramsAndPopulate(null, null))
+			+ " saved projects"
+			+ "</big>";
+		numOfProjects.setText(Html.fromHtml(styledText));
+		numOfProjects.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+	}
+
+	public void onResume() {
+		super.onResume();
+
+		updateConnectBarView();
+		updateProjectBarView();
+	}
+
+	public static Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {
+		// Retrieve all services that can match the given intent
+		PackageManager pm = context.getPackageManager();
+		List<ResolveInfo> resolveInfo = pm.queryIntentServices(implicitIntent, 0);
+
+		// Make sure only one match was found
+		if (resolveInfo == null || resolveInfo.size() != 1) {
+			return null;
+		}
+
+		// Get component info and create ComponentName
+		ResolveInfo serviceInfo = resolveInfo.get(0);
+		String packageName = serviceInfo.serviceInfo.packageName;
+		String className = serviceInfo.serviceInfo.name;
+		ComponentName component = new ComponentName(packageName, className);
+
+		// Create a new intent. Use the old one for extras and such reuse
+		Intent explicitIntent = new Intent(implicitIntent);
+
+		// Set the component to be explicit
+		explicitIntent.setComponent(component);
+
+		return explicitIntent;
+	}
 }

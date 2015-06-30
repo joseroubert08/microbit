@@ -429,15 +429,19 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
 				state = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
 				break;
+
 			case R.id.connectBtn:
 				pos = (Integer) v.getTag();
 				boolean toTurnON = false;
 				boolean currentState = prevDeviceArray[pos].mStatus;
 				if (!currentState)
 					toTurnON = true;
+
 				prevDeviceArray[pos].mStatus = !currentState;
 				changeMicrobitState(pos, prevDeviceArray[pos], toTurnON);
+				if(debug) logi("onClick() :: connectBtn");
 				break;
+
 			case R.id.deleteBtn:
 				pos = (Integer) v.getTag();
 				if ((state == PAIRING_STATE.PAIRING_STATE_NEW_NAME) && (pos == 0)) {

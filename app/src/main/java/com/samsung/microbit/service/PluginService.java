@@ -124,7 +124,7 @@ public class PluginService extends Service {
 				public void run() {
 
 					try {
-						Thread.sleep(3000);
+						Thread.sleep(IPCMessageManager.STARTUP_DELAY);
 						sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null);
 						sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null);
 					} catch (InterruptedException e) {
