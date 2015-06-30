@@ -3,6 +3,8 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
         <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
     </style>
 
     <style name="RobotoTextViewStyle" parent="android:Widget.TextView">

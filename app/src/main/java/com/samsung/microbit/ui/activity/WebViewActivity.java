@@ -9,25 +9,17 @@ import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
-import android.webkit.HttpAuthHandler;
-import android.webkit.JsPromptResult;
-import android.webkit.JsResult;
-import android.webkit.WebView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.DownloadFilesTask;
 
 import org.apache.cordova.Config;
-import org.apache.cordova.CordovaChromeClient;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
-import org.apache.cordova.CordovaWebViewClient;
 import org.apache.cordova.LOG;
 
 import java.util.concurrent.ExecutorService;
@@ -130,9 +122,6 @@ public class WebViewActivity extends Activity implements CordovaInterface {
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
-
-        //Remove title bar
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         MBApp.setContext(this);
 

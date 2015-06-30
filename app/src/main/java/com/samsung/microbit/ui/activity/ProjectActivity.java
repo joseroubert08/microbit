@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -129,7 +130,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 		TextView connectedIndicatorText = (TextView) findViewById(R.id.connectedIndicatorText);
 		ImageButton connectedIndicatorIcon = (ImageButton) findViewById(R.id.connectedIndicatorIcon);
-		setText(connectedIndicatorText, connectedIndicatorIcon);
 
 
 		/* *************************************************
@@ -140,6 +140,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(broadcastReceiver, broadcastIntentFilter);
 		}
 		state = 0;
+
+		if (connectedIndicatorIcon != null && connectedIndicatorText!=null) {
+			setText(connectedIndicatorText, connectedIndicatorIcon);
+		}
 	}
 
 	private void setText(TextView txt, ImageButton imgBtn) {

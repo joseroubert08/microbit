@@ -16,24 +16,15 @@
         android:layout_height="100dp"
         android:src="@drawable/home"
         android:background="@drawable/green_btn"/>
-
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/connect"
-        android:layout_toRightOf="@id/homeBtn"
-        android:textSize="40sp"
-        android:textColor="@color/white_font_color"
-        android:layout_marginLeft="@dimen/content_margin"
-        android:layout_centerVertical="true"/>
     </RelativeLayout>
 
     <ImageView
         android:id="@+id/bbcLogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/microbit"
+        android:layout_marginBottom="50dp"
+        android:src="@drawable/microbitbanner"
+        android:background="@drawable/logo_bg"
         android:layout_centerHorizontal="true"/>
 
     <LinearLayout

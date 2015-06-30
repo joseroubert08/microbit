@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.webkit.HttpAuthHandler;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
@@ -181,9 +180,6 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
-
-        //Remove title bar
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         MBApp.setContext(this);
 
