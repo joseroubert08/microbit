@@ -4,6 +4,8 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
+import com.samsung.microbit.R;
+import com.samsung.microbit.ui.PopUp;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -28,6 +30,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, Long> {
                 totalSize += downloadMgr.download(urls[i], fileName);
                 publishProgress((int) ((i / (float) count) * 100));
 
+
             } catch (URISyntaxException e) {
 
             }
@@ -42,6 +45,10 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, Long> {
     }
 
     protected void onPostExecute(Long result) {
-        Toast.makeText(MBApp.getContext(), "Downloaded", Toast.LENGTH_SHORT).show();
+        PopUp.show(MBApp.getContext(),
+                MBApp.getContext().getString(R.string.download_complete),
+                "",
+                0, 0,
+                PopUp.TYPE_ALERT, null, null);
     }
 }
