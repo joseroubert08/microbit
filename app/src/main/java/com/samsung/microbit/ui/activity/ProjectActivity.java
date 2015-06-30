@@ -92,6 +92,14 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	private void handleBLENotification(Context context, Intent intent) {
 
 		logi("handleBLENotification()");
+
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				setConnectedDeviceText();
+			}
+		});
+
 		int cause = intent.getIntExtra(IPCService.NOTIFICATION_CAUSE, 0);
 		if (cause == IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED) {
 			if (state == STATE_START_FLASH) {
@@ -128,10 +136,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		projectAdapter = new ProjectAdapter(this, projectList);
 		projectListView.setAdapter(projectAdapter);
 
-		TextView connectedIndicatorText = (TextView) findViewById(R.id.connectedIndicatorText);
-		ImageButton connectedIndicatorIcon = (ImageButton) findViewById(R.id.connectedIndicatorIcon);
-
-
 		/* *************************************************
 		 * TODO setup to Handle BLE Notiification
 		 */
@@ -141,18 +145,22 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		}
 		state = 0;
 
-		if (connectedIndicatorIcon != null && connectedIndicatorText!=null) {
-			setText(connectedIndicatorText, connectedIndicatorIcon);
-		}
+		setConnectedDeviceText();
 	}
 
-	private void setText(TextView txt, ImageButton imgBtn) {
+	private void setConnectedDeviceText() {
 
-		ConnectedDevice device = Utils.getPairedMicrobit(this);
-		if (device.mName == null) {
-			imgBtn.setImageResource(R.drawable.disconnected);
-			imgBtn.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_disconnect_btn));
-			txt.setText(getString(R.string.not_connected));
+		TextView connectedIndicatorText = (TextView) findViewById(R.id.connectedIndicatorText);
+		ImageButton connectedIndicatorIcon = (ImageButton) findViewById(R.id.connectedIndicatorIcon);
+
+		if (connectedIndicatorIcon == null || connectedIndicatorText ==null)
+			return;
+
+		ConnectedDevice device =  Utils.getPairedMicrobit(this);
+		if(!device.mStatus) {
+			connectedIndicatorIcon.setImageResource(R.drawable.disconnected);
+			connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_disconnect_btn));
+			connectedIndicatorText.setText(getString(R.string.not_connected));
 		} else {
 			int startIndex = getString(R.string.connected_to).length();
 			int endIndex = startIndex + device.mName.length() + device.mPattern.length() + 2;
@@ -163,7 +171,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			span.setSpan(new ForegroundColorSpan(Color.BLUE), getString(R.string.connected_to).length(), endIndex,
 					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			txt.setText(span);
+			connectedIndicatorText.setText(span);
+
+			connectedIndicatorIcon.setImageResource(R.drawable.connected);
+			connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_connect_btn));
 		}
 	}
 
@@ -186,6 +197,17 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				Project toSend = (Project) projectAdapter.getItem(pos);
 				initiateFlashing(toSend);
 				break;
+			case R.id.connectedIndicatorIcon: {
+				ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
+				if (connectedDevice.mPattern != null) {
+					if (connectedDevice.mStatus) {
+						IPCService.getInstance().bleDisconnect();
+					} else {
+						IPCService.getInstance().bleConnect();
+					}
+				}
+			}
+			break;
 		}
 	}
 

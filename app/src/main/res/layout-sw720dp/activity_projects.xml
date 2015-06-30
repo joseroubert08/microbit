@@ -51,6 +51,7 @@
 			android:layout_height="100dp"
 			android:layout_toRightOf="@id/connectedIndicatorText"
 			android:background="@drawable/project_connect_btn"
+			android:onClick="onClick"
 			android:src="@drawable/connected"/>
 
 	</RelativeLayout>
