@@ -13,6 +13,7 @@ import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.ConnectedDevice;
+import com.samsung.microbit.model.NameValuePair;
 
 import java.util.UUID;
 
@@ -51,18 +52,20 @@ public class IPCService extends Service {
 	 * Business method
 	 */
 	public void bleDisconnect() {
-		sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_DISCONNECT, null);
+		sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_DISCONNECT, null, null);
 	}
 
 	public void bleConnect() {
-		sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CONNECT, null);
+		sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CONNECT, null, null);
 	}
 
 	public void bleReconnect() {
-		sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_RECONNECT, null);
+		sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_RECONNECT, null, null);
 	}
 
 	public void writeCharacteristic(UUID service, UUID Characteristic, int value, int type) {
+		
+
 		//sendtoBLEService();
 	}
 
@@ -97,8 +100,8 @@ public class IPCService extends Service {
 
 					try {
 						Thread.sleep(IPCMessageManager.STARTUP_DELAY);
-						sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null);
-						sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null);
+						sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+						sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -107,20 +110,20 @@ public class IPCService extends Service {
 		}
 	}
 
-	public void sendtoBLEService(int mbsService, int functionCode, CmdArg cmd) {
+	public void sendtoBLEService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
 
 		if (debug) logi("sendtoBLEService()");
 		Class destService = BLEService.class;
-		sendIPCMessge(destService, mbsService, functionCode, cmd);
+		sendIPCMessge(destService, mbsService, functionCode, cmd, args);
 	}
 
-	public void sendtoPluginService(int mbsService, int functionCode, CmdArg cmd) {
+	public void sendtoPluginService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
 		if (debug) logi("sendtoPluginService()");
 		Class destService = PluginService.class;
-		sendIPCMessge(destService, mbsService, functionCode, cmd);
+		sendIPCMessge(destService, mbsService, functionCode, cmd, args);
 	}
 
-	public void sendIPCMessge(Class destService, int mbsService, int functionCode, CmdArg cmd) {
+	public void sendIPCMessge(Class destService, int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
 
 		if (debug) logi("sendIPCMessge()");
 		IPCMessageManager inst = IPCMessageManager.getInstance();
@@ -160,16 +163,17 @@ public class IPCService extends Service {
 			if (msg.arg1 == IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED ||
 				msg.arg1 == IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED) {
 
-				//Bundle data = msg.getData();
-				//CmdArg cmd = new CmdArg(data.getInt(IPCMessageManager.BUNDLE_DATA), data.getString(IPCMessageManager.BUNDLE_VALUE));
-
 				ConnectedDevice cd = Utils.getPairedMicrobit(this);
 				cd.mStatus = (msg.arg1 == IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED);
 				Utils.setPairedMicrobit(this, cd);
 			}
 
+
+			int errorCode = (int) msg.getData().getSerializable(IPCMessageManager.BUNDLE_ERROR_CODE);
+
 			Intent intent = new Intent(INTENT_BLE_NOTIFICATION);
 			intent.putExtra(NOTIFICATION_CAUSE, msg.arg1);
+			intent.putExtra(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
 			LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 		} else if (msg.what == IPCMessageManager.MICIROBIT_MESSAGE) {
 			if (debug) logi("handleIncomingMessage() :: IPCMessageManager.MICIROBIT_MESSAGE msg.arg1 = " + msg.arg1);

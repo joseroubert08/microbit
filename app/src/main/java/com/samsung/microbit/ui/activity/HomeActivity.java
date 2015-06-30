@@ -24,6 +24,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
@@ -49,6 +50,15 @@ public class HomeActivity extends Activity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			handleBLENotification(context, intent);
+			int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+			if (v != 0) {
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						Toast.makeText(HomeActivity.this, "Microbit needs to be reset", Toast.LENGTH_SHORT).show();
+					}
+				});
+			}
 		}
 	};
 
@@ -60,6 +70,8 @@ public class HomeActivity extends Activity {
 			Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 		}
 	}
+
+	ImageButton connectBtn;
 
 	private void handleBLENotification(Context context, Intent intent) {
 
@@ -118,6 +130,7 @@ public class HomeActivity extends Activity {
 	}
 
 	public void onBtnClicked(View v) {
+		if (debug) logi("onBtnClicked() :: ");
 		if (v.getId() == R.id.addDevice) {
 			Intent intent = new Intent(this, ConnectActivity.class);
 			startActivity(intent);
@@ -129,16 +142,20 @@ public class HomeActivity extends Activity {
 			Intent intent = new Intent(this, ProjectActivity.class);
 			startActivity(intent);
 		} else if (v.getId() == R.id.connectBtn) {
+
 			updateConnectBarView();
 			ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
 			if (connectedDevice.mPattern != null) {
 				if (connectedDevice.mStatus) {
+					if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleDisconnect()");
 					IPCService.getInstance().bleDisconnect();
 				} else {
+					if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleConnect()");
 					IPCService.getInstance().bleConnect();
 				}
 			}
 		}
+
 	}
 
 	private final void updateConnectBarView() {
@@ -181,30 +198,5 @@ public class HomeActivity extends Activity {
 
 		updateConnectBarView();
 		updateProjectBarView();
-	}
-
-	public static Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {
-		// Retrieve all services that can match the given intent
-		PackageManager pm = context.getPackageManager();
-		List<ResolveInfo> resolveInfo = pm.queryIntentServices(implicitIntent, 0);
-
-		// Make sure only one match was found
-		if (resolveInfo == null || resolveInfo.size() != 1) {
-			return null;
-		}
-
-		// Get component info and create ComponentName
-		ResolveInfo serviceInfo = resolveInfo.get(0);
-		String packageName = serviceInfo.serviceInfo.packageName;
-		String className = serviceInfo.serviceInfo.name;
-		ComponentName component = new ComponentName(packageName, className);
-
-		// Create a new intent. Use the old one for extras and such reuse
-		Intent explicitIntent = new Intent(implicitIntent);
-
-		// Set the component to be explicit
-		explicitIntent.setComponent(component);
-
-		return explicitIntent;
 	}
 }

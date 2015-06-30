@@ -98,7 +98,7 @@ public abstract class BLEBaseService extends Service {
 			}
 		}
 
-		setNotification(false);
+		setNotification(false, 1);
 	}
 
 	private boolean initialize() {
@@ -136,7 +136,7 @@ public abstract class BLEBaseService extends Service {
 
 	protected abstract void handleUnexpectedConnectionEvent(int event);
 
-	protected abstract void setNotification(boolean isConnected);
+	protected abstract void setNotification(boolean isConnected, int errorCode);
 
 	@Override
 	public void onDestroy() {

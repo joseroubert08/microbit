@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.Constants;
+import com.samsung.microbit.model.NameValuePair;
 import com.samsung.microbit.plugin.AlertPlugin;
 import com.samsung.microbit.plugin.AudioPlugin;
 import com.samsung.microbit.plugin.CameraPlugin;
@@ -125,8 +126,8 @@ public class PluginService extends Service {
 
 					try {
 						Thread.sleep(IPCMessageManager.STARTUP_DELAY);
-						sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null);
-						sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null);
+						sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+						sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -136,21 +137,21 @@ public class PluginService extends Service {
 		}
 	}
 
-	public void sendtoBLEService(int mbsService, int functionCode, CmdArg cmd) {
+	public void sendtoBLEService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
 
 		if(debug) logi("sendtoBLEService()");
 		Class destService = BLEService.class;
-		sendIPCMessge(destService, mbsService, functionCode, cmd);
+		sendIPCMessge(destService, mbsService, functionCode, cmd, args);
 	}
 
-	public void sendtoIPCService(int mbsService, int functionCode, CmdArg cmd) {
+	public void sendtoIPCService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
 
 		if(debug) logi("sendtoIPCService()");
 		Class destService = IPCService.class;
-		sendIPCMessge(destService, mbsService, functionCode, cmd);
+		sendIPCMessge(destService, mbsService, functionCode, cmd, args);
 	}
 
-	public void sendIPCMessge(Class destService, int mbsService, int functionCode, CmdArg cmd) {
+	public void sendIPCMessge(Class destService, int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
 
 		if(debug) logi("sendIPCMessge()");
 		IPCMessageManager inst = IPCMessageManager.getInstance();

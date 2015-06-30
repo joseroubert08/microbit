@@ -26,7 +26,7 @@ public class BLEManager {
 	public static int BLE_ERROR_NOOP = -1 & 0xFFFF0000;
 	public static int BLE_ERROR_NOGATT = -2 & 0xFFFF0000;
 
-	public static long BLE_WAIT_TIMEOUT = 60000;
+	public static long BLE_WAIT_TIMEOUT = 10000;
 
 	public static int OP_NOOP = 0;
 	public static int OP_CONNECT = 1;
@@ -59,7 +59,7 @@ public class BLEManager {
 	protected UnexpectedConnectionEventListener unexpectedDisconnectionListener;
 
 	static final String TAG = "BLEManager";
-	private boolean debug = false;
+	private boolean debug = true;
 
 	void logi(String message) {
 		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
@@ -158,6 +158,7 @@ public class BLEManager {
 				if (inBleOp == OP_NOOP) {
 					inBleOp = OP_CONNECT;
 					try {
+						if(debug) logi("connect() :: bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback)");
 						gatt = bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback);
 						if (gatt != null) {
 							error = 0;
