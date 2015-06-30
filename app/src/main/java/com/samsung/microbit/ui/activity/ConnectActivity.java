@@ -131,6 +131,15 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	private void handleBLENotification(Context context, Intent intent) {
 
 		logi("handleBLENotification()");
+		ConnectedDevice changedDev = Utils.getPairedMicrobit(this);
+
+		if(prevMicrobitList == null )
+			loadPrevMicrobits();
+
+		if ((changedDev.mPattern != null) && (changedDev.mPattern.equals(prevDeviceArray[0].mPattern)))
+		{
+			prevDeviceArray[0].mStatus = changedDev.mStatus;
+		}
 	}
 
 	// *************************************************
@@ -269,6 +278,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	}
 
 	private void toggleLED(ImageView image, int pos) {
+		//Toast.makeText(this, "Pos :" +  pos, Toast.LENGTH_SHORT).show();
 		if (image.getTag() != "1") {
 			deviceCodeArray[pos] = "1";
 			image.setBackground(getApplication().getResources().getDrawable(R.drawable.red_white_led_btn));
@@ -460,18 +470,18 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	private void handleDeleteMicrobit(final int pos) {
 		PopUp.show(this,
-			getString(R.string.deleteMicrobitMessage), //message
-			getString(R.string.deleteMicrobitTitle), //title
-			R.drawable.delete, R.drawable.red_btn,
-			PopUp.TYPE_CHOICE, //type of popup.
-			new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					PopUp.hide();
-					removeMicrobit(pos);
-				}
-			},//override click listener for ok button
-			null);//pass null to use default listener
+				getString(R.string.deleteMicrobitMessage), //message
+				getString(R.string.deleteMicrobitTitle), //title
+				R.drawable.delete, R.drawable.red_btn,
+				PopUp.TYPE_CHOICE, //type of popup.
+				new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						PopUp.hide();
+						removeMicrobit(pos);
+					}
+				},//override click listener for ok button
+				null);//pass null to use default listener
 
 	}
 
@@ -486,35 +496,35 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		if(debug) logi("handle_pairing_failed() :: Start");
 
 		// dummy code to test addition of MBits
-        /* if(debug) {
+		/* if(debug) {
             if (!newDeviceCode.equalsIgnoreCase("vuvuv")) {
 
                 state = PAIRING_STATE.PAIRING_STATE_NEW_NAME;
                 displayConnectScreen(state);
-                ConnectedDevice newDev = new ConnectedDevice(null, newDeviceCode, true, "ab.cd.ef.gh");
+                ConnectedDevice newDev = new ConnectedDevice(null, newDeviceCode, true, "ab.cd.ef.gh.ij.56");
                 addMicrobit(newDev,3);
                 return;
 
             }
-        }*/
+        } */
 
 		displayConnectScreen(PAIRING_STATE.PAIRING_STATE_ERROR);
 
 		PopUp.show(this,
-			getString(R.string.pairingErrorMessage), //message
-			getString(R.string.pairingErrorTitle), //title
-			R.drawable.exclamation, //image icon res id
-			0,
-			PopUp.TYPE_ALERT, //type of popup.
-			new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					PopUp.hide();
-					state = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
-					displayConnectScreen(state);
-				}
-			},//override click listener for ok button
-			null);//pass null to use default listener
+				getString(R.string.pairingErrorMessage), //message
+				getString(R.string.pairingErrorTitle), //title
+				R.drawable.exclamation, //image icon res id
+				0,
+				PopUp.TYPE_ALERT, //type of popup.
+				new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						PopUp.hide();
+						state = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
+						displayConnectScreen(state);
+					}
+				},//override click listener for ok button
+				null);//pass null to use default listener
 
 	}
 
@@ -535,8 +545,6 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				if(debug) logi("mLeScanCallback.onLeScan() ::   Matching DEVICE FOUND, Pairing");
 				if(debug) logi("handle_pairing_successful() :: sending intent to BLEService.class");
 
-				connectBluetoothDevice();
-
 				state = PAIRING_STATE.PAIRING_STATE_NEW_NAME;
 				displayConnectScreen(state);
 
@@ -545,31 +553,52 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		new Handler(Looper.getMainLooper()).post(task);
 	}
 
-	void disconnectBluetooth() {
-		//TODO
-		//Intent intent = new Intent(ConnectActivity.this, BLEService.class);
-		//startService(intent);
 
-	}
 
 	void updateGlobalPairedDevice() {
 
 		ConnectedDevice currentDevice = Utils.getPairedMicrobit(MBApp.getContext());
 
 		if (prevDeviceArray[0] != null) {
-			Utils.setPairedMicrobit(MBApp.getContext(), prevDeviceArray[0]);
 
+			if((currentDevice.mPattern != null) && currentDevice.mPattern.equals(prevDeviceArray[0].mPattern))
+			{
+				// Update existing
+				if(currentDevice.mStatus != prevDeviceArray[0].mStatus)
+				{
+					// Status has changed
+					if(currentDevice.mStatus)
+						disconnectBluetooth();
+					else
+						connectBluetoothDevice();
+				}
+				Utils.setPairedMicrobit(MBApp.getContext(), prevDeviceArray[0]);
+			} else
+			{
+				// device changed, disconnect previous and connect new
+				disconnectBluetooth();
+				Utils.setPairedMicrobit(MBApp.getContext(), prevDeviceArray[0]);
+				connectBluetoothDevice();
+			}
 		} else {
+			//Disconnect existing Gatt connection
+			if(currentDevice.mPattern != null)
+				disconnectBluetooth();
+
 			// Remove existing Microbit
 			Utils.setPairedMicrobit(MBApp.getContext(), null);
 		}
 	}
 
 	void connectBluetoothDevice() {
-		Intent intent = new Intent(ConnectActivity.this, BLEService.class);
-		startService(intent);
+		IPCService.getInstance().bleConnect();
 	}
 
+	void disconnectBluetooth() {
+
+		IPCService.getInstance().bleDisconnect();
+
+	}
 	private void scanningFailed() {
 
 		if(debug) logi("scanningFailed() :: scanning Failed to find a matching device");
@@ -656,6 +685,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	}
 
 
+	/* Microbit list management */
 	private void storeMicrobits(ArrayList prevDevList) {
 		// used for store arrayList in json format
 		SharedPreferences settings;
@@ -669,6 +699,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		editor.putString(PREFERENCES_PREVDEV_KEY, jsonPrevDevices);
 		editor.commit();
 		updateGlobalPairedDevice();
+		//connectedDeviceAdapter.notifyDataSetChanged();
 		populateConnectedDeviceList(true);
 	}
 
@@ -687,6 +718,13 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				return (ArrayList) prevMicrobitList;
 			}
 
+		}
+
+		ConnectedDevice current = Utils.getPairedMicrobit(this);
+		if( (current.mPattern != null) && current.mPattern.equals(prevDeviceArray[0].mPattern))
+		{
+			if(current.mStatus != prevDeviceArray[0].mStatus)
+				prevDeviceArray[0].mStatus = current.mStatus;
 		}
 		return null;
 
@@ -733,7 +771,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			ConnectedDevice st = it.next();
 			if ((st != null) && (ind != 0)) {
 				st.mStatus = false; // turn off the previously connected devive
-				disconnectBluetooth();
+				//disconnectBluetooth();
 			}
 			prevDeviceArray[ind++] = st;
 		}
@@ -759,8 +797,10 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		for (Iterator<ConnectedDevice> it = prevMicrobitList.iterator(); it.hasNext(); ) {
 			ConnectedDevice st = it.next();
 			if (isTurnedOn && (ind != index) && (prevDeviceArray[ind] != null)) {
-				prevDeviceArray[ind].mStatus = false; // toggle previously connected BT OFF
-				disconnectBluetooth();
+				if(prevDeviceArray[ind].mStatus) {
+					//disconnectBluetooth();
+					prevDeviceArray[ind].mStatus = false; // toggle previously connected BT OFF
+				}
 			}
 			ind++;
 		}

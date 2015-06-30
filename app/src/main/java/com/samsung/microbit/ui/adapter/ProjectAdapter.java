@@ -47,7 +47,9 @@ public class ProjectAdapter extends BaseAdapter {
 	private View.OnClickListener sendBtnClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			Toast.makeText(MBApp.getContext(), "sendBtn Clicked: " + v.getTag(), Toast.LENGTH_SHORT).show();
+			//Toast.makeText(MBApp.getContext(), "sendBtn Clicked: " + v.getTag(), Toast.LENGTH_SHORT).show();
+			((View.OnClickListener)projectActivity).onClick(v);
+
 		}
 	};
 
