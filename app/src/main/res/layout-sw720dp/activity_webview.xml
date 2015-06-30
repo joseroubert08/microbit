@@ -72,7 +72,8 @@
             android:id="@+id/touchDevelopView"
             android:background="#7CFC00"
             android:longClickable="true"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize"
+            android:hardwareAccelerated="true"/>
     </LinearLayout>
 
 </RelativeLayout>
