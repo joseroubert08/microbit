@@ -14,17 +14,10 @@
             android:id="@+id/samsungLogo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/samsung_logo"
-            android:layout_alignParentLeft="true"
+            android:src="@drawable/header_03"
+            android:layout_centerHorizontal="true"
             android:layout_gravity="center_vertical"/>
 
-        <ImageView
-            android:id="@+id/bbcLogo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/microbit"
-            android:layout_alignParentRight="true"
-            android:layout_gravity="center_vertical"/>
     </RelativeLayout>
 
     <RelativeLayout

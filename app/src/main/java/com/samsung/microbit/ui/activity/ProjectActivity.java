@@ -76,7 +76,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 		TextView connectedIndicatorText = (TextView) findViewById(R.id.connectedIndicatorText);
 		ImageButton connectedIndicatorIcon = (ImageButton) findViewById(R.id.connectedIndicatorIcon);
-		setText(connectedIndicatorText, connectedIndicatorIcon);
+
+		if (connectedIndicatorIcon != null && connectedIndicatorText!=null) {
+			setText(connectedIndicatorText, connectedIndicatorIcon);
+		}
 	}
 
 	private void setText(TextView txt, ImageButton imgBtn) {
