@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="fill_parent"
-    android:background="#00AAAAAA"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:paddingTop="100dp"
-    android:paddingBottom="150dp"
-    android:paddingLeft="250dp"
-    android:paddingRight="250dp"
+    android:background="#00AAAAAA"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
     >
 
     <ImageView
-        android:layout_width="100dp"
+        android:layout_width="80dp"
         android:layout_height="0dp"
         android:id="@+id/imageIcon"
         android:src="@drawable/exclamation"
@@ -28,7 +27,7 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:text="Title"
-        android:textSize="50sp" />
+        android:textSize="30sp" />
 
     <TextView
         android:id="@+id/messageTxt"
@@ -36,12 +35,12 @@
         android:layout_height="0dp"
         android:layout_weight="2"
         android:textAlignment="center"
-        android:paddingTop="10dp"
+        android:paddingTop="5dp"
         android:paddingBottom="10dp"
         android:layout_gravity="center"
         android:gravity="center"
         android:text="Message"
-        android:textSize="30sp"
+        android:textSize="20sp"
         />
 
     <ViewSwitcher
@@ -56,10 +55,10 @@
             android:layout_height="fill_parent">
 
             <ImageButton
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:layout_alignParentLeft="true"
-                android:layout_marginLeft="150dp"
+                android:layout_marginLeft="20dp"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
                 android:id="@+id/imageButtonCancel"
@@ -68,10 +67,10 @@
                 />
 
             <ImageButton
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="150dp"
+                android:layout_marginRight="20dp"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
                 android:id="@+id/imageButtonOk"
@@ -81,8 +80,8 @@
         </RelativeLayout>
 
         <ImageButton
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:adjustViewBounds="true"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
