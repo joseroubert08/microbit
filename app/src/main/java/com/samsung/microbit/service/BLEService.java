@@ -37,7 +37,7 @@ public class BLEService extends BLEBaseService {
 	public static final int FORMAT_SINT16 = BluetoothGattCharacteristic.FORMAT_SINT16;
 	public static final int FORMAT_SINT32 = BluetoothGattCharacteristic.FORMAT_SINT32;
 
-	
+
 	protected String TAG = "BLEService";
 	protected boolean debug = true;
 
@@ -379,6 +379,9 @@ public class BLEService extends BLEBaseService {
 
 		BluetoothGattService s = getService(UUID.fromString(serviceGuid));
 		BluetoothGattCharacteristic c = s.getCharacteristic(UUID.fromString(characteristic));
+		/*
+		 * TODO Need to try and write, to see if we have an endian issue
+		 */
 		c.setValue(value, type, 0);
 		writeCharacteristic(c);
 	}
