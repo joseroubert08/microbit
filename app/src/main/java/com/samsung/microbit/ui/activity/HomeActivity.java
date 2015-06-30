@@ -70,10 +70,9 @@ public class HomeActivity extends Activity {
 				updateConnectBarView();
 			}
 		});
-
 	}
 
-	// *************************************************    @Override
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -82,7 +81,6 @@ public class HomeActivity extends Activity {
 		} else {
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		}
-
 
 		//Remove title bar
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -95,7 +93,6 @@ public class HomeActivity extends Activity {
 			broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
 			LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(broadcastReceiver, broadcastIntentFilter);
 		}
-
 
 		setContentView(R.layout.activity_home);
 
@@ -131,6 +128,16 @@ public class HomeActivity extends Activity {
 		} else if (v.getId() == R.id.numOfProjects) {
 			Intent intent = new Intent(this, ProjectActivity.class);
 			startActivity(intent);
+		} else if (v.getId() == R.id.connectBtn) {
+			updateConnectBarView();
+			ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
+			if (connectedDevice.mPattern != null) {
+				if (connectedDevice.mStatus) {
+					IPCService.getInstance().bleDisconnect();
+				} else {
+					IPCService.getInstance().bleConnect();
+				}
+			}
 		}
 	}
 
@@ -152,10 +159,10 @@ public class HomeActivity extends Activity {
 		ImageButton connectButton = (ImageButton) findViewById(R.id.connectBtn);
 		if (connectedDevice.mPattern != null && connectedDevice.mStatus) {
 			connectButton.setImageResource(R.drawable.connected);
-			connectButton.setBackgroundColor(0XFF00FF00);
+			connectButton.setBackground(getResources().getDrawable(R.drawable.green_btn));
 		} else {
 			connectButton.setImageResource(R.drawable.disconnected);
-			connectButton.setBackgroundColor(0XFFFF0000);
+			connectButton.setBackground(getResources().getDrawable(R.drawable.red_btn));
 		}
 	}
 
