@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.DownloadFilesTask;
+import com.samsung.microbit.model.Constants;
 
 import org.apache.cordova.Config;
 import org.apache.cordova.CordovaChromeClient;
@@ -33,11 +34,11 @@ import org.apache.cordova.LOG;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class WebViewActivity extends Activity implements CordovaInterface {
+public class TouchDevActivity extends Activity implements CordovaInterface {
 
     private CordovaWebView touchDevelopView = null;
     private ProgressBar touchDevelopProgress = null;
-    private TextView loadingTxt = null, titleTxt = null;
+    private TextView loadingTxt = null;
     private RelativeLayout topBar = null;
     private final ExecutorService threadPool = Executors.newCachedThreadPool();
     private CordovaPlugin activityResultCallback;
@@ -45,7 +46,7 @@ public class WebViewActivity extends Activity implements CordovaInterface {
     private static final int SWIPE_THRESHOLD = 10;
     private static final int SWIPE_VELOCITY_THRESHOLD = 10;
 
-    String TAG = "WebViewActivity";
+    String TAG = "TouchDevActivity";
 
     private class myGestureScanner implements GestureDetector.OnGestureListener{
 
@@ -121,6 +122,56 @@ public class WebViewActivity extends Activity implements CordovaInterface {
         }
     }
 
+    private class myWebViewClient extends CordovaWebViewClient{
+
+        public myWebViewClient(CordovaInterface cordova) {
+            super(cordova);
+        }
+        public myWebViewClient(CordovaInterface cordova, CordovaWebView view){
+            super(cordova,view);
+        }
+        public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
+            LOG.d(TAG, "onReceivedHttpAuthRequest");
+            final WebView mView = view;
+            final HttpAuthHandler mHandler = handler;
+
+            mHandler.proceed("microbit", "bitbug42");
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            if (url.endsWith(".hex")) {
+                new DownloadFilesTask().execute(url);
+                return true;
+            }
+            return false;
+        }
+    }
+
+    private class myWebViewChromeClient extends CordovaChromeClient{
+
+        public myWebViewChromeClient(CordovaInterface cordova) {
+            super(cordova);
+        }
+        public void onProgressChanged(WebView view, int newProgress) {
+            LOG.d(TAG, "onProgressChanged");
+            TouchDevActivity.this.setValue(newProgress);
+            super.onProgressChanged(view, newProgress);
+        }
+
+        @Override
+        public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+            LOG.d(TAG, "onJsAlert");
+            return super.onJsAlert(view, url, message, result);
+        }
+
+        @Override
+        public boolean onJsPrompt(WebView view, String origin, String message, String defaultValue, JsPromptResult result){
+            //TODO 1. Why do I need to write all these functions?
+            //     2. Beautify this
+            return false;
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -146,21 +197,25 @@ public class WebViewActivity extends Activity implements CordovaInterface {
         Config.init(this);
 
         loadingTxt = (TextView) findViewById(R.id.loadingTxt);
-        titleTxt = (TextView) findViewById(R.id.title);
         topBar = (RelativeLayout) findViewById(R.id.topBar);
-
-        titleTxt.setText(getString(R.string.web_view_demo));
 
         touchDevelopProgress = (ProgressBar) findViewById(R.id.progressBar);
         touchDevelopProgress.setMax(100);
         gestureScanner = new GestureDetector(new myGestureScanner());
 
-        String url = "file:///android_asset/www/index_fb.html";
-        touchDevelopView.loadUrl(url);
+        Intent intent = getIntent();
+        String url = intent.getStringExtra(Constants.URL);
 
-        loadingTxt.setVisibility(View.GONE);
-        touchDevelopView.setVisibility(View.VISIBLE);
-        touchDevelopProgress.setVisibility(View.INVISIBLE);
+        //Load URL now
+        if(url == null) {
+            touchDevelopView.loadUrl(getString(R.string.touchDevURLNew));
+        } else {
+            touchDevelopView.loadUrl(url);
+        }
+        touchDevelopView.setWebChromeClient(new myWebViewChromeClient(this));
+        touchDevelopView.setWebViewClient(new myWebViewClient(this, touchDevelopView));
+
+        touchDevelopView.setVisibility(View.INVISIBLE);
 
         topBar.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -231,7 +286,7 @@ public class WebViewActivity extends Activity implements CordovaInterface {
             case "spinner":
                 if (touchDevelopProgress != null ){
                     touchDevelopProgress.setVisibility(View.INVISIBLE);
-                    //loadingTxt.setVisibility(View.INVISIBLE);
+                    loadingTxt.setVisibility(View.INVISIBLE);
                 }
                 break;
         }

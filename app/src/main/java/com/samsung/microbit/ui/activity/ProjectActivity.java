@@ -5,17 +5,14 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -104,7 +101,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 		switch (v.getId()) {
 			case R.id.createProject: {
-					Intent intent = new Intent(this, WebViewActivity.class);
+					Intent intent = new Intent(this, TouchDevActivity.class);
 					intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
 					startActivity(intent);
 					finish();

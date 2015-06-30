@@ -1,10 +1,13 @@
 package com.samsung.microbit.core;
 
-import android.content.res.Configuration;
-import android.util.Log;
-import android.view.Gravity;
-import android.widget.Toast;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.util.Log;
+
+import com.samsung.microbit.MBApp;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.plugin.AlertPlugin;
 import com.samsung.microbit.plugin.AudioPlugin;
@@ -14,6 +17,7 @@ import com.samsung.microbit.plugin.FilePlugin;
 import com.samsung.microbit.plugin.InformationPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
 import com.samsung.microbit.plugin.TelephonyPlugin;
+import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.service.PluginService;
 
 import org.apache.cordova.CallbackContext;
@@ -31,9 +35,48 @@ import java.util.TimerTask;
  */
 public class PluginInterface  extends CordovaPlugin {
 
-    static private CallbackContext callback = null;//callback used to call into JS from Java side
+    private static PluginInterface instance = null;
+
+    private static CallbackContext callback = null;//callback used to call into JS from Java side
+
+    IntentFilter broadcastIntentFilter;
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            handleBLENotification(context, intent);
+        }
+    };
+
+    private void handleBLENotification(Context context, Intent intent) {
+
+        JSONObject parameters = new JSONObject();
+        try {
+            parameters.put("type", "button_press");
+            parameters.put("source", "left");
+            PluginInterface.getInstance().dispatchToJs(parameters);
+
+        } catch (JSONException e) {
+            Log.e("onMicrobitEvent", e.toString());
+        }
+    }
+
+    public static synchronized PluginInterface getInstance() {
+        if (instance == null) {
+            instance = new PluginInterface();
+        }
+
+        return instance;
+    }
 
     protected void pluginInitialize() {
+
+        getInstance();
+
+        if (broadcastIntentFilter == null) {
+            broadcastIntentFilter = new IntentFilter(IPCService.INTENT_MICROBIT_BUTTON_NOTIFICATION);
+            MBApp.getContext().registerReceiver(broadcastReceiver, broadcastIntentFilter);
+        }
     }
 
     //TODO: this code should be removed eventually.
@@ -53,7 +96,6 @@ public class PluginInterface  extends CordovaPlugin {
                     parameters.put("source", "left");
                     dispatchToJs(parameters);
 
-                    //simulateMicrobitEvent(); this will trigger repeat button press event
                 } catch (JSONException e) {
                     Log.e("onMicrobitEvent", e.toString());
                 }
@@ -72,10 +114,6 @@ public class PluginInterface  extends CordovaPlugin {
         }
         else if (action.equals("setCallback")) {
             callback = callbackContext;
-
-            //TODO: this call should be removed eventually.
-            //just there to simulate sending microbit event to JS
-            //simulateMicrobitEvent();
 
             return true;
         }
@@ -129,7 +167,7 @@ public class PluginInterface  extends CordovaPlugin {
         Log.e("onMicrobitEvent", e.toString());
     }
     */
-    static public void dispatchToJs(JSONObject params) {
+    public void dispatchToJs(JSONObject params) {
         if(callback != null) {
             PluginResult result = new PluginResult(PluginResult.Status.OK, params);
             result.setKeepCallback(true);//allows repeat execution of the same callback

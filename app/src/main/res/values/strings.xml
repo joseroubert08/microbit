@@ -134,4 +134,6 @@
     <string name="connected_to">Connected to</string>
     <string name="not_connected">Not Connected</string>
 
+    <string name="web_view_demo">Web View Demo</string>
+
 </resources>

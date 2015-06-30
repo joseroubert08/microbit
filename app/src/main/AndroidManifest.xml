@@ -84,6 +84,12 @@
 			android:screenOrientation="landscape">
 		</activity>
 		<activity
+			android:name=".ui.activity.TouchDevActivity"
+			android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+			android:parentActivityName=".ui.activity.HomeActivity"
+			android:windowSoftInputMode="adjustResize">
+		</activity>
+		<activity
 			android:name=".ui.activity.WebViewActivity"
 			android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
 			android:parentActivityName=".ui.activity.HomeActivity"
