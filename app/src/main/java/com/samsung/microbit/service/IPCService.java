@@ -65,10 +65,14 @@ public class IPCService extends Service {
 		sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_RECONNECT, null, null);
 	}
 
-	public void writeCharacteristic(UUID service, UUID Characteristic, int value, int type) {
-		
+	public void writeCharacteristic(UUID service, UUID characteristic, int value, int type) {
 
-		//sendtoBLEService();
+		NameValuePair[] args = new NameValuePair[4];
+		args[0] = new NameValuePair(IPCMessageManager.BUNDLE_SERVICE_GUID, service.toString());
+		args[1] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_GUID, characteristic.toString());
+		args[2] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_VALUE, value);
+		args[3] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE, type);
+		sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_WRITE_CHARACTERISTIC, null, args);
 	}
 
 	/*
@@ -138,11 +142,22 @@ public class IPCService extends Service {
 		Bundle bundle = new Bundle();
 		if (mbsService == IPCMessageManager.ANDROID_MESSAGE) {
 			if (debug) logi("sendIPCMessge() :: IPCMessageManager.ANDROID_MESSAGE functionCode=" + functionCode);
+			if(args != null) {
+				for(int i=0; i<args.length; i++) {
+					bundle.putSerializable(args[i].getName(), args[i].getValue());
+				}
+			}
 		} else if (mbsService == IPCMessageManager.MICIROBIT_MESSAGE) {
 			if (debug) logi("sendIPCMessge() :: IPCMessageManager.MICIROBIT_MESSAGE functionCode=" + functionCode);
 			if (cmd != null) {
 				bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
 				bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
+			}
+
+			if(args != null) {
+				for(int i=0; i<args.length; i++) {
+					bundle.putSerializable(args[i].getName(), args[i].getValue());
+				}
 			}
 		} else {
 			return;

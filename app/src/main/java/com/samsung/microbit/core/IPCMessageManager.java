@@ -25,8 +25,8 @@ public final class IPCMessageManager {
 	public static final String BUNDLE_ERROR_CODE = "BUNDLE_ERROR_CODE";
 	public static final String BUNDLE_SERVICE_GUID = "BUNDLE_SERVICE_GUID";
 	public static final String BUNDLE_CHARACTERISTIC_GUID = "BUNDLE_CHARACTERISTIC_GUID";
-	public static final String BUNDLE_CHARACTERISTI_TYPE = "BUNDLE_CHARACTERISTI_TYPE";
-	public static final String BUNDLE_BUNDLE_CHARACTERISTI_VALUE = "BUNDLE_BUNDLE_CHARACTERISTI_VALUE";
+	public static final String BUNDLE_CHARACTERISTIC_TYPE = "BUNDLE_CHARACTERISTIC_TYPE";
+	public static final String BUNDLE_CHARACTERISTIC_VALUE = "BUNDLE_CHARACTERISTIC_VALUE";
 
 	public static final int ANDROID_MESSAGE = 1;
 	public static final int MICIROBIT_MESSAGE = 2;

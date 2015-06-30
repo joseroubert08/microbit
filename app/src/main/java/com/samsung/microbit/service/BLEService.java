@@ -25,7 +25,18 @@ import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.model.NameValuePair;
 import com.samsung.microbit.ui.activity.ConnectActivity;
 
+import java.util.UUID;
+
 public class BLEService extends BLEBaseService {
+
+	public static final int FORMAT_UINT8 = BluetoothGattCharacteristic.FORMAT_UINT8;
+	public static final int FORMAT_UINT16 = BluetoothGattCharacteristic.FORMAT_UINT16;
+	public static final int FORMAT_UINT32 = BluetoothGattCharacteristic.FORMAT_UINT32;
+
+	public static final int FORMAT_SINT8 = BluetoothGattCharacteristic.FORMAT_SINT8;
+	public static final int FORMAT_SINT16 = BluetoothGattCharacteristic.FORMAT_SINT16;
+	public static final int FORMAT_SINT32 = BluetoothGattCharacteristic.FORMAT_SINT32;
+
 
 	protected String TAG = "BLEService";
 	protected boolean debug = true;
@@ -215,7 +226,7 @@ public class BLEService extends BLEBaseService {
 			notifyMgr.notify(notificationId, mBuilder.build());
 
 			CmdArg cmd = null;
-			if(deviceAddress != null) {
+			if (deviceAddress != null) {
 				new CmdArg(1, deviceAddress);
 			}
 
@@ -236,7 +247,7 @@ public class BLEService extends BLEBaseService {
 			mBuilder.setContentIntent(resultPendingIntent);
 			notifyMgr.notify(notificationId, mBuilder.build());
 			CmdArg cmd = null;
-			if(deviceAddress != null) {
+			if (deviceAddress != null) {
 				new CmdArg(1, deviceAddress);
 			}
 
@@ -335,8 +346,8 @@ public class BLEService extends BLEBaseService {
 				bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
 			}
 
-			if(args != null) {
-				for(int i=0; i<args.length; i++) {
+			if (args != null) {
+				for (int i = 0; i < args.length; i++) {
 					bundle.putSerializable(args[i].getName(), args[i].getValue());
 				}
 			}
@@ -346,8 +357,8 @@ public class BLEService extends BLEBaseService {
 			if (cmd != null) {
 				bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
 				bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
-				if(args != null) {
-					for(int i=0; i<args.length; i++) {
+				if (args != null) {
+					for (int i = 0; i < args.length; i++) {
 						bundle.putSerializable(args[i].getName(), args[i].getValue());
 					}
 				}
@@ -364,8 +375,24 @@ public class BLEService extends BLEBaseService {
 		}
 	}
 
+	public void writeCharacteristic(String serviceGuid, String characteristic, int value, int type) {
+
+		BluetoothGattService s = getService(UUID.fromString(serviceGuid));
+		if (s != null) {
+			BluetoothGattCharacteristic c = s.getCharacteristic(UUID.fromString(characteristic));
+			if (c != null) {
+				/*
+			 	 * TODO Need to try and write, to see if we have an endian issue
+		 		*/
+				c.setValue(value, type, 0);
+				writeCharacteristic(c);
+			}
+		}
+	}
+
 	private void handleIncomingMessage(Message msg) {
 		if (debug) logi("handleIncomingMessage() :: Start BLEService");
+		Bundle bundle = msg.getData();
 		if (msg.what == IPCMessageManager.ANDROID_MESSAGE) {
 			if (debug) logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
 
@@ -391,6 +418,14 @@ public class BLEService extends BLEBaseService {
 
 					break;
 
+				case IPCMessageManager.IPC_FUNCTION_WRITE_CHARACTERISTIC:
+					if (debug) logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_WRITE_CHARACTERISTIC = " + bleManager);
+					String service = (String) bundle.getSerializable(IPCMessageManager.BUNDLE_SERVICE_GUID);
+					String characteristic = (String) bundle.getSerializable(IPCMessageManager.BUNDLE_CHARACTERISTIC_GUID);
+					int value = (int) bundle.getSerializable(IPCMessageManager.BUNDLE_CHARACTERISTIC_VALUE);
+					int type = (int) bundle.getSerializable(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE);
+					writeCharacteristic(service, characteristic, value, type);
+					break;
 				default:
 			}
 		} else if (msg.what == IPCMessageManager.MICIROBIT_MESSAGE) {
