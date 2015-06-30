@@ -378,12 +378,16 @@ public class BLEService extends BLEBaseService {
 	public void writeCharacteristic(String serviceGuid, String characteristic, int value, int type) {
 
 		BluetoothGattService s = getService(UUID.fromString(serviceGuid));
-		BluetoothGattCharacteristic c = s.getCharacteristic(UUID.fromString(characteristic));
-		/*
-		 * TODO Need to try and write, to see if we have an endian issue
-		 */
-		c.setValue(value, type, 0);
-		writeCharacteristic(c);
+		if (s != null) {
+			BluetoothGattCharacteristic c = s.getCharacteristic(UUID.fromString(characteristic));
+			if (c != null) {
+				/*
+			 	 * TODO Need to try and write, to see if we have an endian issue
+		 		*/
+				c.setValue(value, type, 0);
+				writeCharacteristic(c);
+			}
+		}
 	}
 
 	private void handleIncomingMessage(Message msg) {
