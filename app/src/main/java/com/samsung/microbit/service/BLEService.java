@@ -198,6 +198,11 @@ public class BLEService extends BLEBaseService {
 		if (debug) logi("setNotification() :: isConnected = " + isConnected);
 		NotificationManager notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		int notificationId = 1001;
+
+		NameValuePair[] args = new NameValuePair[2];
+		args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
+		args[1] = new NameValuePair(IPCMessageManager.BUNDLE_DEVICE_ADDRESS, deviceAddress)
+
 		if (!isConnected) {
 			if (debug) logi("setNotification() :: !isConnected");
 			if (bluetoothAdapter != null) {
@@ -225,15 +230,8 @@ public class BLEService extends BLEBaseService {
 			mBuilder.setContentIntent(resultPendingIntent);
 			notifyMgr.notify(notificationId, mBuilder.build());
 
-			CmdArg cmd = null;
-			if (deviceAddress != null) {
-				new CmdArg(1, deviceAddress);
-			}
-
-			NameValuePair[] args = new NameValuePair[1];
-			args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
-			sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED, cmd, args);
-			sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED, cmd, args);
+			sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED, null, args);
+			sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED, null, args);
 		} else {
 			NotificationCompat.Builder mBuilder =
 				new NotificationCompat.Builder(this)
@@ -246,15 +244,9 @@ public class BLEService extends BLEBaseService {
 			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			mBuilder.setContentIntent(resultPendingIntent);
 			notifyMgr.notify(notificationId, mBuilder.build());
-			CmdArg cmd = null;
-			if (deviceAddress != null) {
-				new CmdArg(1, deviceAddress);
-			}
 
-			NameValuePair[] args = new NameValuePair[1];
-			args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
-			sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, cmd, args);
-			sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, cmd, args);
+			sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null, args);
+			sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null, args);
 		}
 	}
 
