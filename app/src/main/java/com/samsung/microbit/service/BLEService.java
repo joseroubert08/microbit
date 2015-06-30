@@ -201,7 +201,7 @@ public class BLEService extends BLEBaseService {
 
 		NameValuePair[] args = new NameValuePair[2];
 		args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
-		args[1] = new NameValuePair(IPCMessageManager.BUNDLE_DEVICE_ADDRESS, deviceAddress)
+		args[1] = new NameValuePair(IPCMessageManager.BUNDLE_DEVICE_ADDRESS, deviceAddress);
 
 		if (!isConnected) {
 			if (debug) logi("setNotification() :: !isConnected");
