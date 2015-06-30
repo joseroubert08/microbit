@@ -136,6 +136,7 @@
     <string name="no_projects">No projects found!</string>
     <string name="connected_to">Connected to</string>
     <string name="not_connected">Not Connected</string>
+    <string name="micro_bit_reset_msg">Microbit needs to be reset.</string>
 
     <string name="web_view_demo">Web View Demo</string>
 

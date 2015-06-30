@@ -36,6 +36,7 @@ import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.service.PluginService;
+import com.samsung.microbit.ui.PopUp;
 
 import java.util.List;
 import java.util.logging.Handler;
@@ -56,7 +57,11 @@ public class HomeActivity extends Activity {
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						Toast.makeText(HomeActivity.this, "Microbit needs to be reset", Toast.LENGTH_SHORT).show();
+						PopUp.show(MBApp.getContext(),
+								MBApp.getContext().getString(R.string.micro_bit_reset_msg),
+								"",
+								0, 0,
+								PopUp.TYPE_ALERT, null, null);
 					}
 				});
 			}
