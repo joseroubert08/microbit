@@ -3,6 +3,7 @@ package com.samsung.microbit.ui.adapter;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,8 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
@@ -26,10 +29,28 @@ public class ProjectAdapter extends BaseAdapter {
 
 	private List<Project> projects;
 	private ProjectActivity projectActivity;
+    private LinearLayout lastActionBarLayout = null;
+
 
 	private View.OnClickListener appNameClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
+
+
+            RelativeLayout r = (RelativeLayout) v.getParent().getParent();
+            LinearLayout actionBarLayout = null;
+
+            if (r != null){
+                actionBarLayout = (LinearLayout)r.findViewById(R.id.actionBarForProgram);
+                Log.d("Rohit", "Got Action bar");
+                if (actionBarLayout != null){
+                    if (lastActionBarLayout != null){
+                        lastActionBarLayout.setVisibility(LinearLayout.GONE);
+                    }
+                    lastActionBarLayout = (LinearLayout)r.findViewById(R.id.actionBarForProgram);
+                    actionBarLayout.setVisibility(LinearLayout.VISIBLE);
+                }
+            }
 			//TODO AFTER DEMO EDIT PROJECT NAME
 			/*
 			Toast.makeText(MBApp.getContext(), "AppName Clicked: " + v.getTag(), Toast.LENGTH_SHORT).show();
@@ -111,6 +132,7 @@ public class ProjectAdapter extends BaseAdapter {
 			LayoutInflater inflater = LayoutInflater.from(MBApp.getContext());
 			convertView = inflater.inflate(R.layout.project_items, null);
 		}
+
 
 		Button appName = (Button) convertView.findViewById(R.id.appNameButton);
 		EditText appNameEdit = (EditText) convertView.findViewById(R.id.appNameEdit);
