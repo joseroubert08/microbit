@@ -135,7 +135,7 @@ public class HomeActivity extends Activity {
 			Intent intent = new Intent(this, ConnectActivity.class);
 			startActivity(intent);
 		} else if (v.getId() == R.id.startNewProject) {
-			Intent intent = new Intent(this, WebViewActivity.class);
+			Intent intent = new Intent(this, TouchDevActivity.class);
 			intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
 			startActivity(intent);
 		} else if (v.getId() == R.id.numOfProjects) {
