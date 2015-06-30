@@ -38,7 +38,7 @@ public class BLEService extends BLEBaseService {
 
 	protected String getDeviceAddress() {
 
-		logi("getDeviceAddress()");
+		if(debug) logi("getDeviceAddress()");
 		ConnectedDevice currentDevice = Utils.getPairedMicrobit(this);
 		String pairedDeviceName = currentDevice.mAddress;
 		if (pairedDeviceName == null) {
@@ -50,13 +50,13 @@ public class BLEService extends BLEBaseService {
 
 	protected void startupConnection() {
 
-		logi("startupConnection()");
+		if(debug) logi("startupConnection()");
 		boolean success = true;
 		if (connect() == 0) {
-			logi("startupConnection() :: connect() == 0");
+			if(debug) logi("startupConnection() :: connect() == 0");
 			if (discoverServices() == 0) {
 
-				logi("startupConnection() :: discoverServices() == 0");
+				if(debug) logi("startupConnection() :: discoverServices() == 0");
 				if (registerNotifications(true)) {
 					setNotification(true);
 				} else {
@@ -64,7 +64,7 @@ public class BLEService extends BLEBaseService {
 				}
 			} else {
 				success = false;
-				logi("startupConnection() :: discoverServices() != 0");
+				if(debug) logi("startupConnection() :: discoverServices() != 0");
 			}
 		} else {
 			success = false;
@@ -72,12 +72,12 @@ public class BLEService extends BLEBaseService {
 
 		if (!success) {
 			if (bleManager != null) {
-				bleManager.reset(true);
+				reset();
 				setNotification(false);
 			}
 		}
 
-		logi("startupConnection() :: end");
+		if(debug) logi("startupConnection() :: end");
 	}
 
 	@Override
@@ -87,27 +87,27 @@ public class BLEService extends BLEBaseService {
 
 	public boolean registerNotifications(boolean enable) {
 
-		logi("registerNotifications()");
+		if(debug) logi("registerNotifications()");
 		BluetoothGattService button1s = getService(Constants.EVENT_SERVICE);
 		if (button1s == null) {
-			logi("registerNotifications() :: not found service " + Constants.EVENT_SERVICE.toString());
+			if(debug) logi("registerNotifications() :: not found service " + Constants.EVENT_SERVICE.toString());
 			return false;
 		}
 
 		BluetoothGattCharacteristic button1c = button1s.getCharacteristic(Constants.ES_CLIENT_EVENT);
 		if (button1c == null) {
-			logi("registerNotifications() :: not found Characteristic " + Constants.ES_CLIENT_EVENT.toString());
+			if(debug) logi("registerNotifications() :: not found Characteristic " + Constants.ES_CLIENT_EVENT.toString());
 			return false;
 		}
 
 		BluetoothGattDescriptor button1d = button1c.getDescriptor(Constants.CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR);
 		if (button1d == null) {
-			logi("registerNotifications() :: not found descriptor " + Constants.CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR.toString());
+			if(debug) logi("registerNotifications() :: not found descriptor " + Constants.CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR.toString());
 			return false;
 		}
 
 		enableCharacteristicNotification(button1c, button1d, enable);
-		logi("registerNotifications() : done");
+		if(debug) logi("registerNotifications() : done");
 		return true;
 	}
 
@@ -127,12 +127,12 @@ public class BLEService extends BLEBaseService {
 	@Override
 	protected void handleUnexpectedConnectionEvent(int event) {
 
-		logi("handleDisconnection() :: event = " + event);
+		if(debug) logi("handleDisconnection() :: event = " + event);
 		if ((event & BLEManager.BLE_CONNECTED) != 0) {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					logi("handleDisconnection() :: BLE_CONNECTED");
+					if(debug) logi("handleDisconnection() :: BLE_CONNECTED");
 					discoverServices();
 					registerNotifications(true);
 					setNotification(true);
@@ -140,24 +140,24 @@ public class BLEService extends BLEBaseService {
 			}).start();
 
 		} else if (event == BLEManager.BLE_DISCONNECTED) {
-			logi("handleDisconnection() :: BLE_DISCONNECTED");
+			if(debug) logi("handleDisconnection() :: BLE_DISCONNECTED");
 			setNotification(false);
 		}
 	}
 
 	private void setNotification(boolean isConnected) {
 
-		logi("setNotification() :: isConnected = " + isConnected);
+		if(debug) logi("setNotification() :: isConnected = " + isConnected);
 		NotificationManager notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		int notificationId = 1001;
 		if (!isConnected) {
-			logi("setNotification() :: !isConnected");
+			if(debug) logi("setNotification() :: !isConnected");
 			if (bluetoothAdapter != null) {
 				if (!bluetoothAdapter.isEnabled()) {
 
-					logi("setNotification() :: !bluetoothAdapter.isEnabled()");
+					if(debug) logi("setNotification() :: !bluetoothAdapter.isEnabled()");
 					if (bleManager != null) {
-						bleManager.reset(true);
+						bleManager.reset();
 					}
 
 					bleManager = null;
@@ -235,16 +235,16 @@ public class BLEService extends BLEBaseService {
 
 	public void startIPCListener() {
 
-		logi("startIPCListener()");
+		if(debug) logi("startIPCListener()");
 		if (IPCMessageManager.getInstance() == null) {
 
 
-			logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
+			if(debug) logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
 			IPCMessageManager inst = IPCMessageManager.getInstance("BLEServiceReceiver", new Handler() {
 
 				@Override
 				public void handleMessage(Message msg) {
-					logi("startIPCListener().handleMessage");
+					if(debug) logi("startIPCListener().handleMessage");
 					handleIncomingMessage(msg);
 				}
 
@@ -271,21 +271,21 @@ public class BLEService extends BLEBaseService {
 
 	public void sendtoPluginService(int mbsService, int functionCode, CmdArg cmd) {
 
-		logi("sendtoPluginService()");
+		if(debug) logi("sendtoPluginService()");
 		Class destService = PluginService.class;
 		sendIPCMessge(destService, mbsService, functionCode, cmd);
 	}
 
 	public void sendtoIPCService(int mbsService, int functionCode, CmdArg cmd) {
 
-		logi("sendtoIPCService()");
+		if(debug) logi("sendtoIPCService()");
 		Class destService = IPCService.class;
 		sendIPCMessge(destService, mbsService, functionCode, cmd);
 	}
 
 	public void sendIPCMessge(Class destService, int mbsService, int functionCode, CmdArg cmd) {
 
-		logi("sendIPCMessge()");
+		if(debug) logi("sendIPCMessge()");
 		IPCMessageManager inst = IPCMessageManager.getInstance();
 		if (!inst.isConnected(destService)) {
 			inst.configureServerConnection(destService, this);
@@ -295,9 +295,9 @@ public class BLEService extends BLEBaseService {
 		msg.arg1 = functionCode;
 		Bundle bundle = new Bundle();
 		if (mbsService == IPCMessageManager.ANDROID_MESSAGE) {
-			logi("sendIPCMessge() :: IPCMessageManager.ANDROID_MESSAGE functionCode=" + functionCode);
+			if(debug) logi("sendIPCMessge() :: IPCMessageManager.ANDROID_MESSAGE functionCode=" + functionCode);
 		} else if (mbsService == IPCMessageManager.MICIROBIT_MESSAGE) {
-			logi("sendIPCMessge() :: IPCMessageManager.MICIROBIT_MESSAGE functionCode=" + functionCode);
+			if(debug) logi("sendIPCMessge() :: IPCMessageManager.MICIROBIT_MESSAGE functionCode=" + functionCode);
 			if (cmd != null) {
 				bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
 				bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
@@ -315,26 +315,37 @@ public class BLEService extends BLEBaseService {
 	}
 
 	private void handleIncomingMessage(Message msg) {
-		logi("handleIncomingMessage() :: Start BLEService");
+		if(debug) logi("handleIncomingMessage() :: Start BLEService");
 		if (msg.what == IPCMessageManager.ANDROID_MESSAGE) {
-			logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
+			if(debug) logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
+
 			switch (msg.arg1) {
 				case IPCMessageManager.IPC_FUNCTION_CONNECT:
-					logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_CONNECT");
+					if(debug) logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_CONNECT bleManager = " + bleManager);
+					setupBLE();
+					// send connected message
 					break;
 
 				case IPCMessageManager.IPC_FUNCTION_DISCONNECT:
-					logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_DISCONNECT");
+					if(debug) logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_DISCONNECT = " + bleManager);
+					if (reset()) {
+						setupBLE();
+					}
+
 					break;
 
 				case IPCMessageManager.IPC_FUNCTION_RECONNECT:
-					logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_RECONNECT");
+					if(debug) logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_RECONNECT = " + bleManager);
+					if (reset()) {
+						setNotification(false);
+					}
+
 					break;
 
 				default:
 			}
 		} else if (msg.what == IPCMessageManager.MICIROBIT_MESSAGE) {
-			logi("handleIncomingMessage() :: IPCMessageManager.MICIROBIT_MESSAGE msg.arg1 = " + msg.arg1);
+			if(debug) logi("handleIncomingMessage() :: IPCMessageManager.MICIROBIT_MESSAGE msg.arg1 = " + msg.arg1);
 		}
 	}
 }

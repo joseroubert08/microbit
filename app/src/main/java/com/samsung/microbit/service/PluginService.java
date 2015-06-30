@@ -27,9 +27,7 @@ public class PluginService extends Service {
 	private boolean debug = true;
 
 	void logi(String message) {
-		if (debug) {
-			Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
-		}
+		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 	}
 
 	public static Messenger mClientMessenger = null;
@@ -53,14 +51,14 @@ public class PluginService extends Service {
 	 */
 	public void handleMessage(Message msg) {
 
-		logi("handleMessage()");
+		if(debug) logi("handleMessage()");
 		Bundle data = msg.getData();
 		mClientMessenger = msg.replyTo;
 		CmdArg cmd = new CmdArg(data.getInt(IPCMessageManager.BUNDLE_DATA), data.getString(IPCMessageManager.BUNDLE_VALUE));
 
-		logi("handleMessage() ## msg.arg1 = " + msg.arg1);
-		logi("handleMessage() ## data.getInt=" + data.getInt(IPCMessageManager.BUNDLE_DATA));
-		logi("handleMessage() ## data.getString=" + data.getString(IPCMessageManager.BUNDLE_VALUE));
+		if(debug) logi("handleMessage() ## msg.arg1 = " + msg.arg1);
+		if(debug) logi("handleMessage() ## data.getInt=" + data.getInt(IPCMessageManager.BUNDLE_DATA));
+		if(debug) logi("handleMessage() ## data.getString=" + data.getString(IPCMessageManager.BUNDLE_VALUE));
 		switch (msg.arg1) {
 
 			case Constants.SAMSUNG_REMOTE_CONTROL_ID:
@@ -86,7 +84,7 @@ public class PluginService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		logi("onStartCommand() ## start");
+		if(debug) logi("onStartCommand() ## start");
 		return START_STICKY;
 	}
 
@@ -107,13 +105,13 @@ public class PluginService extends Service {
 
 	public void startIPCListener() {
 
-		logi("startIPCListener()");
+		if(debug) logi("startIPCListener()");
 		if (IPCMessageManager.getInstance() == null) {
-			logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
+			if(debug) logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
 			IPCMessageManager inst = IPCMessageManager.getInstance("PluginServiceReceiver", new android.os.Handler() {
 				@Override
 				public void handleMessage(Message msg) {
-					logi("startIPCListener().handleMessage");
+					if(debug) logi("startIPCListener().handleMessage");
 					handleIncomingMessage(msg);
 				}
 			});
@@ -140,21 +138,21 @@ public class PluginService extends Service {
 
 	public void sendtoBLEService(int mbsService, int functionCode, CmdArg cmd) {
 
-		logi("sendtoBLEService()");
+		if(debug) logi("sendtoBLEService()");
 		Class destService = BLEService.class;
 		sendIPCMessge(destService, mbsService, functionCode, cmd);
 	}
 
 	public void sendtoIPCService(int mbsService, int functionCode, CmdArg cmd) {
 
-		logi("sendtoIPCService()");
+		if(debug) logi("sendtoIPCService()");
 		Class destService = IPCService.class;
 		sendIPCMessge(destService, mbsService, functionCode, cmd);
 	}
 
 	public void sendIPCMessge(Class destService, int mbsService, int functionCode, CmdArg cmd) {
 
-		logi("sendIPCMessge()");
+		if(debug) logi("sendIPCMessge()");
 		IPCMessageManager inst = IPCMessageManager.getInstance();
 		if (!inst.isConnected(destService)) {
 			inst.configureServerConnection(destService, this);
@@ -164,9 +162,9 @@ public class PluginService extends Service {
 		msg.arg1 = functionCode;
 		Bundle bundle = new Bundle();
 		if (mbsService == IPCMessageManager.ANDROID_MESSAGE) {
-			logi("sendIPCMessge() :: IPCMessageManager.ANDROID_MESSAGE functionCode=" + functionCode);
+			if(debug) logi("sendIPCMessge() :: IPCMessageManager.ANDROID_MESSAGE functionCode=" + functionCode);
 		} else if (mbsService == IPCMessageManager.MICIROBIT_MESSAGE) {
-			logi("sendIPCMessge() :: IPCMessageManager.MICIROBIT_MESSAGE functionCode=" + functionCode);
+			if(debug) logi("sendIPCMessge() :: IPCMessageManager.MICIROBIT_MESSAGE functionCode=" + functionCode);
 			if (cmd != null) {
 				bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
 				bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
@@ -184,9 +182,9 @@ public class PluginService extends Service {
 	}
 
 	private void handleIncomingMessage(Message msg) {
-		logi("handleIncomingMessage() :: Start PluginService");
+		if(debug) logi("handleIncomingMessage() :: Start PluginService");
 		if (msg.what == IPCMessageManager.ANDROID_MESSAGE) {
-			logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
+			if(debug) logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
 		} else if (msg.what == IPCMessageManager.MICIROBIT_MESSAGE) {
 			handleMessage(msg);
 		}

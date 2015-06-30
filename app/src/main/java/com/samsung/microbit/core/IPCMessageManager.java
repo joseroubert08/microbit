@@ -49,14 +49,14 @@ public final class IPCMessageManager {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 
-			logi("serviceConnection.onServiceConnected() :: name.getClassName() " + name.getClassName());
+			if(debug) logi("serviceConnection.onServiceConnected() :: name.getClassName() " + name.getClassName());
 			remoteServices.put(name.getClassName(), new Messenger(service));
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
 
-			logi("serviceConnection.onServiceDisconnected() :: name.getClassName() " + name.getClassName());
+			if(debug) logi("serviceConnection.onServiceDisconnected() :: name.getClassName() " + name.getClassName());
 			remoteServices.remove(name.getClassName());
 		}
 	};
@@ -65,9 +65,7 @@ public final class IPCMessageManager {
 	private boolean debug = false;
 
 	void logi(String message) {
-		if (debug) {
-			Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
-		}
+		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 	}
 
 	// #######################################
@@ -99,7 +97,7 @@ public final class IPCMessageManager {
 
 	public void configureClientHandler(String serviceName, Handler clientHandler) {
 
-		logi("configureClientHandler()");
+		if(debug) logi("configureClientHandler()");
 		synchronized (lock) {
 
 			if (incomingHandler != null) {
@@ -116,7 +114,7 @@ public final class IPCMessageManager {
 
 	public void configureServerConnection(Class serviceClass, Context context) {
 
-		logi("configureServerConnection() :: serviceClass.getName() = " + serviceClass.getName());
+		if(debug) logi("configureServerConnection() :: serviceClass.getName() = " + serviceClass.getName());
 		Intent intent = new Intent();
 		intent.setAction(serviceClass.getName());
 		intent = createExplicitFromImplicitIntent(context.getApplicationContext(), intent);
@@ -130,7 +128,7 @@ public final class IPCMessageManager {
 
 	public void sendMessage(Class serviceClass, Message msg) throws RemoteException {
 
-		logi("sendMessage()");
+		if(debug) logi("sendMessage()");
 		Messenger messenger = remoteServices.get(serviceClass.getName());
 		if (messenger != null) {
 			msg.replyTo = clientMessenger;
@@ -169,31 +167,31 @@ public final class IPCMessageManager {
 
 		public IncomingHandler(HandlerThread thr, Handler clientHandler) {
 			super(thr.getLooper());
-			logi("IncomingHandler.IncomingHandler() :: clientHandler = " + clientHandler);
+			if(debug) logi("IncomingHandler.IncomingHandler() :: clientHandler = " + clientHandler);
 			this.clientHandler = clientHandler;
 		}
 
 		@Override
 		public void handleMessage(Message msg) {
 
-			logi("IncomingHandler.handleMessage()");
+			if(debug) logi("IncomingHandler.handleMessage()");
 			super.handleMessage(msg);
 
 			if (msg.what == ANDROID_MESSAGE) {
 				if (msg.arg1 == IPC_FUNCTION_CODE_INIT) {
-					logi("IncomingHandler.handleMessage() :: ANDROID_MESSAGE.IPC_FUNCTION_CODE_INIT");
+					if(debug) logi("IncomingHandler.handleMessage() :: ANDROID_MESSAGE.IPC_FUNCTION_CODE_INIT");
 					return;
 				}
 			}
 
 			Handler c = null;
 			synchronized (lock) {
-				logi("IncomingHandler.handleMessage() :: getting clientHandler");
+				if(debug) logi("IncomingHandler.handleMessage() :: getting clientHandler");
 				c = clientHandler;
 			}
 
 			if (c != null) {
-				logi("IncomingHandler.handleMessage() :: c != null");
+				if(debug) logi("IncomingHandler.handleMessage() :: c != null");
 				c.handleMessage(msg);
 			}
 		}

@@ -25,9 +25,7 @@ public class IPCService extends Service {
 	private boolean debug = false;
 
 	void logi(String message) {
-		if (debug) {
-			Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
-		}
+		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 	}
 
 	public IPCService() {
@@ -41,7 +39,7 @@ public class IPCService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		logi("onStartCommand()");
+		if(debug) logi("onStartCommand()");
 		return START_STICKY;
 	}
 
@@ -71,9 +69,9 @@ public class IPCService extends Service {
 
 	public void startIPCListener() {
 
-		logi("startIPCListener()");
+		if(debug) logi("startIPCListener()");
 		if (IPCMessageManager.getInstance() == null) {
-			logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
+			if(debug) logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
 			IPCMessageManager inst = IPCMessageManager.getInstance("IPCServiceListener", new android.os.Handler() {
 				@Override
 				public void handleMessage(Message msg) {
@@ -103,20 +101,20 @@ public class IPCService extends Service {
 
 	public void sendtoBLEService(int mbsService, int functionCode, CmdArg cmd) {
 
-		logi("sendtoBLEService()");
+		if(debug) logi("sendtoBLEService()");
 		Class destService = BLEService.class;
 		sendIPCMessge(destService, mbsService, functionCode, cmd);
 	}
 
 	public void sendtoPluginService(int mbsService, int functionCode, CmdArg cmd) {
-		logi("sendtoPluginService()");
+		if(debug) logi("sendtoPluginService()");
 		Class destService = PluginService.class;
 		sendIPCMessge(destService, mbsService, functionCode, cmd);
 	}
 
 	public void sendIPCMessge(Class destService, int mbsService, int functionCode, CmdArg cmd) {
 
-		logi("sendIPCMessge()");
+		if(debug) logi("sendIPCMessge()");
 		IPCMessageManager inst = IPCMessageManager.getInstance();
 		if (!inst.isConnected(destService)) {
 			inst.configureServerConnection(destService, this);
@@ -126,9 +124,9 @@ public class IPCService extends Service {
 		msg.arg1 = functionCode;
 		Bundle bundle = new Bundle();
 		if (mbsService == IPCMessageManager.ANDROID_MESSAGE) {
-			logi("sendIPCMessge() :: IPCMessageManager.ANDROID_MESSAGE functionCode=" + functionCode);
+			if(debug) logi("sendIPCMessge() :: IPCMessageManager.ANDROID_MESSAGE functionCode=" + functionCode);
 		} else if (mbsService == IPCMessageManager.MICIROBIT_MESSAGE) {
-			logi("sendIPCMessge() :: IPCMessageManager.MICIROBIT_MESSAGE functionCode=" + functionCode);
+			if(debug) logi("sendIPCMessge() :: IPCMessageManager.MICIROBIT_MESSAGE functionCode=" + functionCode);
 			if (cmd != null) {
 				bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
 				bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
@@ -146,14 +144,14 @@ public class IPCService extends Service {
 	}
 
 	private void handleIncomingMessage(Message msg) {
-		logi("handleIncomingMessage() :: Start BLEService");
+		if(debug) logi("handleIncomingMessage() :: Start BLEService");
 		if (msg.what == IPCMessageManager.ANDROID_MESSAGE) {
-			logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
+			if(debug) logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
 			Intent intent = new Intent(INTENT_BLE_NOTIFICATION);
 			intent.putExtra(NOTIFICATION_CAUSE, msg.arg1);
 			LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 		} else if (msg.what == IPCMessageManager.MICIROBIT_MESSAGE) {
-			logi("handleIncomingMessage() :: IPCMessageManager.MICIROBIT_MESSAGE msg.arg1 = " + msg.arg1);
+			if(debug) logi("handleIncomingMessage() :: IPCMessageManager.MICIROBIT_MESSAGE msg.arg1 = " + msg.arg1);
 			Intent intent = new Intent(INTENT_MICROBIT_NOTIFICATION);
 			LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 		}

@@ -140,9 +140,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	protected String TAG = "ConnectActivity";
 
 	protected void logi(String message) {
-		if (debug) {
-			Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
-		}
+		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 	}
 
 	@Override
@@ -481,7 +479,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	private void handle_pairing_failed() {
 
-		logi("handle_pairing_failed() :: Start");
+		if(debug) logi("handle_pairing_failed() :: Start");
 
 		// dummy code to test addition of MBits
         /* if(debug) {
@@ -518,7 +516,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	private void handle_pairing_successful(final ConnectedDevice newDev) {
 
-		logi("handle_pairing_successful() :: Start");
+		if(debug) logi("handle_pairing_successful() :: Start");
 
 
 		final Runnable task = new Runnable() {
@@ -530,8 +528,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				int oldId = checkDuplicateMicrobit(newDev);
 				addMicrobit(newDev, oldId);
 
-				logi("mLeScanCallback.onLeScan() ::   Matching DEVICE FOUND, Pairing");
-				logi("handle_pairing_successful() :: sending intent to BLEService.class");
+				if(debug) logi("mLeScanCallback.onLeScan() ::   Matching DEVICE FOUND, Pairing");
+				if(debug) logi("handle_pairing_successful() :: sending intent to BLEService.class");
 
 				connectBluetoothDevice();
 
@@ -570,7 +568,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	private void scanningFailed() {
 
-		logi("scanningFailed() :: scanning Failed to find a matching device");
+		if(debug) logi("scanningFailed() :: scanning Failed to find a matching device");
 		if (deviceFound) {
 			return;
 		}
@@ -580,7 +578,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	private void scanLeDevice(final boolean enable) {
 
-		logi("scanLeDevice() :: enable = " + enable);
+		if(debug) logi("scanLeDevice() :: enable = " + enable);
 		if (enable) {
 			// Stops scanning after a pre-defined scan period.
 			mScanning = true;
@@ -611,20 +609,20 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		@Override
 		public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
 
-			logi("mLeScanCallback.onLeScan() :: Start");
+			if(debug) logi("mLeScanCallback.onLeScan() :: Start");
 			if (device == null) {
 				return;
 			}
 
 			if ((newDeviceName.isEmpty()) || (device.getName() == null)) {
-				logi("mLeScanCallback.onLeScan() ::   Cannot Compare");
+				if(debug) logi("mLeScanCallback.onLeScan() ::   Cannot Compare");
 			} else {
 				String s = device.getName().toLowerCase();
 				if (newDeviceName.toLowerCase().equals(s)
 					|| (s.contains(newDeviceCode.toLowerCase()) && s.contains("microbit"))) {
 
-					// logi("mLeScanCallback.onLeScan() ::   deviceName == " + newDeviceName.toLowerCase());
-					logi("mLeScanCallback.onLeScan() ::   device.getName() == " + device.getName().toLowerCase());
+					// if(debug) logi("mLeScanCallback.onLeScan() ::   deviceName == " + newDeviceName.toLowerCase());
+					if(debug) logi("mLeScanCallback.onLeScan() ::   device.getName() == " + device.getName().toLowerCase());
 
 					// Stop scanning as device is found.
 					deviceFound = true;
@@ -633,8 +631,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 					ConnectedDevice newDev = new ConnectedDevice(null, newDeviceCode.toUpperCase(), true, device.getAddress());
 					handle_pairing_successful(newDev);
 				} else {
-					logi("mLeScanCallback.onLeScan() ::   non-matching - deviceName == " + newDeviceName.toLowerCase());
-					logi("mLeScanCallback.onLeScan() ::   non-matching found - device.getName() == " + device.getName().toLowerCase());
+					if(debug) logi("mLeScanCallback.onLeScan() ::   non-matching - deviceName == " + newDeviceName.toLowerCase());
+					if(debug) logi("mLeScanCallback.onLeScan() ::   non-matching found - device.getName() == " + device.getName().toLowerCase());
 				}
 			}
 		}
