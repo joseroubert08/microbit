@@ -116,10 +116,10 @@ public class HomeActivity extends Activity {
         ImageButton connectButton = (ImageButton) findViewById(R.id.connectBtn);
         if (connectedDevice.mPattern != null && connectedDevice.mStatus) {
             connectButton.setImageResource(R.drawable.connected);
-            connectButton.setBackgroundColor(0XFF00FF00);
+            connectButton.setBackground(getResources().getDrawable(R.drawable.green_btn));
         } else {
             connectButton.setImageResource(R.drawable.disconnected);
-            connectButton.setBackgroundColor(0XFFFF0000);
+            connectButton.setBackground(getResources().getDrawable(R.drawable.red_btn));
         }
     }
 
