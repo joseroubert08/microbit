@@ -526,6 +526,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		if(debug) logi("handle_pairing_successful() :: Start");
 
+
 		final Runnable task = new Runnable() {
 
 			@Override
