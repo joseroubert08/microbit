@@ -137,7 +137,10 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		if ((changedDev.mPattern != null) && (changedDev.mPattern.equals(prevDeviceArray[0].mPattern)))
 		{
-			prevDeviceArray[0].mStatus = changedDev.mStatus;
+			prevDeviceArray[0].mStatus=changedDev.mStatus;
+			prevMicrobitList.set(0, prevDeviceArray[0]);
+			storeMicrobits(prevMicrobitList, true);
+
 		}
 	}
 
@@ -681,7 +684,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 
 	/* Microbit list management */
-	private void storeMicrobits(ArrayList prevDevList) {
+	private void storeMicrobits(ArrayList prevDevList, boolean fromBroadcast) {
 		// used for store arrayList in json format
 		SharedPreferences settings;
 		SharedPreferences.Editor editor;
@@ -695,7 +698,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		editor.commit();
 		updateGlobalPairedDevice();
 		//connectedDeviceAdapter.notifyDataSetChanged();
-		populateConnectedDeviceList(true);
+		if(!fromBroadcast)
+			populateConnectedDeviceList(true);
 	}
 
 	private ArrayList loadPrevMicrobits() {
@@ -771,13 +775,13 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			prevDeviceArray[ind++] = st;
 		}
 
-		storeMicrobits(prevMicrobitList);
+		storeMicrobits(prevMicrobitList, false);
 	}
 
 	public void changeMicrobitName(int index, ConnectedDevice modMicrobit) {
 		prevMicrobitList.remove(index);
 		prevMicrobitList.add(index, modMicrobit);
-		storeMicrobits(prevMicrobitList);
+		storeMicrobits(prevMicrobitList, false);
 	}
 
 	public void changeMicrobitState(int index, ConnectedDevice modMicrobit, boolean isTurnedOn) {
@@ -800,14 +804,14 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			ind++;
 		}
 
-		storeMicrobits(prevMicrobitList);
+		storeMicrobits(prevMicrobitList, false);
 	}
 
 	public void removeMicrobit(int index) {
 		if (prevMicrobitList != null) {
 			prevMicrobitList.remove(index);
 			// prevMicrobitList.trimToSize();
-			storeMicrobits(prevMicrobitList);
+			storeMicrobits(prevMicrobitList, false);
 		}
 	}
 
