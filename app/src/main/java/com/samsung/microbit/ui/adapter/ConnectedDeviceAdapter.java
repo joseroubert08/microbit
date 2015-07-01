@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.ConnectedDevice;
+import com.samsung.microbit.ui.activity.ConnectActivity;
 
 import java.util.List;
 
@@ -97,8 +98,14 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
             deviceName.setTag(pos);
             connectBtn.setTag(pos);
             deleteBtn.setTag(pos);
-            connectBtn.setOnClickListener((View.OnClickListener)parentActivity);
-            deleteBtn.setOnClickListener((View.OnClickListener) parentActivity);
+
+            if(ConnectActivity.disableListView()) {
+                connectBtn.setEnabled(false);
+                deleteBtn.setEnabled(false);
+            } else {
+                connectBtn.setOnClickListener((View.OnClickListener) parentActivity);
+                deleteBtn.setOnClickListener((View.OnClickListener) parentActivity);
+            }
         }
 
         return convertView;

@@ -55,6 +55,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	private final String PREFERENCES_PREVDEV_PREFNAME = "PreviousDevices";
 	private final String PREFERENCES_PREVDEV_KEY = "PreviousDevicesKey";
 	private final int PREVIOUS_DEVICES_MAX = 3;
+	private static boolean DISABLE_DEVICE_LIST = false;
 
 	ConnectedDevice[] prevDeviceArray;
 	ArrayList prevMicrobitList;
@@ -203,7 +204,6 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		lvConnectedDevice = (ListView) findViewById(R.id.connectedDeviceList);
 		populateConnectedDeviceList(false);
 
-
 		connectButtonView = (RelativeLayout) findViewById(R.id.connectButtonView);
 		connectTipView = (RelativeLayout) findViewById(R.id.connectTipView);
 		newDeviceView = (RelativeLayout) findViewById(R.id.newDeviceView);
@@ -319,12 +319,23 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		}
 	}
 
+	public static boolean disableListView() {
+		return DISABLE_DEVICE_LIST;
+	}
+
 
 	private void displayConnectScreen(PAIRING_STATE gotoState) {
 		connectButtonView.setVisibility(View.GONE);
 		connectTipView.setVisibility(View.GONE);
 		newDeviceView.setVisibility(View.GONE);
 		connectSearchView.setVisibility(View.GONE);
+
+		if(gotoState == PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON)
+			DISABLE_DEVICE_LIST = false;
+		else
+			DISABLE_DEVICE_LIST = true;
+
+		populateConnectedDeviceList(true);
 
 		switch (gotoState) {
 			case PAIRING_STATE_CONNECT_BUTTON:
@@ -444,12 +455,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 			case R.id.deleteBtn:
 				pos = (Integer) v.getTag();
-				if ((state == PAIRING_STATE.PAIRING_STATE_NEW_NAME) && (pos == 0)) {
-					Toast.makeText(MBApp.getContext(), "Cancel rename and delete!!", Toast.LENGTH_SHORT).show();
-				} else {
-					handleDeleteMicrobit(pos);
-
-				}
+				handleDeleteMicrobit(pos);
 				break;
 			default:
 				Toast.makeText(MBApp.getContext(), "Default Item Clicked: " + v.getId(), Toast.LENGTH_SHORT).show();
