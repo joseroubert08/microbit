@@ -250,6 +250,7 @@ public class BLEService extends BLEBaseService {
 
 	// ######################################################################
 
+	int lastEvent = Constants.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE;
 	void sendMessage(int eventSrc, int event) {
 
 		int msgService = 0;
@@ -259,11 +260,22 @@ public class BLEService extends BLEBaseService {
 			case Constants.SAMSUNG_ALERTS_ID:
 			case Constants.SAMSUNG_AUDIO_RECORDER_ID:
 			case Constants.SAMSUNG_CAMERA_ID:
-				eventSrc = Constants.SAMSUNG_CAMERA_ID;
-				event = (event == Constants.SAMSUNG_REMOTE_CONTROL_EVT_FORWARD) ? Constants.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE : Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO;
+
+				// TODO remove thiese demo hacks
+				eventSrc = Constants.SAMSUNG_REMOTE_CONTROL_ID;
+				event = (event == Constants.SAMSUNG_REMOTE_CONTROL_EVT_FORWARD) ? Constants.SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK : Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY;
+				if(event == Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY) {
+					if(lastEvent == Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY) {
+						event = Constants.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE;
+					} else {
+						event = Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY;
+					}
+
+					lastEvent = event;
+				}
 
 				msgService = eventSrc;
-				cmd = new CmdArg(event, "");
+				cmd = new CmdArg(event, "1000");
 				break;
 
 			default:

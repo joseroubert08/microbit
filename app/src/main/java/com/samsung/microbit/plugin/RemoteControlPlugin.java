@@ -3,6 +3,7 @@ package com.samsung.microbit.plugin;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.util.Log;
 import android.view.KeyEvent;
 
 import java.util.Timer;
@@ -18,42 +19,58 @@ public class RemoteControlPlugin {
 
 	private static Context context = null;
 
+	static final String TAG = "RemoteControlPlugin";
+	private static boolean debug = true;
+
+	static void logi(String message) {
+		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+	}
+
 	public static void pluginEntry(Context ctx, CmdArg cmd) {
 		context = ctx;
 		switch (cmd.getCMD()) {
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY:
+				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_PLAY");
 				Play();
 				break;
 
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE:
+				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_PAUSE");
 				Pause();
 				break;
 
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_STOP:
+				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_STOP");
 				Stop();
 				break;
 
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK:
+				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK");
 				NextTrack();
 				break;
 
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_PREVTRACK:
+				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_PREVTRACK");
 				PrevTrack();
 				break;
 
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_FORWARD:
+				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_FORWARD");
 				Forward();
 				break;
 
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_REWIND:
+				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_REWIND");
 				Rewind();
 				break;
 
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEUP:
+				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEUP");
 				VolumeUp();
 				break;
 
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN:
+				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN");
 				VolumeDown();
 				break;
 
