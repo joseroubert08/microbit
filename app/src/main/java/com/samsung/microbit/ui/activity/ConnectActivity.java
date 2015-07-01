@@ -523,8 +523,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	}
 
 	private void handle_pairing_successful(final ConnectedDevice newDev) {
-getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                            WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		
 		if(debug) logi("handle_pairing_successful() :: Start");
 
 
