@@ -1,6 +1,8 @@
 package com.samsung.microbit.ui.activity;
 
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -20,6 +22,7 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -153,11 +156,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		TextView connectedIndicatorText = (TextView) findViewById(R.id.connectedIndicatorText);
 		ImageButton connectedIndicatorIcon = (ImageButton) findViewById(R.id.connectedIndicatorIcon);
 
-		if (connectedIndicatorIcon == null || connectedIndicatorText ==null)
+		if (connectedIndicatorIcon == null || connectedIndicatorText == null)
 			return;
 
-		ConnectedDevice device =  Utils.getPairedMicrobit(this);
-		if(!device.mStatus) {
+		ConnectedDevice device = Utils.getPairedMicrobit(this);
+		if (!device.mStatus) {
 			connectedIndicatorIcon.setImageResource(R.drawable.disconnected);
 			connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_disconnect_btn));
 			connectedIndicatorText.setText(getString(R.string.not_connected));
@@ -168,9 +171,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			Spannable span = new SpannableString(getString(R.string.connected_to) + "\n" + device.mName + "\n" + device.mPattern);
 			span.setSpan(new AbsoluteSizeSpan(20), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			span.setSpan(new ForegroundColorSpan(Color.BLACK), 0, startIndex,
-					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			span.setSpan(new ForegroundColorSpan(Color.BLUE), getString(R.string.connected_to).length(), endIndex,
-					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			connectedIndicatorText.setText(span);
 
 			connectedIndicatorIcon.setImageResource(R.drawable.connected);
@@ -256,17 +259,18 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		final Intent service = new Intent(ProjectActivity.this, DfuService.class);
 		service.putExtra(DfuService.EXTRA_DEVICE_ADDRESS, currentMicrobit.mAddress);
 		service.putExtra(DfuService.EXTRA_DEVICE_NAME, currentMicrobit.mPattern);
-		service.putExtra(DfuService.EXTRA_FILE_MIME_TYPE,DfuService.MIME_TYPE_OCTET_STREAM);
-		service.putExtra(DfuService.EXTRA_FILE_PATH,programToSend.filePath); // a path or URI must be provided.
-		service.putExtra(DfuService.EXTRA_KEEP_BOND,false);
-		service.putExtra(DfuService.INTENT_RESULT_RECEIVER,resultReceiver);
-		service.putExtra(DfuService.INTENT_REQUESTED_PHASE,2);
+		service.putExtra(DfuService.EXTRA_FILE_MIME_TYPE, DfuService.MIME_TYPE_OCTET_STREAM);
+		service.putExtra(DfuService.EXTRA_FILE_PATH, programToSend.filePath); // a path or URI must be provided.
+		service.putExtra(DfuService.EXTRA_KEEP_BOND, false);
+		service.putExtra(DfuService.INTENT_RESULT_RECEIVER, resultReceiver);
+		service.putExtra(DfuService.INTENT_REQUESTED_PHASE, 2);
 		startService(service);
 	}
+
 	private void handle_phase1_complete() {
 		//TODO:
-	//	pairingStatus.setText("micro:bit found");
-	//	pairingMessage.setText("Press button on micro:bit and then select OK");
+		//	pairingStatus.setText("micro:bit found");
+		//	pairingMessage.setText("Press button on micro:bit and then select OK");
 		//state = STATE_PHASE1_COMPLETE;
 
 		IntentFilter filter = new IntentFilter(DfuService.BROADCAST_PROGRESS);
@@ -275,26 +279,25 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter);
 		LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter1);
 		PopUp.show(this,
-				"Press button on micro:bit and then select OK", //message
-				"Flashing", //title
-				R.drawable.exclamation, //image icon res id
-				0,
-				PopUp.TYPE_ALERT, //type of popup.
-				new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						PopUp.hide();
-						state = STATE_PHASE1_COMPLETE;
-						startFlashingPhase2();
+			"Press button on micro:bit and then select OK", //message
+			"Flashing", //title
+			R.drawable.exclamation, //image icon res id
+			0,
+			PopUp.TYPE_ALERT, //type of popup.
+			new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					PopUp.hide();
+					state = STATE_PHASE1_COMPLETE;
+					startFlashingPhase2();
 
-					}
-				},//override click listener for ok button
-				null);//pass null to use default listener
-
-
+				}
+			},//override click listener for ok button
+			null);//pass null to use default listener
 
 
 	}
+
 	/**
 	 *
 	 */
@@ -318,19 +321,19 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 
 					PopUp.show(MBApp.getContext(),
-							"micro:bit not in correct state", //message
-							"Flashing", //title
-							R.drawable.exclamation, //image icon res id
-							0,
-							PopUp.TYPE_ALERT, //type of popup.
-							new View.OnClickListener() {
-								@Override
-								public void onClick(View v) {
-									PopUp.hide();
-									finish();
-								}
-							},//override click listener for ok button
-							null);//pass null to use default listener
+						"micro:bit not in correct state", //message
+						"Flashing", //title
+						R.drawable.exclamation, //image icon res id
+						0,
+						PopUp.TYPE_ALERT, //type of popup.
+						new View.OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								PopUp.hide();
+								finish();
+							}
+						},//override click listener for ok button
+						null);//pass null to use default listener
 				}
 			}
 
@@ -379,7 +382,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 							if ((isCompleted == false) && (inProgress == false))// Disconnecting event because of error
 							{
 								String error_message = "Flashing Error Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
-										+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]";
+									+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]";
 
 								logi(error_message);
 								// Todo
@@ -402,17 +405,18 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 				} else if ((state > 0) && (state < 100)) {
 					if (!inProgress) {
-						// todo Update progress bar
+						// TODO Update progress bar check if correct.(my3)
 						inProgress = true;
 					}
 
+					updateProgress(state);
 					//flashSpinnerDialog.setProgress(state);
 				}
 			} else if (intent.getAction() == DfuService.BROADCAST_ERROR) {
 				String error_message = broadcastGetErrorMessage(intent.getIntExtra(DfuService.EXTRA_DATA, 0));
 
 				logi("DFUResultReceiver.onReceive() :: Flashing ERROR!!  Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
-						+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
+					+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
 
 				//todo dismiss progress
 
@@ -501,6 +505,53 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+
+	// Updates progress in the overlay fragment (my3)
+	void updateProgress(final int progress) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (fragment != null) {
+					fragment.setProgressBar(progress);
+				}
+			}
+		});
+	}
+
+	// hide progress overlay (my3)
+	void hideOverlay() {
+		if (debug) logi("hideOverlay()");
+		if (popupOverlay != null && popupOverlay.getVisibility() == View.VISIBLE) {
+			popupOverlay.setVisibility(View.INVISIBLE);
+		}
+	}
+
+	// Show progress overlay (my3)
+	void showOverlay() {
+		if (debug) logi("showOverlay load_fragment()");
+
+		if (popupOverlay == null) {
+			popupOverlay = (LinearLayout) findViewById(R.id.popup_overlay);
+			popupOverlay.getBackground().setAlpha(224);
+			popupOverlay.setOnTouchListener(new View.OnTouchListener() {
+				public boolean onTouch(View v, MotionEvent event) {
+					return true;
+				}
+			});
+		}
+
+		if (fragment == null) {
+			FragmentManager fragmentManager = getFragmentManager();
+			FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+			fragment = new ProjectActivityPopupFragment();
+			fragmentTransaction.add(R.id.popup_overlay, fragment);
+			fragmentTransaction.commit();
+		}
+
+		fragment.setFragmentView(true, "Sending project", 0);
+		popupOverlay.setVisibility(View.VISIBLE);
 	}
 
 	@Override
