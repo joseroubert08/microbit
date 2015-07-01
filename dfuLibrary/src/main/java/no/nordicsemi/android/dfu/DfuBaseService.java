@@ -598,6 +598,7 @@ public abstract class DfuBaseService extends IntentService {
 	private static final UUID FLASH_PAIRING_SERVICE_UUID = UUID.fromString("d8af991c-7144-43d7-954b-99512f95f99c");
 	private static final UUID FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID = UUID.fromString("97109547-e63a-442a-bf89-9d730413dc2f");
 	private static final UUID FLASH_PAIRING_CODE_CHARACTERISTIC_UUID = UUID.fromString("947b6934-64d1-4fad-9bd0-cc9d6e9f3ea3");
+	private static final UUID CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
 	//
 	public static final int NOTIFICATION_ID = 283; // a random number
@@ -1040,6 +1041,12 @@ public abstract class DfuBaseService extends IntentService {
 		@Override
 		public void onCharacteristicChanged(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
 
+			/*
+			if(FLASH_PAIRING_CODE_CHARACTERISTIC_UUID.equals(characteristic.getUuid())) {
+				// Possible press of button A after a 2 has been written to FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID
+			}
+			*/
+
 			final int responseType = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 			switch (responseType) {
 				case OP_CODE_PACKET_RECEIPT_NOTIF_KEY:
@@ -1167,7 +1174,8 @@ public abstract class DfuBaseService extends IntentService {
 	protected void onHandleIntent(final Intent intent) {
 
 		int phase = intent.getIntExtra(INTENT_REQUESTED_PHASE, 0) & 0x03;
-		ResultReceiver resultReceiver = (ResultReceiver) intent.getParcelableExtra(INTENT_RESULT_RECEIVER);;
+		ResultReceiver resultReceiver = (ResultReceiver) intent.getParcelableExtra(INTENT_RESULT_RECEIVER);
+		;
 
 		int rc = 0;
 		if ((phase & 0x01) != 0) {

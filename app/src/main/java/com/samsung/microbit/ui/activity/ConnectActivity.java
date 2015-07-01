@@ -523,16 +523,15 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	}
 
 	private void handle_pairing_successful(final ConnectedDevice newDev) {
-getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                            WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		if(debug) logi("handle_pairing_successful() :: Start");
 
+		if(debug) logi("handle_pairing_successful() :: Start");
 
 		final Runnable task = new Runnable() {
 
 			@Override
 			public void run() {
 
+				getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 				//= new ConnectedDevice(null, newDeviceCode, true, device.getAddress() );
 				int oldId = checkDuplicateMicrobit(newDev);
 				addMicrobit(newDev, oldId);

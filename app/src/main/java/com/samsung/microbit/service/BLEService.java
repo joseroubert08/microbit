@@ -209,9 +209,7 @@ public class BLEService extends BLEBaseService {
 				if (!bluetoothAdapter.isEnabled()) {
 
 					if (debug) logi("setNotification() :: !bluetoothAdapter.isEnabled()");
-					if (bleManager != null) {
-						bleManager.reset();
-					}
+					reset();
 
 					//bleManager = null;
 					bluetoothDevice = null;

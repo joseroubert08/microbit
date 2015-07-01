@@ -158,7 +158,6 @@ public class HomeActivity extends Activity {
 				}
 			}
 		}
-
 	}
 
 	private final void updateConnectBarView() {
