@@ -166,7 +166,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			connectedIndicatorText.setText(getString(R.string.not_connected));
 		} else {
 			int startIndex = getString(R.string.connected_to).length();
-			int endIndex = startIndex + device.mName.length() + device.mPattern.length() + 2;
+			int endIndex = startIndex + 2;
+			if(device.mName!=null)
+				endIndex += device.mName.length();
+			if(device.mPattern!=null)
+			endIndex += device.mPattern.length();
 
 			Spannable span = new SpannableString(getString(R.string.connected_to) + "\n" + device.mName + "\n" + device.mPattern);
 			span.setSpan(new AbsoluteSizeSpan(20), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -300,7 +304,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 			int phase = resultCode & 0x0ffff;
 
-			if ((phase & 0x01) != 0) {
+			if (phase == 0x33) { // New code on characteristic changed
+				logi("resultReceiver.onReceiveResult() :: Phase 2 complete recieved ");
+				PopUp.hide();
+				startFlashingPhase2();
+
+			}
+			else if ((phase & 0x01) != 0) {
 				if ((phase & 0x0ff00) == 0) {
 					logi("resultReceiver.onReceiveResult() :: Phase 1 complete recieved ");
 					handle_phase1_complete();
@@ -329,13 +339,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				}
 			}
 
-			if (phase == 0x33) { // New code on characteristic changed
-				logi("resultReceiver.onReceiveResult() :: Phase 2 complete recieved ");
-				PopUp.hide();
-				startFlashingPhase2();
-
-			}
-
 			if ((phase & 0x02) != 0) {
 				logi("resultReceiver.onReceiveResult() :: Phase 2 complete recieved ");
 			}
@@ -361,7 +364,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				{
 					// Todo status
 					showOverlay();
-					popupOverlay.setVisibility(View.VISIBLE);
+					//popupOverlay.setVisibility(View.VISIBLE);
 					dialogInitDone = true;
 				}
 
@@ -535,6 +538,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 	// Updates progress in the overlay fragment (my3)
 	void updateProgress(final int progress) {
+		/*
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -542,21 +546,24 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 					fragment.setProgressBar(progress);
 				}
 			}
-		});
+		});*/
 	}
 
 	// hide progress overlay (my3)
 	void hideOverlay() {
+		/*
 		if (debug) logi("hideOverlay()");
 		if (popupOverlay != null && popupOverlay.getVisibility() == View.VISIBLE) {
 			popupOverlay.setVisibility(View.INVISIBLE);
 		}
+		*/
 	}
 
 	// Show progress overlay (my3)
 	void showOverlay() {
 		if (debug) logi("showOverlay load_fragment()");
 
+		/*
 		if (popupOverlay == null) {
 			popupOverlay = (LinearLayout) findViewById(R.id.popup_overlay);
 			popupOverlay.getBackground().setAlpha(224);
@@ -578,6 +585,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 		fragment.setFragmentView(true, "Sending project", 0);
 		popupOverlay.setVisibility(View.VISIBLE);
+		*/
 	}
 
 	@Override

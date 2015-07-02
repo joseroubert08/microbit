@@ -1268,12 +1268,24 @@ public abstract class DfuBaseService extends IntentService {
 			return false;
 		}
 
+		boolean rc;
 		if(enable) {
-			gatt.setCharacteristicNotification(fpsc, enable);
+			rc = gatt.setCharacteristicNotification(fpsc, enable);
 			fpsd.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
 		} else {
-			gatt.setCharacteristicNotification(fpsc, false);
+			rc = gatt.setCharacteristicNotification(fpsc, false);
 			fpsd.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
+		}
+
+		if(rc == false) {
+			logi("gatt.setCharacteristicNotification [toEnable ? "+enable+"] failed " + rc);
+			return false;
+		}
+
+		rc = gatt.writeDescriptor(fpsd);
+		if(rc == false) {
+			logi("gatt.writeDescriptor failed " + rc);
+			return false;
 		}
 		return true;
 	}
@@ -2269,7 +2281,7 @@ public abstract class DfuBaseService extends IntentService {
 			device = mBluetoothAdapter.getRemoteDevice(address);
 		}
 
-		gatt = device.connectGatt(this, false, mGattCallback);
+		gatt = device.connectGatt(this, true, mGattCallback);
 
 		// We have to wait until the device is connected and services are discovered
 		// Connection error may occur as well.
@@ -2888,6 +2900,7 @@ public abstract class DfuBaseService extends IntentService {
 		}
 	}
 
+
 	@SuppressLint("NewApi")
 	private boolean createBond(final BluetoothDevice device) {
 		if (device.getBondState() == BluetoothDevice.BOND_BONDED)
@@ -3031,7 +3044,7 @@ public abstract class DfuBaseService extends IntentService {
 		final String deviceName = mDeviceName != null ? mDeviceName : getString(R.string.dfu_unknown_name);
 
 		// final Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_stat_notify_dfu); <- this looks bad on Android 5
-/*
+
 		final NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setSmallIcon(android.R.drawable.stat_sys_upload).
 			setOnlyAlertOnce(true);//.setLargeIcon(largeIcon);
 
@@ -3085,7 +3098,7 @@ public abstract class DfuBaseService extends IntentService {
 					final String text = (mFileType & TYPE_APPLICATION) > 0 ? getString(R.string.dfu_status_uploading_msg, deviceName) : getString(R.string.dfu_status_uploading_components_msg, deviceName);
 					builder.setOngoing(true).setContentTitle(title).setContentText(text).setProgress(100, progress, false);
 				}
-		}*/
+		}
 		// send progress or error broadcast
 		if (progress < ERROR_MASK)
 			sendProgressBroadcast(progress);
@@ -3106,11 +3119,11 @@ public abstract class DfuBaseService extends IntentService {
 			final Intent abortIntent = new Intent(BROADCAST_ACTION);
 			abortIntent.putExtra(EXTRA_ACTION, ACTION_ABORT);
 			final PendingIntent pendingAbortIntent = PendingIntent.getBroadcast(this, 1, abortIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-					//builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
+					builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
 		}
 
-		//final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		//manager.notify(NOTIFICATION_ID, builder.build());
+		final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		manager.notify(NOTIFICATION_ID, builder.build());
 	}
 
 	/**
