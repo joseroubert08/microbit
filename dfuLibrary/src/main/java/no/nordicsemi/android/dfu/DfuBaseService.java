@@ -111,7 +111,7 @@ public abstract class DfuBaseService extends IntentService {
 
 	private static final String TAG = "DfuBaseService";
 	//private static final boolean DEBUG = BuildConfig.DEBUG;
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
 	public static final String INTENT_RESULT_RECEIVER = "com.samsung.resultReceiver";
 	public static final String INTENT_REQUESTED_PHASE = "com.samsung.runonly.phase";
@@ -1047,6 +1047,7 @@ public abstract class DfuBaseService extends IntentService {
 				// SEND status mythri
 
 			//	sendMessage(eventSrc, event);
+				logi("FLashing code written notification");
 				resultReceiver.send(0x33, null);
 
 			}
@@ -1286,7 +1287,8 @@ public abstract class DfuBaseService extends IntentService {
 		if(rc == false) {
 			logi("gatt.writeDescriptor failed " + rc);
 			return false;
-		}
+		} else
+			logi("Registered notification " + enable);
 		return true;
 	}
 
@@ -1309,7 +1311,7 @@ public abstract class DfuBaseService extends IntentService {
 		if (filePath != null && fileType == TYPE_AUTO) {
 			fileType = filePath.toLowerCase(Locale.US).endsWith("zip") ? TYPE_AUTO : TYPE_APPLICATION;
 		}
-
+		logi("Phase1 s");
 		String mimeType = intent.getStringExtra(EXTRA_FILE_MIME_TYPE);
 		mimeType = mimeType != null ? mimeType : (fileType == TYPE_AUTO ? MIME_TYPE_ZIP : MIME_TYPE_OCTET_STREAM);
 		mPartCurrent = intent.getIntExtra(EXTRA_PART_CURRENT, 1);
@@ -1365,20 +1367,31 @@ public abstract class DfuBaseService extends IntentService {
 
 		final BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
 
-		if (fps == null) {
+		if (fps == null){
+			logi("Upload aborted");
+			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
+			terminateConnection(gatt, PROGRESS_ABORTED);
 			return 6;
+		}
+
+
+
+		final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
+		boolean ret=sfpc.setValue(2, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
+		if(!ret)
+			logi("Error setting Flashing code");
+		else
+			logi("Flashing code set to 2");
+		try {
+			writeCharacteristic(gatt, sfpc);
+		} catch (Exception e) {
+			logi("Flashing code 2 write exception");
+			e.printStackTrace();
 		}
 
 		registerNotifications(true);
 
-		final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
-		sfpc.setValue(2, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-		try {
-			writeCharacteristic(gatt, sfpc);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		logi("Phase1 e");
 		return 0;
 	}
 
@@ -1387,6 +1400,7 @@ public abstract class DfuBaseService extends IntentService {
 
 		makeGattConnection(deviceAddress);
 
+		logi("Phase2 s");
 		int rc = 1;
 		final BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
 		final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
@@ -1397,7 +1411,7 @@ public abstract class DfuBaseService extends IntentService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		registerNotifications(false); // TODO: Is this required?
+		//registerNotifications(false); // TODO: Is this required?
 
 		if (rc == 0) {
 			waitUntilDisconnected();
@@ -1419,6 +1433,7 @@ public abstract class DfuBaseService extends IntentService {
 			} while (intent != null);
 		}
 
+		logi("Phase2 e");
 		return rc;
 	}
 
@@ -1433,6 +1448,7 @@ public abstract class DfuBaseService extends IntentService {
 
 		final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+		logi("Phase3 s");
 		// Read input parameters
 		final String deviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
 		final String deviceName = intent.getStringExtra(EXTRA_DEVICE_NAME);
@@ -3194,6 +3210,7 @@ public abstract class DfuBaseService extends IntentService {
 	private void sendLogBroadcast(final int level, final String message) {
 		final String fullMessage = "[DFU] " + message;
 		final Intent broadcast = new Intent(BROADCAST_LOG);
+		logi("Dfu update " + fullMessage);
 		broadcast.putExtra(EXTRA_LOG_MESSAGE, fullMessage);
 		broadcast.putExtra(EXTRA_LOG_LEVEL, level);
 		broadcast.putExtra(EXTRA_DEVICE_ADDRESS, mDeviceAddress);
