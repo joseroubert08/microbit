@@ -702,10 +702,12 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		String jsonPrevDevices = gson.toJson(prevDeviceArray, ConnectedDevice[].class);
 		editor.putString(PREFERENCES_PREVDEV_KEY, jsonPrevDevices);
 		editor.commit();
-		updateGlobalPairedDevice();
-		//connectedDeviceAdapter.notifyDataSetChanged();
 		if(!fromBroadcast)
-			populateConnectedDeviceList(true);
+		{
+			updateGlobalPairedDevice();
+		}
+		//connectedDeviceAdapter.notifyDataSetChanged();
+		populateConnectedDeviceList(true);
 	}
 
 	private ArrayList loadPrevMicrobits() {

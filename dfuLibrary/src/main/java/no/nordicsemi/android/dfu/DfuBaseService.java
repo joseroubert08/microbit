@@ -1041,11 +1041,16 @@ public abstract class DfuBaseService extends IntentService {
 		@Override
 		public void onCharacteristicChanged(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
 
-			/*
+
 			if(FLASH_PAIRING_CODE_CHARACTERISTIC_UUID.equals(characteristic.getUuid())) {
 				// Possible press of button A after a 2 has been written to FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID
+				// SEND status mythri
+
+			//	sendMessage(eventSrc, event);
+				resultReceiver.send(0x33, null);
+
 			}
-			*/
+
 
 			final int responseType = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 			switch (responseType) {
@@ -1170,11 +1175,12 @@ public abstract class DfuBaseService extends IntentService {
 		unregisterReceiver(mBondStateBroadcastReceiver);
 	}
 
+	ResultReceiver resultReceiver;
 	@Override
 	protected void onHandleIntent(final Intent intent) {
 
 		int phase = intent.getIntExtra(INTENT_REQUESTED_PHASE, 0) & 0x03;
-		ResultReceiver resultReceiver = (ResultReceiver) intent.getParcelableExtra(INTENT_RESULT_RECEIVER);
+		resultReceiver = (ResultReceiver) intent.getParcelableExtra(INTENT_RESULT_RECEIVER);
 		;
 
 		int rc = 0;
@@ -1239,6 +1245,39 @@ public abstract class DfuBaseService extends IntentService {
 
 		return true;
 	}
+
+
+
+	public boolean registerNotifications(boolean enable) {
+
+		BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
+		if (fps == null) {
+			logi("registerNotifications() :: not found service " + FLASH_PAIRING_SERVICE_UUID.toString());
+			return false;
+		}
+
+		BluetoothGattCharacteristic fpsc = fps.getCharacteristic(FLASH_PAIRING_CODE_CHARACTERISTIC_UUID);
+		if (fpsc == null) {
+			logi("registerNotifications() :: not found Characteristic " + FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID.toString());
+			return false;
+		}
+
+		BluetoothGattDescriptor fpsd = fpsc.getDescriptor(CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR);
+		if (fpsd == null) {
+			logi("registerNotifications() :: not found descriptor " + CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR.toString());
+			return false;
+		}
+
+		if(enable) {
+			gatt.setCharacteristicNotification(fpsc, enable);
+			fpsd.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+		} else {
+			gatt.setCharacteristicNotification(fpsc, false);
+			fpsd.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
+		}
+		return true;
+	}
+
 
 	/* TODO
 		Temporary code till we have callbacks for FLASH_PAIRING_CODE_CHARACTERISTIC_UUID
@@ -1318,6 +1357,8 @@ public abstract class DfuBaseService extends IntentService {
 			return 6;
 		}
 
+		registerNotifications(true);
+
 		final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
 		sfpc.setValue(2, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 		try {
@@ -1344,6 +1385,7 @@ public abstract class DfuBaseService extends IntentService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		registerNotifications(false); // TODO: Is this required?
 
 		if (rc == 0) {
 			waitUntilDisconnected();
@@ -3064,11 +3106,11 @@ public abstract class DfuBaseService extends IntentService {
 			final Intent abortIntent = new Intent(BROADCAST_ACTION);
 			abortIntent.putExtra(EXTRA_ACTION, ACTION_ABORT);
 			final PendingIntent pendingAbortIntent = PendingIntent.getBroadcast(this, 1, abortIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-			//		builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
+					//builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
 		}
 
-		final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		//	manager.notify(NOTIFICATION_ID, builder.build());
+		//final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		//manager.notify(NOTIFICATION_ID, builder.build());
 	}
 
 	/**

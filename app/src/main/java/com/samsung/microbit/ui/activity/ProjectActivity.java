@@ -3,7 +3,6 @@ package com.samsung.microbit.ui.activity;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -146,9 +145,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
 			LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(broadcastReceiver, broadcastIntentFilter);
 		}
-		state = 0;
+		state = STATE_START_NOFLASH;
 
 		setConnectedDeviceText();
+
 	}
 
 	private void setConnectedDeviceText() {
@@ -284,15 +284,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			R.drawable.exclamation, //image icon res id
 			0,
 			PopUp.TYPE_ALERT, //type of popup.
-			new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					PopUp.hide();
-					state = STATE_PHASE1_COMPLETE;
-					startFlashingPhase2();
-
-				}
-			},//override click listener for ok button
+			null,//override click listener for ok button
 			null);//pass null to use default listener
 
 
@@ -337,6 +329,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				}
 			}
 
+			if (phase == 0x33) { // New code on characteristic changed
+				logi("resultReceiver.onReceiveResult() :: Phase 2 complete recieved ");
+				PopUp.hide();
+				startFlashingPhase2();
+
+			}
+
 			if ((phase & 0x02) != 0) {
 				logi("resultReceiver.onReceiveResult() :: Phase 2 complete recieved ");
 			}
@@ -358,22 +357,30 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			String message = "Broadcast intent detected " + intent.getAction();
 			logi("DFUResultReceiver.onReceive :: " + message);
 			if (intent.getAction() == DfuService.BROADCAST_PROGRESS) {
-				if (!dialogInitDone) {
+				if (!dialogInitDone)
+				{
 					// Todo status
+					showOverlay();
+					popupOverlay.setVisibility(View.VISIBLE);
 					dialogInitDone = true;
 				}
+
 				int state = intent.getIntExtra(DfuService.EXTRA_DATA, 0);
 				logi("DFUResultReceiver.onReceive :: state -- " + state);
 
-				if (state < 0) {
+				if (state < 0)
+				{
 					switch (state) {
 						case DfuService.PROGRESS_COMPLETED:
 							if (!isCompleted) {
 								// todo progress bar dismiss
+								hideOverlay();
 								// finish();
+								/*if (popupOverlay != null && popupOverlay.getVisibility() == View.VISIBLE) {
+									fragment.changeMeaning();
+								}*/
 								LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
 							}
-
 							isCompleted = true;
 							inInit = false;
 							inProgress = false;
@@ -382,13 +389,15 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 							if ((isCompleted == false) && (inProgress == false))// Disconnecting event because of error
 							{
 								String error_message = "Flashing Error Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
-									+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]";
+										+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]";
 
 								logi(error_message);
+								hideOverlay();
 								// Todo
 								// Progress bar dismiss
 								// popup
 								//alertView(error_message, R.string.flashing_failed_title);
+
 								LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
 							}
 
@@ -396,16 +405,19 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 						case DfuService.PROGRESS_CONNECTING:
 							if (!inInit) {
 								// Todo popup
+								showOverlay();
 							}
 
 							inInit = true;
 							isCompleted = false;
 							break;
-					}
 
-				} else if ((state > 0) && (state < 100)) {
+
+					}
+				}else if ((state > 0) && (state < 100)) {
 					if (!inProgress) {
 						// TODO Update progress bar check if correct.(my3)
+						updateProgress(state);
 						inProgress = true;
 					}
 
@@ -416,12 +428,26 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				String error_message = broadcastGetErrorMessage(intent.getIntExtra(DfuService.EXTRA_DATA, 0));
 
 				logi("DFUResultReceiver.onReceive() :: Flashing ERROR!!  Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
-					+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
+						+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
 
 				//todo dismiss progress
+				hideOverlay();
 
 				//TODO popup flashing failed
-				//alertView(error_message, R.string.flashing_failed_title);
+				PopUp.show(MBApp.getContext(),
+						error_message, //message
+						"Flashing error", //title
+						R.drawable.exclamation, 0,
+						PopUp.TYPE_ALERT, //type of popup.
+						new View.OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								PopUp.hide();
+
+							}
+						},//override click listener for ok button
+						null);//pass null to use default listener
+
 			}
 		}
 
