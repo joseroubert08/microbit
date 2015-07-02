@@ -38,12 +38,32 @@
         </FrameLayout>
 
         <!-- Overlay Smile Icon -->
-        <ImageView
-            android:visibility="invisible"
-            android:id="@+id/smiley_icon"
+        <RelativeLayout
+            android:id="@+id/smiley_icon_overlay"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/blink_rectangle"/>
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/smiley_icon"
+                android:layout_width="432dp"
+                android:layout_height="432dp"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/smiley_overlay"
+                android:layout_gravity="center" />
+            <TextView
+                android:id="@+id/smileText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Smile!!!"
+                android:textSize="90sp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/smiley_icon"
+                android:textColor="#ffe8eb1a" />
+
+        </RelativeLayout>
+
 
         <!-- Right Bar -->
         <FrameLayout
@@ -61,6 +81,7 @@
         </FrameLayout>
 
         <!-- Flash Rectangle -->
+
         <ImageView
             android:visibility="invisible"
             android:id="@+id/blink_rectangle"
@@ -68,5 +89,4 @@
             android:layout_height="match_parent"
             android:src="@drawable/blink_rectangle"/>
     </FrameLayout>
-
 </FrameLayout>
