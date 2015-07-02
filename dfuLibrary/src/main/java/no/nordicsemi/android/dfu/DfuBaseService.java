@@ -1042,11 +1042,11 @@ public abstract class DfuBaseService extends IntentService {
 		public void onCharacteristicChanged(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
 
 
-			if(FLASH_PAIRING_CODE_CHARACTERISTIC_UUID.equals(characteristic.getUuid())) {
+			if (FLASH_PAIRING_CODE_CHARACTERISTIC_UUID.equals(characteristic.getUuid())) {
 				// Possible press of button A after a 2 has been written to FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID
 				// SEND status mythri
 
-			//	sendMessage(eventSrc, event);
+				//	sendMessage(eventSrc, event);
 				logi("FLashing code written notification");
 				resultReceiver.send(0x33, null);
 
@@ -1177,6 +1177,7 @@ public abstract class DfuBaseService extends IntentService {
 	}
 
 	ResultReceiver resultReceiver;
+
 	@Override
 	protected void onHandleIntent(final Intent intent) {
 
@@ -1248,7 +1249,6 @@ public abstract class DfuBaseService extends IntentService {
 	}
 
 
-
 	public boolean registerNotifications(boolean enable) {
 
 		BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
@@ -1270,7 +1270,7 @@ public abstract class DfuBaseService extends IntentService {
 		}
 
 		boolean rc;
-		if(enable) {
+		if (enable) {
 			rc = gatt.setCharacteristicNotification(fpsc, enable);
 			fpsd.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
 		} else {
@@ -1278,13 +1278,13 @@ public abstract class DfuBaseService extends IntentService {
 			fpsd.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
 		}
 
-		if(rc == false) {
-			logi("gatt.setCharacteristicNotification [toEnable ? "+enable+"] failed " + rc);
+		if (rc == false) {
+			logi("gatt.setCharacteristicNotification [toEnable ? " + enable + "] failed " + rc);
 			return false;
 		}
 
 		rc = gatt.writeDescriptor(fpsd);
-		if(rc == false) {
+		if (rc == false) {
 			logi("gatt.writeDescriptor failed " + rc);
 			return false;
 		} else
@@ -1367,7 +1367,7 @@ public abstract class DfuBaseService extends IntentService {
 
 		final BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
 
-		if (fps == null){
+		if (fps == null) {
 			logi("Upload aborted");
 			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
 			terminateConnection(gatt, PROGRESS_ABORTED);
@@ -1375,10 +1375,9 @@ public abstract class DfuBaseService extends IntentService {
 		}
 
 
-
 		final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
-		boolean ret=sfpc.setValue(2, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-		if(!ret)
+		boolean ret = sfpc.setValue(2, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
+		if (!ret)
 			logi("Error setting Flashing code");
 		else
 			logi("Flashing code set to 2");
@@ -1414,8 +1413,11 @@ public abstract class DfuBaseService extends IntentService {
 		//registerNotifications(false); // TODO: Is this required?
 
 		if (rc == 0) {
-			waitUntilDisconnected();
 
+			waitUntilDisconnected();
+			waitUntilConnected();
+
+			disconnect(gatt);
 			refreshDeviceCache(gatt, true);
 			mError = 0;
 			gattConnect(gatt);
@@ -1564,6 +1566,12 @@ public abstract class DfuBaseService extends IntentService {
 			 */
 
 			// Are we connected?
+			if (gatt != null) {
+				gatt.close();
+				gatt = null;
+			}
+
+
 			if (gatt == null) {
 				makeGattConnection(deviceAddress);
 				if (gatt == null) {
@@ -1593,9 +1601,9 @@ public abstract class DfuBaseService extends IntentService {
 			// We have connected to DFU device and services are discoverer
 			BluetoothGattService dfuService = null;
 
-/*
+
 			int retry = 15;
-			do {
+			/*do {
 				dfuService = gatt.getService(DFU_SERVICE_UUID); // there was a case when the service was null. I don't know why
 				if (dfuService == null) {
 					retry--;
@@ -1609,8 +1617,8 @@ public abstract class DfuBaseService extends IntentService {
 					} catch (InterruptedException e) {
 					}
 				}
-			} while (dfuService == null);
-*/
+			} while (dfuService == null);*/
+
 			dfuService = gatt.getService(DFU_SERVICE_UUID); // there was a case when the service was null. I don't know why
 			if (dfuService == null) {
 				loge("DFU service does not exists on the device");
@@ -2359,10 +2367,28 @@ public abstract class DfuBaseService extends IntentService {
 	 * Wait until the connection state will change to {@link #STATE_DISCONNECTED} or until an error occurs.
 	 */
 	private void waitUntilDisconnected() {
+		logi("waitUntilDisconnected");
 		try {
 			synchronized (mLock) {
 				while (mConnectionState != STATE_DISCONNECTED && mError == 0) {
+					logi("waitUntilDisconnected : waiting");
 					mLock.wait();
+					logi("waitUntilDisconnected : wait done");
+				}
+			}
+		} catch (final InterruptedException e) {
+			loge("Sleeping interrupted", e);
+		}
+	}
+
+	private void waitUntilConnected() {
+		logi("waitUntilConnected");
+		try {
+			synchronized (mLock) {
+				if (mConnectionState != STATE_CONNECTED && mError == 0) {
+					logi("waitUntilConnected : waiting");
+					mLock.wait();
+					logi("waitUntilConnected : wait:done");
 				}
 			}
 		} catch (final InterruptedException e) {
@@ -3135,7 +3161,7 @@ public abstract class DfuBaseService extends IntentService {
 			final Intent abortIntent = new Intent(BROADCAST_ACTION);
 			abortIntent.putExtra(EXTRA_ACTION, ACTION_ABORT);
 			final PendingIntent pendingAbortIntent = PendingIntent.getBroadcast(this, 1, abortIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-					builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
+			builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
 		}
 
 		final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
