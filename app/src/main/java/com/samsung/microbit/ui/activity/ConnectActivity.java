@@ -136,7 +136,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		if(prevMicrobitList == null )
 			loadPrevMicrobits();
 
-		if ((changedDev.mPattern != null) && (changedDev.mPattern.equals(prevDeviceArray[0].mPattern)))
+		if (changedDev.mPattern != null && changedDev.mPattern.equals(prevDeviceArray[0].mPattern))
 		{
 			prevDeviceArray[0].mStatus=changedDev.mStatus;
 			prevMicrobitList.set(0, prevDeviceArray[0]);
