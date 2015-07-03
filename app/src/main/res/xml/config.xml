@@ -58,6 +58,6 @@
     -->
 	<!-- Cordova Plugin Interface needed for JS2JAVA simulator -->
     <feature name="PluginInterface">
-        <param name="android-package" value="com.samsung.microbit.plugin.PluginInterface" />
+        <param name="android-package" value="com.samsung.microbit.core.PluginInterface" />
     </feature>
 </widget>

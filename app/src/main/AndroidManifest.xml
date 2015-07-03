@@ -26,11 +26,14 @@
 	<uses-permission android:name="android.permission.BLUETOOTH"/>
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
 	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
 	<uses-permission android:name="android.permission.VIBRATE"/>
 	<uses-permission android:name="android.permission.RECORD_AUDIO"/>
 	<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 	<uses-permission android:name="android.permission.CAMERA"/>
+	<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+	<uses-permission android:name="android.permission.INTERACT_ACROSS_USERS"/>
 
 	<uses-feature
 		android:name="android.hardware.bluetooth_le"
@@ -41,12 +44,13 @@
 
 	<application
 		android:icon="@drawable/ic_launcher"
-        android:logo="@drawable/ic_launcher"
-        >
+		android:logo="@drawable/ic_launcher"
+		android:theme="@style/AppTheme"
+		android:hardwareAccelerated="true">
 		<activity
-			android:name=".ui.MainActivity"
+			android:name=".ui.activity.HomeActivity"
 			android:label="@string/app_name"
-			android:screenOrientation="portrait">
+			android:screenOrientation="userLandscape">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 
@@ -54,45 +58,61 @@
 			</intent-filter>
 		</activity>
 		<activity
-			android:name=".ui.DeviceScanActivity"
-			android:label="@string/search_BLE_activity"/>
+			android:name=".ui.activity.ProjectActivity"
+			android:label="@string/app_name"
+			android:parentActivityName=".ui.activity.HomeActivity"
+			android:windowSoftInputMode="adjustPan"/>
 		<activity
-			android:name=".DeviceControlActivity"
+			android:name=".ui.activity.NotificationActivity"
 			android:label="@string/device_details"/>
 		<activity
-			android:name=".ui.NotificationActivity"
-			android:label="@string/device_details"/>
-		<activity
-			android:name=".DevicePairingActivity"
-			android:label="Pairing Activity"/>
-
-		<service
-			android:name=".BluetoothLeService"
-			android:enabled="true"/>
-		<service
-			android:name=".service.DfuService"
-			android:enabled="true"/>
-		<service
-			android:process=":exported"
-			android:name=".service.PluginService">
-			<intent-filter>
-				<action android:name="com.samsung.microbit.service.PluginService"/>
-			</intent-filter>
-		</service>
-
-		<activity
-			android:name=".ui.LEDGridActivity"
+			android:name=".ui.activity.LEDGridActivity"
 			android:label="@string/title_activity_ledgrid"
-			android:parentActivityName=".ui.DeviceScanActivity">
-			<meta-data
-				android:name="android.support.PARENT_ACTIVITY"
-				android:value="com.samsung.microbit.ui.DeviceScanActivity"/>
+			android:parentActivityName=".ui.activity.HomeActivity">
 		</activity>
 		<activity
-			android:name=".activity.CameraActivity_OldAPI"
+			android:name=".ui.activity.ConnectActivity"
+			android:label="@string/title_activity_connect"
+			android:parentActivityName=".ui.activity.HomeActivity"
+			android:windowSoftInputMode="adjustPan">
+		</activity>
+		<activity
+			android:name=".ui.activity.GamepadActivity"
+			android:label="@string/title_activity_gamepad"
+			android:parentActivityName=".ui.activity.HomeActivity"
+			android:screenOrientation="landscape">
+		</activity>
+		<activity
+			android:name=".ui.activity.TouchDevActivity"
+			android:parentActivityName=".ui.activity.HomeActivity"
+			android:windowSoftInputMode="adjustResize">
+		</activity>
+		<activity
+			android:name=".ui.activity.WebViewActivity"
+			android:parentActivityName=".ui.activity.HomeActivity"
+			android:windowSoftInputMode="adjustResize">
+		</activity>
+		<activity
+			android:name=".ui.activity.AudioRecorderActivity"
+			android:label="Audio Recorder"
+			android:theme="@android:style/Theme.Holo">
+			<intent-filter>
+				<action android:name="com.samsung.microbit.ui.AudioRecorderActivity.action.LAUNCH"/>
+			</intent-filter>
+			<intent-filter>
+				<action android:name="com.samsung.microbit.ui.AudioRecorderActivity.action.START_RECORD"/>
+			</intent-filter>
+			<intent-filter>
+				<action android:name="com.samsung.microbit.ui.AudioRecorderActivity.action.STOP_RECORD"/>
+			</intent-filter>
+		</activity>
+		<activity
+			android:name=".ui.activity.CameraActivity_OldAPI"
+			android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+			android:configChanges="orientation|screenSize|keyboardHidden"
 			android:label="Camera Microbit"
-			android:screenOrientation="portrait"
-			android:configChanges="orientation|keyboardHidden">
+			android:launchMode="singleTask"
+			android:screenOrientation="landscape">
 			<intent-filter>
 				<action android:name="com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_PIC"/>
 			</intent-filter>
@@ -102,11 +122,32 @@
 		</activity>
 
 		<service
-			android:name=".service.BLEService"
-			android:process=":BLEService"
-			android:exported="false"
-			android:enabled="true">
+			android:name=".service.DfuService"
+			android:enabled="true"/>
+
+		<service
+			android:name=".service.PluginService"
+			android:process=":PluginService">
+			<intent-filter>
+				<action android:name="com.samsung.microbit.service.PluginService"/>
+			</intent-filter>
 		</service>
+
+		<service
+			android:name=".service.BLEService"
+			android:process=":BLEService">
+			<intent-filter>
+				<action android:name="com.samsung.microbit.service.BLEService"/>
+			</intent-filter>
+		</service>
+
+		<service
+			android:name=".service.IPCService">
+			<intent-filter>
+				<action android:name="com.samsung.microbit.service.IPCService"/>
+			</intent-filter>
+		</service>
+
 	</application>
 
 </manifest>
