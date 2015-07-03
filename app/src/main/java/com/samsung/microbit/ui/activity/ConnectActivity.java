@@ -251,7 +251,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 						findViewById(R.id.ok_pattern_button).setVisibility(View.VISIBLE);
 						((TextView) findViewById(R.id.newDeviceTxt)).setText(R.string.new_devices);
 					}
-					toggleLED((ImageView) v, position);
+					boolean isOn = toggleLED((ImageView) v, position);
+					setCol(parent, position, isOn);
 					//Toast.makeText(MBApp.getContext(), "LED Clicked: " + position, Toast.LENGTH_SHORT).show();
 				}
 				//TODO KEEP TRACK OF ALL LED STATUS AND TOGGLE COLOR
@@ -276,20 +277,46 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		}
 		newDeviceCode = newDeviceName;
 		newDeviceName = "BBC microbit [" + newDeviceName + "]";
-		// Toast.makeText(this, "Pattern :"+newDeviceCode, Toast.LENGTH_SHORT).show();
+		//Toast.makeText(this, "Pattern :"+newDeviceCode, Toast.LENGTH_SHORT).show();
 	}
 
-	private void toggleLED(ImageView image, int pos) {
+	private void setCol(AdapterView<?> parent, int pos, boolean enabled)
+	{
+		int index=pos-5;
+		ImageView v;
+
+		while(index >= 0)
+		{
+			 v = (ImageView) parent.getChildAt(index);
+			 v.setBackground(getApplication().getResources().getDrawable(R.drawable.white_red_led_btn));
+			v.setTag("0");
+			index -=5;
+		}
+		index = pos+5;
+		while(index < 25){
+			v = (ImageView) parent.getChildAt(index);
+			v.setBackground(getApplication().getResources().getDrawable(R.drawable.red_white_led_btn));
+			v.setTag("1");
+			index +=5;
+		}
+
+	}
+
+	private boolean toggleLED(ImageView image, int pos) {
+		boolean isOn;
 		//Toast.makeText(this, "Pos :" +  pos, Toast.LENGTH_SHORT).show();
 		if (image.getTag() != "1") {
 			deviceCodeArray[pos] = "1";
 			image.setBackground(getApplication().getResources().getDrawable(R.drawable.red_white_led_btn));
 			image.setTag("1");
+			isOn=true;
 		} else {
 			deviceCodeArray[pos] = "0";
 			image.setBackground(getApplication().getResources().getDrawable(R.drawable.white_red_led_btn));
 			image.setTag("0");
+			isOn=false;
 		}
+		return isOn;
 	}
 
 	private void populateConnectedDeviceList(boolean isupdate) {

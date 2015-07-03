@@ -3087,7 +3087,7 @@ public abstract class DfuBaseService extends IntentService {
 
 		// final Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_stat_notify_dfu); <- this looks bad on Android 5
 
-		final NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setSmallIcon(android.R.drawable.stat_sys_upload).
+		/*final NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setSmallIcon(android.R.drawable.stat_sys_upload).
 			setOnlyAlertOnce(true);//.setLargeIcon(largeIcon);
 
 		// Android 5
@@ -3140,7 +3140,7 @@ public abstract class DfuBaseService extends IntentService {
 					final String text = (mFileType & TYPE_APPLICATION) > 0 ? getString(R.string.dfu_status_uploading_msg, deviceName) : getString(R.string.dfu_status_uploading_components_msg, deviceName);
 					builder.setOngoing(true).setContentTitle(title).setContentText(text).setProgress(100, progress, false);
 				}
-		}
+		}*/
 		// send progress or error broadcast
 		if (progress < ERROR_MASK)
 			sendProgressBroadcast(progress);
@@ -3161,11 +3161,11 @@ public abstract class DfuBaseService extends IntentService {
 			final Intent abortIntent = new Intent(BROADCAST_ACTION);
 			abortIntent.putExtra(EXTRA_ACTION, ACTION_ABORT);
 			final PendingIntent pendingAbortIntent = PendingIntent.getBroadcast(this, 1, abortIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-			builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
+			//builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
 		}
 
-		final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		manager.notify(NOTIFICATION_ID, builder.build());
+		//final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		//manager.notify(NOTIFICATION_ID, builder.build());
 	}
 
 	/**

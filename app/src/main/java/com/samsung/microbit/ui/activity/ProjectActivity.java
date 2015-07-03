@@ -360,29 +360,44 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			String message = "Broadcast intent detected " + intent.getAction();
 			logi("DFUResultReceiver.onReceive :: " + message);
 			if (intent.getAction() == DfuService.BROADCAST_PROGRESS) {
-				if (!dialogInitDone)
+				/*if (!dialogInitDone)
 				{
 					// Todo status
-					showOverlay();
+					PopUp.show(MBApp.getContext(),
+							"",
+							MBApp.getContext().getString(R.string.download_complete),
+							R.drawable.mbit, 0,
+							PopUp.TYPE_PROGRESS, null, null);
+
+
 					//popupOverlay.setVisibility(View.VISIBLE);
 					dialogInitDone = true;
-				}
+				}*/
 
 				int state = intent.getIntExtra(DfuService.EXTRA_DATA, 0);
-				logi("DFUResultReceiver.onReceive :: state -- " + state);
-
 				if (state < 0)
 				{
+					logi("DFUResultReceiver.onReceive :: state -- " + state);
 					switch (state) {
 						case DfuService.PROGRESS_COMPLETED:
 							if (!isCompleted) {
 								// todo progress bar dismiss
-								hideOverlay();
-								// finish();
-								/*if (popupOverlay != null && popupOverlay.getVisibility() == View.VISIBLE) {
-									fragment.changeMeaning();
-								}*/
+								PopUp.hide();
 								LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
+
+								PopUp.show(MBApp.getContext(),
+										getString(R.string.flashing_success_message), //message
+										getString(R.string.flashing_success_title), //title
+										R.drawable.exclamation, 0,
+										PopUp.TYPE_ALERT, //type of popup.
+										new View.OnClickListener() {
+											@Override
+											public void onClick(View v) {
+												PopUp.hide();
+												finish();
+											}
+										},//override click listener for ok button
+										null);//pass null to use default listener
 							}
 							isCompleted = true;
 							inInit = false;
@@ -395,11 +410,20 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 										+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]";
 
 								logi(error_message);
-								hideOverlay();
-								// Todo
-								// Progress bar dismiss
-								// popup
-								//alertView(error_message, R.string.flashing_failed_title);
+								//PopUp.hide();
+								PopUp.show(MBApp.getContext(),
+										error_message, //message
+										"Flashing error", //title
+										R.drawable.exclamation, 0,
+										PopUp.TYPE_ALERT, //type of popup.
+										new View.OnClickListener() {
+											@Override
+											public void onClick(View v) {
+												PopUp.hide();
+
+											}
+										},//override click listener for ok button
+										null);//pass null to use default listener
 
 								LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
 							}
@@ -407,10 +431,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 							break;
 						case DfuService.PROGRESS_CONNECTING:
 							if (!inInit) {
-								// Todo popup
-								showOverlay();
+								PopUp.show(MBApp.getContext(),
+										"",
+										MBApp.getContext().getString(R.string.sending_project),
+										R.drawable.mbit, 0,
+										PopUp.TYPE_PROGRESS, null, null);
 							}
-
 							inInit = true;
 							isCompleted = false;
 							break;
@@ -420,12 +446,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				}else if ((state > 0) && (state < 100)) {
 					if (!inProgress) {
 						// TODO Update progress bar check if correct.(my3)
-						updateProgress(state);
+
 						inProgress = true;
 					}
+					PopUp.updateProgressBar(state);
 
-					updateProgress(state);
-					//flashSpinnerDialog.setProgress(state);
 				}
 			} else if (intent.getAction() == DfuService.BROADCAST_ERROR) {
 				String error_message = broadcastGetErrorMessage(intent.getIntExtra(DfuService.EXTRA_DATA, 0));
@@ -434,7 +459,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 						+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
 
 				//todo dismiss progress
-				hideOverlay();
+				PopUp.hide();
 
 				//TODO popup flashing failed
 				PopUp.show(MBApp.getContext(),
@@ -536,107 +561,5 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		return true;
 	}
 
-	// Updates progress in the overlay fragment (my3)
-	void updateProgress(final int progress) {
-		/*
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				if (fragment != null) {
-					fragment.setProgressBar(progress);
-				}
-			}
-		});*/
-	}
 
-	// hide progress overlay (my3)
-	void hideOverlay() {
-		/*
-		if (debug) logi("hideOverlay()");
-		if (popupOverlay != null && popupOverlay.getVisibility() == View.VISIBLE) {
-			popupOverlay.setVisibility(View.INVISIBLE);
-		}
-		*/
-	}
-
-	// Show progress overlay (my3)
-	void showOverlay() {
-		if (debug) logi("showOverlay load_fragment()");
-
-		/*
-		if (popupOverlay == null) {
-			popupOverlay = (LinearLayout) findViewById(R.id.popup_overlay);
-			popupOverlay.getBackground().setAlpha(224);
-			popupOverlay.setOnTouchListener(new View.OnTouchListener() {
-				public boolean onTouch(View v, MotionEvent event) {
-					return true;
-				}
-			});
-		}
-
-		if (fragment == null) {
-			FragmentManager fragmentManager = getFragmentManager();
-			FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-			fragment = new ProjectActivityPopupFragment();
-			fragmentTransaction.add(R.id.popup_overlay, fragment);
-			fragmentTransaction.commit();
-		}
-
-		fragment.setFragmentView(true, "Sending project", 0);
-		popupOverlay.setVisibility(View.VISIBLE);
-		*/
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-
-		//noinspection SimplifiableIfStatement
-		/*
-		if (id == R.id.action_settings) {
-			return true;
-		} else if (id == R.id.load_fragment) {
-			Log.i("ProjectActivity", "###### onOptionsItemSelected load_fragment");
-
-			if (popupOverlay == null) {
-				popupOverlay = (LinearLayout) findViewById(R.id.popup_overlay);
-				popupOverlay.getBackground().setAlpha(224);
-				popupOverlay.setOnTouchListener(new View.OnTouchListener() {
-					@OverridemainContentView
-					public boolean onTouch(View v, MotionEvent event) {
-						return true;
-					}
-				});
-			}
-
-			popupOverlay.setVisibility(View.VISIBLE);
-
-			if (fragment == null) {
-				FragmentManager fragmentManager = getFragmentManager();
-				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-				fragment = new ProjectActivityPopupFragment();
-				fragmentTransaction.add(R.id.popup_overlay, fragment);
-				fragmentTransaction.commit();
-			}
-		} else if (id == R.id.hide_load_fragment) {
-			Log.i("ProjectActivity", "#### onOptionsItemSelected() : id == R.id.hide_load_fragment");
-			if (popupOverlay != null && popupOverlay.getVisibility() == View.VISIBLE) {
-				popupOverlay.setVisibility(View.INVISIBLE);
-			}
-
-		} else if (id == R.id.change_button_meaning) {
-			Log.i("ProjectActivity", "#### onOptionsItemSelected() : id == R.id.change_button_meaning");
-			if (popupOverlay != null && popupOverlay.getVisibility() == View.VISIBLE) {
-				fragment.changeMeaning();
-			}
-		}
-		*/
-
-		return super.onOptionsItemSelected(item);
-	}
 }

@@ -41,12 +41,21 @@
 
         <ImageView
             android:id="@+id/microbit_tip_image"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:src="@drawable/tip_mb"
-            android:layout_centerVertical="true"
+            android:layout_marginEnd="57dp"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="57dp" />
+        />
+        <ImageView
+            android:id="@+id/microbit_tip_image_back"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/tip_mb_back"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="57dp"
+            android:layout_below="@id/microbit_tip_image"
+            />
 
         <ImageButton
             android:id="@+id/ok_connect_button"

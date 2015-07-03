@@ -46,7 +46,8 @@ public class PopUp {
     static public final int TYPE_CHOICE = 0;//2 buttons type
     static public final int TYPE_ALERT = 1;//1 button type
     static public final int TYPE_PROGRESS = 2;//1 button progress bar type
-    static public final int TYPE_MAX = 3;
+	static public final int TYPE_NOBUTTON = 3;//No button type
+    static public final int TYPE_MAX = 4;
 
     static public int current_type = TYPE_MAX;
 
@@ -159,6 +160,11 @@ public class PopUp {
                 messageTextView.setVisibility(View.GONE);
                 switcher.setVisibility(View.INVISIBLE);
                 progressBar.setVisibility(View.VISIBLE);
+                break;
+            }
+            case TYPE_NOBUTTON:
+            {
+                switcher.setVisibility(View.GONE);
                 break;
             }
         }
