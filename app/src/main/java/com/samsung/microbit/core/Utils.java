@@ -123,14 +123,30 @@ public class Utils {
 			pairedDevice = new ConnectedDevice();
 		}
 
-		if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
+/*
+        pairedDevice.mName = "M1";
+        pairedDevice.mPattern = "IGZP";
+        pairedDevice.mStatus=false;
+        pairedDevice.mAddress = "D2:A4:A3:A9:86:60";
+
+        setPairedMicrobit(ctx , pairedDevice);
+*/
+
+        if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
 			String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
+            Log.d("MicroBit", "ConnectedDevice - pairedDeviceString - " + pairedDeviceString);
+
 			Gson gson = new Gson();
 			pairedDevice = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
 		}else {
 			pairedDevice.mPattern = null;
 			pairedDevice.mName = null;
 		}
+
+
+        Log.d("MicroBit", "ConnectedDevice - pairedDevice.mPattern - " + pairedDevice.mPattern);
+        Log.d("MicroBit", "ConnectedDevice - pairedDevice.mName - " + pairedDevice.mName);
+
 		return pairedDevice;
 	}
 	public static void setPairedMicrobit(Context ctx, ConnectedDevice newDevice)

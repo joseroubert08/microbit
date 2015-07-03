@@ -63,6 +63,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/connected"
             android:background="@drawable/white_btn"
+            android:onClick="onBtnClicked"
             android:layout_marginLeft="@dimen/widget_margin"
             android:layout_marginRight="@dimen/widget_margin"
             android:layout_marginTop="@dimen/widget_margin"
