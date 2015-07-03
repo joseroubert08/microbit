@@ -3,17 +3,15 @@ package com.samsung.microbit.ui;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
@@ -44,9 +42,11 @@ PopUp.show(context,
 public class PopUp {
 
     static private Dialog dialog = null;
+    static private ProgressBar progressBar = null;
     static public final int TYPE_CHOICE = 0;//2 buttons type
     static public final int TYPE_ALERT = 1;//1 button type
-    static public final int TYPE_MAX = 2;
+    static public final int TYPE_PROGRESS = 2;//1 button progress bar type
+    static public final int TYPE_MAX = 3;
 
     static public int current_type = TYPE_MAX;
 
@@ -83,6 +83,11 @@ public class PopUp {
         current_type = TYPE_MAX; // reset current type to none
     }
 
+    public static void updateProgressBar(int val) {
+        if(progressBar != null)
+            progressBar.setProgress(val);
+    }
+
     //pass 0 to imageResId to use default exclamation icon
     //pass 0 to imageBackgroundResId if no background needed for icon
     public static void show(Context context, String message, String title,
@@ -90,7 +95,7 @@ public class PopUp {
                             View.OnClickListener okListener, View.OnClickListener cancelListener)
     {
         //if blocking popup is already displayed, do not show another popup
-        if (current_type == TYPE_CHOICE)
+        if (current_type == TYPE_CHOICE || current_type == TYPE_PROGRESS)
             return;
 
         PopUp.hide();
@@ -116,9 +121,12 @@ public class PopUp {
 
         ViewSwitcher switcher = (ViewSwitcher)popUpView.findViewById(R.id.switcher);
 
+        progressBar = (ProgressBar) popUpView.findViewById(R.id.progressBar);
+
         switch (type) {
             case TYPE_CHOICE: {
                 switcher.setDisplayedChild(0);
+                progressBar.setVisibility(View.GONE);
                 ImageButton imageButtonOk = (ImageButton) popUpView.findViewById(R.id.imageButtonOk);
                 if (okListener != null) {
                     imageButtonOk.setOnClickListener(okListener);
@@ -137,12 +145,20 @@ public class PopUp {
             case TYPE_ALERT:
             {
                 switcher.setDisplayedChild(1);
+                progressBar.setVisibility(View.GONE);
                 ImageButton imageButton = (ImageButton) popUpView.findViewById(R.id.imageButton);
                 if (okListener != null) {
                     imageButton.setOnClickListener(okListener);
                 } else {
                     imageButton.setOnClickListener(defaultListener);
                 }
+                break;
+            }
+            case TYPE_PROGRESS:
+            {
+                messageTextView.setVisibility(View.GONE);
+                switcher.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
                 break;
             }
         }

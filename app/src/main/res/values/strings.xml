@@ -139,5 +139,6 @@
     <string name="micro_bit_reset_msg">Microbit needs to be reset.</string>
 
     <string name="web_view_demo">Web View Demo</string>
+    <string name="sending_project">Sending project</string>
 
 </resources>
