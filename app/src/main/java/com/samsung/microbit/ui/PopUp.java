@@ -165,6 +165,7 @@ public class PopUp {
             case TYPE_NOBUTTON:
             {
                 switcher.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
                 break;
             }
         }

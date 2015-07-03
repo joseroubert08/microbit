@@ -66,6 +66,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	int STATE_START_FLASH = 1;
 	int STATE_PHASE1_COMPLETE = 2;
 
+	Handler mHandler;
+	private Runnable handleResetMicrobit;
 
 	private DFUResultReceiver dfuResultReceiver;
 
@@ -106,6 +108,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		if (cause == IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED) {
 			if (state == STATE_START_FLASH) {
 				startFlashingPhase1();
+				state = STATE_START_NOFLASH;
 			}
 		}
 	}
@@ -255,6 +258,14 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		service.putExtra(DfuService.INTENT_REQUESTED_PHASE, 1);
 		startService(service);
 
+		PopUp.show(this,
+				"Starting Flashing..", //message
+				"Flashing", //title
+				R.drawable.exclamation, //image icon res id
+				0,
+				PopUp.TYPE_NOBUTTON, //type of popup.
+				null,//override click listener for ok button,
+				null);//pass null to use default listener
 	}
 
 	protected void startFlashingPhase2() {
@@ -282,18 +293,45 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		dfuResultReceiver = new DFUResultReceiver();
 		LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter);
 		LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter1);
+		mHandler = new Handler();
+		handleResetMicrobit = new Runnable() {
+			@Override
+			public void run() {
+				handle_reset_microbit();
+			}
+		};
 		PopUp.show(this,
-			"Press button on micro:bit and then select OK", //message
-			"Flashing", //title
-			R.drawable.exclamation, //image icon res id
-			0,
-			PopUp.TYPE_ALERT, //type of popup.
-			null,//override click listener for ok button
-			null);//pass null to use default listener
+				"Press button on micro:bit and then select OK", //message
+				"Flashing", //title
+				R.drawable.exclamation, //image icon res id
+				0,
+				PopUp.TYPE_NOBUTTON, //type of popup.
+				null,//override click listener for ok button
+				null);//pass null to use default listener
 
+		//mHandler.postDelayed(handleResetMicrobit, 30000);
 
 	}
 
+
+	void handle_reset_microbit()
+	{
+		PopUp.show(MBApp.getContext(),
+				"micro:bit not in correct state", //message
+				"Flashing", //title
+				R.drawable.exclamation, //image icon res id
+				0,
+				PopUp.TYPE_ALERT, //type of popup.
+				new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						PopUp.hide();
+
+					}
+				},//override click listener for ok button
+				null);//pass null to use default listener
+		LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
+	}
 	/**
 	 *
 	 */
@@ -307,6 +345,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			if (phase == 0x33) { // New code on characteristic changed
 				logi("resultReceiver.onReceiveResult() :: Phase 2 complete recieved ");
 				PopUp.hide();
+				mHandler.removeCallbacks(handleResetMicrobit);
+				handleResetMicrobit=null;
 				startFlashingPhase2();
 
 			}
@@ -332,7 +372,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 							@Override
 							public void onClick(View v) {
 								PopUp.hide();
-								finish();
+
 							}
 						},//override click listener for ok button
 						null);//pass null to use default listener
@@ -350,7 +390,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 	class DFUResultReceiver extends BroadcastReceiver {
 
-		private boolean dialogInitDone = false;
 		private boolean isCompleted = false;
 		private boolean inInit = false;
 		private boolean inProgress = false;
@@ -360,19 +399,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			String message = "Broadcast intent detected " + intent.getAction();
 			logi("DFUResultReceiver.onReceive :: " + message);
 			if (intent.getAction() == DfuService.BROADCAST_PROGRESS) {
-				/*if (!dialogInitDone)
-				{
-					// Todo status
-					PopUp.show(MBApp.getContext(),
-							"",
-							MBApp.getContext().getString(R.string.download_complete),
-							R.drawable.mbit, 0,
-							PopUp.TYPE_PROGRESS, null, null);
-
-
-					//popupOverlay.setVisibility(View.VISIBLE);
-					dialogInitDone = true;
-				}*/
 
 				int state = intent.getIntExtra(DfuService.EXTRA_DATA, 0);
 				if (state < 0)
@@ -394,7 +420,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 											@Override
 											public void onClick(View v) {
 												PopUp.hide();
-												finish();
 											}
 										},//override click listener for ok button
 										null);//pass null to use default listener
@@ -434,7 +459,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 								PopUp.show(MBApp.getContext(),
 										"",
 										MBApp.getContext().getString(R.string.sending_project),
-										R.drawable.mbit, 0,
+										R.drawable.mbit, R.drawable.lightblue_btn,
 										PopUp.TYPE_PROGRESS, null, null);
 							}
 							inInit = true;
@@ -475,6 +500,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 							}
 						},//override click listener for ok button
 						null);//pass null to use default listener
+				LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
 
 			}
 		}

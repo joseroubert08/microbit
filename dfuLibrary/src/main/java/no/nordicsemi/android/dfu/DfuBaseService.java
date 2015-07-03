@@ -1048,7 +1048,9 @@ public abstract class DfuBaseService extends IntentService {
 
 				//	sendMessage(eventSrc, event);
 				logi("FLashing code written notification");
-				resultReceiver.send(0x33, null);
+				//mBytesConfirmed = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 1);
+				//if(mBytesConfirmed != 0)
+					resultReceiver.send(0x33, null);
 
 			}
 
@@ -1376,6 +1378,13 @@ public abstract class DfuBaseService extends IntentService {
 
 
 		final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
+		if (sfpc == null) {
+			logi("Upload aborted");
+			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
+			terminateConnection(gatt, PROGRESS_ABORTED);
+			return 6;
+		}
+
 		boolean ret = sfpc.setValue(2, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 		if (!ret)
 			logi("Error setting Flashing code");
@@ -1410,7 +1419,7 @@ public abstract class DfuBaseService extends IntentService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		//registerNotifications(false); // TODO: Is this required?
+		registerNotifications(false); // TODO: Is this required?
 
 		if (rc == 0) {
 

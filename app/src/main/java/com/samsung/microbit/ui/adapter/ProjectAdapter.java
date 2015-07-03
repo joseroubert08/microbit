@@ -154,6 +154,7 @@ public class ProjectAdapter extends BaseAdapter {
 		ImageButton deleteBtn = (ImageButton) convertView.findViewById(R.id.deleteBtn);
 		deleteBtn.setTag(position);
 		deleteBtn.setOnClickListener(deleteBtnClickListener);
+		deleteBtn.setEnabled(true);
 
 		appName.setText(p.name);
 		codeBtn.setText("Code");
@@ -166,6 +167,7 @@ public class ProjectAdapter extends BaseAdapter {
 			Drawable myIcon = convertView.getResources().getDrawable(R.drawable.lightblue_btn);
 			sendBtn.setBackground(myIcon);
 		}
+		sendBtn.setClickable(true);
 
 		return convertView;
 	}
