@@ -36,6 +36,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.service.BLEService;
@@ -125,6 +126,19 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			handleBLENotification(context, intent);
+			int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+			if (v != 0) {
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						PopUp.show(MBApp.getContext(),
+								MBApp.getContext().getString(R.string.micro_bit_reset_msg),
+								"",
+								0, 0,
+								PopUp.TYPE_ALERT, null, null);
+					}
+				});
+			}
 		}
 	};
 
@@ -143,6 +157,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			storeMicrobits(prevMicrobitList, true);
 
 		}
+
+		PopUp.hide();
 	}
 
 	// *************************************************
@@ -622,6 +638,14 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	}
 
 	void connectBluetoothDevice() {
+
+		PopUp.show(MBApp.getContext(),
+				getString(R.string.init_connection),
+				"",
+				R.drawable.mbit, R.drawable.lightblue_btn,
+				PopUp.TYPE_SPINNER,
+				null,null);
+
 		IPCService.getInstance().bleConnect();
 	}
 

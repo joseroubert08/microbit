@@ -86,6 +86,7 @@ public class HomeActivity extends Activity {
 			@Override
 			public void run() {
 				updateConnectBarView();
+				PopUp.hide();
 			}
 		});
 	}
@@ -154,6 +155,14 @@ public class HomeActivity extends Activity {
 					IPCService.getInstance().bleDisconnect();
 				} else {
 					if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleConnect()");
+
+					PopUp.show(MBApp.getContext(),
+							getString(R.string.init_connection),
+							"",
+							R.drawable.mbit, R.drawable.lightblue_btn,
+							PopUp.TYPE_SPINNER,
+							null,null);
+
 					IPCService.getInstance().bleConnect();
 				}
 			}

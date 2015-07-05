@@ -90,6 +90,19 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			handleBLENotification(context, intent);
+			int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+			if (v != 0) {
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						PopUp.show(MBApp.getContext(),
+								MBApp.getContext().getString(R.string.micro_bit_reset_msg),
+								"",
+								0, 0,
+								PopUp.TYPE_ALERT, null, null);
+					}
+				});
+			}
 		}
 	};
 
@@ -101,6 +114,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			@Override
 			public void run() {
 				setConnectedDeviceText();
+				PopUp.hide();
 			}
 		});
 
@@ -162,29 +176,37 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		if (connectedIndicatorIcon == null || connectedIndicatorText == null)
 			return;
 
+		int startIndex = 0;
+		Spannable span = null;
 		ConnectedDevice device = Utils.getPairedMicrobit(this);
 		if (!device.mStatus) {
 			connectedIndicatorIcon.setImageResource(R.drawable.disconnected);
 			connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_disconnect_btn));
 			connectedIndicatorText.setText(getString(R.string.not_connected));
+			startIndex = getString(R.string.not_connected).length();
+			//TODO Add a formatted string in string resource KK
+			span = new SpannableString(getString(R.string.not_connected) + "\n" + device.mName + "\n(" + device.mPattern + ")");
 		} else {
-			int startIndex = getString(R.string.connected_to).length();
-			int endIndex = startIndex + 2;
-			if(device.mName!=null)
-				endIndex += device.mName.length();
-			if(device.mPattern!=null)
-			endIndex += device.mPattern.length();
-
-			Spannable span = new SpannableString(getString(R.string.connected_to) + "\n" + device.mName + "\n" + device.mPattern);
-			span.setSpan(new AbsoluteSizeSpan(20), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			span.setSpan(new ForegroundColorSpan(Color.BLACK), 0, startIndex,
-				Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			span.setSpan(new ForegroundColorSpan(Color.BLUE), getString(R.string.connected_to).length(), endIndex,
-				Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			connectedIndicatorText.setText(span);
-
+			startIndex = getString(R.string.connected_to).length();
 			connectedIndicatorIcon.setImageResource(R.drawable.connected);
 			connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_connect_btn));
+			//TODO Add a formatted string in string resource KK
+			span = new SpannableString(getString(R.string.connected_to) + "\n" + device.mName + "\n(" + device.mPattern + ")");
+		}
+
+		if(device.mPattern != null) {
+			int endIndex = startIndex + 4;
+			if (device.mName != null)
+				endIndex += device.mName.length();
+			if (device.mPattern != null)
+				endIndex += device.mPattern.length();
+
+			span.setSpan(new AbsoluteSizeSpan(20), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			span.setSpan(new ForegroundColorSpan(Color.BLACK), 0, startIndex,
+					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			span.setSpan(new ForegroundColorSpan(Color.BLUE), getString(R.string.connected_to).length(), endIndex,
+					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			connectedIndicatorText.setText(span);
 		}
 	}
 
@@ -238,6 +260,14 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 					if (connectedDevice.mStatus) {
 						IPCService.getInstance().bleDisconnect();
 					} else {
+
+						PopUp.show(MBApp.getContext(),
+								getString(R.string.init_connection),
+								"",
+								R.drawable.mbit, R.drawable.lightblue_btn,
+								PopUp.TYPE_SPINNER,
+								null,null);
+
 						IPCService.getInstance().bleConnect();
 					}
 				}
@@ -485,8 +515,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 						case DfuService.PROGRESS_CONNECTING:
 							if (!inInit) {
 								PopUp.show(MBApp.getContext(),
-										"Initialising Connection..", //message
-										"Send Project", //title
+										getString(R.string.init_connection), //message
+										getString(R.string.send_project), //title
 										R.drawable.mbit, R.drawable.lightblue_btn,
 										PopUp.TYPE_SPINNER, //type of popup.
 										new View.OnClickListener() {

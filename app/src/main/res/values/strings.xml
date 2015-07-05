@@ -140,5 +140,7 @@
 
     <string name="web_view_demo">Web View Demo</string>
     <string name="sending_project">Sending project</string>
+    <string name="send_project">Send Project</string>
+    <string name="init_connection">Initialising Connection..</string>
 
 </resources>
