@@ -59,6 +59,16 @@
         android:progress="0"
         android:progressDrawable="@drawable/green_progress_bar" />
 
+    <ProgressBar
+        android:id="@+id/spinnerBar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/currentStatus"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="10dp"
+        android:paddingBottom="100dp"
+        />
+
     <ViewSwitcher
         android:id="@+id/switcher"
         android:layout_weight="1"

@@ -47,7 +47,8 @@ public class PopUp {
     static public final int TYPE_ALERT = 1;//1 button type
     static public final int TYPE_PROGRESS = 2;//1 button progress bar type
 	static public final int TYPE_NOBUTTON = 3;//No button type
-    static public final int TYPE_MAX = 4;
+    static public final int TYPE_SPINNER = 4;//button type spinner
+    static public final int TYPE_MAX = 5;
 
     static public int current_type = TYPE_MAX;
 
@@ -123,6 +124,8 @@ public class PopUp {
         ViewSwitcher switcher = (ViewSwitcher)popUpView.findViewById(R.id.switcher);
 
         progressBar = (ProgressBar) popUpView.findViewById(R.id.progressBar);
+        ProgressBar spinnerBar = (ProgressBar) popUpView.findViewById(R.id.spinnerBar);
+        spinnerBar.setVisibility(View.GONE);
 
         switch (type) {
             case TYPE_CHOICE: {
@@ -164,7 +167,15 @@ public class PopUp {
             }
             case TYPE_NOBUTTON:
             {
-                switcher.setVisibility(View.GONE);
+                switcher.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
+                break;
+            }
+            case TYPE_SPINNER:
+            {
+                messageTextView.setVisibility(View.VISIBLE);
+                switcher.setVisibility(View.INVISIBLE);
+                spinnerBar.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.GONE);
                 break;
             }

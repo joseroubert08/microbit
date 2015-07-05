@@ -190,6 +190,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 	public void onClick(final View v) {
 
+		int pos;
 		switch (v.getId()) {
 			case R.id.createProject: {
 				Intent intent = new Intent(this, TouchDevActivity.class);
@@ -202,8 +203,32 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				finish();
 			}
 			break;
+			case R.id.codeBtn:
+				pos = (Integer) v.getTag();
+				Project toOpen = (Project) projectAdapter.getItem(pos);
+				if(toOpen.codeUrl != null) {
+					Intent intent = new Intent(this, TouchDevActivity.class);
+					intent.putExtra(toOpen.codeUrl, getString(R.string.touchDevURLNew));
+					startActivity(intent);
+				} else {
+					PopUp.show(this,
+							"Not available yet.. Coming soon..", //message
+							"Code Project", //title
+							R.drawable.exclamation, //image icon res id (pass 0 to use default icon)
+							0, //image icon background res id (pass 0 if there is no background)
+							PopUp.TYPE_ALERT, //type of popup.
+							new View.OnClickListener(){
+								@Override
+								public void onClick(View v) {
+									PopUp.hide();
+									//Write your own code
+								}
+							},//override click listener for ok button
+							null);//pass null to use default listener
+				}
+				break;
 			case R.id.sendBtn:
-				int pos = (Integer) v.getTag();
+				pos = (Integer) v.getTag();
 				Project toSend = (Project) projectAdapter.getItem(pos);
 				initiateFlashing(toSend);
 				break;
@@ -225,6 +250,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	protected void initiateFlashing(Project toSend) {
 
 		ConnectedDevice currentMicrobit = Utils.getPairedMicrobit(this);
+		if(dfuResultReceiver != null) {
+			LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
+			dfuResultReceiver = null;
+		}
 		programToSend = toSend;
 		if (currentMicrobit.mStatus) {
 			// Disconnect Existing Gatt
@@ -259,10 +288,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		startService(service);
 
 		PopUp.show(this,
-				"Starting Flashing..", //message
-				"Flashing", //title
-				R.drawable.exclamation, //image icon res id
-				0,
+				"Finding the device..", //message
+				"Send Project", //title
+				R.drawable.mbit, R.drawable.lightblue_btn,
 				PopUp.TYPE_NOBUTTON, //type of popup.
 				null,//override click listener for ok button,
 				null);//pass null to use default listener
@@ -410,7 +438,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 								// todo progress bar dismiss
 								PopUp.hide();
 								LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
-
+								dfuResultReceiver=null;
 								PopUp.show(MBApp.getContext(),
 										getString(R.string.flashing_success_message), //message
 										getString(R.string.flashing_success_title), //title
@@ -457,10 +485,18 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 						case DfuService.PROGRESS_CONNECTING:
 							if (!inInit) {
 								PopUp.show(MBApp.getContext(),
-										"",
-										MBApp.getContext().getString(R.string.sending_project),
+										"Initialising Connection..", //message
+										"Send Project", //title
 										R.drawable.mbit, R.drawable.lightblue_btn,
-										PopUp.TYPE_PROGRESS, null, null);
+										PopUp.TYPE_SPINNER, //type of popup.
+										new View.OnClickListener() {
+											@Override
+											public void onClick(View v) {
+												PopUp.hide();
+
+											}
+										},//override click listener for ok button
+										null);//pass null to use default listener
 							}
 							inInit = true;
 							isCompleted = false;
@@ -471,7 +507,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				}else if ((state > 0) && (state < 100)) {
 					if (!inProgress) {
 						// TODO Update progress bar check if correct.(my3)
-
+						PopUp.show(MBApp.getContext(),
+								"",
+								MBApp.getContext().getString(R.string.sending_project),
+								R.drawable.mbit, R.drawable.lightblue_btn,
+								PopUp.TYPE_PROGRESS, null, null);
 						inProgress = true;
 					}
 					PopUp.updateProgressBar(state);
@@ -501,6 +541,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 						},//override click listener for ok button
 						null);//pass null to use default listener
 				LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
+				dfuResultReceiver=null;
 
 			}
 		}

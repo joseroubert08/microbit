@@ -77,7 +77,8 @@ public class ProjectAdapter extends BaseAdapter {
 	private View.OnClickListener codeBtnClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			Toast.makeText(MBApp.getContext(), "codeBtn Clicked: " + v.getTag(), Toast.LENGTH_SHORT).show();
+			((View.OnClickListener)projectActivity).onClick(v);
+			//Toast.makeText(MBApp.getContext(), "codeBtn Clicked: " + v.getTag(), Toast.LENGTH_SHORT).show();
 		}
 	};
 

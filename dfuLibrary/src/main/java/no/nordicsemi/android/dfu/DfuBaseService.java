@@ -1185,7 +1185,6 @@ public abstract class DfuBaseService extends IntentService {
 
 		int phase = intent.getIntExtra(INTENT_REQUESTED_PHASE, 0) & 0x03;
 		resultReceiver = (ResultReceiver) intent.getParcelableExtra(INTENT_RESULT_RECEIVER);
-		;
 
 		int rc = 0;
 		if ((phase & 0x01) != 0) {
@@ -1440,6 +1439,11 @@ public abstract class DfuBaseService extends IntentService {
 				logi("Calling phase 3");
 				mError = 0;
 				intent = phase3(intent);
+				gatt.disconnect();
+				waitUntilDisconnected();
+				close(gatt);
+				gatt=null;
+				resultReceiver=null;
 				logi("End phase 3");
 			} while (intent != null);
 		}
