@@ -357,8 +357,18 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			lvConnectedDevice.setAdapter(connectedDeviceAdapter);
 
 		} else {
+			ConnectedDevice currentDev = Utils.getPairedMicrobit(this);
+
 			connectedDeviceAdapter = new ConnectedDeviceAdapter(this, connectedDeviceList);
 			lvConnectedDevice.setAdapter(connectedDeviceAdapter);
+
+			if (currentDev.mPattern != null && currentDev.mPattern.equals(prevDeviceArray[0].mPattern))
+			{
+				prevDeviceArray[0].mStatus=currentDev.mStatus;
+				prevMicrobitList.set(0, prevDeviceArray[0]);
+				storeMicrobits(prevMicrobitList, true);
+			}
+
 		}
 	}
 
