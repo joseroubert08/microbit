@@ -488,8 +488,16 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				pos = (Integer) v.getTag();
 				boolean toTurnON = false;
 				boolean currentState = prevDeviceArray[pos].mStatus;
-				if (!currentState)
+				if (!currentState) {
+					PopUp.show(MBApp.getContext(),
+							getString(R.string.init_connection),
+							"",
+							R.drawable.mbit, R.drawable.lightblue_btn,
+							PopUp.TYPE_SPINNER,
+							null,null);
+					
 					toTurnON = true;
+				}
 
 				prevDeviceArray[pos].mStatus = !currentState;
 				changeMicrobitState(pos, prevDeviceArray[pos], toTurnON);
@@ -638,21 +646,11 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	}
 
 	void connectBluetoothDevice() {
-
-		PopUp.show(MBApp.getContext(),
-				getString(R.string.init_connection),
-				"",
-				R.drawable.mbit, R.drawable.lightblue_btn,
-				PopUp.TYPE_SPINNER,
-				null,null);
-
 		IPCService.getInstance().bleConnect();
 	}
 
 	void disconnectBluetooth() {
-
 		IPCService.getInstance().bleDisconnect();
-
 	}
 	private void scanningFailed() {
 
