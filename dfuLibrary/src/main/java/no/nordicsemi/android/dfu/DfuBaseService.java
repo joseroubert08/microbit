@@ -1398,6 +1398,13 @@ public abstract class DfuBaseService extends IntentService {
 
 		registerNotifications(true);
 
+		if(mConnectionState == STATE_DISCONNECTED) {
+			logi("Gatt disconnected");
+			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
+			terminateConnection(gatt, PROGRESS_ABORTED);
+			return 6;
+		}
+
 		logi("Phase1 e");
 		return 0;
 	}
