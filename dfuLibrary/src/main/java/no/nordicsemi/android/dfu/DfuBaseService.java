@@ -1446,11 +1446,11 @@ public abstract class DfuBaseService extends IntentService {
 				logi("Calling phase 3");
 				mError = 0;
 				intent = phase3(intent);
+				resultReceiver=null;
 				gatt.disconnect();
 				waitUntilDisconnected();
 				close(gatt);
 				gatt=null;
-				resultReceiver=null;
 				logi("End phase 3");
 			} while (intent != null);
 		}
