@@ -204,7 +204,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			span.setSpan(new AbsoluteSizeSpan(20), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			span.setSpan(new ForegroundColorSpan(Color.BLACK), 0, startIndex,
 					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			span.setSpan(new ForegroundColorSpan(Color.BLUE), getString(R.string.connected_to).length(), endIndex,
+			span.setSpan(new ForegroundColorSpan(Color.BLUE), startIndex, endIndex,
 					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			connectedIndicatorText.setText(span);
 		}
