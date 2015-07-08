@@ -6,225 +6,212 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.BLEManager;
+import com.samsung.microbit.core.IPCMessageManager;
+import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.CmdArg;
-import com.samsung.microbit.model.PreferencesInteraction;
-import com.samsung.microbit.model.Utils;
-import com.samsung.microbit.plugin.AlertPlugin;
-import com.samsung.microbit.plugin.AudioPlugin;
-import com.samsung.microbit.model.BLEManager;
-import com.samsung.microbit.plugin.CameraPlugin;
-import com.samsung.microbit.plugin.RemoteControlPlugin;
-import com.samsung.microbit.ui.activity.LEDGridActivity;
-import com.samsung.microbit.ui.activity.MainActivity;
+import com.samsung.microbit.model.ConnectedDevice;
+import com.samsung.microbit.model.Constants;
+import com.samsung.microbit.model.NameValuePair;
+import com.samsung.microbit.ui.activity.ConnectActivity;
 
 import java.util.UUID;
 
 public class BLEService extends BLEBaseService {
 
-	public static final UUID BUTTON_1_SERVICE = UUID.fromString("0000a000-0000-1000-8000-00805f9b34fb");
-	public static final UUID BUTTON_2_SERVICE = UUID.fromString("0000b000-0000-1000-8000-00805f9b34fb");
+	public static final int FORMAT_UINT8 = BluetoothGattCharacteristic.FORMAT_UINT8;
+	public static final int FORMAT_UINT16 = BluetoothGattCharacteristic.FORMAT_UINT16;
+	public static final int FORMAT_UINT32 = BluetoothGattCharacteristic.FORMAT_UINT32;
 
-	public static final UUID BUTTON_1_CHARACTERISTIC = UUID.fromString("0000a001-0000-1000-8000-00805f9b34fb");
-	public static final UUID BUTTON_2_CHARACTERISTIC = UUID.fromString("0000b001-0000-1000-8000-00805f9b34fb");
+	public static final int FORMAT_SINT8 = BluetoothGattCharacteristic.FORMAT_SINT8;
+	public static final int FORMAT_SINT16 = BluetoothGattCharacteristic.FORMAT_SINT16;
+	public static final int FORMAT_SINT32 = BluetoothGattCharacteristic.FORMAT_SINT32;
 
-	public static final UUID CALLBACK_DESCRIPTOR = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-
-	public static final String MESSAGE_NAME = "uBIT_BUTTON_PRESS";
 
 	protected String TAG = "BLEService";
 	protected boolean debug = true;
 
-	NotificationManager notifyMgr;
-	int notificationId = 1010;
-
-	@Override
-	public IBinder onBind(Intent intent) {
-		return mBinder;
+	protected void logi(String message) {
+		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 	}
 
-	private final IBinder mBinder = new LocalBinder();
+	NotificationManager notifyMgr = null;
+	int notificationId = 1010;
 
-	public class LocalBinder extends Binder {
-		public BLEService getService() {
-			return BLEService.this;
-		}
+	public BLEService() {
+		startIPCListener();
+	}
+
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+
+		int rc = 0;
+		if (debug) logi("onStartCommand()");
+		rc = super.onStartCommand(intent, flags, startId);
+		/*
+		 * Make the initial connection to other processes
+		 */
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+
+				try {
+					Thread.sleep(IPCMessageManager.STARTUP_DELAY + 500L);
+					sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+					sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+					setNotification(false, 0);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
+
+		return rc;
 	}
 
 	protected String getDeviceAddress() {
 
-		logi("getDeviceAddress()");
-		final String[] pairedDeviceName = new String[1];
-		Utils.getInstance().preferencesInteraction(this, new PreferencesInteraction() {
-			@Override
-			public void interAct(SharedPreferences preferences) {
-				String s = preferences.getString(Utils.PREFERENCES_ADDRESS_KEY, null);
-				logi("getDeviceAddress() :: s = " + s);
-				pairedDeviceName[0] = s;
-			}
-		});
-
-		if (pairedDeviceName[0] == null) {
-			setNotification(false);
+		if (debug) logi("getDeviceAddress()");
+		ConnectedDevice currentDevice = Utils.getPairedMicrobit(this);
+		String pairedDeviceName = currentDevice.mAddress;
+		if (pairedDeviceName == null) {
+			setNotification(false, 2);
 		}
 
-		return pairedDeviceName[0];
+		return pairedDeviceName;
 	}
 
 	protected void startupConnection() {
 
-		logi("startupConnection()");
+		if (debug) logi("startupConnection() bleManager=" + bleManager);
 		boolean success = true;
-		if (connect() == 0) {
-			logi("startupConnection() :: connect() == 0");
-			if (discoverServices() == 0) {
+		int rc = connect();
+		if (rc == 0) {
+			if (debug) logi("startupConnection() :: connect() == 0");
+			rc = discoverServices();
+			if (rc == 0) {
 
-				logi("startupConnection() :: discoverServices() == 0");
+				if (debug) logi("startupConnection() :: discoverServices() == 0");
 				if (registerNotifications(true)) {
-					setNotification(true);
+					setNotification(true, 0);
 				} else {
+					rc = 1;
 					success = false;
 				}
 			} else {
 				success = false;
-				logi("startupConnection() :: discoverServices() != 0");
+				if (debug) logi("startupConnection() :: discoverServices() != 0");
 			}
 		} else {
 			success = false;
 		}
 
-		if (success) {
-			if (serviceConnectionPluginService == null) {
-				logi("startupConnection() :: serviceConnectionPluginService == null");
-				connectWithServer();
-			}
-		} else {
+		if (!success) {
 			if (bleManager != null) {
-				bleManager.reset(true);
-				setNotification(false);
+				reset();
+				setNotification(false, 1);
 			}
 		}
 
-		logi("startupConnection() :: end");
+		if (debug) logi("startupConnection() :: end");
 	}
 
 	@Override
 	public void onDestroy() {
-		Log.i(TAG, "onDestroy called");
+		logi("onDestroy()");
 	}
 
 	public boolean registerNotifications(boolean enable) {
 
-		logi("registerNotifications()");
-		BluetoothGattService button1s = getService(BUTTON_1_SERVICE);
+		if (debug) logi("registerNotifications()");
+		BluetoothGattService button1s = getService(Constants.EVENT_SERVICE);
 		if (button1s == null) {
+			if (debug) logi("registerNotifications() :: not found service " + Constants.EVENT_SERVICE.toString());
 			return false;
 		}
 
-		BluetoothGattCharacteristic button1c = button1s.getCharacteristic(BUTTON_1_CHARACTERISTIC);
+		BluetoothGattCharacteristic button1c = button1s.getCharacteristic(Constants.ES_CLIENT_EVENT);
 		if (button1c == null) {
+			if (debug) logi("registerNotifications() :: not found Characteristic " + Constants.ES_CLIENT_EVENT.toString());
 			return false;
 		}
 
-		BluetoothGattDescriptor button1d = button1c.getDescriptor(CALLBACK_DESCRIPTOR);
+		BluetoothGattDescriptor button1d = button1c.getDescriptor(Constants.CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR);
 		if (button1d == null) {
+			if (debug)
+				logi("registerNotifications() :: not found descriptor " + Constants.CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR.toString());
 			return false;
 		}
 
 		enableCharacteristicNotification(button1c, button1d, enable);
-
-
-		BluetoothGattService button2s = getService(BUTTON_2_SERVICE);
-		if (button2s == null) {
-			return false;
-		}
-
-		BluetoothGattCharacteristic button2c = button2s.getCharacteristic(BUTTON_2_CHARACTERISTIC);
-		if (button2c == null) {
-			return false;
-		}
-
-		BluetoothGattDescriptor button2d = button2c.getDescriptor(CALLBACK_DESCRIPTOR);
-		if (button2d == null) {
-			return false;
-		}
-
-		enableCharacteristicNotification(button2c, button2d, enable);
-		logi("registerNotifications() : done");
+		if (debug) logi("registerNotifications() : done");
 		return true;
 	}
 
 	@Override
 	protected void handleCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 
-		int value = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-		if (value == 0) {
+		int value = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
+		int eventSrc = value & 0x0ffff;
+		if (eventSrc < 1001) {
 			return;
 		}
 
-		// Bit 5 (1)==button down (0)==button up
-		// bit 6 (1)==button 2.
-		if (BUTTON_2_CHARACTERISTIC.equals(characteristic.getUuid())) {
-			value |= 0x020;
-		}
-
-		logi("onCharacteristicChanged value = " + value);
-		sendMessage(value);
+		int event = (value >> 16) & 0x0ffff;
+		sendMessage(eventSrc, event);
 	}
 
 	@Override
 	protected void handleUnexpectedConnectionEvent(int event) {
 
-		logi("handleDisconnection() :: event = " + event);
+		if (debug) logi("handleDisconnection() :: event = " + event);
 		if ((event & BLEManager.BLE_CONNECTED) != 0) {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					logi("handleDisconnection() :: BLE_CONNECTED");
+					if (debug) logi("handleDisconnection() :: BLE_CONNECTED");
 					discoverServices();
 					registerNotifications(true);
-					setNotification(true);
+					setNotification(true, 0);
 				}
 			}).start();
 
 		} else if (event == BLEManager.BLE_DISCONNECTED) {
-			logi("handleDisconnection() :: BLE_DISCONNECTED");
-			setNotification(false);
+			if (debug) logi("handleDisconnection() :: BLE_DISCONNECTED");
+			setNotification(false, 0);
 		}
 	}
 
-	private void setNotification(boolean isConnected) {
+	@Override
+	protected void setNotification(boolean isConnected, int errorCode) {
 
-		logi("setNotification() :: isConnected = " + isConnected);
+		if (debug) logi("setNotification() :: isConnected = " + isConnected);
 		NotificationManager notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		int notificationId = 1001;
+
+		NameValuePair[] args = new NameValuePair[2];
+		args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
+		args[1] = new NameValuePair(IPCMessageManager.BUNDLE_DEVICE_ADDRESS, deviceAddress);
+
 		if (!isConnected) {
-			logi("setNotification() :: !isConnected");
+			if (debug) logi("setNotification() :: !isConnected");
 			if (bluetoothAdapter != null) {
 				if (!bluetoothAdapter.isEnabled()) {
 
-					logi("setNotification() :: !bluetoothAdapter.isEnabled()");
-					if (bleManager != null) {
-						bleManager.reset(true);
-					}
+					if (debug) logi("setNotification() :: !bluetoothAdapter.isEnabled()");
+					reset();
 
-					bleManager = null;
+					//bleManager = null;
 					bluetoothDevice = null;
 				}
 			}
@@ -236,11 +223,13 @@ public class BLEService extends BLEBaseService {
 					.setOngoing(true)
 					.setContentText("micro:bit Disconnected");
 
-			Intent intent = new Intent(this, LEDGridActivity.class);
-			intent.putExtra(LEDGridActivity.INTENT_IS_FOR_FLASHING, false);
+			Intent intent = new Intent(this, ConnectActivity.class);
 			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			mBuilder.setContentIntent(resultPendingIntent);
 			notifyMgr.notify(notificationId, mBuilder.build());
+
+			sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED, null, args);
+			sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED, null, args);
 		} else {
 			NotificationCompat.Builder mBuilder =
 				new NotificationCompat.Builder(this)
@@ -249,137 +238,200 @@ public class BLEService extends BLEBaseService {
 					.setOngoing(true)
 					.setContentText("micro:bit Connected");
 
-			Intent intent = new Intent(this, LEDGridActivity.class);
-			intent.putExtra(LEDGridActivity.INTENT_IS_FOR_FLASHING, false);
+			Intent intent = new Intent(this, ConnectActivity.class);
 			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			mBuilder.setContentIntent(resultPendingIntent);
 			notifyMgr.notify(notificationId, mBuilder.build());
+
+			sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null, args);
+			sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null, args);
 		}
 	}
 
 	// ######################################################################
 
-	private boolean mIsRemoteControlPlay = false;
-	private Messenger messengerPluginService = null;
-	private Messenger mClientMessenger = null;
-	private ServiceConnection serviceConnectionPluginService = null;
-	private IncomingHandler messageHandler = null;
-	private HandlerThread messageHandlerThread = null;
-	private boolean isBoundToPluginService = false;
+	int lastEvent = Constants.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE;
+	void sendMessage(int eventSrc, int event) {
 
-	void sendMessage(int buttonPressed) {
-
-		if (buttonPressed == 0) {
-			return;
-		}
-
-		if ((buttonPressed & 0x010) == 0) {
-			return;
-		}
-
-		Log.i(TAG, "### uBit Button detected for button = " + buttonPressed);
-		int msgService = PluginService.ALERT;
+		int msgService = 0;
 		CmdArg cmd = null;
-		//convention
-		//0x1X: button 1 pressed on nordic, where X is the program id
-		//0x3X: button 2 pressed on nordic, where X is the program id
-		switch (buttonPressed) {
-			case 0x011:
-				msgService = PluginService.REMOTE_CONTROL;
-				mIsRemoteControlPlay = !mIsRemoteControlPlay;
-				cmd = new CmdArg(mIsRemoteControlPlay ? RemoteControlPlugin.PLAY : RemoteControlPlugin.PAUSE, "");
+		switch (eventSrc) {
+			case Constants.SAMSUNG_REMOTE_CONTROL_ID:
+			case Constants.SAMSUNG_ALERTS_ID:
+			case Constants.SAMSUNG_AUDIO_RECORDER_ID:
+			case Constants.SAMSUNG_CAMERA_ID:
+
+				// TODO remove thiese demo hacks
+				eventSrc = Constants.SAMSUNG_REMOTE_CONTROL_ID;
+				event = (event == Constants.SAMSUNG_REMOTE_CONTROL_EVT_FORWARD) ? Constants.SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK : Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY;
+				if(event == Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY) {
+					if(lastEvent == Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY) {
+						event = Constants.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE;
+					} else {
+						event = Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY;
+					}
+
+					lastEvent = event;
+				}
+
+				msgService = eventSrc;
+				cmd = new CmdArg(event, "1000");
 				break;
 
-			case 0x012:
-				msgService = PluginService.CAMERA;
-				cmd = new CmdArg(CameraPlugin.LAUNCH_CAMERA_FOR_PIC, "");
-				break;
+			default:
+				return;
 
-			case 0x014://Audio demo: button '1' used for launching audio activity
-				msgService = PluginService.AUDIO;
-				cmd = new CmdArg(AudioPlugin.LAUNCH, "");
-				break;
-			case 0x018:
-				cmd = new CmdArg(AlertPlugin.FINDPHONE, "");
-				break;
-
-			case 0x031:
-				msgService = PluginService.REMOTE_CONTROL;
-				cmd = new CmdArg(RemoteControlPlugin.NEXT_TRACK, "");
-				break;
-
-			case 0x032:
-				msgService = PluginService.CAMERA;
-				cmd = new CmdArg(CameraPlugin.TAKE_PIC, "");
-				break;
-
-			case 0x034://Audio demo: button '2' used for start/stop recording
-				msgService = PluginService.AUDIO;
-				cmd = new CmdArg(AudioPlugin.TOOGLE_RECORD, "");
-				break;
-
-			case 0x038:
-				cmd = new CmdArg(AlertPlugin.VIBRATE, "500");
-				break;
 		}
 
 		if (cmd != null) {
-			sendCommand(msgService, cmd);
+			sendtoPluginService(IPCMessageManager.MICIROBIT_MESSAGE, msgService, cmd, null);
 		}
 	}
 
-	class IncomingHandler extends Handler {
-		public IncomingHandler(HandlerThread thr) {
-			super(thr.getLooper());
-		}
+	/*
+	 * IPC Messenger handling
+	 */
+	@Override
+	public IBinder onBind(Intent intent) {
 
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
+		return IPCMessageManager.getInstance().getClientMessenger().getBinder();
+	}
+
+	public void startIPCListener() {
+
+		if (debug) logi("startIPCListener()");
+		if (IPCMessageManager.getInstance() == null) {
+
+
+			if (debug) logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
+			IPCMessageManager inst = IPCMessageManager.getInstance("BLEServiceReceiver", new Handler() {
+
+				@Override
+				public void handleMessage(Message msg) {
+					if (debug) logi("startIPCListener().handleMessage");
+					handleIncomingMessage(msg);
+				}
+
+			});
 		}
 	}
 
-	public void connectWithServer() {
-		messageHandlerThread = new HandlerThread("BLEReceiverThread");
-		messageHandlerThread.start();
-		messageHandler = new IncomingHandler(messageHandlerThread);
-		mClientMessenger = new Messenger(messageHandler);
+	public void sendtoPluginService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
 
-		serviceConnectionPluginService = new ServiceConnection() {
-			@Override
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				isBoundToPluginService = true;
-				messengerPluginService = new Messenger(service);
+		if (debug) logi("sendtoPluginService()");
+		Class destService = PluginService.class;
+		sendIPCMessge(destService, mbsService, functionCode, cmd, args);
+	}
+
+	public void sendtoIPCService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
+
+		if (debug) logi("sendtoIPCService()");
+		Class destService = IPCService.class;
+		sendIPCMessge(destService, mbsService, functionCode, cmd, args);
+	}
+
+	public void sendIPCMessge(Class destService, int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
+
+		if (debug) logi("sendIPCMessge()");
+		IPCMessageManager inst = IPCMessageManager.getInstance();
+		if (!inst.isConnected(destService)) {
+			inst.configureServerConnection(destService, this);
+		}
+
+		Message msg = Message.obtain(null, mbsService);
+		msg.arg1 = functionCode;
+		Bundle bundle = new Bundle();
+		if (mbsService == IPCMessageManager.ANDROID_MESSAGE) {
+			if (debug) logi("sendIPCMessge() :: IPCMessageManager.ANDROID_MESSAGE functionCode=" + functionCode);
+			if (cmd != null) {
+				bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
+				bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
 			}
 
-			@Override
-			public void onServiceDisconnected(ComponentName name) {
-				isBoundToPluginService = false;
-				serviceConnectionPluginService = null;
+			if (args != null) {
+				for (int i = 0; i < args.length; i++) {
+					bundle.putSerializable(args[i].getName(), args[i].getValue());
+				}
 			}
-		};
 
-		Intent mIntent = new Intent();
-		mIntent.setAction(PluginService.class.getName());
-		mIntent = MainActivity.createExplicitFromImplicitIntent(getApplicationContext(), mIntent);
-		bindService(mIntent, serviceConnectionPluginService, Context.BIND_AUTO_CREATE);
+		} else if (mbsService == IPCMessageManager.MICIROBIT_MESSAGE) {
+			if (debug) logi("sendIPCMessge() :: IPCMessageManager.MICIROBIT_MESSAGE functionCode=" + functionCode);
+			if (cmd != null) {
+				bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
+				bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
+				if (args != null) {
+					for (int i = 0; i < args.length; i++) {
+						bundle.putSerializable(args[i].getName(), args[i].getValue());
+					}
+				}
+			}
+		} else {
+			return;
+		}
+
+		msg.setData(bundle);
+		try {
+			inst.sendMessage(destService, msg);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public void sendCommand(int mbsService, CmdArg cmd) {
-		if (messengerPluginService != null) {
-			Message msg = Message.obtain(null, mbsService);
-			Bundle bundle = new Bundle();
-			bundle.putInt(PluginService.BUNDLE_DATA, cmd.getCMD());
-			bundle.putString(PluginService.BUNDLE_VALUE, cmd.getValue());
-			msg.setData(bundle);
-			msg.replyTo = mClientMessenger;
-			try {
-				messengerPluginService.send(msg);
-			} catch (RemoteException e) {
-				e.printStackTrace();
+	public void writeCharacteristic(String serviceGuid, String characteristic, int value, int type) {
+
+		BluetoothGattService s = getService(UUID.fromString(serviceGuid));
+		if (s != null) {
+			BluetoothGattCharacteristic c = s.getCharacteristic(UUID.fromString(characteristic));
+			if (c != null) {
+				/*
+			 	 * TODO Need to try and write, to see if we have an endian issue
+		 		*/
+				c.setValue(value, type, 0);
+				writeCharacteristic(c);
 			}
 		}
 	}
 
-	// ######################################################################
+	private void handleIncomingMessage(Message msg) {
+		if (debug) logi("handleIncomingMessage() :: Start BLEService");
+		Bundle bundle = msg.getData();
+		if (msg.what == IPCMessageManager.ANDROID_MESSAGE) {
+			if (debug) logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
+
+			switch (msg.arg1) {
+				case IPCMessageManager.IPC_FUNCTION_CONNECT:
+					if (debug) logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_CONNECT bleManager = " + bleManager);
+					setupBLE();
+					break;
+
+				case IPCMessageManager.IPC_FUNCTION_DISCONNECT:
+					if (debug) logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_DISCONNECT = " + bleManager);
+					if (reset()) {
+						setNotification(false, 0);
+					}
+
+					break;
+
+				case IPCMessageManager.IPC_FUNCTION_RECONNECT:
+					if (debug) logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_RECONNECT = " + bleManager);
+					if (reset()) {
+						setupBLE();
+					}
+
+					break;
+
+				case IPCMessageManager.IPC_FUNCTION_WRITE_CHARACTERISTIC:
+					if (debug) logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_WRITE_CHARACTERISTIC = " + bleManager);
+					String service = (String) bundle.getSerializable(IPCMessageManager.BUNDLE_SERVICE_GUID);
+					String characteristic = (String) bundle.getSerializable(IPCMessageManager.BUNDLE_CHARACTERISTIC_GUID);
+					int value = (int) bundle.getSerializable(IPCMessageManager.BUNDLE_CHARACTERISTIC_VALUE);
+					int type = (int) bundle.getSerializable(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE);
+					writeCharacteristic(service, characteristic, value, type);
+					break;
+				default:
+			}
+		} else if (msg.what == IPCMessageManager.MICIROBIT_MESSAGE) {
+			if (debug) logi("handleIncomingMessage() :: IPCMessageManager.MICIROBIT_MESSAGE msg.arg1 = " + msg.arg1);
+		}
+	}
 }

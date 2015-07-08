@@ -18,6 +18,8 @@
     <string name="app_name">Companion</string>
     <string name="poweredBy">Powered by\r\n SAMSUNG</string>
 
+    <string name="touchDevURLNew">https://test.microbit.co.uk/app/?fota=1</string>
+
     <string name="search_BLE_activity">Search Microbit</string>
     <string name="device_details">Device_details</string>
     <string name="dummy_section_text">Section %1d is just a dummy section.</string>
@@ -34,6 +36,8 @@
     <string name="disconnected">Disconnected</string>
     <string name="title_devices">MicroBit Device Scan</string>
     <string name="title_activity_ledgrid">Find MicroBit</string>
+    <string name="title_activity_connect">Connect</string>
+    <string name="title_activity_gamepad">GamePad</string>
     <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
     <string name="microbit_not_found">Microbit not found. Please search.</string>
     <string name="microbit_found">Use existing micro:bit?</string>
@@ -68,6 +72,7 @@
     <string name="menu_disconnect">Disconnect</string>
     <string name="menu_scan">Scan</string>
     <string name="menu_stop">Stop</string>
+    <string name="action_settings">Settings</string>
 
     <!-- Camera items -->
     <string name="picture">Picture</string>
@@ -86,5 +91,56 @@
     <string name="title_activity_about_us">about_us</string>
     <string name="back_button">Take me Back</string>
     <string name="about_us"> That\'s All !! Happy Coding </string>
-    
+
+    <!-- Alert plugin -->
+    <string name="vibrating_via_microbit">Vibrating via Microbit!</string>
+    <string name="findphone_via_microbit">Find my phone alert via Microbit!</string>
+    <string name="ringtone_via_microbit">Playing ringtone via Microbit!</string>
+    <string name="sound_via_microbit">Playing sound via Microbit!</string>
+    <string name="alert">Alert...</string>
+
+    <!-- Connect Activity -->
+    <string name="previous_devices">Previous devices</string>
+    <string name="new_devices_pattern_null">Repeat the pattern below</string>
+    <string name="new_devices">Connect to a new device</string>
+    <string name="name_device">Name device</string>
+    <string name="name_empty_error">Please enter device name.</string>
+    <string name="connect">Connect</string>
+    <string name="gamepad">Gamepad</string>
+    <string name="connectNew">Connect to a new device</string>
+    <string name="connectTipTitle">Get the pairing pattern</string>
+    <string name="connectTipText">To start pairing with a device Please click the marked buttons on your Micro:Bit</string>
+    <string name="connectSearchingTitle">Connecting...</string>
+    <!--Connect Popup messages -->
+    <string name="pairingErrorTitle">Error</string>
+    <string name="pairingErrorMessage">We cannot find that Micro:Bit\nPlease try again</string>
+    <string name="deleteMicrobitTitle">Delete Microbit?</string>
+    <string name="deleteMicrobitMessage">Are you sure you want to remove this device?</string>
+
+    <string name="your_projects">Your projects</string>
+    <string name="start_new_project">Start a new project</string>
+    <string name="new_project">New Project</string>
+    <string name="loading_page_msg">Please wait. Page is loading...</string>
+
+    <!-- Popup message -->
+    <string name="delete_project_message">Are you sure you want to want to remove this project?\r\nIt will be removed from this app but will still be available within your Micro:Bit account.</string>
+    <string name="delete_project_title">Delete project?</string>
+
+    <string name="create_new_project">Create Project</string>
+    <string name="download_existing">Download Existing</string>
+    <string name="downloading">Downloading...</string>
+    <string name="download_complete">Download complete.</string>
+    <string name="projects">Projects</string>
+    <string name="send">Send</string>
+    <string name="code">Code</string>
+    <string name="no_projects">No projects found!</string>
+    <string name="connected_to">Connected to</string>
+    <string name="not_connected">Not Connected</string>
+    <string name="micro_bit_reset_msg">Microbit needs to be reset.</string>
+
+    <string name="web_view_demo">Web View Demo</string>
+    <string name="sending_project">Sending project</string>
+    <string name="send_project">Send Project</string>
+    <string name="init_connection">Initialising Connection..</string>
+
 </resources>

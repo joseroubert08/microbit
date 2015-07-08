@@ -1,0 +1,63 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools" android:layout_width="fill_parent"
+	android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+	android:paddingRight="@dimen/activity_horizontal_margin"
+	tools:context=".MainActivity"
+	android:background="@drawable/bg">
+
+
+
+    <ImageView
+        android:id="@+id/titleLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/header_03"
+        android:background="@android:color/white"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"/>
+
+
+        <LinearLayout
+            android:id="@+id/mainContentView"
+            android:layout_width="fill_parent"
+            android:layout_height="400dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/widget_margin"
+            android:background="@drawable/white_bg"
+            android:layout_below="@+id/titleLogo"
+            android:layout_alignParentStart="true">
+
+            <TextView
+                android:id="@android:id/empty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textSize="@dimen/button_text_size"
+                android:textColor="@color/black_font_color"
+                android:text="@string/no_projects" />
+            <ListView
+                android:id="@+id/projectListView"
+                android:layout_width="fill_parent"
+                android:layout_height="400dp"
+                android:layout_weight="0.73"
+                android:divider="@android:color/transparent"
+                android:layout_centerVertical="true"
+                android:dividerHeight="5dp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/createProject"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/green_btn"
+            android:drawableRight="@drawable/light_bulb"
+            android:layout_below="@+id/mainContentView"
+            android:text="@string/create_new_project"
+            android:layout_marginTop="@dimen/widget_margin"
+            android:onClick="onClick"
+            android:textSize="25sp" />
+
+        <include layout="@layout/view_footer" />
+
+</RelativeLayout>

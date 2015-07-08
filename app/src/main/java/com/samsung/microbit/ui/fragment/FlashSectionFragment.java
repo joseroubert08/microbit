@@ -23,6 +23,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.ui.activity.LEDGridActivity;
 
 import java.io.BufferedReader;
@@ -55,8 +56,6 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
 	private static final String PREFERENCES_ADDRESS_KEY = "PairedDeviceAddress";
 	private HashMap<String, String> prettyFileNameMap = new HashMap<String, String>();
 
-	final public static String BINARY_FILE_NAME = "/sdcard/output.bin";
-
 	public FlashSectionFragment() {
 	}
 
@@ -66,7 +65,7 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
 		//Search BLE devices here with proper flash support
 		checkMicroBitAttached();
 		//Populate program list for later use
-		findProgramsAndPopulate();
+		//Utils.findProgramsAndPopulate(prettyFileNameMap, list);
 	}
 
 
@@ -101,37 +100,6 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
 		} else {
 			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 			startActivityForResult(enableBtIntent, REQUEST_BT_ENABLE);
-		}
-	}
-
-	private void findProgramsAndPopulate() {
-		File sdcardDownloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-		Log.d("MicroBit", "Searching files in " + sdcardDownloads.getAbsolutePath());
-
-		int iTotalPrograms = 0;
-		if (sdcardDownloads.exists()) {
-			File files[] = sdcardDownloads.listFiles();
-			for (int i = 0; i < files.length; i++) {
-				String fileName = files[i].getName();
-				if (fileName.endsWith(".hex")) {
-
-					//Beautify the filename
-					String parsedFileName;
-
-					int dot = fileName.lastIndexOf(".");
-					parsedFileName = fileName.substring(0, dot);
-					parsedFileName = parsedFileName.replace('_', ' ');
-
-					prettyFileNameMap.put(parsedFileName, fileName);
-
-					list.add(parsedFileName);
-					++iTotalPrograms;
-				}
-			}
-		}
-
-		if (iTotalPrograms == 0) {
-			list.add("No programs found !");
 		}
 	}
 
@@ -328,7 +296,7 @@ public class FlashSectionFragment extends Fragment implements OnItemClickListene
 
 						//Write file
 						Log.d("MicroBit", "Writing output file");
-						FileOutputStream f = new FileOutputStream(new File(BINARY_FILE_NAME));
+						FileOutputStream f = new FileOutputStream(new File(Utils.BINARY_FILE_NAME));
 						f.write(buffer);
 						f.flush();
 						f.close();

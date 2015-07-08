@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.Size;
 import android.util.Log;
@@ -11,28 +12,41 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.util.AttributeSet;
 
 /**
  * Created by t.maestri on 09/06/2015.
  */
-public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 
     private final String TAG = "microbit_camera";
 
-    //SurfaceView mSurfaceView;
+    SurfaceView mSurfaceView;
     SurfaceHolder mHolder;
     Size mPreviewSize;
     List<Size> mSupportedPreviewSizes;
     Camera mCamera;
 
-    public CameraPreview(Context context, Camera camera) {
+    public CameraPreview(Context context, SurfaceView sv, Camera camera) {
         super(context);
+
+        mSurfaceView = sv;
+        addView(mSurfaceView);
 
         setCamera(camera);
 
-        mHolder = getHolder();
+        mHolder = mSurfaceView.getHolder();
         mHolder.addCallback(this);
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+    }
+
+    public Rect GetSurfaceRect(){
+        int[] location = new int[2];
+        mSurfaceView.getLocationOnScreen(location);
+        int w = mSurfaceView.getWidth();
+        int h = mSurfaceView.getHeight();
+        Rect rect = new Rect(location[0],location[1],location[0]+w,location[1]+h);
+        return rect;
     }
 
     public void setCamera(Camera camera) {
@@ -59,10 +73,11 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // We purposely disregard child measurements because act as a
         // wrapper to a SurfaceView that centers the camera preview instead
         // of stretching it.
-        Log.d(TAG,"onMeasure(" + widthMeasureSpec + "," + heightMeasureSpec + ")");
+        Log.d(TAG,"onMeasure()");
 
         final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
         final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
+
         setMeasuredDimension(width, height);
 
         if (mSupportedPreviewSizes != null) {
@@ -73,42 +88,38 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         Log.d(TAG,"onLayout()");
+
         if (changed) {
-            //final View child = mSurfaceView;
 
             final int width = r - l;
             final int height = b - t;
 
-            Log.d(TAG,"onLayout() wxh = " + width + " x " + height);
-
             int previewWidth = width;
             int previewHeight = height;
-            int inverseRadio = height/width;
+//            int inverseRadio = height/width;
 
-            int previewRatio = 0;
+//            int previewRatio = 0;
 
             if (mPreviewSize != null) {
                 previewWidth = mPreviewSize.width;
                 previewHeight = mPreviewSize.height;
-                previewRatio = previewWidth/previewHeight;
+//                previewRatio = previewWidth/previewHeight;
             }
 
-            if (Math.abs(inverseRadio - previewRatio) < 0.001)
-            {
-                previewWidth = mPreviewSize.height;
-                previewHeight = mPreviewSize.width;
-            }
-
-            Log.d(TAG,"onLayout() previewWidth x previewHeight = " + previewWidth + " x " + previewHeight);
+//            if (Math.abs(inverseRadio - previewRatio) < 0.001)
+//            {
+//                previewWidth = mPreviewSize.height;
+//                previewHeight = mPreviewSize.width;
+//            }
 
             // Center the child SurfaceView within the parent.
             if (width * previewHeight > height * previewWidth) {
                 final int scaledChildWidth = previewWidth * height / previewHeight;
-                this.layout((width - scaledChildWidth) / 2, 0,
+                mSurfaceView.layout((width - scaledChildWidth) / 2, 0,
                         (width + scaledChildWidth) / 2, height);
             } else {
                 final int scaledChildHeight = previewHeight * width / previewWidth;
-                this.layout(0, (height - scaledChildHeight) / 2,
+                mSurfaceView.layout(0, (height - scaledChildHeight) / 2,
                         width, (height + scaledChildHeight) / 2);
             }
         }
