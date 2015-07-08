@@ -513,7 +513,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 							break;
 						case DfuService.PROGRESS_CONNECTING:
-							if (!inInit) {
+							if ((!inInit) && (!isCompleted)){
 								PopUp.show(MBApp.getContext(),
 										getString(R.string.init_connection), //message
 										getString(R.string.send_project), //title
