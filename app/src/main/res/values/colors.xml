@@ -7,4 +7,22 @@
     <color name="divider_color">#ff000000</color>
     <color name="black_font_color">#ff000000</color>
     <color name="white_font_color">#ffffff</color>
+
+    <color name="ok_button_up">#ff02ec00</color>
+    <color name="ok_button_down">#3A871F</color>
+
+    <color name="cancel_button_up">#FF6666</color>
+    <color name="cancel_button_down">#AA6666</color>
+
+    <color name="gamepad_button_green_up">#41B618</color>
+    <color name="gamepad_button_green_down">#3A871F</color>
+
+    <color name="gamepad_button_purple_up">#CC66FF</color>
+    <color name="gamepad_button_purple_down">#A83FDE</color>
+
+    <color name="gamepad_button_blue_up">#3399CC</color>
+    <color name="gamepad_button_blue_down">#0C79B1</color>
+
+    <color name="gamepad_button_yellow_up">#FDCA37</color>
+    <color name="gamepad_button_yellow_down">#E3B016</color>
 </resources>

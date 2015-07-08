@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.samsung.microbit.MBApp;
-import com.samsung.microbit.ui.activity.MainActivity;
+import com.samsung.microbit.ui.activity.HomeActivity;
 
 public class NotificationActivity extends Activity {
     @Override
@@ -17,7 +17,7 @@ public class NotificationActivity extends Activity {
         // If this activity is the root activity of the task, the app is not running
         if (isTaskRoot()) {
             // Start the app before finishing
-            final Intent intent = new Intent(this, MainActivity.class);
+            final Intent intent = new Intent(this, HomeActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtras(getIntent().getExtras()); // copy all extras
             startActivity(intent);

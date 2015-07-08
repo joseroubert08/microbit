@@ -220,7 +220,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 					service.putExtra(DfuService.EXTRA_DEVICE_NAME, mSelectedDevice.getName());
 				}
 				service.putExtra(DfuService.EXTRA_FILE_MIME_TYPE, DfuService.MIME_TYPE_OCTET_STREAM);
-				service.putExtra(DfuService.EXTRA_FILE_PATH, FlashSectionFragment.BINARY_FILE_NAME); // a path or URI must be provided.
+				service.putExtra(DfuService.EXTRA_FILE_PATH, Utils.BINARY_FILE_NAME); // a path or URI must be provided.
 				service.putExtra(DfuService.EXTRA_KEEP_BOND, false);
 				service.putExtra(DfuService.INTENT_RESULT_RECEIVER, resultReceiver);
 				service.putExtra(DfuService.INTENT_REQUESTED_PHASE, 2);
@@ -509,7 +509,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		service.putExtra(DfuService.EXTRA_FILE_MIME_TYPE, DfuService.MIME_TYPE_OCTET_STREAM);
 		//service.putExtra(DfuService.EXTRA_FILE_TYPE, mFileType);
 
-		service.putExtra(DfuService.EXTRA_FILE_PATH, FlashSectionFragment.BINARY_FILE_NAME); // a path or URI must be provided.
+		service.putExtra(DfuService.EXTRA_FILE_PATH, Utils.BINARY_FILE_NAME); // a path or URI must be provided.
 		//service.putExtra(DfuService.EXTRA_FILE_URI, mFileStreamUri);
 		// Init packet is required by Bootloader/DFU from SDK 7.0+ if HEX or BIN file is given above.
 		// In case of a ZIP file, the init packet (a DAT file) must be included inside the ZIP file.
@@ -531,7 +531,7 @@ public class LEDGridActivity extends Activity implements View.OnClickListener {
 		service.putExtra(DfuService.EXTRA_DEVICE_NAME, mSelectedDevice.getName());
 		service.putExtra(DfuService.EXTRA_FILE_MIME_TYPE, DfuService.MIME_TYPE_OCTET_STREAM);
 		//service.putExtra(DfuService.EXTRA_FILE_TYPE, mFileType);
-		service.putExtra(DfuService.EXTRA_FILE_PATH, FlashSectionFragment.BINARY_FILE_NAME); // a path or URI must be provided.
+		service.putExtra(DfuService.EXTRA_FILE_PATH, Utils.BINARY_FILE_NAME); // a path or URI must be provided.
 
 		//service.putExtra(DfuService.EXTRA_FILE_URI, mFileStreamUri);
 		// Init packet is required by Bootloader/DFU from SDK 7.0+ if HEX or BIN file is given above.

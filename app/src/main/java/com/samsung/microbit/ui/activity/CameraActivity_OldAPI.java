@@ -6,6 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import android.graphics.Rect;
+import 	android.os.SystemClock;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -28,9 +31,17 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.SurfaceView;
+import android.view.Surface;
+import android.graphics.Paint;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
+import android.widget.LinearLayout.LayoutParams;
 
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
@@ -46,7 +57,7 @@ public class CameraActivity_OldAPI extends Activity {
 	private static boolean mInstanceActive = false;
 
 	private CameraPreview mPreview;
-	private Button mButtonClick;
+	private ImageButton mButtonClick;
 	private Camera mCamera;
 	private BroadcastReceiver mMessageReceiver;
 	private boolean mVideo = false;
@@ -55,7 +66,7 @@ public class CameraActivity_OldAPI extends Activity {
 	private File mVideoFile = null;
 
 	private static final String TAG = "CameraActivity_OldAPI";
-	private boolean debug = true;
+	private boolean debug = false;
 
 	void logi(String message) {
 		if (debug) {
@@ -78,7 +89,8 @@ public class CameraActivity_OldAPI extends Activity {
 
 	private void setButtonForPicture() {
 
-		mButtonClick.setText(R.string.picture);
+		mButtonClick.setBackgroundResource(R.drawable.camera_icon);
+		mButtonClick.invalidate();
 		mButtonClick.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
@@ -101,6 +113,7 @@ public class CameraActivity_OldAPI extends Activity {
 	}
 
 	private void setPreviewForPicture() {
+		mPreview.setSoundEffectsEnabled(false);
 		mPreview.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -117,7 +130,8 @@ public class CameraActivity_OldAPI extends Activity {
 
 	private void setButtonForVideo() {
 
-		mButtonClick.setText(R.string.record);
+		mButtonClick.setBackgroundResource(R.drawable.start_record_icon);
+		mButtonClick.invalidate();
 		mButtonClick.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				if (mIsRecording) {
@@ -134,7 +148,8 @@ public class CameraActivity_OldAPI extends Activity {
 						finish();
 					}
 
-					mButtonClick.setText(R.string.stop);
+					mButtonClick.setBackgroundResource(R.drawable.stop_record_icon);
+					mButtonClick.invalidate();
 
 					//TODO Check that is true
 					// work on UiThread for better performance
@@ -183,13 +198,15 @@ public class CameraActivity_OldAPI extends Activity {
 			mVideo = true;
 		}
 
-		mPreview = new CameraPreview(this, mCamera);
-		((FrameLayout) findViewById(R.id.surfaceView)).addView(mPreview);
-
+		SurfaceView mSurfaceView = new SurfaceView(this);
+		mPreview = new CameraPreview(this, mSurfaceView, mCamera);
+		mPreview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+		((FrameLayout) findViewById(R.id.camera_preview_container)).addView(mPreview);
 		mPreview.setKeepScreenOn(true);
 
-		mButtonClick = (Button) findViewById(R.id.picture);
-
+		mButtonClick = (ImageButton) findViewById(R.id.picture);
+//		mButtonClick.bringToFront();
+//		((ImageView)findViewById(R.id.bbcLogo)).bringToFront();
 
 		if(mVideo) {
 			//Setup specific to OPEN_FOR_VIDEO
@@ -206,9 +223,10 @@ public class CameraActivity_OldAPI extends Activity {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				Log.i("CameraActivity_OldAPI", "mMessageReceiver.onReceive() :: Start");
-
-				if (!mVideo && intent.getAction().equals("TAKE_PIC")) {
+				if(intent.getAction().equals("CLOSE")){
+					finish();
+				}
+				else if(!mVideo && intent.getAction().equals("TAKE_PIC")) {
 					mButtonClick.callOnClick();
 				}
 				else if(mVideo && !mIsRecording && intent.getAction().equals("START_VIDEO")) {
@@ -230,42 +248,40 @@ public class CameraActivity_OldAPI extends Activity {
 	}
 
 
-//    public int getCameraDisplayOrientation(int cameraId, android.hardware.Camera mCamera)
-//    {
-//        android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
-//        android.hardware.Camera.getCameraInfo(cameraId, info);
-//        int rotation = getWindowManager().getDefaultDisplay().getRotation();
-//        int degrees = 0;
-//        switch (rotation)
-//        {
-//            case Surface.ROTATION_0:
-//                degrees = 0;
-//                break;
-//            case Surface.ROTATION_90:
-//                degrees = 90;
-//                break;
-//            case Surface.ROTATION_180:
-//                degrees = 180;
-//                break;
-//            case Surface.ROTATION_270:
-//                degrees = 270;
-//                break;
-//        }
-//
-//        Log.d(TAG, "degrees = " + degrees);
-//
-//        int result;
-//        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT)
-//        {
-//            result = (info.orientation + degrees) % 360;
-//            result = (360 - result) % 360; // compensate the mirror
-//        } else
-//        { // back-facing
-//            result = (info.orientation - degrees + 360) % 360;
-//        }
-//
-//        return result;
-//    }
+    public int getCameraDisplayOrientation(int cameraId, android.hardware.Camera mCamera)
+    {
+        android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+        android.hardware.Camera.getCameraInfo(cameraId, info);
+        int rotation = getWindowManager().getDefaultDisplay().getRotation();
+        int degrees = 0;
+        switch (rotation)
+        {
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
+        }
+
+        int result;
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT)
+        {
+            result = (info.orientation + degrees) % 360;
+            result = (360 - result) % 360; // compensate the mirror
+        } else
+        { // back-facing
+            result = (info.orientation - degrees + 360) % 360;
+        }
+
+        return result;
+    }
 
 	@Override
 	protected void onResume() {
@@ -275,11 +291,11 @@ public class CameraActivity_OldAPI extends Activity {
 		int camIdx = getFrontFacingCamera();
 		try {
 			mCamera = Camera.open(camIdx);
-			//int mRotation = getCameraDisplayOrientation(camIdx,mCamera);
+			int mRotation = getCameraDisplayOrientation(camIdx,mCamera);
 			Camera.Parameters parameters = mCamera.getParameters();
-			parameters.setRotation(270); //set rotation to save the picture
+			parameters.setRotation(mRotation); //set rotation to save the picture
 			mCamera.setParameters(parameters);
-			mCamera.setDisplayOrientation(90);
+			mCamera.setDisplayOrientation(mRotation);
 			mCamera.startPreview();
 			mPreview.setCamera(mCamera);
 			//LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("TAKE_PIC"));
@@ -291,6 +307,8 @@ public class CameraActivity_OldAPI extends Activity {
 			else {
 				this.registerReceiver(mMessageReceiver, new IntentFilter("TAKE_PIC"));
 			}
+
+			this.registerReceiver(mMessageReceiver, new IntentFilter("CLOSE"));
 
 			logi("onCreate() :: onResume # ");
 		} catch (RuntimeException ex) {
@@ -327,9 +345,11 @@ public class CameraActivity_OldAPI extends Activity {
 	}
 
 	//TODO Add Sound here
+	//Currently if the device is on silent mode no sound is going to be heard
 	ShutterCallback shutterCallback = new ShutterCallback() {
 		public void onShutter() {
 			//			 Log.d(TAG, "onShutter'd");
+			((ImageView) findViewById(R.id.blink_rectangle)).setVisibility(View.VISIBLE);
 		}
 	};
 
@@ -342,11 +362,16 @@ public class CameraActivity_OldAPI extends Activity {
 	PictureCallback jpegCallback = new PictureCallback() {
 		public void onPictureTaken(byte[] data, Camera camera) {
 			new SaveImageTask().execute(data);
+			DrawBlink();
 			resetCam();
-			finish();
-			Log.d(TAG, "onPictureTaken - jpeg");
+//			finish();
 		}
 	};
+
+	void DrawBlink(){
+		SystemClock.sleep(500);
+		((ImageView) findViewById(R.id.blink_rectangle)).setVisibility(View.GONE);
+	}
 
 	@Override
 	protected void onStart() {

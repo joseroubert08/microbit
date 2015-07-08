@@ -14,11 +14,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<manifest
-	package="com.samsung.microbit"
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:versionCode="1"
-	android:versionName="1.0">
+<manifest package="com.samsung.microbit"
+		  xmlns:android="http://schemas.android.com/apk/res/android"
+		  android:versionCode="1"
+		  android:versionName="1.0">
 
 	<uses-sdk android:minSdkVersion="19"/>
 
@@ -27,52 +26,72 @@
 	<uses-permission android:name="android.permission.BLUETOOTH"/>
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
 	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
 	<uses-permission android:name="android.permission.VIBRATE"/>
 	<uses-permission android:name="android.permission.RECORD_AUDIO"/>
 	<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 	<uses-permission android:name="android.permission.CAMERA"/>
 	<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+	<uses-permission android:name="android.permission.INTERACT_ACROSS_USERS"/>
 
 	<uses-feature
 		android:name="android.hardware.bluetooth_le"
 		android:required="true"/>
-
 	<uses-feature
 		android:name="android.hardware.camera"
 		android:required="false"/>
 
 	<application
 		android:icon="@drawable/ic_launcher"
-		android:logo="@drawable/ic_launcher">
-
+		android:logo="@drawable/ic_launcher"
+		android:theme="@style/AppTheme"
+		android:hardwareAccelerated="true">
 		<activity
-			android:name=".ui.activity.MainActivity"
-			android:label="@string/app_name">
+			android:name=".ui.activity.HomeActivity"
+			android:label="@string/app_name"
+			android:screenOrientation="userLandscape">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
 		</activity>
-
+		<activity
+			android:name=".ui.activity.ProjectActivity"
+			android:label="@string/app_name"
+			android:parentActivityName=".ui.activity.HomeActivity"
+			android:windowSoftInputMode="adjustPan"/>
 		<activity
 			android:name=".ui.activity.NotificationActivity"
 			android:label="@string/device_details"/>
-
 		<activity
 			android:name=".ui.activity.LEDGridActivity"
 			android:label="@string/title_activity_ledgrid"
-			android:parentActivityName=".ui.activity.MainActivity">
+			android:parentActivityName=".ui.activity.HomeActivity">
 		</activity>
-
 		<activity
 			android:name=".ui.activity.ConnectActivity"
 			android:label="@string/title_activity_connect"
-			android:parentActivityName=".ui.activity.MainActivity"
+			android:parentActivityName=".ui.activity.HomeActivity"
 			android:windowSoftInputMode="adjustPan">
 		</activity>
-
+		<activity
+			android:name=".ui.activity.GamepadActivity"
+			android:label="@string/title_activity_gamepad"
+			android:parentActivityName=".ui.activity.HomeActivity"
+			android:screenOrientation="landscape">
+		</activity>
+		<activity
+			android:name=".ui.activity.TouchDevActivity"
+			android:parentActivityName=".ui.activity.HomeActivity"
+			android:windowSoftInputMode="adjustResize">
+		</activity>
+		<activity
+			android:name=".ui.activity.WebViewActivity"
+			android:parentActivityName=".ui.activity.HomeActivity"
+			android:windowSoftInputMode="adjustResize">
+		</activity>
 		<activity
 			android:name=".ui.activity.AudioRecorderActivity"
 			android:label="Audio Recorder"
@@ -87,13 +106,13 @@
 				<action android:name="com.samsung.microbit.ui.AudioRecorderActivity.action.STOP_RECORD"/>
 			</intent-filter>
 		</activity>
-
 		<activity
 			android:name=".ui.activity.CameraActivity_OldAPI"
+			android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
 			android:configChanges="orientation|screenSize|keyboardHidden"
 			android:label="Camera Microbit"
 			android:launchMode="singleTask"
-			android:screenOrientation="portrait">
+			android:screenOrientation="landscape">
 			<intent-filter>
 				<action android:name="com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_PIC"/>
 			</intent-filter>
@@ -108,7 +127,7 @@
 
 		<service
 			android:name=".service.PluginService"
-			android:process=":exported">
+			android:process=":PluginService">
 			<intent-filter>
 				<action android:name="com.samsung.microbit.service.PluginService"/>
 			</intent-filter>
@@ -116,9 +135,19 @@
 
 		<service
 			android:name=".service.BLEService"
-			android:enabled="true"
-			android:exported="false"
 			android:process=":BLEService">
+			<intent-filter>
+				<action android:name="com.samsung.microbit.service.BLEService"/>
+			</intent-filter>
 		</service>
+
+		<service
+			android:name=".service.IPCService">
+			<intent-filter>
+				<action android:name="com.samsung.microbit.service.IPCService"/>
+			</intent-filter>
+		</service>
+
 	</application>
+
 </manifest>
