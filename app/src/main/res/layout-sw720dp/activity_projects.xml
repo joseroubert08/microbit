@@ -114,9 +114,20 @@
 				android:id="@+id/downloadExisting"
 				android:layout_width="fill_parent"
 				android:layout_height="@dimen/button_height"
+				android:layout_marginBottom="8dp"
 				android:background="@drawable/green_btn"
 				android:gravity="center_vertical|left"
 				android:text="@string/download_existing"
+				android:textSize="@dimen/button_text_size"/>
+
+			<Button
+				android:id="@+id/preferences"
+				android:layout_width="fill_parent"
+				android:layout_height="@dimen/button_height"
+				android:background="@drawable/green_btn"
+				android:gravity="center_vertical|left"
+				android:onClick="onClick"
+				android:text="Preferences"
 				android:textSize="@dimen/button_text_size"/>
 		</LinearLayout>
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<array name="projectListSortOrder">
+		<item>By name - ascending</item>
+		<item>By name - descending</item>
+		<item>By modified date/time - ascending</item>
+		<item>By modified date/time - descending</item>
+	</array>
+</resources>
