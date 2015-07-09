@@ -86,7 +86,7 @@ public abstract class BLEBaseService extends Service {
 					new UnexpectedConnectionEventListener() {
 						@Override
 						public void handleConnectionEvent(int event) {
-							if (debug) logi("setupBLE().CharacteristicChangeListener.onCharacteristicChanged()");
+							if (debug) logi("setupBLE().CharacteristicChangeListener.handleUnexpectedConnectionEvent()");
 							if (bleManager != null) {
 								handleUnexpectedConnectionEvent(event);
 							}
