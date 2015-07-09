@@ -2,7 +2,6 @@ package com.samsung.microbit.core;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Environment;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -11,7 +10,8 @@ import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.model.Project;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,8 +21,16 @@ public class Utils {
 	public static final String PREFERENCES_NAME_KEY = "PairedDeviceName";  // To be removed
 	public static final String PREFERENCES_ADDRESS_KEY = "PairedDeviceAddress"; // To be removed
 	public static final String PREFERENCES_PAIREDDEV_KEY = "PairedDeviceDevice";
+
+	public static final String PREFERENCES = "Preferences";
+	public static final String PREFERENCES_LIST_ORDER = "Preferences.listOrder";
+
+	public final static int SORTBY_PROJECT_NAME = 0;
+	public final static int SORTBY_PROJECT_TIMESTAMP = 1;
+	public final static int ORDERBY_ASCENDING = 0;
+	public final static int ORDERBY_DESCENDING = 1;
+
 	private static ConnectedDevice pairedDevice = new ConnectedDevice();
-	private static boolean		isChanged;
 
 	private static final Object lock = new Object();
 	private static Utils instance;
@@ -92,13 +100,54 @@ public class Utils {
 						prettyFileNameMap.put(parsedFileName, fileName);
 
 					if (list != null)
-						list.add(new Project(parsedFileName, files[i].getAbsolutePath(), null, false));
+						list.add(new Project(parsedFileName, files[i].getAbsolutePath(), files[i].lastModified(), null, false));
+
 					++totalPrograms;
 				}
 			}
 		}
 
 		return totalPrograms;
+	}
+
+	public static List<Project> sortProjectList(List<Project> list, final int orderBy, final int sortOrder) {
+
+		Project[] projectArray = list.toArray(new Project[0]);
+		Comparator<Project> comparator = new Comparator<Project>() {
+			@Override
+			public int compare(Project lhs, Project rhs) {
+				int rc;
+				switch (orderBy) {
+					case SORTBY_PROJECT_NAME:
+						// byName
+						rc = lhs.name.toLowerCase().compareTo(rhs.name.toLowerCase());
+						break;
+
+					default:
+						// byTimestamp
+						if (lhs.timestamp < rhs.timestamp) {
+							rc = 1;
+						} else if (lhs.timestamp > rhs.timestamp) {
+							rc = -1;
+						} else {
+							rc = lhs.name.toLowerCase().compareTo(rhs.name.toLowerCase());
+						}
+
+						break;
+				}
+
+				if (sortOrder != ORDERBY_ASCENDING) {
+					rc = 0 - rc;
+				}
+
+				return rc;
+			}
+		};
+
+		Arrays.sort(projectArray, comparator);
+		list.clear();
+		list.addAll(Arrays.asList(projectArray));
+		return list;
 	}
 
 	public static boolean deleteFile(String filePath) {
@@ -115,54 +164,63 @@ public class Utils {
 		return false;
 	}
 
-	public static ConnectedDevice getPairedMicrobit(Context ctx)
-	{
+	public static ConnectedDevice getPairedMicrobit(Context ctx) {
 		SharedPreferences pairedDevicePref = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
 
-		if(pairedDevice == null){
+		if (pairedDevice == null) {
 			pairedDevice = new ConnectedDevice();
 		}
 
-/*
-        pairedDevice.mName = "M1";
-        pairedDevice.mPattern = "IGZP";
-        pairedDevice.mStatus=false;
-        pairedDevice.mAddress = "D2:A4:A3:A9:86:60";
-
-        setPairedMicrobit(ctx , pairedDevice);
-*/
-
-        if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
+		if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
 			String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
-            Log.d("MicroBit", "ConnectedDevice - pairedDeviceString - " + pairedDeviceString);
+			Log.d("MicroBit", "ConnectedDevice - pairedDeviceString - " + pairedDeviceString);
 
 			Gson gson = new Gson();
 			pairedDevice = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
-		}else {
+		} else {
 			pairedDevice.mPattern = null;
 			pairedDevice.mName = null;
 		}
 
 
-        Log.d("MicroBit", "ConnectedDevice - pairedDevice.mPattern - " + pairedDevice.mPattern);
-        Log.d("MicroBit", "ConnectedDevice - pairedDevice.mName - " + pairedDevice.mName);
+		Log.d("MicroBit", "ConnectedDevice - pairedDevice.mPattern - " + pairedDevice.mPattern);
+		Log.d("MicroBit", "ConnectedDevice - pairedDevice.mName - " + pairedDevice.mName);
 
 		return pairedDevice;
 	}
-	public static void setPairedMicrobit(Context ctx, ConnectedDevice newDevice)
-	{
+
+	public static void setPairedMicrobit(Context ctx, ConnectedDevice newDevice) {
+
 		SharedPreferences pairedDevicePref = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
 		SharedPreferences.Editor editor = pairedDevicePref.edit();
-		if(newDevice == null)
-		{
+		if (newDevice == null) {
 			editor.clear();
 		} else {
 			Gson gson = new Gson();
 			String jsonActiveDevice = gson.toJson(newDevice);
 			editor.putString(PREFERENCES_PAIREDDEV_KEY, jsonActiveDevice);
 		}
+
 		editor.commit();
-		isChanged = true;
+	}
+
+	public static int getListOrderPrefs(Context ctx) {
+		SharedPreferences prefs = ctx.getApplicationContext().getSharedPreferences(PREFERENCES, Context.MODE_MULTI_PROCESS);
+
+		int i = 0;
+		if (prefs != null) {
+			i = prefs.getInt(PREFERENCES_LIST_ORDER, 0);
+		}
+
+		return i;
+	}
+
+	public static void setListOrderPrefs(Context ctx, int orderPref) {
+
+		SharedPreferences prefs = ctx.getApplicationContext().getSharedPreferences(PREFERENCES, Context.MODE_MULTI_PROCESS);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putInt(PREFERENCES_LIST_ORDER, orderPref);
+		editor.commit();
 	}
 
 	// bit position to value mask

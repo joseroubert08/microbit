@@ -1,10 +1,10 @@
 package com.samsung.microbit.ui.activity;
 
 import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
@@ -13,18 +13,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.v4.content.LocalBroadcastManager;
-import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -70,6 +66,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	private Runnable handleResetMicrobit;
 
 	private DFUResultReceiver dfuResultReceiver;
+	private int projectListSortOrder = 0;
 
 	// DEBUG
 	protected boolean debug = true;
@@ -96,10 +93,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 					@Override
 					public void run() {
 						PopUp.show(MBApp.getContext(),
-								MBApp.getContext().getString(R.string.micro_bit_reset_msg),
-								"",
-								0, 0,
-								PopUp.TYPE_ALERT, null, null);
+							MBApp.getContext().getString(R.string.micro_bit_reset_msg),
+							"",
+							0, 0,
+							PopUp.TYPE_ALERT, null, null);
 					}
 				});
 			}
@@ -147,13 +144,23 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		mainContentView.getBackground().setAlpha(128);
 
 		projectListView = (ListView) findViewById(R.id.projectListView);
+
+		/*
 		TextView emptyText = (TextView) findViewById(android.R.id.empty);
 		projectListView.setEmptyView(emptyText);
 
 		Utils.findProgramsAndPopulate(prettyFileNameMap, projectList);
 
+		projectListSortOrder = Utils.getListOrderPrefs(this);
+		int sortBy = (projectListSortOrder >> 1);
+		int sortOrder = projectListSortOrder & 0x01;
+		Utils.sortProjectList(projectList, sortBy, sortOrder);
+
 		projectAdapter = new ProjectAdapter(this, projectList);
 		projectListView.setAdapter(projectAdapter);
+		*/
+
+		updateProjectsListSortOrder();
 
 		/* *************************************************
 		 * TODO setup to Handle BLE Notiification
@@ -184,77 +191,123 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_disconnect_btn));
 			connectedIndicatorText.setText(getString(R.string.not_connected));
 			startIndex = getString(R.string.not_connected).length();
+
 			//TODO Add a formatted string in string resource KK
 			span = new SpannableString(getString(R.string.not_connected) + "\n" + device.mName + "\n(" + device.mPattern + ")");
 		} else {
 			startIndex = getString(R.string.connected_to).length();
 			connectedIndicatorIcon.setImageResource(R.drawable.connected);
 			connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_connect_btn));
+
 			//TODO Add a formatted string in string resource KK
 			span = new SpannableString(getString(R.string.connected_to) + "\n" + device.mName + "\n(" + device.mPattern + ")");
 		}
 
-		if(device.mPattern != null) {
+		if (device.mPattern != null) {
 			int endIndex = startIndex + 4;
 			if (device.mName != null)
 				endIndex += device.mName.length();
+
 			if (device.mPattern != null)
 				endIndex += device.mPattern.length();
 
 			span.setSpan(new AbsoluteSizeSpan(20), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			span.setSpan(new ForegroundColorSpan(Color.BLACK), 0, startIndex,
-					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			span.setSpan(new ForegroundColorSpan(Color.BLUE), startIndex, endIndex,
-					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			span.setSpan(new ForegroundColorSpan(Color.BLACK), 0, startIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			span.setSpan(new ForegroundColorSpan(Color.BLUE), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			connectedIndicatorText.setText(span);
 		}
+	}
+
+	void updateProjectsListSortOrder () {
+
+		TextView emptyText = (TextView) findViewById(android.R.id.empty);
+		projectListView.setEmptyView(emptyText);
+		Utils.findProgramsAndPopulate(prettyFileNameMap, projectList);
+
+		projectListSortOrder = Utils.getListOrderPrefs(this);
+		int sortBy = (projectListSortOrder >> 1);
+		int sortOrder = projectListSortOrder & 0x01;
+		Utils.sortProjectList(projectList, sortBy, sortOrder);
+
+		projectAdapter = new ProjectAdapter(this, projectList);
+		projectListView.setAdapter(projectAdapter);
+	}
+
+	void projectListSortOrderChanged() {
+		Utils.setListOrderPrefs(this, projectListSortOrder);
+		projectList.clear();
+		updateProjectsListSortOrder();
 	}
 
 	public void onClick(final View v) {
 
 		int pos;
+		Intent intent;
+
 		switch (v.getId()) {
-			case R.id.createProject: {
-				Intent intent = new Intent(this, TouchDevActivity.class);
+			case R.id.preferences:
+				Toast.makeText(MBApp.getContext(), "preferences", Toast.LENGTH_SHORT).show();
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setTitle("Pick display order of projects")
+					.setSingleChoiceItems(R.array.projectListSortOrder, projectListSortOrder, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+							projectListSortOrder = which;
+							projectListSortOrderChanged();
+						}
+					})
+					.setNegativeButton("Cancel", null);
+
+				builder.create();
+				builder.show();
+
+				break;
+
+			case R.id.createProject:
+				intent = new Intent(this, TouchDevActivity.class);
 				intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
 				startActivity(intent);
 				finish();
-			}
-			break;
-			case R.id.homeBtn: {
+				break;
+
+			case R.id.homeBtn:
 				finish();
-			}
-			break;
+				break;
+
 			case R.id.codeBtn:
 				pos = (Integer) v.getTag();
 				Project toOpen = (Project) projectAdapter.getItem(pos);
-				if(toOpen.codeUrl != null) {
-					Intent intent = new Intent(this, TouchDevActivity.class);
+				if (toOpen.codeUrl != null) {
+					intent = new Intent(this, TouchDevActivity.class);
 					intent.putExtra(toOpen.codeUrl, getString(R.string.touchDevURLNew));
 					startActivity(intent);
 				} else {
 					PopUp.show(this,
-							"Not available yet.. Coming soon..", //message
-							"Code Project", //title
-							R.drawable.exclamation, //image icon res id (pass 0 to use default icon)
-							0, //image icon background res id (pass 0 if there is no background)
-							PopUp.TYPE_ALERT, //type of popup.
-							new View.OnClickListener(){
-								@Override
-								public void onClick(View v) {
-									PopUp.hide();
-									//Write your own code
-								}
-							},//override click listener for ok button
-							null);//pass null to use default listener
+						"Not available yet.. Coming soon..", //message
+						"Code Project", //title
+						R.drawable.exclamation, //image icon res id (pass 0 to use default icon)
+						0, //image icon background res id (pass 0 if there is no background)
+						PopUp.TYPE_ALERT, //type of popup.
+						new View.OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								PopUp.hide();
+								//Write your own code
+							}
+						},//override click listener for ok button
+						null);//pass null to use default listener
 				}
+
 				break;
+
 			case R.id.sendBtn:
 				pos = (Integer) v.getTag();
 				Project toSend = (Project) projectAdapter.getItem(pos);
 				initiateFlashing(toSend);
 				break;
-			case R.id.connectedIndicatorIcon: {
+
+			case R.id.connectedIndicatorIcon:
 				ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
 				if (connectedDevice.mPattern != null) {
 					if (connectedDevice.mStatus) {
@@ -262,17 +315,17 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 					} else {
 
 						PopUp.show(MBApp.getContext(),
-								getString(R.string.init_connection),
-								"",
-								R.drawable.mbit, R.drawable.lightblue_btn,
-								PopUp.TYPE_SPINNER,
-								null,null);
+							getString(R.string.init_connection),
+							"",
+							R.drawable.mbit, R.drawable.lightblue_btn,
+							PopUp.TYPE_SPINNER,
+							null, null);
 
 						IPCService.getInstance().bleConnect();
 					}
 				}
-			}
-			break;
+
+				break;
 		}
 	}
 
@@ -280,7 +333,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	protected void initiateFlashing(Project toSend) {
 
 		ConnectedDevice currentMicrobit = Utils.getPairedMicrobit(this);
-		if(dfuResultReceiver != null) {
+		if (dfuResultReceiver != null) {
 			LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
 			dfuResultReceiver = null;
 		}
@@ -318,12 +371,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		startService(service);
 
 		PopUp.show(this,
-				"Finding the device..", //message
-				"Send Project", //title
-				R.drawable.mbit, R.drawable.lightblue_btn,
-				PopUp.TYPE_NOBUTTON, //type of popup.
-				null,//override click listener for ok button,
-				null);//pass null to use default listener
+			"Finding the device..", //message
+			"Send Project", //title
+			R.drawable.mbit, R.drawable.lightblue_btn,
+			PopUp.TYPE_NOBUTTON, //type of popup.
+			null,//override click listener for ok button,
+			null);//pass null to use default listener
 	}
 
 	protected void startFlashingPhase2() {
@@ -359,37 +412,37 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			}
 		};
 		PopUp.show(this,
-				"Press button on micro:bit and then select OK", //message
-				"Flashing", //title
-				R.drawable.exclamation, //image icon res id
-				0,
-				PopUp.TYPE_NOBUTTON, //type of popup.
-				null,//override click listener for ok button
-				null);//pass null to use default listener
+			"Press button on micro:bit and then select OK", //message
+			"Flashing", //title
+			R.drawable.exclamation, //image icon res id
+			0,
+			PopUp.TYPE_NOBUTTON, //type of popup.
+			null,//override click listener for ok button
+			null);//pass null to use default listener
 
 		//mHandler.postDelayed(handleResetMicrobit, 30000);
 
 	}
 
 
-	void handle_reset_microbit()
-	{
+	void handle_reset_microbit() {
 		PopUp.show(MBApp.getContext(),
-				"micro:bit not in correct state", //message
-				"Flashing", //title
-				R.drawable.exclamation, //image icon res id
-				0,
-				PopUp.TYPE_ALERT, //type of popup.
-				new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						PopUp.hide();
+			"micro:bit not in correct state", //message
+			"Flashing", //title
+			R.drawable.exclamation, //image icon res id
+			0,
+			PopUp.TYPE_ALERT, //type of popup.
+			new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					PopUp.hide();
 
-					}
-				},//override click listener for ok button
-				null);//pass null to use default listener
+				}
+			},//override click listener for ok button
+			null);//pass null to use default listener
 		LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
 	}
+
 	/**
 	 *
 	 */
@@ -404,11 +457,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				logi("resultReceiver.onReceiveResult() :: Phase 2 complete recieved ");
 				PopUp.hide();
 				mHandler.removeCallbacks(handleResetMicrobit);
-				handleResetMicrobit=null;
+				handleResetMicrobit = null;
 				startFlashingPhase2();
 
-			}
-			else if ((phase & 0x01) != 0) {
+			} else if ((phase & 0x01) != 0) {
 				if ((phase & 0x0ff00) == 0) {
 					logi("resultReceiver.onReceiveResult() :: Phase 1 complete recieved ");
 					handle_phase1_complete();
@@ -459,8 +511,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			if (intent.getAction() == DfuService.BROADCAST_PROGRESS) {
 
 				int state = intent.getIntExtra(DfuService.EXTRA_DATA, 0);
-				if (state < 0)
-				{
+				if (state < 0) {
 					logi("DFUResultReceiver.onReceive :: state -- " + state);
 					switch (state) {
 						case DfuService.PROGRESS_COMPLETED:
@@ -468,19 +519,19 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 								// todo progress bar dismiss
 								PopUp.hide();
 								LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
-								dfuResultReceiver=null;
+								dfuResultReceiver = null;
 								PopUp.show(MBApp.getContext(),
-										getString(R.string.flashing_success_message), //message
-										getString(R.string.flashing_success_title), //title
-										R.drawable.exclamation, 0,
-										PopUp.TYPE_ALERT, //type of popup.
-										new View.OnClickListener() {
-											@Override
-											public void onClick(View v) {
-												PopUp.hide();
-											}
-										},//override click listener for ok button
-										null);//pass null to use default listener
+									getString(R.string.flashing_success_message), //message
+									getString(R.string.flashing_success_title), //title
+									R.drawable.exclamation, 0,
+									PopUp.TYPE_ALERT, //type of popup.
+									new View.OnClickListener() {
+										@Override
+										public void onClick(View v) {
+											PopUp.hide();
+										}
+									},//override click listener for ok button
+									null);//pass null to use default listener
 							}
 							isCompleted = true;
 							inInit = false;
@@ -490,23 +541,23 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 							if ((isCompleted == false) && (inProgress == false))// Disconnecting event because of error
 							{
 								String error_message = "Flashing Error Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
-										+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]";
+									+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]";
 
 								logi(error_message);
 								//PopUp.hide();
 								PopUp.show(MBApp.getContext(),
-										error_message, //message
-										"Flashing error", //title
-										R.drawable.exclamation, 0,
-										PopUp.TYPE_ALERT, //type of popup.
-										new View.OnClickListener() {
-											@Override
-											public void onClick(View v) {
-												PopUp.hide();
+									error_message, //message
+									"Flashing error", //title
+									R.drawable.exclamation, 0,
+									PopUp.TYPE_ALERT, //type of popup.
+									new View.OnClickListener() {
+										@Override
+										public void onClick(View v) {
+											PopUp.hide();
 
-											}
-										},//override click listener for ok button
-										null);//pass null to use default listener
+										}
+									},//override click listener for ok button
+									null);//pass null to use default listener
 
 								LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
 							}
@@ -515,18 +566,18 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 						case DfuService.PROGRESS_CONNECTING:
 							if (!inInit) {
 								PopUp.show(MBApp.getContext(),
-										getString(R.string.init_connection), //message
-										getString(R.string.send_project), //title
-										R.drawable.mbit, R.drawable.lightblue_btn,
-										PopUp.TYPE_SPINNER, //type of popup.
-										new View.OnClickListener() {
-											@Override
-											public void onClick(View v) {
-												PopUp.hide();
+									getString(R.string.init_connection), //message
+									getString(R.string.send_project), //title
+									R.drawable.mbit, R.drawable.lightblue_btn,
+									PopUp.TYPE_SPINNER, //type of popup.
+									new View.OnClickListener() {
+										@Override
+										public void onClick(View v) {
+											PopUp.hide();
 
-											}
-										},//override click listener for ok button
-										null);//pass null to use default listener
+										}
+									},//override click listener for ok button
+									null);//pass null to use default listener
 							}
 							inInit = true;
 							isCompleted = false;
@@ -534,14 +585,14 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 
 					}
-				}else if ((state > 0) && (state < 100)) {
+				} else if ((state > 0) && (state < 100)) {
 					if (!inProgress) {
 						// TODO Update progress bar check if correct.(my3)
 						PopUp.show(MBApp.getContext(),
-								"",
-								MBApp.getContext().getString(R.string.sending_project),
-								R.drawable.mbit, R.drawable.lightblue_btn,
-								PopUp.TYPE_PROGRESS, null, null);
+							"",
+							MBApp.getContext().getString(R.string.sending_project),
+							R.drawable.mbit, R.drawable.lightblue_btn,
+							PopUp.TYPE_PROGRESS, null, null);
 						inProgress = true;
 					}
 					PopUp.updateProgressBar(state);
@@ -551,27 +602,27 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				String error_message = broadcastGetErrorMessage(intent.getIntExtra(DfuService.EXTRA_DATA, 0));
 
 				logi("DFUResultReceiver.onReceive() :: Flashing ERROR!!  Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
-						+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
+					+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
 
 				//todo dismiss progress
 				PopUp.hide();
 
 				//TODO popup flashing failed
 				PopUp.show(MBApp.getContext(),
-						error_message, //message
-						"Flashing error", //title
-						R.drawable.exclamation, 0,
-						PopUp.TYPE_ALERT, //type of popup.
-						new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								PopUp.hide();
+					error_message, //message
+					"Flashing error", //title
+					R.drawable.exclamation, 0,
+					PopUp.TYPE_ALERT, //type of popup.
+					new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							PopUp.hide();
 
-							}
-						},//override click listener for ok button
-						null);//pass null to use default listener
+						}
+					},//override click listener for ok button
+					null);//pass null to use default listener
 				LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
-				dfuResultReceiver=null;
+				dfuResultReceiver = null;
 
 			}
 		}

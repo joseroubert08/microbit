@@ -174,12 +174,12 @@ public class BLEService extends BLEBaseService {
 	@Override
 	protected void handleUnexpectedConnectionEvent(int event) {
 
-		if (debug) logi("handleDisconnection() :: event = " + event);
+		if (debug) logi("handleUnexpectedConnectionEvent() :: event = " + event);
 		if ((event & BLEManager.BLE_CONNECTED) != 0) {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					if (debug) logi("handleDisconnection() :: BLE_CONNECTED");
+					if (debug) logi("handleUnexpectedConnectionEvent() :: BLE_CONNECTED");
 					discoverServices();
 					registerNotifications(true);
 					setNotification(true, 0);
@@ -187,7 +187,7 @@ public class BLEService extends BLEBaseService {
 			}).start();
 
 		} else if (event == BLEManager.BLE_DISCONNECTED) {
-			if (debug) logi("handleDisconnection() :: BLE_DISCONNECTED");
+			if (debug) logi("handleUnexpectedConnectionEvent() :: BLE_DISCONNECTED");
 			setNotification(false, 0);
 		}
 	}
@@ -251,6 +251,7 @@ public class BLEService extends BLEBaseService {
 	// ######################################################################
 
 	int lastEvent = Constants.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE;
+
 	void sendMessage(int eventSrc, int event) {
 
 		int msgService = 0;
@@ -264,8 +265,8 @@ public class BLEService extends BLEBaseService {
 				// TODO remove thiese demo hacks
 				eventSrc = Constants.SAMSUNG_REMOTE_CONTROL_ID;
 				event = (event == Constants.SAMSUNG_REMOTE_CONTROL_EVT_FORWARD) ? Constants.SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK : Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY;
-				if(event == Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY) {
-					if(lastEvent == Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY) {
+				if (event == Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY) {
+					if (lastEvent == Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY) {
 						event = Constants.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE;
 					} else {
 						event = Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY;
