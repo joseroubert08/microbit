@@ -22,14 +22,18 @@
 			android:textColor="@color/black_font_color"
 			android:textSize="12pt"/>
 
-		<EditText
+		<com.samsung.microbit.ui.control.ExtendedEditText
 			android:id="@+id/appNameEdit"
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"
 			android:background="@drawable/white_btn"
-			android:gravity="left|center_vertical"
-			android:textColor="@color/black_font_color"
 			android:editable="true"
+			android:enabled="true"
+			android:focusable="true"
+			android:focusableInTouchMode="true"
+			android:gravity="left|center_vertical"
+			android:inputType="textNoSuggestions|textVisiblePassword"
+			android:textColor="@color/black_font_color"
 			android:textSize="12pt"
 			android:visibility="invisible"/>
 	</RelativeLayout>

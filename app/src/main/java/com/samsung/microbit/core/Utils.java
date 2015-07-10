@@ -110,6 +110,31 @@ public class Utils {
 		return totalPrograms;
 	}
 
+	public static int renameFile(String filePath, String newName) {
+
+		File oldPathname = new File(filePath);
+		newName = newName.replace(' ', '_');
+		if (!newName.toLowerCase().endsWith(".hex")) {
+			newName = newName + ".hex";
+		}
+
+		File newPathname = new File(oldPathname.getParentFile().getAbsolutePath(), newName);
+		if (newPathname.exists()) {
+			return 1;
+		}
+
+		if (!oldPathname.exists() || !oldPathname.isFile()) {
+			return 2;
+		}
+
+		int rc = 3;
+		if (oldPathname.renameTo(newPathname)) {
+			rc = 0;
+		}
+
+		return rc;
+	}
+
 	public static List<Project> sortProjectList(List<Project> list, final int orderBy, final int sortOrder) {
 
 		Project[] projectArray = list.toArray(new Project[0]);

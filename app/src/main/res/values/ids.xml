@@ -2,4 +2,5 @@
 <resources>
     <item type="id" name="positionId" />
     <item type="id" name="textedit" />
+	<item type="id" name="editbutton" />
 </resources>
