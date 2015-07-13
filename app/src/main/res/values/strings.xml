@@ -129,7 +129,7 @@
     <string name="create_new_project">Create Project</string>
     <string name="download_existing">Download Existing</string>
     <string name="downloading">Downloading...</string>
-    <string name="download_complete">Download complete.</string>
+    <string name="download_complete">Download complete.Flash to microbit ?</string>
     <string name="projects">Projects</string>
     <string name="send">Send</string>
     <string name="code">Code</string>
