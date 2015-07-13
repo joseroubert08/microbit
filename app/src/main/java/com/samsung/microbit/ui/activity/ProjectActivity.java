@@ -173,6 +173,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 		setConnectedDeviceText();
 
+		String fileToDownload = getIntent().getStringExtra("download_file");
+		if(fileToDownload != null)
+		{
+			programToSend = new Project(fileToDownload, Constants.HEX_FILE_DIR +"/"+fileToDownload, 0, null, false);
+			initiateFlashing(programToSend);
+		}
 	}
 
 	private void setConnectedDeviceText() {

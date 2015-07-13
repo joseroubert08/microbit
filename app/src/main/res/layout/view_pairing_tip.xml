@@ -25,7 +25,6 @@
         android:layout_alignParentEnd="true">
 
         <TextView
-
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/connectTipText"
@@ -35,8 +34,6 @@
             android:layout_marginLeft="@dimen/content_margin"
             android:textColor="@color/black_font_color"
             android:layout_toStartOf="@+id/microbit_tip_image">
-
-
         </TextView>
 
         <ImageView
@@ -45,9 +42,8 @@
             android:layout_height="150dp"
             android:src="@drawable/tip_mb"
             android:layout_marginEnd="57dp"
-            android:layout_alignParentEnd="true"
-        />
-        <!-- back -->
+            android:layout_alignParentEnd="true"/>
+
         <ImageView
             android:id="@+id/microbit_tip_image_back"
             android:layout_width="150dp"
@@ -55,8 +51,20 @@
             android:src="@drawable/tip_mb_back"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="57dp"
-            android:layout_below="@id/microbit_tip_image"
-            />
+            android:layout_below="@id/microbit_tip_image"/>
+
+        <ImageButton
+            android:id="@+id/cancel_tip_button"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/cross"
+            android:background="@drawable/popup_cancel_button"
+            android:clickable="true"
+            android:layout_marginBottom="@dimen/content_margin"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="false"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="15dp" />
 
         <ImageButton
             android:id="@+id/ok_connect_button"
@@ -65,10 +73,11 @@
             android:src="@drawable/tick"
             android:background="@drawable/popup_ok_button"
             android:clickable="true"
-            android:layout_marginLeft="85dp"
             android:layout_marginBottom="@dimen/content_margin"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true" />
+            android:layout_marginLeft="85dp"
+            android:layout_toLeftOf="@+id/microbit_tip_image_back"
+            android:layout_marginRight="15dp" />
 
     </RelativeLayout>
 </RelativeLayout>
