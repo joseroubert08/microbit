@@ -124,33 +124,28 @@ public class ProjectAdapter extends BaseAdapter {
 		@Override
 		public void onClick(View v) {
 
-			/*
-
 			RelativeLayout r = (RelativeLayout) v.getParent().getParent();
 			LinearLayout actionBarLayout = null;
 
 			if (r != null) {
 				actionBarLayout = (LinearLayout) r.findViewById(R.id.actionBarForProgram);
-				Log.d("Rohit", "Got Action bar");
-				if (actionBarLayout != null) {
+				if (actionBarLayout != null) {  //Potrait Layout
 					if (lastActionBarLayout != null) {
 						lastActionBarLayout.setVisibility(LinearLayout.GONE);
 					}
 
 					lastActionBarLayout = (LinearLayout) r.findViewById(R.id.actionBarForProgram);
 					actionBarLayout.setVisibility(LinearLayout.VISIBLE);
+				} else {
+                    EditText ed = (EditText) v.getTag(R.id.textedit);
+                    ed.setVisibility(View.VISIBLE);
+                    String currentText = (String) ((Button) v).getText();
+                    ed.setText(currentText);
+                    ed.requestFocus();
+                    ed.setSelection(ed.getText().length());
 				}
 			}
 
-*/
-			//TODO AFTER DEMO EDIT PROJECT NAME
-
-			EditText ed = (EditText) v.getTag(R.id.textedit);
-			ed.setVisibility(View.VISIBLE);
-			String currentText = (String) ((Button) v).getText();
-			ed.setText(currentText);
-			ed.requestFocus();
-			ed.setSelection(ed.getText().length());
 		}
 	};
 
