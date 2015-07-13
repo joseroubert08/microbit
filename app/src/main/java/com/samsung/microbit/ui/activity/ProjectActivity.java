@@ -144,23 +144,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		mainContentView.getBackground().setAlpha(128);
 
 		projectListView = (ListView) findViewById(R.id.projectListView);
-
-		/*
-		TextView emptyText = (TextView) findViewById(android.R.id.empty);
-		projectListView.setEmptyView(emptyText);
-
-		Utils.findProgramsAndPopulate(prettyFileNameMap, projectList);
-
-		projectListSortOrder = Utils.getListOrderPrefs(this);
-		int sortBy = (projectListSortOrder >> 1);
-		int sortOrder = projectListSortOrder & 0x01;
-		Utils.sortProjectList(projectList, sortBy, sortOrder);
-
-		projectAdapter = new ProjectAdapter(this, projectList);
-		projectListView.setAdapter(projectAdapter);
-		*/
-
-		updateProjectsListSortOrder();
+		updateProjectsListSortOrder(true);
 
 		/* *************************************************
 		 * TODO setup to Handle BLE Notiification
@@ -169,16 +153,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
 			LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(broadcastReceiver, broadcastIntentFilter);
 		}
+
 		state = STATE_START_NOFLASH;
-
 		setConnectedDeviceText();
-
-		String fileToDownload = getIntent().getStringExtra("download_file");
-		if(fileToDownload != null)
-		{
-			programToSend = new Project(fileToDownload, Constants.HEX_FILE_DIR +"/"+fileToDownload, 0, null, false);
-			initiateFlashing(programToSend);
-		}
 	}
 
 	private void setConnectedDeviceText() {
@@ -224,11 +201,50 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		}
 	}
 
-	void updateProjectsListSortOrder () {
+	public void renameFile(String filePath, String newName) {
+
+		int rc = Utils.renameFile(filePath, newName);
+		if (rc != 0) {
+			AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+			alertDialog.setTitle("Alert");
+
+			String message = "OOPS!";
+			switch (rc) {
+				case 1:
+					message = "Cannot rename, destination file already exists.";
+					break;
+
+				case 2:
+					message = "Cannot rename, source file not exist.";
+					break;
+
+				case 3:
+					message = "Rename opertaion failed.";
+					break;
+			}
+
+			alertDialog.setMessage(message);
+			alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+
+			alertDialog.show();
+		} else {
+			updateProjectsListSortOrder(true);
+		}
+	}
+
+	void updateProjectsListSortOrder(boolean reReadFS) {
 
 		TextView emptyText = (TextView) findViewById(android.R.id.empty);
 		projectListView.setEmptyView(emptyText);
-		Utils.findProgramsAndPopulate(prettyFileNameMap, projectList);
+		if (reReadFS) {
+			projectList.clear();
+			Utils.findProgramsAndPopulate(prettyFileNameMap, projectList);
+		}
 
 		projectListSortOrder = Utils.getListOrderPrefs(this);
 		int sortBy = (projectListSortOrder >> 1);
@@ -241,8 +257,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 	void projectListSortOrderChanged() {
 		Utils.setListOrderPrefs(this, projectListSortOrder);
-		projectList.clear();
-		updateProjectsListSortOrder();
+		updateProjectsListSortOrder(true);
 	}
 
 	public void onClick(final View v) {
@@ -335,7 +350,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		}
 	}
 
-
 	protected void initiateFlashing(Project toSend) {
 
 		ConnectedDevice currentMicrobit = Utils.getPairedMicrobit(this);
@@ -347,13 +361,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		if (currentMicrobit.mStatus) {
 			// Disconnect Existing Gatt
 			IPCService.getInstance().bleDisconnect();
-
 			state = STATE_START_FLASH;
 		} else {
 			startFlashingPhase1();
 		}
 	}
-
 
 	protected void startFlashingPhase1() {
 
@@ -539,10 +551,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 									},//override click listener for ok button
 									null);//pass null to use default listener
 							}
+
 							isCompleted = true;
 							inInit = false;
 							inProgress = false;
 							break;
+
 						case DfuService.PROGRESS_DISCONNECTING:
 							if ((isCompleted == false) && (inProgress == false))// Disconnecting event because of error
 							{
@@ -569,8 +583,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 							}
 
 							break;
+
 						case DfuService.PROGRESS_CONNECTING:
-							if ((!inInit) && (!isCompleted)){
+							if ((!inInit) && (!isCompleted)) {
 								PopUp.show(MBApp.getContext(),
 									getString(R.string.init_connection), //message
 									getString(R.string.send_project), //title
@@ -585,11 +600,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 									},//override click listener for ok button
 									null);//pass null to use default listener
 							}
+
 							inInit = true;
 							isCompleted = false;
 							break;
-
-
 					}
 				} else if ((state > 0) && (state < 100)) {
 					if (!inProgress) {
@@ -599,8 +613,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 							MBApp.getContext().getString(R.string.sending_project),
 							R.drawable.mbit, R.drawable.lightblue_btn,
 							PopUp.TYPE_PROGRESS, null, null);
+
 						inProgress = true;
 					}
+
 					PopUp.updateProgressBar(state);
 
 				}
@@ -627,6 +643,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 						}
 					},//override click listener for ok button
 					null);//pass null to use default listener
+
 				LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
 				dfuResultReceiver = null;
 
@@ -714,6 +731,4 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-
-
 }
