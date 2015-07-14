@@ -66,11 +66,6 @@
 			android:name=".ui.activity.NotificationActivity"
 			android:label="@string/device_details"/>
 		<activity
-			android:name=".ui.activity.LEDGridActivity"
-			android:label="@string/title_activity_ledgrid"
-			android:parentActivityName=".ui.activity.HomeActivity">
-		</activity>
-		<activity
 			android:name=".ui.activity.ConnectActivity"
 			android:label="@string/title_activity_connect"
 			android:parentActivityName=".ui.activity.HomeActivity"
