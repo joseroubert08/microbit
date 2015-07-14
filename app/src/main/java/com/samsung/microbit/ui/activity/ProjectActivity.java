@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.samsung.microbit.core.CommonGUI.commonAlertDialog;
 
 
 public class ProjectActivity extends Activity implements View.OnClickListener {
@@ -148,6 +147,14 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 		state = STATE_START_NOFLASH;
 		setConnectedDeviceText();
+		String fileToDownload = getIntent().getStringExtra("download_file");
+
+		if(fileToDownload != null)
+		{
+			programToSend = new Project(fileToDownload, Constants.HEX_FILE_DIR +"/"+fileToDownload, 0, null, false);
+			initiateFlashing(programToSend);
+		}
+
 	}
 
 	private void setConnectedDeviceText() {
@@ -257,7 +264,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		int pos;
 		Intent intent;
 
-		ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
 		switch (v.getId()) {
 			case R.id.preferences:
 				Toast.makeText(MBApp.getContext(), "preferences", Toast.LENGTH_SHORT).show();
@@ -316,18 +322,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				break;
 
 			case R.id.sendBtn:
-				if (connectedDevice.mPattern == null) {
-					commonAlertDialog(this, "Alert", "<p>Cannot send.</p><p>No microbit connected</p>");
-				} else {
-
-					pos = (Integer) v.getTag();
-					Project toSend = (Project) projectAdapter.getItem(pos);
-					initiateFlashing(toSend);
-				}
-
+				pos = (Integer) v.getTag();
+				Project toSend = (Project) projectAdapter.getItem(pos);
+				initiateFlashing(toSend);
 				break;
 
 			case R.id.connectedIndicatorIcon:
+				ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
 				if (connectedDevice.mPattern != null) {
 					if (connectedDevice.mStatus) {
 						IPCService.getInstance().bleDisconnect();
@@ -361,6 +362,23 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			// Disconnect Existing Gatt
 			IPCService.getInstance().bleDisconnect();
 			state = STATE_START_FLASH;
+		}
+		else if (currentMicrobit.mPattern == null)
+		{
+			PopUp.show(MBApp.getContext(),
+					getString(R.string.flashing_error_msg), //message
+					getString(R.string.flashing_failed_title), //title
+					R.drawable.exclamation, //image icon res id
+					0,
+					PopUp.TYPE_ALERT, //type of popup.
+					new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							PopUp.hide();
+
+						}
+					},//override click listener for ok button
+					null);//pass null to use default listener
 		} else {
 			startFlashingPhase1();
 		}
@@ -388,8 +406,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		startService(service);
 
 		PopUp.show(this,
-			"Finding the device..", //message
-			"Send Project", //title
+			getString(R.string.flashing_phase1_msg), //message
+			getString(R.string.flashing_title), //title
 			R.drawable.mbit, R.drawable.lightblue_btn,
 			PopUp.TYPE_NOBUTTON, //type of popup.
 			null,//override click listener for ok button,
@@ -429,8 +447,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			}
 		};
 		PopUp.show(this,
-			"Press button on micro:bit and then select OK", //message
-			"Flashing", //title
+			getString(R.string.flashing_phase2_msg), //message
+			getString(R.string.flashing_title), //title
 			R.drawable.exclamation, //image icon res id
 			0,
 			PopUp.TYPE_NOBUTTON, //type of popup.
@@ -444,8 +462,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 	void handle_reset_microbit() {
 		PopUp.show(MBApp.getContext(),
-			"micro:bit not in correct state", //message
-			"Flashing", //title
+			getString(R.string.flashing_error_msg), //message
+			getString(R.string.flashing_failed_title), //title
 			R.drawable.exclamation, //image icon res id
 			0,
 			PopUp.TYPE_ALERT, //type of popup.
@@ -490,8 +508,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 
 					PopUp.show(MBApp.getContext(),
-						"micro:bit not in correct state", //message
-						"Flashing", //title
+						getString(R.string.flashing_error_msg), //message
+						getString(R.string.flashing_failed_title), //title
 						R.drawable.exclamation, //image icon res id
 						0,
 						PopUp.TYPE_ALERT, //type of popup.
@@ -566,7 +584,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 								//PopUp.hide();
 								PopUp.show(MBApp.getContext(),
 									error_message, //message
-									"Flashing error", //title
+									getString(R.string.flashing_failed_title), //title
 									R.drawable.exclamation, 0,
 									PopUp.TYPE_ALERT, //type of popup.
 									new View.OnClickListener() {
@@ -631,7 +649,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				//TODO popup flashing failed
 				PopUp.show(MBApp.getContext(),
 					error_message, //message
-					"Flashing error", //title
+					getString(R.string.flashing_failed_title), //title
 					R.drawable.exclamation, 0,
 					PopUp.TYPE_ALERT, //type of popup.
 					new View.OnClickListener() {

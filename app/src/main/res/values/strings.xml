@@ -131,12 +131,16 @@
     <string name="downloading">Downloading...</string>
     <string name="download_complete">Download complete.Flash to microbit ?</string>
     <string name="projects">Projects</string>
-    <string name="send">Send</string>
-    <string name="code">Code</string>
+    <string name="send">Flash</string>
+    <string name="code">Edit</string>
     <string name="no_projects">No projects found!</string>
     <string name="connected_to">Connected to</string>
     <string name="not_connected">Not Connected</string>
     <string name="micro_bit_reset_msg">Microbit needs to be reset.</string>
+    <string name="flashing_title">Flashing</string>
+    <string name="flashing_error_msg">micro:bit not in correct state</string>
+    <string name="flashing_phase1_msg">Finding the device..</string>
+    <string name="flashing_phase2_msg">Press button on micro:bit.</string>
 
     <string name="web_view_demo">Web View Demo</string>
     <string name="sending_project">Sending project</string>
