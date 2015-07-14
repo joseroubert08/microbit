@@ -1,9 +1,11 @@
 package com.samsung.microbit.ui.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -41,6 +43,8 @@ import com.samsung.microbit.ui.PopUp;
 import java.util.List;
 import java.util.logging.Handler;
 
+import static com.samsung.microbit.core.CommonGUI.commonAlertDialog;
+
 public class HomeActivity extends Activity {
 
 	/* *************************************************
@@ -58,10 +62,10 @@ public class HomeActivity extends Activity {
 					@Override
 					public void run() {
 						PopUp.show(MBApp.getContext(),
-								MBApp.getContext().getString(R.string.micro_bit_reset_msg),
-								"",
-								0, 0,
-								PopUp.TYPE_ALERT, null, null);
+							MBApp.getContext().getString(R.string.micro_bit_reset_msg),
+							"",
+							0, 0,
+							PopUp.TYPE_ALERT, null, null);
 					}
 				});
 			}
@@ -157,14 +161,16 @@ public class HomeActivity extends Activity {
 					if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleConnect()");
 
 					PopUp.show(MBApp.getContext(),
-							getString(R.string.init_connection),
-							"",
-							R.drawable.mbit, R.drawable.lightblue_btn,
-							PopUp.TYPE_SPINNER,
-							null,null);
+						getString(R.string.init_connection),
+						"",
+						R.drawable.mbit, R.drawable.lightblue_btn,
+						PopUp.TYPE_SPINNER,
+						null, null);
 
 					IPCService.getInstance().bleConnect();
 				}
+			} else {
+				commonAlertDialog(this, "Alert", "<p>Cannot connect.</p><p>No microbit paired</p>");
 			}
 		}
 	}

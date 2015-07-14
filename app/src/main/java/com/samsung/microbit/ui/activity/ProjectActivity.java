@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.AbsoluteSizeSpan;
@@ -43,6 +44,8 @@ import com.samsung.microbit.ui.fragment.ProjectActivityPopupFragment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.samsung.microbit.core.CommonGUI.commonAlertDialog;
 
 
 public class ProjectActivity extends Activity implements View.OnClickListener {
@@ -265,6 +268,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		int pos;
 		Intent intent;
 
+		ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
 		switch (v.getId()) {
 			case R.id.preferences:
 				Toast.makeText(MBApp.getContext(), "preferences", Toast.LENGTH_SHORT).show();
@@ -323,13 +327,18 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				break;
 
 			case R.id.sendBtn:
-				pos = (Integer) v.getTag();
-				Project toSend = (Project) projectAdapter.getItem(pos);
-				initiateFlashing(toSend);
+				if (connectedDevice.mPattern == null) {
+					commonAlertDialog(this, "Alert", "<p>Cannot send.</p><p>No microbit connected</p>");
+				} else {
+
+					pos = (Integer) v.getTag();
+					Project toSend = (Project) projectAdapter.getItem(pos);
+					initiateFlashing(toSend);
+				}
+
 				break;
 
 			case R.id.connectedIndicatorIcon:
-				ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
 				if (connectedDevice.mPattern != null) {
 					if (connectedDevice.mStatus) {
 						IPCService.getInstance().bleDisconnect();
@@ -357,6 +366,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
 			dfuResultReceiver = null;
 		}
+
 		programToSend = toSend;
 		if (currentMicrobit.mStatus) {
 			// Disconnect Existing Gatt
