@@ -99,12 +99,6 @@ public class HomeActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (getResources().getBoolean(R.bool.portrait_only)) {
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		} else {
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-		}
-
 		MBApp.setContext(this);
 		/* *************************************************
 		 * TODO setup to Handle BLE Notiification
