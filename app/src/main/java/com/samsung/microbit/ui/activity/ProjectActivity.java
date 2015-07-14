@@ -38,7 +38,6 @@ import com.samsung.microbit.service.DfuService;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.adapter.ProjectAdapter;
-import com.samsung.microbit.ui.fragment.ProjectActivityPopupFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,10 +50,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	ProjectAdapter projectAdapter;
 	private ListView projectListView;
 	private HashMap<String, String> prettyFileNameMap = new HashMap<String, String>();
-	private ArrayList<String> list = new ArrayList<String>();
-
-	ProjectActivityPopupFragment fragment;
-	LinearLayout popupOverlay;
 
 	Project programToSend;
 	public int state;
