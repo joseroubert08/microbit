@@ -20,9 +20,7 @@ public class DownloadManager {
     public DownloadManager() {
     }
 
-    public long download(String sourceUrl, String filename) {
-
-        String destinationFile = Constants.HEX_FILE_DIR.getAbsolutePath() + "/" +  filename;
+    public long download(String sourceUrl, String destinationFile) {
 
         long objectSize = 0L;
         try {

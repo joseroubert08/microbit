@@ -21,6 +21,8 @@ import java.util.UUID;
 
 public abstract class BLEBaseService extends Service {
 
+	public static final boolean AUTO_CONNECT = true;
+
 	protected BLEManager bleManager;
 	BluetoothManager bluetoothManager;
 	BluetoothAdapter bluetoothAdapter;
@@ -228,7 +230,7 @@ public abstract class BLEBaseService extends Service {
 
 		int rc = 99;
 		if (bleManager != null) {
-			rc = bleManager.connect(true);
+			rc = bleManager.connect(AUTO_CONNECT);
 			rc = interpretCode(rc, BLEManager.BLE_CONNECTED);
 		}
 

@@ -149,7 +149,7 @@ public class BLEManager {
 
 	public int connect(boolean autoReconnect) {
 
-		if(debug) logi("connect()");
+		if(debug) logi("connect() :: autoReconnect=" + autoReconnect);
 		int rc = BLE_ERROR_NOOP;
 
 		if (gatt == null) {

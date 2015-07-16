@@ -25,7 +25,6 @@ public class CommonGUI {
 		);
 
 		alertDialog.show();
-		System.out.println("Hello");
 	}
 
 }
