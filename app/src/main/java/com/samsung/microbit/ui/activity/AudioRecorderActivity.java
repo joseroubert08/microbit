@@ -13,12 +13,14 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 
+import android.view.View;
 import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.samsung.microbit.R;
 import com.samsung.microbit.plugin.AudioPlugin;
+import com.samsung.microbit.ui.PopUp;
 
 /**
  * Created by frederic.ma on 14/06/2015.
@@ -36,10 +38,8 @@ public class AudioRecorderActivity extends Activity {
     private boolean backPressed;
     private Bitmap notificationLargeIconBitmap;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    private void create()
+    {
         setContentView(R.layout.activity_audio_recorder);
 
         filenameTxt = (TextView)findViewById(R.id.filenameTxt);
@@ -52,6 +52,32 @@ public class AudioRecorderActivity extends Activity {
         backPressed = false;
 
         notificationLargeIconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.microphone_on);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        PopUp.show(this,
+                "Accept Audio Recording?\nClick Yes to allow", //message
+                "Privacy", //title
+                R.drawable.microphone_on, //image icon res id (pass 0 to use default icon)
+                0, //image icon background res id (pass 0 if there is no background)
+                PopUp.TYPE_CHOICE, //type of popup.
+                new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        PopUp.hide();
+                        AudioRecorderActivity.this.create();
+                    }
+                },//override click listener for ok button
+                new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        PopUp.hide();
+                        AudioRecorderActivity.this.finish();
+                    }
+                });//pass null to use default listener
     }
 
     @Override

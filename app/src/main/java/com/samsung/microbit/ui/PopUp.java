@@ -23,6 +23,11 @@ import com.samsung.microbit.R;
 /*
 How to use:
 
+Note that the "context" has to be activity or application based.
+Passing service "context" will not work anymore because TYPE_SYSTEM_ALERT has to be disabled
+in order to fix the overlap bug with the system power dialog.
+To show the popup from service, you must call the popup from an activity
+
 PopUp.show(context,
         "Accept Audio Recording?\nClick Yes to allow", //message
         "Privacy", //title
@@ -59,11 +64,13 @@ public class PopUp {
         }
     };
 
+    static private View.OnClickListener backPressListener = null;
+
     static private Dialog.OnKeyListener keyListener = new Dialog.OnKeyListener() {
         @Override
         public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
-                PopUp.hide();
+                backPressListener.onClick(null);
                 return true;
             }
             return false;
@@ -126,6 +133,7 @@ public class PopUp {
         progressBar = (ProgressBar) popUpView.findViewById(R.id.progressBar);
         ProgressBar spinnerBar = (ProgressBar) popUpView.findViewById(R.id.spinnerBar);
         spinnerBar.setVisibility(View.GONE);
+        backPressListener = defaultListener;
 
         switch (type) {
             case TYPE_CHOICE: {
@@ -141,6 +149,7 @@ public class PopUp {
                 ImageButton imageButtonCancel = (ImageButton) popUpView.findViewById(R.id.imageButtonCancel);
                 if (cancelListener != null) {
                     imageButtonCancel.setOnClickListener(cancelListener);
+                    backPressListener = cancelListener;
                 } else {
                     imageButtonCancel.setOnClickListener(defaultListener);
                 }
@@ -182,7 +191,10 @@ public class PopUp {
         }
 
         dialog.setContentView(popUpView);
-        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);//needed by Service class
+        //Do not use TYPE_SYSTEM_ALERT because it hides system power dialog
+        //Side effect of not using TYPE_SYSTEM_ALERT is that a Popup can only be shown within an activity
+        //TYPE_SYSTEM_ALERT allows a service to show a dialog without an activity.
+        //dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         dialog.getWindow().setLayout(WindowManager.LayoutParams.FILL_PARENT,
                 WindowManager.LayoutParams.FILL_PARENT);
         dialog.show();
