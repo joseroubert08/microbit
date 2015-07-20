@@ -2,6 +2,8 @@ package com.samsung.microbit.model;
 
 import android.os.Environment;
 
+import com.samsung.microbit.MBApp;
+
 import java.io.File;
 import java.util.UUID;
 
@@ -210,5 +212,6 @@ public class Constants {
 
 	//TODO: Change to data/data/appName/files MBApp.getContext().getFilesDir();
 	public static File HEX_FILE_DIR = Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
+	//public static File HEX_FILE_DIR = MBApp.getContext().getFilesDir();
 
 }

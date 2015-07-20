@@ -254,6 +254,7 @@ public class BLEService extends BLEBaseService {
 
 	void sendMessage(int eventSrc, int event) {
 
+		logi("eventSrc" + eventSrc + "  event=" + event);
 		int msgService = 0;
 		CmdArg cmd = null;
 		switch (eventSrc) {
@@ -262,7 +263,9 @@ public class BLEService extends BLEBaseService {
 			case Constants.SAMSUNG_AUDIO_RECORDER_ID:
 			case Constants.SAMSUNG_CAMERA_ID:
 
+				/*
 				// TODO remove thiese demo hacks
+
 				eventSrc = Constants.SAMSUNG_REMOTE_CONTROL_ID;
 				event = (event == Constants.SAMSUNG_REMOTE_CONTROL_EVT_FORWARD) ? Constants.SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK : Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY;
 				if (event == Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY) {
@@ -274,6 +277,7 @@ public class BLEService extends BLEBaseService {
 
 					lastEvent = event;
 				}
+				*/
 
 				msgService = eventSrc;
 				cmd = new CmdArg(event, "1000");

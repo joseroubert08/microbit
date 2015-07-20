@@ -138,7 +138,7 @@ public class BLEManager {
 			inBleOp = OP_NOOP;
 			callbackCompleted = false;
 			if (gatt != null) {
-				if(debug) logi("reset() :: gatt != null");
+				if(debug) logi("reset() :: gatt != null : closing gatt");
 				gatt.close();
 			}
 
