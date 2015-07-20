@@ -89,6 +89,7 @@
 		<activity
 			android:name=".ui.activity.AudioRecorderActivity"
 			android:label="Audio Recorder"
+			android:launchMode="singleTask"
 			android:theme="@android:style/Theme.Holo">
 			<intent-filter>
 				<action android:name="com.samsung.microbit.ui.AudioRecorderActivity.action.LAUNCH"/>
