@@ -47,6 +47,7 @@ import com.samsung.microbit.ui.adapter.LEDAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	private SharedPreferences preferences;
 	private final String PREFERENCES_PREVDEV_PREFNAME = "PreviousDevices";
 	private final String PREFERENCES_PREVDEV_KEY = "PreviousDevicesKey";
-	private final int PREVIOUS_DEVICES_MAX = 3;
+	private final int PREVIOUS_DEVICES_MAX = 999;
 	private static boolean DISABLE_DEVICE_LIST = false;
 
 	ConnectedDevice[] prevDeviceArray;
@@ -212,7 +213,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		mHandler = new Handler(Looper.getMainLooper());
 
-		prevDeviceArray = new ConnectedDevice[PREVIOUS_DEVICES_MAX];
+		//prevDeviceArray = new ConnectedDevice[PREVIOUS_DEVICES_MAX];
 		lvConnectedDevice = (ListView) findViewById(R.id.connectedDeviceList);
 		populateConnectedDeviceList(false);
 
@@ -349,7 +350,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		for (int i = 0; i < numOfPreviousItems; i++) {
 			connectedDeviceList.add(prevDeviceArray[i]);
 		}
-		for (int i = numOfPreviousItems; i < PREVIOUS_DEVICES_MAX; i++) {
+		for (int i = numOfPreviousItems; i < 3; i++) {
 			connectedDeviceList.add(new ConnectedDevice(null, null, false, null));
 		}
 
@@ -359,18 +360,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			lvConnectedDevice.setAdapter(connectedDeviceAdapter);
 
 		} else {
-			ConnectedDevice currentDev = Utils.getPairedMicrobit(this);
-
 			connectedDeviceAdapter = new ConnectedDeviceAdapter(this, connectedDeviceList);
 			lvConnectedDevice.setAdapter(connectedDeviceAdapter);
-
-			if (currentDev.mPattern != null && currentDev.mPattern.equals(prevDeviceArray[0].mPattern))
-			{
-				prevDeviceArray[0].mStatus=currentDev.mStatus;
-				prevMicrobitList.set(0, prevDeviceArray[0]);
-				storeMicrobits(prevMicrobitList, true);
-			}
-
 		}
 	}
 
@@ -504,7 +495,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 							R.drawable.mbit, R.drawable.lightblue_btn,
 							PopUp.TYPE_SPINNER,
 							null,null);
-					
+
 					toTurnON = true;
 				}
 
@@ -563,7 +554,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
                 state = PAIRING_STATE.PAIRING_STATE_NEW_NAME;
                 displayConnectScreen(state);
-                ConnectedDevice newDev = new ConnectedDevice(null, newDeviceCode, true, "ab.cd.ef.gh.ij.56");
+                ConnectedDevice newDev = new ConnectedDevice(null, newDeviceCode, false, "ab.cd.ef.gh.ij.56");
                 addMicrobit(newDev,PREVIOUS_DEVICES_MAX);
                 return;
 
@@ -622,7 +613,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		ConnectedDevice currentDevice = Utils.getPairedMicrobit(MBApp.getContext());
 
-		if (prevDeviceArray[0] != null) {
+		if ((prevDeviceArray != null) && (prevDeviceArray[0] != null)) {
 
 			if((currentDevice.mPattern != null) && currentDevice.mPattern.equals(prevDeviceArray[0].mPattern))
 			{
@@ -722,7 +713,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 					deviceFound = true;
 					scanLeDevice(false);
 
-					ConnectedDevice newDev = new ConnectedDevice(null, newDeviceCode.toUpperCase(), true, device.getAddress());
+					ConnectedDevice newDev = new ConnectedDevice(null, newDeviceCode.toUpperCase(), false, device.getAddress());
 					handle_pairing_successful(newDev);
 				} else {
 					if(debug) logi("mLeScanCallback.onLeScan() ::   non-matching - deviceName == " + newDeviceName.toLowerCase());
@@ -754,11 +745,16 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		settings = getSharedPreferences(PREFERENCES_PREVDEV_PREFNAME, MODE_PRIVATE);
 		editor = settings.edit();
 		Gson gson = new Gson();
-		//ConnectedDevice[] prevMicrobitItems = new ConnectedDevice[prevDevList.size()];
-		prevDevList.toArray(prevDeviceArray);
-		String jsonPrevDevices = gson.toJson(prevDeviceArray, ConnectedDevice[].class);
-		editor.putString(PREFERENCES_PREVDEV_KEY, jsonPrevDevices);
-		editor.commit();
+        int totalnum = prevDevList.size();
+        if(totalnum > 0 ) {
+            prevDeviceArray = (ConnectedDevice[]) prevDevList.toArray(new ConnectedDevice[totalnum]);
+            String jsonPrevDevices = gson.toJson(prevDeviceArray, ConnectedDevice[].class);
+            editor.putString(PREFERENCES_PREVDEV_KEY, jsonPrevDevices);
+        } else {
+            prevDeviceArray = null;
+            editor.clear();
+        }
+        editor.commit();
 		if(!fromBroadcast)
 		{
 			updateGlobalPairedDevice();
@@ -779,13 +775,14 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				prevDeviceArray = gson.fromJson(prevDevicesStr, ConnectedDevice[].class);
 				prevMicrobitTemp = Arrays.asList(prevDeviceArray);
 				prevMicrobitList = new ArrayList(prevMicrobitTemp);
+				prevMicrobitList.removeAll(Collections.singleton(null));
 				return (ArrayList) prevMicrobitList;
 			}
 
 		}
 
 		ConnectedDevice current = Utils.getPairedMicrobit(this);
-		if( (current.mPattern != null) && current.mPattern.equals(prevDeviceArray[0].mPattern))
+		if( (prevDeviceArray !=null) && ((current.mPattern != null) && current.mPattern.equals(prevDeviceArray[0].mPattern)))
 		{
 			if(current.mStatus != prevDeviceArray[0].mStatus)
 				prevDeviceArray[0].mStatus = current.mStatus;
@@ -809,7 +806,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	public void addMicrobit(ConnectedDevice newMicrobit, int oldId) {
 		if (prevMicrobitList == null)
-			prevMicrobitList = new ArrayList(PREVIOUS_DEVICES_MAX);
+			prevMicrobitList = new ArrayList(1);
 
 		// This device already exists in the list, so remove it and add as new
 		if (oldId != PREVIOUS_DEVICES_MAX) {
@@ -822,30 +819,14 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			}
 		}
 
-		// If there are already PREVIOUS_DEVICES_MAX devices, delete last one
-		if (prevMicrobitList.size() == PREVIOUS_DEVICES_MAX)
-			prevMicrobitList.remove(PREVIOUS_DEVICES_MAX - 1);
-
 		// new devices are added to top of the list
 		prevMicrobitList.add(0, newMicrobit);
-
-		String dbgDevices = "A ";
-		int ind = 0;
-		for (Iterator<ConnectedDevice> it = prevMicrobitList.iterator(); it.hasNext(); ) {
-			ConnectedDevice st = it.next();
-			if ((st != null) && (ind != 0)) {
-				st.mStatus = false; // turn off the previously connected devive
-				//disconnectBluetooth();
-			}
-			prevDeviceArray[ind++] = st;
-		}
-
 		storeMicrobits(prevMicrobitList, false);
 	}
 
 	public void changeMicrobitName(int index, ConnectedDevice modMicrobit) {
-		prevMicrobitList.remove(index);
-		prevMicrobitList.add(index, modMicrobit);
+
+		prevMicrobitList.set(index, modMicrobit);
 		storeMicrobits(prevMicrobitList, false);
 	}
 
@@ -875,7 +856,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	public void removeMicrobit(int index) {
 		if (prevMicrobitList != null) {
 			prevMicrobitList.remove(index);
-			// prevMicrobitList.trimToSize();
+		//	prevMicrobitList.remove(null);
 			storeMicrobits(prevMicrobitList, false);
 		}
 	}
