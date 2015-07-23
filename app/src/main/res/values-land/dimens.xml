@@ -6,7 +6,7 @@
 
 	<dimen name="widget_margin">5dp</dimen>
 	<dimen name="content_margin">16dp</dimen>
-	<dimen name="home_content_margin">100dp</dimen>
+	<dimen name="home_content_margin">30dp</dimen>
 
 	<dimen name="button_text_size">25sp</dimen>
 	<dimen name="button_height">80dp</dimen>

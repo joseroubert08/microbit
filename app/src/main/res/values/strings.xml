@@ -131,8 +131,8 @@
     <string name="downloading">Downloading...</string>
     <string name="download_complete">Download complete.Flash to microbit ?</string>
     <string name="projects">Projects</string>
-    <string name="send">Flash</string>
-    <string name="code">Edit</string>
+    <string name="flash">Flash</string>
+    <string name="view">View</string>
     <string name="no_projects">No projects found!</string>
     <string name="connected_to">Connected to</string>
     <string name="not_connected">Not Connected</string>
@@ -146,5 +146,8 @@
     <string name="sending_project">Sending project</string>
     <string name="send_project">Send Project</string>
     <string name="init_connection">Initialising Connection..</string>
+
+    <string name="send">Change ID To FLASH</string>
+    <string name="code">Change ID To VIEW</string>
 
 </resources>

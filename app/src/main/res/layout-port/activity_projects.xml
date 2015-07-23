@@ -58,6 +58,4 @@
             android:onClick="onClick"
             android:textSize="25sp" />
 
-        <include layout="@layout/view_footer" />
-
 </RelativeLayout>

@@ -59,7 +59,7 @@
 				android:layout_toRightOf="@id/codeBtn"
 				android:background="@drawable/green_btn"
 				android:drawableRight="@drawable/microbit_send"
-				android:text="@string/send"
+				android:text="@string/flash"
 				android:textColor="@color/black_font_color" />
 
 			<ImageButton

@@ -250,15 +250,13 @@ public class ProjectAdapter extends BaseAdapter {
 		deleteBtn.setEnabled(true);
 
 		appNameButton.setText(p.name);
-		//appNameEdit.setText(p.name);
-		codeBtn.setText("Code");
 		if (p.runStatus) {
-			sendBtn.setText("Running");
+			sendBtn.setText("");
 			Drawable myIcon = convertView.getResources().getDrawable(R.drawable.green_btn);
 			sendBtn.setBackground(myIcon);
 		} else {
-			sendBtn.setText("Send");
-			Drawable myIcon = convertView.getResources().getDrawable(R.drawable.lightblue_btn);
+			sendBtn.setText(R.string.flash);
+			Drawable myIcon = convertView.getResources().getDrawable(R.drawable.blue_btn);
 			sendBtn.setBackground(myIcon);
 		}
 

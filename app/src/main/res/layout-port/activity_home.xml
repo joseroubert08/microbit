@@ -132,7 +132,7 @@
 
     </RelativeLayout>
 
-    <include layout="@layout/view_footer"/>
+
 
 </RelativeLayout>
 

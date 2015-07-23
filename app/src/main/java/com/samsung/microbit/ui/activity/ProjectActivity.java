@@ -131,9 +131,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_projects);
 
-		LinearLayout mainContentView = (LinearLayout) findViewById(R.id.mainContentView);
-		mainContentView.getBackground().setAlpha(128);
-
 		projectListView = (ListView) findViewById(R.id.projectListView);
 		updateProjectsListSortOrder(true);
 
@@ -291,7 +288,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				finish();
 				break;
 
-			case R.id.homeBtn:
+			case R.id.backBtn:
 				finish();
 				break;
 
@@ -378,7 +375,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 						}
 					},//override click listener for ok button
-					null);//pass null to use default listener
+					null);//pass null to use default listeneronClick
 		} else {
 			startFlashingPhase1();
 		}
