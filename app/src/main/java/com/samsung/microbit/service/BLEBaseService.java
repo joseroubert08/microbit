@@ -216,6 +216,15 @@ public abstract class BLEBaseService extends Service {
 		return rc;
 	}
 
+	public boolean isConnected() {
+
+		if (bleManager != null) {
+			return bleManager.isConnected();
+		}
+
+		return false;
+	}
+
 	public int getBleState() {
 
 		int rc = 99;

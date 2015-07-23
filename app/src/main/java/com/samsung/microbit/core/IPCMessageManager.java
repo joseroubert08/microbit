@@ -31,7 +31,7 @@ public final class IPCMessageManager {
 
 
 	public static final int ANDROID_MESSAGE = 1;
-	public static final int MICIROBIT_MESSAGE = 2;
+	public static final int MICROBIT_MESSAGE = 2;
 
 	public static final int IPC_FUNCTION_CODE_INIT = 0;
 	public static final int IPC_FUNCTION_DISCONNECT = 1;

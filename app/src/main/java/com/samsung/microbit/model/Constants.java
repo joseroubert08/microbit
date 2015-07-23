@@ -1,5 +1,6 @@
 package com.samsung.microbit.model;
 
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Environment;
 
 import com.samsung.microbit.MBApp;
@@ -10,10 +11,25 @@ import java.util.UUID;
 public class Constants {
 
 	/*
+	 * Going to and coming from microbit the following rul eapplies:
+	 * high 16 bits ==  event_sub_code (eg. SAMSUNG_REMOTE_CONTROL_EVT_PLAY)
+	 * low 16 bits == event category    (eg. SAMSUNG_REMOTE_CONTROL_ID)
+	 */
+
+	public static final int FORMAT_UINT8 = BluetoothGattCharacteristic.FORMAT_UINT8;
+	public static final int FORMAT_UINT16 = BluetoothGattCharacteristic.FORMAT_UINT16;
+	public static final int FORMAT_UINT32 = BluetoothGattCharacteristic.FORMAT_UINT32;
+
+	public static final int FORMAT_SINT8 = BluetoothGattCharacteristic.FORMAT_SINT8;
+	public static final int FORMAT_SINT16 = BluetoothGattCharacteristic.FORMAT_SINT16;
+	public static final int FORMAT_SINT32 = BluetoothGattCharacteristic.FORMAT_SINT32;
+
+
+	/*
 	 * Events that Samsung devices respond to:
 	 */
 	public static final int SAMSUNG_REMOTE_CONTROL_ID = 1001;
-	public static final int SAMSUNG_REMOTE_CONTROL_IDF = SAMSUNG_REMOTE_CONTROL_ID << 16;
+	//public static final int SAMSUNG_REMOTE_CONTROL_IDF = SAMSUNG_REMOTE_CONTROL_ID << 16;
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_PLAY = 0;
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_PAUSE = 1;
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_STOP = 2;
@@ -25,7 +41,7 @@ public class Constants {
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN = 8;
 
 	public static final int SAMSUNG_CAMERA_ID = 1002;
-	public static final int SAMSUNG_CAMERA_IDF = SAMSUNG_CAMERA_ID << 16;
+	//public static final int SAMSUNG_CAMERA_IDF = SAMSUNG_CAMERA_ID << 16;
 	public static final int SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE = 0;
 	public static final int SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE = 1;
 	public static final int SAMSUNG_CAMERA_EVT_TAKE_PHOTO = 2;
@@ -36,14 +52,14 @@ public class Constants {
 	public static final int SAMSUNG_CAMERA_EVT_TOGGLE_FRONT_REAR = 7;
 
 	public static final int SAMSUNG_AUDIO_RECORDER_ID = 1003;
-	public static final int SAMSUNG_AUDIO_RECORDER_IDF = SAMSUNG_AUDIO_RECORDER_ID << 16;
+	//public static final int SAMSUNG_AUDIO_RECORDER_IDF = SAMSUNG_AUDIO_RECORDER_ID << 16;
 	public static final int SAMSUNG_AUDIO_RECORDER_EVT_LAUNCH = 0;
 	public static final int SAMSUNG_AUDIO_RECORDER_EVT_START_CAPTURE = 1;
 	public static final int SAMSUNG_AUDIO_RECORDER_EVT_STOP_CAPTURE = 2;
 	public static final int SAMSUNG_AUDIO_RECORDER_EVT_STOP = 3;
 
 	public static final int SAMSUNG_ALERTS_ID = 1004;
-	public static final int SAMSUNG_ALERTS_IDF = SAMSUNG_ALERTS_ID << 16;
+	//public static final int SAMSUNG_ALERTS_IDF = SAMSUNG_ALERTS_ID << 16;
 	public static final int SAMSUNG_ALERT_EVT_DISPLAY_TOAST = 0;
 	public static final int SAMSUNG_ALERT_EVT_VIBRATE = 1;
 	public static final int SAMSUNG_ALERT_EVT_PLAY_SOUND = 2;
@@ -59,8 +75,9 @@ public class Constants {
 	/*
 	 * Events that Samsung devices generate:
 	 */
+
 	public static final int SAMSUNG_SIGNAL_STRENGTH_ID = 1101;
-	public static final int SAMSUNG_SIGNAL_STRENGTH_IDF = SAMSUNG_SIGNAL_STRENGTH_ID << 16;
+	//public static final int SAMSUNG_SIGNAL_STRENGTH_IDF = SAMSUNG_SIGNAL_STRENGTH_ID << 16;
 	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_NO_BAR = 0;
 	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_ONE_BAR = 1;
 	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_TWO_BAR = 2;
@@ -68,7 +85,7 @@ public class Constants {
 	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_FOUR_BAR = 4;
 
 	public static final int SAMSUNG_PLAY_CONTROLLER_ID = 1102;
-	public static final int SAMSUNG_PLAY_CONTROLLER_IDF = SAMSUNG_PLAY_CONTROLLER_ID << 16;
+	//public static final int SAMSUNG_PLAY_CONTROLLER_IDF = SAMSUNG_PLAY_CONTROLLER_ID << 16;
 	public static final int SAMSUNG_BUTTON_UP = 0;
 	public static final int SAMSUNG_BUTTON_DOWN = 1;
 	public static final int SAMSUNG_BUTTON_RIGHT = 2;
@@ -79,7 +96,7 @@ public class Constants {
 	public static final int SAMSUNG_BUTTON_D = 7;
 
 	public static final int SAMSUNG_DEVICE_INFO_ID = 1103;
-	public static final int SAMSUNG_DEVICE_INFO_IDF = SAMSUNG_DEVICE_INFO_ID << 16;
+	//public static final int SAMSUNG_DEVICE_INFO_IDF = SAMSUNG_DEVICE_INFO_ID << 16;
 	public static final int SAMSUNG_DEVICE_ORIENTATION_LANDSCAPE = 0;
 	public static final int SAMSUNG_DEVICE_ORIENTATION_PORTRAIT = 1;
 	public static final int SAMSUNG_DEVICE_GESTURE_NONE = 2;
@@ -91,13 +108,13 @@ public class Constants {
 	 * this is microbit buttons
 	 */
 	public static final int MICROBIT_BUTTON_A_ID = 1;
-	public static final int MICROBIT_BUTTON_A_IDF = MICROBIT_BUTTON_A_ID << 16;
+	//public static final int MICROBIT_BUTTON_A_IDF = MICROBIT_BUTTON_A_ID << 16;
 
 	public static final int MICROBIT_BUTTON_B_ID = 2;
-	public static final int MICROBIT_BUTTON_B_IDF = MICROBIT_BUTTON_B_ID << 16;
+	//public static final int MICROBIT_BUTTON_B_IDF = MICROBIT_BUTTON_B_ID << 16;
 
 	public static final int MICROBIT_BUTTON_RESET_ID = 3;
-	public static final int MICROBIT_BUTTON_RESET_IDF = MICROBIT_BUTTON_RESET_ID << 16;
+	//public static final int MICROBIT_BUTTON_RESET_IDF = MICROBIT_BUTTON_RESET_ID << 16;
 
 	public static final int MICROBIT_BUTTON_EVT_DOWN = 1;
 	public static final int MICROBIT_BUTTON_EVT_UP = 2;
@@ -206,6 +223,10 @@ public class Constants {
 		msb |= (shortUUID << 32);
 		u = new UUID(msb, u.getLeastSignificantBits());
 		return u;
+	}
+
+	public static int makeMicroBitValue(int category, int value) {
+		return ((value << 16) | category);
 	}
 
 	public static String URL = "URL";

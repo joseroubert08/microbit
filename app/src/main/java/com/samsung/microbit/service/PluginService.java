@@ -17,6 +17,7 @@ import com.samsung.microbit.model.NameValuePair;
 import com.samsung.microbit.plugin.AlertPlugin;
 import com.samsung.microbit.plugin.AudioPlugin;
 import com.samsung.microbit.plugin.CameraPlugin;
+import com.samsung.microbit.plugin.InformationPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
 
 /**
@@ -32,8 +33,10 @@ public class PluginService extends Service {
 	}
 
 	public static Messenger mClientMessenger = null;
+	public static PluginService instance;
 
 	public PluginService() {
+		instance = this;
 		startIPCListener();
 	}
 
@@ -82,6 +85,16 @@ public class PluginService extends Service {
 				CameraPlugin.pluginEntry(PluginService.this, cmd);
 				break;
 
+			case Constants.SAMSUNG_SIGNAL_STRENGTH_ID:
+				if (debug) logi("handleMessage() ##  SAMSUNG_SIGNAL_STRENGTH_ID");
+				InformationPlugin.pluginEntry(PluginService.this, cmd);
+				break;
+
+			case Constants.SAMSUNG_DEVICE_INFO_ID:
+				if (debug) logi("handleMessage() ##  SAMSUNG_DEVICE_INFO_ID");
+				InformationPlugin.pluginEntry(PluginService.this, cmd);
+				break;
+
 			default:
 				break;
 		}
@@ -89,7 +102,31 @@ public class PluginService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		if (debug) logi("onStartCommand() ## start");
+		if (debug) logi("onStartCommand() :: start");
+
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+				if (debug) logi("onStartCommand().run() ::  Starting Constants.REG_SIGNALSTRENGTH");
+				Message msg = Message.obtain(null, Constants.SAMSUNG_DEVICE_INFO_ID);
+				msg.arg1 = Constants.SAMSUNG_DEVICE_INFO_ID;
+				Bundle bundle = new Bundle();
+				bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DEVICEORIENTATION);
+				//bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DEVICEGESTURE);
+				//bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DISPLAY);
+
+				bundle.putString(IPCMessageManager.BUNDLE_VALUE, "on");
+				msg.setData(bundle);
+				handleMessage(msg);
+			}
+		}).run();
+
 		return START_STICKY;
 	}
 
@@ -157,25 +194,27 @@ public class PluginService extends Service {
 
 	public void sendIPCMessge(Class destService, int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
 
-		if (debug) logi("sendIPCMessge()");
 		IPCMessageManager inst = IPCMessageManager.getInstance();
 		if (!inst.isConnected(destService)) {
 			inst.configureServerConnection(destService, this);
 		}
 
+		if (mbsService != IPCMessageManager.ANDROID_MESSAGE || mbsService != IPCMessageManager.MICROBIT_MESSAGE) {
+			return;
+		}
+
 		Message msg = Message.obtain(null, mbsService);
 		msg.arg1 = functionCode;
 		Bundle bundle = new Bundle();
-		if (mbsService == IPCMessageManager.ANDROID_MESSAGE) {
-			if (debug) logi("sendIPCMessge() :: IPCMessageManager.ANDROID_MESSAGE functionCode=" + functionCode);
-		} else if (mbsService == IPCMessageManager.MICIROBIT_MESSAGE) {
-			if (debug) logi("sendIPCMessge() :: IPCMessageManager.MICIROBIT_MESSAGE functionCode=" + functionCode);
-			if (cmd != null) {
-				bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
-				bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
+		if (cmd != null) {
+			bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
+			bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
+		}
+
+		if (args != null) {
+			for (int i = 0; i < args.length; i++) {
+				bundle.putSerializable(args[i].getName(), args[i].getValue());
 			}
-		} else {
-			return;
 		}
 
 		msg.setData(bundle);
@@ -190,7 +229,7 @@ public class PluginService extends Service {
 		if (debug) logi("handleIncomingMessage() :: Start PluginService");
 		if (msg.what == IPCMessageManager.ANDROID_MESSAGE) {
 			if (debug) logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
-		} else if (msg.what == IPCMessageManager.MICIROBIT_MESSAGE) {
+		} else if (msg.what == IPCMessageManager.MICROBIT_MESSAGE) {
 			handleMessage(msg);
 		}
 	}
