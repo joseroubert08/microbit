@@ -45,7 +45,6 @@ import java.util.HashMap;
 import java.util.List;
 
 
-
 public class ProjectActivity extends Activity implements View.OnClickListener {
 
 	List<Project> projectList = new ArrayList<Project>();
@@ -122,6 +121,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	}
 
 	@Override
+	public void onResume() {
+		super.onResume();
+		MBApp.setContext(this);
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -146,9 +151,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		setConnectedDeviceText();
 		String fileToDownload = getIntent().getStringExtra("download_file");
 
-		if(fileToDownload != null)
-		{
-			programToSend = new Project(fileToDownload, Constants.HEX_FILE_DIR +"/"+fileToDownload, 0, null, false);
+		if (fileToDownload != null) {
+			programToSend = new Project(fileToDownload, Constants.HEX_FILE_DIR + "/" + fileToDownload, 0, null, false);
 			initiateFlashing(programToSend);
 		}
 
@@ -359,23 +363,21 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			// Disconnect Existing Gatt
 			IPCService.getInstance().bleDisconnect();
 			state = STATE_START_FLASH;
-		}
-		else if (currentMicrobit.mPattern == null)
-		{
+		} else if (currentMicrobit.mPattern == null) {
 			PopUp.show(MBApp.getContext(),
-					getString(R.string.flashing_error_msg), //message
-					getString(R.string.flashing_failed_title), //title
-					R.drawable.exclamation, //image icon res id
-					0,
-					PopUp.TYPE_ALERT, //type of popup.
-					new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							PopUp.hide();
+				getString(R.string.flashing_error_msg), //message
+				getString(R.string.flashing_failed_title), //title
+				R.drawable.exclamation, //image icon res id
+				0,
+				PopUp.TYPE_ALERT, //type of popup.
+				new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						PopUp.hide();
 
-						}
-					},//override click listener for ok button
-					null);//pass null to use default listeneronClick
+					}
+				},//override click listener for ok button
+				null);//pass null to use default listeneronClick
 		} else {
 			startFlashingPhase1();
 		}

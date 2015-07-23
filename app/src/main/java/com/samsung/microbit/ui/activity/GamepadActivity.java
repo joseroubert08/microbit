@@ -16,7 +16,13 @@ public class GamepadActivity extends Activity {
 
     private Vibrator vibrator;
 
-    @Override
+	@Override
+	public void onResume() {
+		super.onResume();
+		MBApp.setContext(this);
+	}
+
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

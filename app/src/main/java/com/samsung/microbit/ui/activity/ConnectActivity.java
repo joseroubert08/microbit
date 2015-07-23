@@ -171,6 +171,12 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	}
 
 	@Override
+	public void onResume() {
+		super.onResume();
+		MBApp.setContext(this);
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
