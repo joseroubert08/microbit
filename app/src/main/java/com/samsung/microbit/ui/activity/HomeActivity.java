@@ -99,6 +99,7 @@ public class HomeActivity extends Activity implements View.OnClickListener  {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		if (debug) logi("onCreate() :: ");
 		MBApp.setContext(this);
 		/* *************************************************
 		 * TODO setup to Handle BLE Notiification
@@ -131,6 +132,12 @@ public class HomeActivity extends Activity implements View.OnClickListener  {
 		startService(intent);
 	}
 
+	@Override
+	protected void onStart() {
+		super.onStart();
+	}
+
+
 	public void onClick(final View v) {
 		if (debug) logi("onBtnClicked() :: ");
 		if (v.getId() == R.id.addDevice) {
@@ -154,6 +161,7 @@ public class HomeActivity extends Activity implements View.OnClickListener  {
 				} else {
 					if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleConnect()");
 
+					// using MBApp.getContext() instead of this causes problem after flashing
 					PopUp.show(MBApp.getContext(),
 						getString(R.string.init_connection),
 						"",
@@ -204,9 +212,12 @@ public class HomeActivity extends Activity implements View.OnClickListener  {
 		numOfProjects.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
 	}
 
+	@Override
 	public void onResume() {
+		if (debug) logi("onResume() :: ");
 		super.onResume();
 
+		MBApp.setContext(this);
 		updateConnectBarView();
 		updateProjectBarView();
 	}

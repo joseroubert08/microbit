@@ -131,36 +131,27 @@ public class IPCService extends Service {
 
 	public void sendIPCMessge(Class destService, int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
 
-		if (debug) logi("sendIPCMessge()");
 		IPCMessageManager inst = IPCMessageManager.getInstance();
 		if (!inst.isConnected(destService)) {
 			inst.configureServerConnection(destService, this);
 		}
 
+		if (mbsService != IPCMessageManager.ANDROID_MESSAGE && mbsService != IPCMessageManager.MICROBIT_MESSAGE) {
+			return;
+		}
+
 		Message msg = Message.obtain(null, mbsService);
 		msg.arg1 = functionCode;
 		Bundle bundle = new Bundle();
-		if (mbsService == IPCMessageManager.ANDROID_MESSAGE) {
-			if (debug) logi("sendIPCMessge() :: IPCMessageManager.ANDROID_MESSAGE functionCode=" + functionCode);
-			if(args != null) {
-				for(int i=0; i<args.length; i++) {
-					bundle.putSerializable(args[i].getName(), args[i].getValue());
-				}
-			}
-		} else if (mbsService == IPCMessageManager.MICIROBIT_MESSAGE) {
-			if (debug) logi("sendIPCMessge() :: IPCMessageManager.MICIROBIT_MESSAGE functionCode=" + functionCode);
-			if (cmd != null) {
-				bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
-				bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
-			}
+		if (cmd != null) {
+			bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
+			bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
+		}
 
-			if(args != null) {
-				for(int i=0; i<args.length; i++) {
-					bundle.putSerializable(args[i].getName(), args[i].getValue());
-				}
+		if (args != null) {
+			for (int i = 0; i < args.length; i++) {
+				bundle.putSerializable(args[i].getName(), args[i].getValue());
 			}
-		} else {
-			return;
 		}
 
 		msg.setData(bundle);
@@ -192,8 +183,8 @@ public class IPCService extends Service {
 			intent.putExtra(NOTIFICATION_CAUSE, msg.arg1);
 			intent.putExtra(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
 			LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-		} else if (msg.what == IPCMessageManager.MICIROBIT_MESSAGE) {
-			if (debug) logi("handleIncomingMessage() :: IPCMessageManager.MICIROBIT_MESSAGE msg.arg1 = " + msg.arg1);
+		} else if (msg.what == IPCMessageManager.MICROBIT_MESSAGE) {
+			if (debug) logi("handleIncomingMessage() :: IPCMessageManager.MICROBIT_MESSAGE msg.arg1 = " + msg.arg1);
 			Intent intent = new Intent(INTENT_MICROBIT_NOTIFICATION);
 			LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 		}

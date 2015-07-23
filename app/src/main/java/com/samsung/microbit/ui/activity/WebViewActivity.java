@@ -113,7 +113,13 @@ public class WebViewActivity extends Activity implements CordovaInterface {
         }
     }
 
-    @Override
+	@Override
+	public void onResume() {
+		super.onResume();
+		MBApp.setContext(this);
+	}
+
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

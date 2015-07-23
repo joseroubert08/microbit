@@ -171,7 +171,14 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
             return false;
         }
     }
-    @Override
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		MBApp.setContext(this);
+	}
+
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
