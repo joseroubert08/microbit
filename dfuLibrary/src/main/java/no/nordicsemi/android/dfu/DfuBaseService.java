@@ -808,9 +808,10 @@ public abstract class DfuBaseService extends IntentService {
 		@Override
 		public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
 			// Check whether an error occurred
+			logi("onConnectionStateChange() :: Start");
 			if (status == BluetoothGatt.GATT_SUCCESS) {
 				if (newState == BluetoothGatt.STATE_CONNECTED) {
-					logi("Connected to GATT server");
+					logi("onConnectionStateChange() :: Connected to GATT server");
 					mConnectionState = STATE_CONNECTED;
 
 					/*
@@ -828,7 +829,7 @@ public abstract class DfuBaseService extends IntentService {
 					if (gatt.getDevice().getBondState() == BluetoothDevice.BOND_BONDED) {
 						try {
 							synchronized (this) {
-								logd("Waiting 1600 ms for a possible Service Changed indication...");
+								logd("onConnectionStateChange() :: Waiting 1600 ms for a possible Service Changed indication...");
 								wait(1600);
 
 								// After 1.6s the services are already discovered so the following gatt.discoverServices() finishes almost immediately.
@@ -843,7 +844,7 @@ public abstract class DfuBaseService extends IntentService {
 
 					// Attempts to discover services after successful connection.
 					final boolean success = gatt.discoverServices();
-					logi("Attempting to start service discovery... " + (success ? "succeed" : "failed"));
+					logi("onConnectionStateChange() :: Attempting to start service discovery... " + (success ? "succeed" : "failed"));
 
 					if (!success) {
 						mError = ERROR_SERVICE_DISCOVERY_NOT_STARTED;
@@ -852,12 +853,12 @@ public abstract class DfuBaseService extends IntentService {
 						return;
 					}
 				} else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
-					logi("Disconnected from GATT server");
+					logi("onConnectionStateChange() :: Disconnected from GATT server");
 					mPaused = false;
 					mConnectionState = STATE_DISCONNECTED;
 				}
 			} else {
-				loge("Connection state change error: " + status + " newState: " + newState);
+				loge("onConnectionStateChange() :: Connection state change error: " + status + " newState: " + newState);
 				mPaused = false;
 				mError = ERROR_CONNECTION_STATE_MASK | status;
 				mConnectionState = STATE_DISCONNECTED;
@@ -872,12 +873,13 @@ public abstract class DfuBaseService extends IntentService {
 		@Override
 		public void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
 			// Notify waiting thread
+			logi("onServicesDiscovered() :: Start");
 			synchronized (mLock) {
 				if (status == BluetoothGatt.GATT_SUCCESS) {
-					logi("Services discovered");
+					logi("onServicesDiscovered() :: Services discovered");
 					mConnectionState = STATE_CONNECTED_AND_READY;
 				} else {
-					loge("Service discovery error: " + status);
+					loge("onServicesDiscovered() :: Service discovery error: " + status);
 					mError = ERROR_CONNECTION_MASK | status;
 				}
 
@@ -1050,7 +1052,7 @@ public abstract class DfuBaseService extends IntentService {
 				logi("FLashing code written notification");
 				//mBytesConfirmed = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 1);
 				//if(mBytesConfirmed != 0)
-					resultReceiver.send(0x33, null);
+				resultReceiver.send(0x33, null);
 
 			}
 
@@ -1398,7 +1400,7 @@ public abstract class DfuBaseService extends IntentService {
 
 		registerNotifications(true);
 
-		if(mConnectionState == STATE_DISCONNECTED) {
+		if (mConnectionState == STATE_DISCONNECTED) {
 			logi("Gatt disconnected");
 			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
 			terminateConnection(gatt, PROGRESS_ABORTED);
@@ -1446,11 +1448,13 @@ public abstract class DfuBaseService extends IntentService {
 				logi("Calling phase 3");
 				mError = 0;
 				intent = phase3(intent);
-				resultReceiver=null;
+				resultReceiver = null;
 				gatt.disconnect();
 				waitUntilDisconnected();
+				//waitUntilConnected(10000);
+				//gatt.disconnect();
 				close(gatt);
-				gatt=null;
+				gatt = null;
 				logi("End phase 3");
 			} while (intent != null);
 		}
@@ -2416,6 +2420,21 @@ public abstract class DfuBaseService extends IntentService {
 		}
 	}
 
+	private void waitUntilConnected(long timeout) {
+		logi("waitUntilConnected");
+		try {
+			synchronized (mLock) {
+				if (mConnectionState != STATE_CONNECTED && mError == 0) {
+					logi("waitUntilConnected : waiting");
+					mLock.wait(timeout);
+					logi("waitUntilConnected : wait:done");
+				}
+			}
+		} catch (final InterruptedException e) {
+			loge("Sleeping interrupted", e);
+		}
+	}
+
 	private void gattConnect(final BluetoothGatt gatt) {
 		try {
 			if (gatt.connect()) {
@@ -3288,31 +3307,31 @@ public abstract class DfuBaseService extends IntentService {
 
 	private void loge(final String message) {
 		if (DEBUG) {
-			Log.e(TAG, "### " + message);
+			Log.e(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 		}
 	}
 
 	private void loge(final String message, final Throwable e) {
 		if (DEBUG) {
-			Log.e(TAG, "### " + message, e);
+			Log.e(TAG, "### " + Thread.currentThread().getId() + " # " + message, e);
 		}
 	}
 
 	private void logw(final String message) {
 		if (DEBUG) {
-			Log.w(TAG, "### " + message);
+			Log.w(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 		}
 	}
 
 	private void logi(final String message) {
 		if (DEBUG) {
-			Log.i(TAG, "### " + message);
+			Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 		}
 	}
 
 	private void logd(final String message) {
 		if (DEBUG) {
-			Log.d(TAG, "### " + message);
+			Log.d(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 		}
 	}
 

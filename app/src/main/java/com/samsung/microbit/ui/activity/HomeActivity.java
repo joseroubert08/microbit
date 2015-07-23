@@ -154,7 +154,8 @@ public class HomeActivity extends Activity {
 				} else {
 					if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleConnect()");
 
-					PopUp.show(MBApp.getContext(),
+					// using MBApp.getContext() instead of this causes problem after flashing
+					PopUp.show(this,
 						getString(R.string.init_connection),
 						"",
 						R.drawable.mbit, R.drawable.lightblue_btn,

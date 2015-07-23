@@ -333,7 +333,7 @@ public class BLEService extends BLEBaseService {
 			inst.configureServerConnection(destService, this);
 		}
 
-		if (mbsService != IPCMessageManager.ANDROID_MESSAGE || mbsService != IPCMessageManager.MICROBIT_MESSAGE) {
+		if (mbsService != IPCMessageManager.ANDROID_MESSAGE && mbsService != IPCMessageManager.MICROBIT_MESSAGE) {
 			return;
 		}
 
