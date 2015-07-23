@@ -1,43 +1,41 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent" android:layout_height="fill_parent"
-    android:background="@drawable/bg">
+    android:background="@drawable/bg_land">
 
     <RelativeLayout
-        android:id="@+id/topBar"
+        android:id="@+id/headerBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/content_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:clickable="true">
+        android:background="#ffff">
 
         <ImageButton
-            android:id="@+id/homeBtn"
+            android:id="@+id/backBtn"
+            android:onClick="onClick"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:src="@drawable/home"
-            android:layout_marginTop="@dimen/content_margin"
-            android:background="@drawable/green_btn"
-            android:onClick="onBtnClicked"/>
+            android:src="@drawable/back"
+            android:background="@android:color/transparent"/>
 
-        <ImageView
-            android:id="@+id/bbcLogo"
+        <TextView
+            style="@style/h1"
+            android:id="@+id/titleTxt"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
-            android:src="@drawable/microbitbanner"
-            android:background="@drawable/logo_bg"
-            android:layout_centerHorizontal="true"/>
+            android:layout_height="100dp"
+            android:text="@string/new_project"
+            android:layout_toRightOf="@id/backBtn"
+            android:gravity="center"/>
 
         <ImageButton
             android:id="@+id/refreshBtn"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="@dimen/content_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:src="@drawable/refresh"
-            android:background="@drawable/green_btn"
-            android:onClick="onBtnClicked"
-            android:layout_alignParentRight="true"/>
+            android:background="@drawable/blue_btn"
+            android:onClick="onClick"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="3dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"/>
 
     </RelativeLayout>
 
@@ -46,7 +44,7 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/topBar"
+        android:layout_below="@id/headerBar"
         android:progressDrawable="@drawable/green_progress_bar"/>
 
     <LinearLayout
@@ -70,7 +68,6 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:id="@+id/touchDevelopView"
-            android:background="#7CFC00"
             android:longClickable="true"
             android:windowSoftInputMode="adjustResize"
             android:hardwareAccelerated="true"/>

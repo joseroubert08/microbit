@@ -38,7 +38,7 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
     private CordovaWebView touchDevelopView = null;
     private ProgressBar touchDevelopProgress = null;
     private TextView loadingTxt = null;
-    private RelativeLayout topBar = null;
+    private RelativeLayout headerBar = null;
     private final ExecutorService threadPool = Executors.newCachedThreadPool();
     private CordovaPlugin activityResultCallback;
     GestureDetector gestureScanner;
@@ -86,9 +86,9 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
                 } else {
                     if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(v) > SWIPE_VELOCITY_THRESHOLD) {
                         if (diffY > 0) {
-                            if(topBar.getVisibility() == View.GONE) {
-                                topBar.setVisibility(View.VISIBLE);
-                                topBar.animate()
+                            if(headerBar.getVisibility() == View.GONE) {
+                                headerBar.setVisibility(View.VISIBLE);
+                                headerBar.animate()
                                         .translationY(0)
                                         .alpha(1.0f)
                                         .setListener(new AnimatorListenerAdapter() {
@@ -99,15 +99,15 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
                                         });
                             }
                         } else {
-                            if(topBar.getVisibility() == View.VISIBLE) {
-                                topBar.animate()
-                                        .translationY(-topBar.getHeight())
+                            if(headerBar.getVisibility() == View.VISIBLE) {
+                                headerBar.animate()
+                                        .translationY(-headerBar.getHeight())
                                         .alpha(0.0f)
                                         .setListener(new AnimatorListenerAdapter() {
                                             @Override
                                             public void onAnimationEnd(Animator animation) {
                                                 super.onAnimationEnd(animation);
-                                                topBar.setVisibility(View.GONE);
+                                                headerBar.setVisibility(View.GONE);
                                             }
                                         });
                             }
@@ -187,7 +187,7 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
         Config.init(this);
 
         loadingTxt = (TextView) findViewById(R.id.loadingTxt);
-        topBar = (RelativeLayout) findViewById(R.id.topBar);
+        headerBar = (RelativeLayout) findViewById(R.id.headerBar);
 
         touchDevelopProgress = (ProgressBar) findViewById(R.id.progressBar);
         touchDevelopProgress.setMax(100);
@@ -207,7 +207,7 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
 
         touchDevelopView.setVisibility(View.INVISIBLE);
 
-        topBar.setOnTouchListener(new View.OnTouchListener() {
+        headerBar.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent me) {
                 return gestureScanner.onTouchEvent(me);
@@ -219,15 +219,15 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
                 if(touchDevelopView.getScrollY() == 0 || touchDevelopView.getScrollY() == v.getMeasuredHeight()){
                     return gestureScanner.onTouchEvent(me);
                 } else if(touchDevelopView.getScrollY() > 20) {
-                    if(topBar.getVisibility() == View.VISIBLE) {
-                        topBar.animate()
-                                .translationY(-topBar.getHeight())
+                    if(headerBar.getVisibility() == View.VISIBLE) {
+                        headerBar.animate()
+                                .translationY(-headerBar.getHeight())
                                 .alpha(0.0f)
                                 .setListener(new AnimatorListenerAdapter() {
                                     @Override
                                     public void onAnimationEnd(Animator animation) {
                                         super.onAnimationEnd(animation);
-                                        topBar.setVisibility(View.GONE);
+                                        headerBar.setVisibility(View.GONE);
                                     }
                                 });
                     }
@@ -237,8 +237,8 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
         });
     }
 
-    public void onBtnClicked(View v){
-        if(v.getId() == R.id.homeBtn){
+    public void onClick(final View v) {
+        if(v.getId() == R.id.backBtn){
             finish();
         } else if(v.getId() == R.id.refreshBtn){
             touchDevelopView.reload();
