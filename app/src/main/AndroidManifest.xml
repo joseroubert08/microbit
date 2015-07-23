@@ -71,12 +71,6 @@
 			android:windowSoftInputMode="adjustPan">
 		</activity>
 		<activity
-			android:name=".ui.activity.GamepadActivity"
-			android:label="@string/title_activity_gamepad"
-			android:parentActivityName=".ui.activity.HomeActivity"
-			android:screenOrientation="landscape">
-		</activity>
-		<activity
 			android:name=".ui.activity.TouchDevActivity"
 			android:parentActivityName=".ui.activity.HomeActivity"
 			android:windowSoftInputMode="adjustResize">
