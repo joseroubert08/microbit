@@ -15,7 +15,7 @@
 
 	<RelativeLayout
 		android:id="@+id/appName"
-		android:layout_width="@dimen/list_textbox_width"
+		android:layout_width="@dimen/list_project_text_width"
 		android:layout_height="@dimen/list_item_height"
 		android:layout_marginLeft="@dimen/list_item_margin"
 		android:layout_toRightOf="@id/deleteBtn">

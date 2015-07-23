@@ -131,6 +131,7 @@
     <string name="downloading">Downloading...</string>
     <string name="download_complete">Download complete.Flash to microbit ?</string>
     <string name="projects">Projects</string>
+    <string name="pair_my_device">Pair my device</string>
     <string name="flash">Flash</string>
     <string name="view">View</string>
     <string name="no_projects">No projects found!</string>

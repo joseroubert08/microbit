@@ -190,9 +190,6 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		setContentView(R.layout.activity_connect);
 
-		LinearLayout mainContentView = (LinearLayout) findViewById(R.id.mainContentView);
-		mainContentView.getBackground().setAlpha(128);
-
 		final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 		mBluetoothAdapter = bluetoothManager.getAdapter();
 		// Checks if Bluetooth is supported on the device.
@@ -504,6 +501,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				pos = (Integer) v.getTag();
 				handleDeleteMicrobit(pos);
 				break;
+			case R.id.backBtn:
+				finish();
+				break;
 			default:
 				Toast.makeText(MBApp.getContext(), "Default Item Clicked: " + v.getId(), Toast.LENGTH_SHORT).show();
 				break;
@@ -533,10 +533,6 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
 				InputMethodManager.HIDE_NOT_ALWAYS);
-	}
-
-	public void onHomeBtnClicked(View v) {
-		finish();
 	}
 
 	private volatile boolean deviceFound = false;

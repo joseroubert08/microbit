@@ -15,6 +15,9 @@
 	<dimen name="list_text_btn_width">150dp</dimen>
 	<dimen name="list_btn_width">80dp</dimen>
 	<dimen name="list_item_height">80dp</dimen>
-	<dimen name="list_textbox_width">800dp</dimen>
+	<dimen name="list_project_text_width">800dp</dimen>
 	<dimen name="list_item_margin">16dp</dimen>
+	<dimen name="list_device_text_width">320dp</dimen>
+
+	<dimen name="project_main_margin">50dp</dimen>
 </resources>
