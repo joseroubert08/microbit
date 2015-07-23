@@ -76,11 +76,6 @@
 			android:windowSoftInputMode="adjustResize">
 		</activity>
 		<activity
-			android:name=".ui.activity.WebViewActivity"
-			android:parentActivityName=".ui.activity.HomeActivity"
-			android:windowSoftInputMode="adjustResize">
-		</activity>
-		<activity
 			android:name=".ui.activity.AudioRecorderActivity"
 			android:label="Audio Recorder"
 			android:launchMode="singleTask"
