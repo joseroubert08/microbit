@@ -45,7 +45,7 @@ import java.util.logging.Handler;
 
 import static com.samsung.microbit.core.CommonGUI.commonAlertDialog;
 
-public class HomeActivity extends Activity {
+public class HomeActivity extends Activity implements View.OnClickListener  {
 
 	/* *************************************************
 	 * TODO setup to Handle BLE Notiifications
@@ -131,7 +131,7 @@ public class HomeActivity extends Activity {
 		startService(intent);
 	}
 
-	public void onBtnClicked(View v) {
+	public void onClick(final View v) {
 		if (debug) logi("onBtnClicked() :: ");
 		if (v.getId() == R.id.addDevice) {
 			Intent intent = new Intent(this, ConnectActivity.class);

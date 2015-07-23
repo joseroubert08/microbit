@@ -1,149 +1,104 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools" android:layout_width="fill_parent"
-	android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-	android:paddingRight="@dimen/activity_horizontal_margin"
+	android:layout_height="match_parent"
 	tools:context=".MainActivity"
-	android:background="@drawable/bg">
+	android:background="@drawable/bg_land">
 
 	<RelativeLayout
-		android:layout_width="wrap_content"
+		android:id="@+id/headerBar"
+		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_marginTop="@dimen/content_margin">
+		android:background="#ffff">
 
 		<ImageButton
-			android:id="@+id/homeBtn"
+			android:id="@+id/backBtn"
 			android:onClick="onClick"
 			android:layout_width="100dp"
 			android:layout_height="100dp"
-			android:src="@drawable/home"
-			android:background="@drawable/green_btn"/>
-
-	</RelativeLayout>
-
-	<ImageView
-		android:id="@+id/bbcLogo"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
-        android:src="@drawable/microbitbanner"
-        android:background="@drawable/logo_bg"
-		android:layout_centerHorizontal="true"/>
-
-	<RelativeLayout
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="@dimen/content_margin"
-		android:layout_alignParentEnd="true">
+			android:src="@drawable/back"
+			android:background="@android:color/transparent"/>
 
 		<TextView
-			android:id="@+id/connectedIndicatorText"
+			style="@style/h1"
+			android:id="@+id/titleTxt"
 			android:layout_width="wrap_content"
-			android:maxWidth="300dp"
-			android:minWidth="200dp"
 			android:layout_height="100dp"
-			android:background="@drawable/project_text_box"
-			android:editable="false"
-			android:gravity="top"/>
+			android:text="@string/projects"
+			android:layout_toRightOf="@id/backBtn"
+			android:gravity="center"/>
 
-		<ImageButton
-			android:id="@+id/connectedIndicatorIcon"
-			android:layout_width="100dp"
-			android:layout_height="100dp"
-			android:layout_toRightOf="@id/connectedIndicatorText"
-			android:background="@drawable/project_connect_btn"
-			android:onClick="onClick"
-			android:src="@drawable/connected"/>
+		<RelativeLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="3dp"
+			android:layout_marginBottom="3dp"
+			android:layout_alignParentEnd="true"
+			android:layout_marginRight="@dimen/activity_horizontal_margin">
+
+			<TextView
+				android:id="@+id/connectedIndicatorText"
+				android:layout_width="wrap_content"
+				android:maxWidth="500dp"
+				android:minWidth="300dp"
+				android:layout_height="100dp"
+				android:background="@drawable/project_text_box"
+				android:editable="false"
+				android:gravity="top"/>
+
+			<ImageButton
+				android:id="@+id/connectedIndicatorIcon"
+				android:layout_width="100dp"
+				android:layout_height="100dp"
+				android:layout_toRightOf="@id/connectedIndicatorText"
+				android:background="@drawable/project_connect_btn"
+				android:onClick="onClick"
+				android:src="@drawable/connected"/>
+
+		</RelativeLayout>
 
 	</RelativeLayout>
 
 	<RelativeLayout
-		android:layout_width="wrap_content"
+		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:orientation="vertical"
-		android:layout_below="@id/bbcLogo"
-		android:layout_marginTop="@dimen/content_margin">
+		android:layout_below="@id/headerBar"
+		android:layout_marginTop="@dimen/content_margin"
+		android:paddingLeft="@dimen/activity_horizontal_margin"
+		android:paddingRight="@dimen/activity_horizontal_margin">
 
-		<LinearLayout
-			android:id="@+id/mainContentView"
-			android:layout_width="830dp"
-			android:layout_height="400dp"
-			android:orientation="horizontal"
-			android:layout_gravity="center_vertical"
-			android:background="@drawable/white_bg">
+		<Button
+			style="@style/p1"
+			android:id="@+id/createProject"
+			android:layout_width="fill_parent"
+			android:layout_height="@dimen/button_height"
+			android:layout_marginBottom="8dp"
+			android:background="@drawable/yellow_btn"
+			android:drawableRight="@drawable/light_bulb"
+			android:gravity="center_vertical|left"
+			android:text="@string/create_new_project"
+			android:onClick="onClick"
+			android:textSize="@dimen/button_text_size"/>
 
-				<ListView
-					android:id="@+id/projectListView"
-					android:layout_width="fill_parent"
-					android:layout_height="fill_parent"
-					android:layout_weight="1"
-					android:divider="@android:color/transparent"
-					android:dividerHeight="5dp"/>
-
-				<TextView
-					android:id="@android:id/empty"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_gravity="center"
-					android:gravity="center"
-					android:textSize="@dimen/button_text_size"
-					android:textColor="@color/black_font_color"
-					android:text="@string/no_projects" />
-
-		</LinearLayout>
-
-		<LinearLayout
-			android:id="@+id/main_right"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentEnd="true"
-			android:orientation="vertical">
-
-			<Button
-				android:id="@+id/createProject"
+			<ListView
+				android:id="@+id/projectListView"
 				android:layout_width="fill_parent"
-				android:layout_height="@dimen/button_height"
-				android:layout_marginBottom="8dp"
-				android:background="@drawable/green_btn"
-				android:drawableRight="@drawable/light_bulb"
-				android:gravity="center_vertical|left"
-				android:text="@string/create_new_project"
-				android:onClick="onClick"
-				android:textSize="@dimen/button_text_size"/>
+				android:layout_height="fill_parent"
+				android:layout_weight="1"
+				android:layout_below="@id/createProject"
+				android:divider="@android:color/transparent"
+				android:dividerHeight="5dp"/>
 
-			<Button
-				android:id="@+id/downloadExisting"
-				android:layout_width="fill_parent"
-				android:layout_height="@dimen/button_height"
-				android:layout_marginBottom="8dp"
-				android:background="@drawable/green_btn"
-				android:gravity="center_vertical|left"
-				android:text="@string/download_existing"
-				android:textSize="@dimen/button_text_size"/>
-
-			<Button
-				android:id="@+id/preferences"
-				android:layout_width="fill_parent"
-				android:layout_height="@dimen/button_height"
-				android:background="@drawable/green_btn"
-				android:gravity="center_vertical|left"
-				android:onClick="onClick"
-				android:text="Preferences"
-				android:textSize="@dimen/button_text_size"/>
-		</LinearLayout>
+			<TextView
+				android:id="@android:id/empty"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:gravity="center"
+				android:textSize="@dimen/button_text_size"
+				android:textColor="@color/black_font_color"
+				android:text="@string/no_projects" />
 
 	</RelativeLayout>
-
-	<LinearLayout
-		android:id="@+id/popup_overlay"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_alignParentStart="true"
-		android:layout_alignParentTop="true"
-		android:background="#333333"
-		android:orientation="horizontal"
-		android:visibility="invisible">
-	</LinearLayout>
-
-	<include layout="@layout/view_footer"/>
 
 </RelativeLayout>

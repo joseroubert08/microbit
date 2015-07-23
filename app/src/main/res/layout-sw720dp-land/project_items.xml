@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-				xmlns:app="http://schemas.android.com/apk/res-auto"
-				android:layout_width="fill_parent"
-				android:layout_height="fill_parent"
-				android:orientation="horizontal">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="horizontal"
+	android:background="@drawable/white_btn">
+
+	<ImageButton
+		android:id="@+id/deleteBtn"
+		android:layout_width="@dimen/list_btn_width"
+		android:layout_height="@dimen/list_item_height"
+		android:background="@drawable/red_btn"
+		android:src="@drawable/delete"/>
 
 	<RelativeLayout
 		android:id="@+id/appName"
-		android:layout_width="350dp"
-		android:layout_height="80dp"
-		android:layout_marginLeft="@dimen/activity_vertical_margin"
-		android:layout_marginTop="@dimen/activity_vertical_margin">
+		android:layout_width="@dimen/list_project_text_width"
+		android:layout_height="@dimen/list_item_height"
+		android:layout_marginLeft="@dimen/list_item_margin"
+		android:layout_toRightOf="@id/deleteBtn">
 
 		<Button
 			android:id="@+id/appNameButton"
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"
-			android:background="@drawable/white_btn"
 			android:drawableRight="@drawable/edit_project_name"
+			android:background="@drawable/white_bg"
 			android:gravity="left|center_vertical"
 			android:textColor="@color/black_font_color"
 			android:textSize="12pt"/>
@@ -26,11 +34,11 @@
 			android:id="@+id/appNameEdit"
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"
-			android:background="@drawable/white_btn"
 			android:editable="true"
 			android:enabled="true"
 			android:focusable="true"
 			android:focusableInTouchMode="true"
+			android:background="@drawable/white_bg"
 			android:gravity="left|center_vertical"
 			android:inputType="textNoSuggestions|textVisiblePassword"
 			android:textColor="@color/black_font_color"
@@ -39,40 +47,27 @@
 	</RelativeLayout>
 
 	<Button
+		style="@style/p1"
 		android:id="@+id/codeBtn"
-		android:layout_width="150dp"
-		android:layout_height="80dp"
-		android:layout_marginLeft="@dimen/activity_vertical_margin"
-		android:layout_marginTop="@dimen/activity_vertical_margin"
+		android:layout_width="@dimen/list_text_btn_width"
+		android:layout_height="@dimen/list_item_height"
+		android:layout_marginLeft="@dimen/list_item_margin"
 		android:layout_toRightOf="@id/appName"
 		android:background="@drawable/green_btn"
-		android:drawableRight="@drawable/edit_project_code"
+		android:drawableRight="@drawable/view"
 		android:gravity="left|center_vertical"
-		android:text="@string/code"
-		android:textSize="12pt"/>
+		android:text="@string/view" />
 
 	<Button
+		style="@style/p1"
 		android:id="@+id/sendBtn"
-		android:layout_width="150dp"
-		android:layout_height="80dp"
-		android:layout_marginLeft="@dimen/activity_vertical_margin"
-		android:layout_marginTop="@dimen/activity_vertical_margin"
+		android:layout_width="@dimen/list_text_btn_width"
+		android:layout_height="@dimen/list_item_height"
+		android:layout_marginLeft="@dimen/list_item_margin"
 		android:layout_toRightOf="@id/codeBtn"
-		android:background="@drawable/green_btn"
-		android:drawableRight="@drawable/microbit_send"
+		android:background="@drawable/blue_btn"
+		android:drawableRight="@drawable/flashing"
 		android:gravity="left|center_vertical"
-		android:text="@string/send"
-		android:textColor="@color/black_font_color"
-		android:textSize="12pt"/>
-
-	<ImageButton
-		android:id="@+id/deleteBtn"
-		android:layout_width="80dp"
-		android:layout_height="80dp"
-		android:layout_marginLeft="@dimen/activity_vertical_margin"
-		android:layout_marginTop="@dimen/activity_vertical_margin"
-		android:layout_toRightOf="@id/sendBtn"
-		android:background="@drawable/red_btn"
-		android:src="@drawable/delete"/>
+		android:text="@string/flash"/>
 
 </RelativeLayout>
