@@ -501,7 +501,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 					PopUp.show(MBApp.getContext(),
 							getString(R.string.init_connection),
 							"",
-							R.drawable.mbit, R.drawable.lightblue_btn,
+							R.drawable.mbit, R.drawable.blue_btn,
 							PopUp.TYPE_SPINNER,
 							null,null);
 					

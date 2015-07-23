@@ -338,7 +338,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 						PopUp.show(MBApp.getContext(),
 							getString(R.string.init_connection),
 							"",
-							R.drawable.mbit, R.drawable.lightblue_btn,
+							R.drawable.mbit, R.drawable.blue_btn,
 							PopUp.TYPE_SPINNER,
 							null, null);
 
@@ -407,7 +407,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		PopUp.show(this,
 			getString(R.string.flashing_phase1_msg), //message
 			getString(R.string.flashing_title), //title
-			R.drawable.mbit, R.drawable.lightblue_btn,
+			R.drawable.mbit, R.drawable.blue_btn,
 			PopUp.TYPE_NOBUTTON, //type of popup.
 			null,//override click listener for ok button,
 			null);//pass null to use default listener
@@ -605,7 +605,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 								PopUp.show(MBApp.getContext(),
 									getString(R.string.init_connection), //message
 									getString(R.string.send_project), //title
-									R.drawable.mbit, R.drawable.lightblue_btn,
+									R.drawable.mbit, R.drawable.blue_btn,
 									PopUp.TYPE_SPINNER, //type of popup.
 									new View.OnClickListener() {
 										@Override
@@ -627,7 +627,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 						PopUp.show(MBApp.getContext(),
 							"",
 							MBApp.getContext().getString(R.string.sending_project),
-							R.drawable.mbit, R.drawable.lightblue_btn,
+							R.drawable.mbit, R.drawable.blue_btn,
 							PopUp.TYPE_PROGRESS, null, null);
 
 						inProgress = true;
