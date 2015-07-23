@@ -16,9 +16,9 @@
 	<dimen name="list_item_height">80dp</dimen>
 	<dimen name="list_project_text_width">800dp</dimen>
 	<dimen name="list_item_margin">16dp</dimen>
-	<dimen name="list_device_text_width">320dp</dimen>
+	<dimen name="list_device_text_width">550dp</dimen>
 
-	<dimen name="project_main_margin">50dp</dimen>
+	<dimen name="project_main_margin">20dp</dimen>
 
 	<dimen name="samsung_logo_bottom_marging">150dp</dimen>
 

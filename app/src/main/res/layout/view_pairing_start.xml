@@ -5,7 +5,7 @@ android:id="@+id/connectButtonView"
 android:layout_toRightOf="@id/prevDeviceView"
 android:layout_width="0dp"
 android:layout_weight="1"
-android:visibility="gone">
+android:visibility="visible">
 
 <Button
     style="@style/h2"

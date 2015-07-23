@@ -217,23 +217,29 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		populateConnectedDeviceList(false);
 
 		connectButtonView = (RelativeLayout) findViewById(R.id.connectButtonView);
-		connectTipView = (RelativeLayout) findViewById(R.id.connectTipView);
-		newDeviceView = (RelativeLayout) findViewById(R.id.newDeviceView);
-		connectSearchView = (RelativeLayout) findViewById(R.id.connectSearchView);
 
-		displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
-		findViewById(R.id.connectButton).setOnClickListener(this);
-		findViewById(R.id.cancel_tip_button).setOnClickListener(this);
-		findViewById(R.id.ok_name_button).setOnClickListener(this);
-		findViewById(R.id.cancel_name_button).setOnClickListener(this);
-		findViewById(R.id.cancel_search_button).setOnClickListener(this);
+		if(connectButtonView != null) {
+			connectButtonView = (RelativeLayout) findViewById(R.id.connectButtonView);
+			connectTipView = (RelativeLayout) findViewById(R.id.connectTipView);
+			newDeviceView = (RelativeLayout) findViewById(R.id.newDeviceView);
+			connectSearchView = (RelativeLayout) findViewById(R.id.connectSearchView);
 
-		//Animation
-		WebView animation = (WebView) findViewById(R.id.animationwebView);
-		animation.setBackgroundColor(Color.TRANSPARENT);
-		animation.loadUrl("file:///android_asset/htmls/animation.html");
+			displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+			findViewById(R.id.connectButton).setOnClickListener(this);
+			findViewById(R.id.cancel_tip_button).setOnClickListener(this);
+			findViewById(R.id.ok_name_button).setOnClickListener(this);
+			findViewById(R.id.cancel_name_button).setOnClickListener(this);
+			findViewById(R.id.cancel_search_button).setOnClickListener(this);
 
-
+			//Animation
+			WebView animation = (WebView) findViewById(R.id.animationwebView);
+			animation.setBackgroundColor(Color.TRANSPARENT);
+			animation.loadUrl("file:///android_asset/htmls/animation.html");
+		} else {
+			RelativeLayout connectButtonView = (RelativeLayout) findViewById(R.id.bottomConnectButton);
+			connectButtonView.setVisibility(View.VISIBLE);
+			findViewById(R.id.connectButton).setOnClickListener(this);
+		}
 	}
 
 	@Override
@@ -292,7 +298,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		//Toast.makeText(this, "Pattern :"+newDeviceCode, Toast.LENGTH_SHORT).show();
 	}
 
-	private void setCol(AdapterView<?> parent, int pos, boolean enabled)
+	private void setCol(AdapterView<?> parent, int pos, boolean enabledlandscape)
 	{
 		int index=pos-5;
 		ImageView v;
@@ -441,8 +447,12 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		switch (v.getId()) {
 			case R.id.connectButton:
-				state = PAIRING_STATE.PAIRING_STATE_TIP;
-				displayConnectScreen(PAIRING_STATE.PAIRING_STATE_TIP);
+				if(connectButtonView != null) {
+					state = PAIRING_STATE.PAIRING_STATE_TIP;
+					displayConnectScreen(PAIRING_STATE.PAIRING_STATE_TIP);
+				} else {
+					Toast.makeText(MBApp.getContext(), "Open portrait activity to connect", Toast.LENGTH_SHORT).show();
+				}
 				break;
 			case R.id.ok_connect_button:
 				state = PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY;
