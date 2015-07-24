@@ -78,6 +78,7 @@
 			android:name=".ui.activity.AudioRecorderActivity"
 			android:label="Audio Recorder"
 			android:launchMode="singleTask"
+			android:configChanges="orientation|screenSize"
 			android:theme="@android:style/Theme.Holo">
 		</activity>
 		<activity
