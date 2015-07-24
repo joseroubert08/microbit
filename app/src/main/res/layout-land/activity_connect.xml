@@ -1,100 +1,82 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="fill_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="@drawable/bg">
+    android:background="@drawable/bg_land">
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/content_margin">
-        <ImageButton
-            android:id="@+id/homeBtn"
-            android:onClick="onHomeBtnClicked"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/home"
-            android:background="@drawable/green_btn"/>
-
-    </RelativeLayout>
-    <RelativeLayout
-        android:id="@+id/header_layout"
+        android:id="@+id/headerBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white">
+        android:background="#ffff">
 
-        <ImageView
-            android:id="@+id/samsungLogo"
+        <ImageButton
+            android:id="@+id/backBtn"
+            android:onClick="onClick"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/back"
+            android:background="@android:color/transparent"/>
+
+        <TextView
+            style="@style/h1"
+            android:id="@+id/titleTxt"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/header_03"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="center_vertical"/>
+            android:layout_height="100dp"
+            android:text="@string/pair_my_device"
+            android:layout_toRightOf="@id/backBtn"
+            android:gravity="center"/>
 
     </RelativeLayout>
-
 
     <LinearLayout
         android:id="@+id/mainContentView"
         android:layout_width="fill_parent"
-        android:layout_height="450dp"
-        android:orientation="vertical"
-        android:layout_gravity="center_vertical"
-        android:background="@drawable/white_bg"
-        android:layout_marginTop="@dimen/content_margin"
-        android:layout_below="@id/header_layout">
+        android:layout_height="wrap_content"
+        android:layout_below="@id/headerBar"
+        android:paddingLeft="@dimen/project_main_margin"
+        android:paddingRight="@dimen/project_main_margin">
 
         <RelativeLayout
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/prevDeviceView"
-            android:layout_width="fill_parent">
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="@dimen/project_main_margin">
 
             <TextView
+                style="@style/h1"
                 android:id="@+id/prevDeviceTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/previous_devices"
-                android:textColor="@color/black_font_color"
-                android:textSize="30sp"/>
+                android:layout_marginBottom="@dimen/project_main_margin"/>
 
             <ListView
                 android:id="@+id/connectedDeviceList"
                 android:layout_width="fill_parent"
-                android:layout_height="360dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
                 android:layout_below="@id/prevDeviceTxt"
                 android:divider="@android:color/transparent"
                 android:dividerHeight="5dp"
                 android:clickable="false"/>
+
         </RelativeLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="fill_parent"
+            android:background="@color/divider_color"
+            android:layout_marginLeft="@dimen/project_main_margin"
+            android:layout_marginRight="@dimen/project_main_margin"/>
 
         <include layout="@layout/view_pairing_start"/>
         <include layout="@layout/view_pairing_tip"/>
         <include layout="@layout/view_pairing_pattern"/>
         <include layout="@layout/view_pairing_searching"/>
+
     </LinearLayout>
-
-
-
-
-        <!--
-               <View
-                   android:layout_width="1dp"
-                   android:layout_height="fill_parent"
-                   android:background="@color/divider_color"
-                   android:layout_marginLeft="5dp"
-                   android:layout_marginRight="5dp"/>
-
-
-               <include layout="@layout/view_pairing_start"/>
-               <include layout="@layout/view_pairing_tip"/>
-               <include layout="@layout/view_pairing_pattern"/>
-               <include layout="@layout/view_pairing_searching"/>
-               -->
-
-
-
-
 
 
 
