@@ -7,10 +7,32 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <!--h2 font style -->
+    <style name="h2" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/black_font_color</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <!--p1 font style -->
     <style name="p1" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/black_font_color</item>
         <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+
+    <!--p2 font style -->
+    <style name="p2" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/black_font_color</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <!--p2 font style -->
+    <style name="p3" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/black_font_color</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textStyle">normal</item>
     </style>
 
