@@ -28,7 +28,9 @@
 	<string name="phase2_complete_ok">Phase 2 completed. Device should be flashed</string>
 	<string name="phase1_complete_not_ok">Device not found or in right mode or connection error</string>
 
-    <string name="label_data">Data:</string>
+	<string name="downloading_file">Downloading file</string>
+
+	<string name="label_data">Data:</string>
     <string name="label_device_address">Device address:</string>
     <string name="label_state">State:</string>
     <string name="no_data">No data</string>

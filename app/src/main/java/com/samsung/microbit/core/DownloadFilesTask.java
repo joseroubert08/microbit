@@ -95,12 +95,15 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
 					}
 				} while (destinationFile == null);
 
+
+				showDownloadProgress(true);
 				long fileSize = downloadMgr.download(urls[i], destinationFile);
+				showDownloadProgress(false);
 				newresult = new String(currentFileName);
-				if (fileSize >= 0) {
-					totalSize += fileSize;
-					publishProgress((int) ((i / (float) count) * 100));
-				}
+				//if (fileSize >= 0) {
+				//	totalSize += fileSize;
+				//	publishProgress((int) ((i / (float) count) * 100));
+				//}
 
 			} catch (URISyntaxException e) {
 
@@ -180,8 +183,23 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
 		alertDialog.show();
 	}
 
-	protected void onProgressUpdate(Integer... progress) {
+	protected void showDownloadProgress(final boolean show) {
 
+		Activity v = (Activity) MBApp.getContext();
+		v.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (show) {
+					PopUp.show(MBApp.getContext(), MBApp.getContext().getString(R.string.downloading),
+						MBApp.getContext().getString(R.string.downloading_file), 0, 0, PopUp.TYPE_SPINNER, null, null);
+				} else {
+					PopUp.hide();
+				}
+			}
+		});
+	}
+
+	protected void onProgressUpdate(Integer... progress) {
 	}
 
 	protected void onPostExecute(final String result) {

@@ -17,8 +17,18 @@ import java.net.URLConnection;
  */
 public class DownloadManager {
 
+	volatile boolean cancelled = false;
+
     public DownloadManager() {
     }
+
+	public boolean isCancelled() {
+		return cancelled;
+	}
+
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
+	}
 
     public long download(String sourceUrl, String destinationFile) {
 
@@ -44,7 +54,7 @@ public class DownloadManager {
         byte[] buffer = new byte[1024];
         int i;
 
-        while (true) {
+        while (!cancelled) {
             i = src.read(buffer);
             if (i == -1) {
                 break;
