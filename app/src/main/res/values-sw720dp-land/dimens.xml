@@ -10,6 +10,7 @@
 
 	<!-- Generic Buttons TODO maybe remove-->
 	<dimen name="button_text_size">25sp</dimen>
+	<dimen name="button_size">80dp</dimen>
 	<dimen name="button_height">80dp</dimen>
 
 	<!-- Header bar -->
@@ -20,6 +21,12 @@
 
 	<!-- Home UI -->
 	<dimen name="samsung_logo_bottom_marging">30dp</dimen>
+	<dimen name="home_connect_title_width">250dp</dimen>
+	<dimen name="home_project_title_width">250dp</dimen>
+	<dimen name="home_device_name_width">500dp</dimen>
+	<dimen name="home_device_name_empty_width">585dp</dimen>
+	<dimen name="home_no_project_btn_width">340dp</dimen>
+	<dimen name="home_start_btn_width">240dp</dimen>
 
 	<!-- Project UI -->
 	<dimen name="project_name_width">800dp</dimen>

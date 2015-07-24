@@ -151,4 +151,6 @@
     <string name="send">Change ID To FLASH</string>
     <string name="code">Change ID To VIEW</string>
 
+    <string name="connect_to_mbit">Connect to your Micro:Bit</string>
+
 </resources>
