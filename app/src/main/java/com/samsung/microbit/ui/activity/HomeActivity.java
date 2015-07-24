@@ -140,10 +140,10 @@ public class HomeActivity extends Activity implements View.OnClickListener  {
 
 	public void onClick(final View v) {
 		if (debug) logi("onBtnClicked() :: ");
-		if (v.getId() == R.id.addDevice) {
+		if (v.getId() == R.id.addDevice || v.getId() == R.id.addDeviceEmpty) {
 			Intent intent = new Intent(this, ConnectActivity.class);
 			startActivity(intent);
-		} else if (v.getId() == R.id.startNewProject) {
+		} else if (v.getId() == R.id.startNewProject || v.getId() == R.id.startNewProjectImg) {
 			Intent intent = new Intent(this, TouchDevActivity.class);
 			intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
 			startActivity(intent);
@@ -179,20 +179,28 @@ public class HomeActivity extends Activity implements View.OnClickListener  {
 
 	private final void updateConnectBarView() {
 		Button addDeviceButton = (Button) findViewById(R.id.addDevice);
+		Button addDeviceEmpty = (Button) findViewById(R.id.addDeviceEmpty);
+		ImageButton connectButton = (ImageButton) findViewById(R.id.connectBtn);
 		ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
 
 		if (connectedDevice.mPattern != null) {
+			addDeviceButton.setVisibility(View.VISIBLE);
+			connectButton.setVisibility(View.VISIBLE);
 			String styledText = "<big><font color='blue'>"
 				+ (connectedDevice.mName != null ? connectedDevice.mName : "")
 				+ "</font>"
 				+ "<font color='blue'> (" + connectedDevice.mPattern + ")</font></big>";
 			addDeviceButton.setText(Html.fromHtml(styledText));
+			addDeviceEmpty.setVisibility(View.GONE);
+			addDeviceButton.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
 		} else {
-			addDeviceButton.setText("Connect to your Micro:Bit");
+			addDeviceButton.setVisibility(View.GONE);
+			connectButton.setVisibility(View.GONE);
+			addDeviceEmpty.setVisibility(View.VISIBLE);
+			addDeviceEmpty.setText(R.string.connect_to_mbit);
+			addDeviceEmpty.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
 		}
-		addDeviceButton.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
 
-		ImageButton connectButton = (ImageButton) findViewById(R.id.connectBtn);
 		if (connectedDevice.mPattern != null && connectedDevice.mStatus) {
 			connectButton.setImageResource(R.drawable.connected);
 			connectButton.setBackground(getResources().getDrawable(R.drawable.green_btn));
