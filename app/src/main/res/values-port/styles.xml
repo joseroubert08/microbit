@@ -1,0 +1,17 @@
+<resources>
+
+    <!--h1 font style -->
+    <style name="h1" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/black_font_color</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!--p1 font style -->
+    <style name="p1" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/black_font_color</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+</resources>

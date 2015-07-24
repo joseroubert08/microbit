@@ -40,7 +40,7 @@
 				android:layout_width="wrap_content"
 				android:maxWidth="@dimen/header_device_name_max"
 				android:minWidth="@dimen/header_device_name_min"
-				android:layout_height="100dp"
+				android:layout_height="@dimen/header_title_height"
 				android:background="@drawable/project_text_box"
 				android:editable="false"
 				android:gravity="top"/>
@@ -90,13 +90,13 @@
 			android:dividerHeight="5dp"/>
 
 		<TextView
+			style="@style/h1"
 			android:id="@android:id/empty"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center"
+			android:layout_below="@id/createProject"
 			android:gravity="center"
-			android:textSize="@dimen/button_text_size"
-			android:textColor="@color/black_font_color"
 			android:text="@string/no_projects" />
 
 	</RelativeLayout>
