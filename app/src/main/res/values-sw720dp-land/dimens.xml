@@ -41,5 +41,12 @@
 	<dimen name="lv_item_height">80dp</dimen>
 	<dimen name="lv_item_margin">16dp</dimen>
 
-
+	<!-- PopUp -->
+	<dimen name="popup_button_margin">150dp</dimen>
+	<dimen name="popup_button_size">100dp</dimen>
+	<dimen name="popup_paddingTop">100dp</dimen>
+	<dimen name="popup_paddingBottom">150dp</dimen>
+	<dimen name="popup_paddingLeft">250dp</dimen>
+	<dimen name="popup_paddingRight">250dp</dimen>
+	<dimen name="popup_icon_size">100dp</dimen>
 </resources>
