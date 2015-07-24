@@ -6,6 +6,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -182,6 +183,13 @@ public class AudioRecorderActivity extends Activity {
         NotificationManager mNotifyMgr =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(NOTIFICATION_ID);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        //handle orientation change to prevent re-creation of activity.
+        //i.e. while recording we need to preserve state of recorder
+        super.onConfigurationChanged(newConfig);
     }
 
     @Override
