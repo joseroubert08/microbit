@@ -2,7 +2,7 @@
 	xmlns:tools="http://schemas.android.com/tools" android:layout_width="fill_parent"
 	android:layout_height="match_parent"
 	tools:context=".MainActivity"
-	android:background="@drawable/bg_port">
+	android:id="@+id/layout">
 
 	<RelativeLayout
 		android:id="@+id/headerBar"
@@ -13,8 +13,8 @@
 		<ImageButton
 			android:id="@+id/backBtn"
 			android:onClick="onClick"
-			android:layout_width="100dp"
-			android:layout_height="100dp"
+			android:layout_width="@dimen/header_btn_size"
+			android:layout_height="@dimen/header_btn_size"
 			android:src="@drawable/back"
 			android:background="@android:color/transparent"/>
 
@@ -22,7 +22,7 @@
 			style="@style/h1"
 			android:id="@+id/titleTxt"
 			android:layout_width="wrap_content"
-			android:layout_height="100dp"
+			android:layout_height="@dimen/header_title_height"
 			android:text="@string/projects"
 			android:layout_toRightOf="@id/backBtn"
 			android:gravity="center"/>
@@ -38,8 +38,8 @@
 			<TextView
 				android:id="@+id/connectedIndicatorText"
 				android:layout_width="wrap_content"
-				android:maxWidth="300dp"
-				android:minWidth="200dp"
+				android:maxWidth="@dimen/header_device_name_max"
+				android:minWidth="@dimen/header_device_name_min"
 				android:layout_height="100dp"
 				android:background="@drawable/project_text_box"
 				android:editable="false"
@@ -47,8 +47,8 @@
 
 			<ImageButton
 				android:id="@+id/connectedIndicatorIcon"
-				android:layout_width="100dp"
-				android:layout_height="100dp"
+				android:layout_width="@dimen/header_btn_size"
+				android:layout_height="@dimen/header_btn_size"
 				android:layout_toRightOf="@id/connectedIndicatorText"
 				android:background="@drawable/project_connect_btn"
 				android:onClick="onClick"

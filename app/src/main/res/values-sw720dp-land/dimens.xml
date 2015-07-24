@@ -20,4 +20,9 @@
 	<dimen name="list_device_text_width">320dp</dimen>
 
 	<dimen name="project_main_margin">50dp</dimen>
+
+	<dimen name="header_btn_size">100dp</dimen>
+	<dimen name="header_device_name_max">500dp</dimen>
+	<dimen name="header_device_name_min">300dp</dimen>
+	<dimen name="header_title_height">100dp</dimen>
 </resources>

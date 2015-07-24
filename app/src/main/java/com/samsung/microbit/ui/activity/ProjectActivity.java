@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,12 +20,15 @@ import android.text.SpannableString;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -135,6 +139,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		//Remove title bar
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_projects);
+
+		RelativeLayout layout = (RelativeLayout)findViewById(R.id.layout);
+
+		if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+			layout.setBackground( getResources().getDrawable(R.drawable.bg_port));
+		else
+			layout.setBackground( getResources().getDrawable(R.drawable.bg_land));
 
 		projectListView = (ListView) findViewById(R.id.projectListView);
 		updateProjectsListSortOrder(true);
@@ -266,6 +277,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		Intent intent;
 
 		switch (v.getId()) {
+			/*
 			case R.id.preferences:
 				Toast.makeText(MBApp.getContext(), "preferences", Toast.LENGTH_SHORT).show();
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -284,6 +296,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				builder.show();
 
 				break;
+			*/
 
 			case R.id.createProject:
 				intent = new Intent(this, TouchDevActivity.class);
