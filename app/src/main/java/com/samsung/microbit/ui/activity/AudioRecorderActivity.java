@@ -9,10 +9,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.ImageView;
@@ -21,6 +25,11 @@ import android.widget.TextView;
 import com.samsung.microbit.R;
 import com.samsung.microbit.plugin.AudioPlugin;
 import com.samsung.microbit.ui.PopUp;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 /**
  * Created by frederic.ma on 14/06/2015.
@@ -32,11 +41,18 @@ public class AudioRecorderActivity extends Activity {
     private TextView filenameTxt;
     private Chronometer chronometer;
     private ImageView imageMic;
-    private Drawable drawable_mic_off;//TODO: make sure they are destroyed after use
-    private Drawable drawable_mic_on;//TODO: make sure they are destroyed after use
+    private Drawable drawable_mic_off;
+    private Drawable drawable_mic_on;
+    private Bitmap notificationLargeIconBitmapRecordingOn;
+    private Bitmap notificationLargeIconBitmapRecordingOff;
+    NotificationCompat.Builder mBuilder;
 
     private boolean backPressed;
-    private Bitmap notificationLargeIconBitmap;
+
+    private static MediaRecorder mRecorder = null;
+    private static File mFile = null;
+    private static boolean mIsRecording = false;
+    private static boolean mLaunchActivity = false;
 
     private void create()
     {
@@ -51,12 +67,23 @@ public class AudioRecorderActivity extends Activity {
 
         backPressed = false;
 
-        notificationLargeIconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.microphone_on);
+        notificationLargeIconBitmapRecordingOn = BitmapFactory.decodeResource(getResources(), R.drawable.microphone_on);
+        notificationLargeIconBitmapRecordingOff = BitmapFactory.decodeResource(getResources(), R.drawable.microphone_off);
+
+        mBuilder = new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setLargeIcon(notificationLargeIconBitmapRecordingOff)
+                        .setTicker("Micro:bit Audio Recorder")//TODO: use string id
+                .setContentTitle("Micro:bit Audio Recorder");//TODO: use string id
+
+        processIntent(getIntent());
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mLaunchActivity = false;
 
         PopUp.show(this,
                 "Accept Audio Recording?\nClick Yes to allow", //message
@@ -64,14 +91,15 @@ public class AudioRecorderActivity extends Activity {
                 R.drawable.microphone_on, //image icon res id (pass 0 to use default icon)
                 0, //image icon background res id (pass 0 if there is no background)
                 PopUp.TYPE_CHOICE, //type of popup.
-                new View.OnClickListener(){
+                new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         PopUp.hide();
                         AudioRecorderActivity.this.create();
+                        mLaunchActivity = true;
                     }
                 },//override click listener for ok button
-                new View.OnClickListener(){
+                new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         PopUp.hide();
@@ -89,7 +117,8 @@ public class AudioRecorderActivity extends Activity {
     protected void onStop() {
         super.onStop();
         //do not create notification if back pressed (or it is not recording?)
-        if (!backPressed) {
+        //or if activity was not launched
+        if (mLaunchActivity && !backPressed) {
             Intent resultIntent = new Intent(this, AudioRecorderActivity.class);
             resultIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//bring existing activity to foreground
 
@@ -101,13 +130,10 @@ public class AudioRecorderActivity extends Activity {
                             PendingIntent.FLAG_UPDATE_CURRENT //update existing notification instead of creating new one
                     );
 
-
-            NotificationCompat.Builder mBuilder =
-                    new NotificationCompat.Builder(this)
-                            .setSmallIcon(R.drawable.ic_launcher)
-                            .setLargeIcon(notificationLargeIconBitmap)
-                            .setTicker("Micro:bit Audio Recorder")//TODO: use string id
-                            .setContentTitle("Micro:bit Audio Recorder");//TODO: use string id
+            if (mIsRecording)
+                mBuilder.setLargeIcon(notificationLargeIconBitmapRecordingOn);
+            else
+                mBuilder.setLargeIcon(notificationLargeIconBitmapRecordingOff);
 
             mBuilder.setContentIntent(resultPendingIntent);
             Notification notification = mBuilder.build();
@@ -124,26 +150,27 @@ public class AudioRecorderActivity extends Activity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
+        //process intent only if activity is launched after popup confirmation
+        if (mLaunchActivity)
+            processIntent(intent);
+    }
+
+    private void processIntent(Intent intent)
+    {
         if (intent.getAction() == null)
             return;
 
-        if (intent.getAction().toString().equals(AudioPlugin.INTENT_ACTION_START_RECORD))
-        {
-            chronometer.setBase(SystemClock.elapsedRealtime());
-            chronometer.start();
-
-            String filename = intent.getStringExtra("filename");
-            if (filename != null)
-                filenameTxt.setText(filename);
-
-            imageMic.setImageDrawable(drawable_mic_on);
+        if (intent.getAction().toString().equals(AudioPlugin.INTENT_ACTION_START_RECORD)) {
+            startRecording();
         }
-        else if (intent.getAction().toString().equals(AudioPlugin.INTENT_ACTION_STOP_RECORD))
-        {   //TODO: delay this call if activity was in background?
-            //otherwise the time is not updated
-            chronometer.stop();
-
-            imageMic.setImageDrawable(drawable_mic_off);
+        else if (intent.getAction().toString().equals(AudioPlugin.INTENT_ACTION_STOP_RECORD)) {
+            stopRecording();
+        }
+        else if (intent.getAction().toString().equals(AudioPlugin.INTENT_ACTION_STOP)) {
+            if (mIsRecording)
+                stopRecording();
+            finish();
+            backPressed = true;//prevent notification creation
         }
     }
 
@@ -159,10 +186,96 @@ public class AudioRecorderActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        //if recording is active, then stop recording.
+        //otherwise exit activity
+        if (mIsRecording) {
+            stopRecording();
+        }
+        else {
+            super.onBackPressed();
+            backPressed = true;
+        }
+    }
 
-        backPressed = true;
-        //TODO: if recording is active, then stop recording. Also do not call super.onBackPressed();
-        //do like existing samsung voice recorder app
+    public File getAudioFilename() {
+        // Get the directory for the user's public pictures directory.
+        File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+        if (!dir.exists()) {
+            if (!dir.mkdirs()) {
+                Log.e("AudioPlugin", "Failed to create directory");
+            }
+        }
+
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyy_HHmmss");
+        String filename = "voice_" + sdf.format(c.getTime());
+
+        File file = new File(dir, filename + ".3gp");
+        return file;
+    }
+
+    void startRecording() {
+        if (mRecorder != null)
+            return;
+
+        mRecorder = new MediaRecorder();
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+
+        mFile = getAudioFilename();
+
+        //TODO: check disk space left?
+        mRecorder.setOutputFile(mFile.getPath());
+        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+        try {
+            mRecorder.prepare();
+        } catch (IOException e) {
+            if (mRecorder != null) {
+                mRecorder.reset();
+                mRecorder.release();
+                mRecorder = null;
+            }
+            //TODO: show popup for failure?
+            Log.e("AudioPlugin", "prepare() failed" + e.toString());
+            return;
+        }
+
+        mRecorder.start();
+        mIsRecording = true;
+
+        //UI update
+        chronometer.setBase(SystemClock.elapsedRealtime());
+        chronometer.start();
+
+        filenameTxt.setText(mFile.getName());
+        imageMic.setImageDrawable(drawable_mic_on);
+    }
+
+    void stopRecording() {
+        if (mRecorder == null)
+            return;
+
+        mRecorder.stop();
+        mRecorder.release();
+        mRecorder = null;
+        mIsRecording = false;
+
+        refreshAudio(mFile);
+
+        //UI update
+        chronometer.stop();
+
+        imageMic.setImageDrawable(drawable_mic_off);
+    }
+
+    private void refreshAudio(File file) {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        mediaScanIntent.setData(Uri.fromFile(file));
+        sendBroadcast(mediaScanIntent);
+    }
+
+    public static boolean isRecording() {
+        return mIsRecording;
     }
 }
