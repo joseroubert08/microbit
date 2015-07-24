@@ -4,25 +4,35 @@
 	<dimen name="activity_vertical_margin">16dp</dimen>
 	<dimen name="activity_bottom_margin">24dp</dimen>
 
+	<!-- Generic margin TODO maybe rename -->
 	<dimen name="widget_margin">5dp</dimen>
 	<dimen name="content_margin">16dp</dimen>
-	<dimen name="samsung_logo_bottom_marging">30dp</dimen>
 
+	<!-- Generic Buttons TODO maybe remove-->
 	<dimen name="button_text_size">25sp</dimen>
 	<dimen name="button_height">80dp</dimen>
 
-
-	<dimen name="list_text_btn_width">150dp</dimen>
-	<dimen name="list_btn_width">80dp</dimen>
-	<dimen name="list_item_height">80dp</dimen>
-	<dimen name="list_project_text_width">800dp</dimen>
-	<dimen name="list_item_margin">16dp</dimen>
-	<dimen name="list_device_text_width">320dp</dimen>
-
-	<dimen name="project_main_margin">50dp</dimen>
-
+	<!-- Header bar -->
 	<dimen name="header_btn_size">100dp</dimen>
 	<dimen name="header_device_name_max">500dp</dimen>
 	<dimen name="header_device_name_min">300dp</dimen>
 	<dimen name="header_title_height">100dp</dimen>
+
+	<!-- Home UI -->
+	<dimen name="samsung_logo_bottom_marging">30dp</dimen>
+
+	<!-- Project UI -->
+	<dimen name="project_name_width">800dp</dimen>
+	<dimen name="project_main_margin">50dp</dimen>
+
+	<!-- Connect UI -->
+	<dimen name="device_name_width">320dp</dimen>
+
+	<!-- Generic list view item -->
+	<dimen name="lv_txt_img_btn_width">150dp</dimen>
+	<dimen name="lv_btn_width">80dp</dimen>
+	<dimen name="lv_item_height">80dp</dimen>
+	<dimen name="lv_item_margin">16dp</dimen>
+
+
 </resources>
