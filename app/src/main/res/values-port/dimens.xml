@@ -33,7 +33,9 @@
 	<dimen name="project_main_margin">20dp</dimen>
 
 	<!-- Connect UI -->
-	<dimen name="device_name_width">550dp</dimen>
+	<dimen name="device_name_width">170dp</dimen>
+	<dimen name="device_main_margin">16dp</dimen>
+	<dimen name="device_lv_bottom_margin">70dp</dimen>
 
 	<!-- Generic list view item -->
 	<dimen name="lv_btn_width">60dp</dimen>
