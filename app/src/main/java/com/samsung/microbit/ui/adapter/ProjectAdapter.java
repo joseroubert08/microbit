@@ -2,6 +2,7 @@ package com.samsung.microbit.ui.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -33,7 +34,6 @@ public class ProjectAdapter extends BaseAdapter {
 
 	private List<Project> projects;
 	private ProjectActivity projectActivity;
-	private LinearLayout lastActionBarLayout = null;
 
 	protected String TAG = "ProjectAdapter";
 	protected boolean debug = true;
@@ -124,31 +124,50 @@ public class ProjectAdapter extends BaseAdapter {
 		@Override
 		public void onClick(View v) {
 
-			renameProject(v);
+			if (v.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+				changeActionBar(v);
+			} else if (v.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+				renameProject(v);
+			}
 		}
 	};
 
-	private void renameProject(View v) {
+	private View.OnLongClickListener appNameLongClickListener = new View.OnLongClickListener() {
+		@Override
+		public boolean onLongClick(View v) {
+
+			if (v.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+				renameProject(v);
+			}
+
+			return true;
+		}
+	};
+
+	private void changeActionBar(View v) {
+
 		RelativeLayout r = (RelativeLayout) v.getParent().getParent();
 		LinearLayout actionBarLayout = null;
-
 		if (r != null) {
 			actionBarLayout = (LinearLayout) r.findViewById(R.id.actionBarForProgram);
 			if (actionBarLayout != null) {  //Potrait Layout
-				if (lastActionBarLayout != null) {
-					lastActionBarLayout.setVisibility(LinearLayout.GONE);
-				}
 
-				lastActionBarLayout = (LinearLayout) r.findViewById(R.id.actionBarForProgram);
-				actionBarLayout.setVisibility(LinearLayout.VISIBLE);
-			} else {
-				EditText ed = (EditText) v.getTag(R.id.textedit);
-				ed.setVisibility(View.VISIBLE);
-				String currentText = (String) ((Button) v).getText();
-				ed.setText(currentText);
-				ed.requestFocus();
-				ed.setSelection(ed.getText().length());
+				int visibility = (actionBarLayout.getVisibility() == View.VISIBLE) ? View.GONE : View.VISIBLE;
+				actionBarLayout.setVisibility(visibility);
 			}
+		}
+	}
+
+	private void renameProject(View v) {
+
+		RelativeLayout r = (RelativeLayout) v.getParent().getParent();
+		if (r != null) {
+			EditText ed = (EditText) v.getTag(R.id.textedit);
+			ed.setVisibility(View.VISIBLE);
+			String currentText = (String) ((Button) v).getText();
+			ed.setText(currentText);
+			ed.requestFocus();
+			ed.setSelection(ed.getText().length());
 		}
 	}
 
@@ -226,10 +245,10 @@ public class ProjectAdapter extends BaseAdapter {
 		Button appNameButton = (Button) convertView.findViewById(R.id.appNameButton);
 		ExtendedEditText appNameEdit = (ExtendedEditText) convertView.findViewById(R.id.appNameEdit);
 
-
 		appNameButton.setTag(R.id.positionId, position);
 		appNameButton.setTag(R.id.textedit, appNameEdit);
 		appNameButton.setOnClickListener(appNameClickListener);
+		appNameButton.setOnLongClickListener(appNameLongClickListener);
 
 		appNameEdit.setTag(R.id.positionId, position);
 		appNameEdit.setTag(R.id.editbutton, appNameButton);
