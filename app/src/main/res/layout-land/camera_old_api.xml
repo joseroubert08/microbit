@@ -8,7 +8,8 @@
     <FrameLayout
         android:id="@+id/camera_preview_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_land">
     </FrameLayout>
 
     <FrameLayout
@@ -17,12 +18,13 @@
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:background="@drawable/bg_header">
+            android:layout_gravity="left"
+            android:layout_marginLeft="@dimen/content_margin">
         <ImageView
             android:id="@+id/bbcLogo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|left"
+            android:layout_gravity="top"
             android:layout_marginTop="50dp"
             android:src="@drawable/greetings_emojio"/>
 
@@ -30,7 +32,7 @@
             android:id="@+id/samsungLogo"
             android:layout_width="95dp"
             android:layout_height="74dp"
-            android:layout_gravity="bottom|left"
+            android:layout_gravity="bottom"
             android:layout_marginBottom="50dp"
             android:src="@drawable/sam_clear_logo"/>
 
@@ -41,13 +43,12 @@
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:layout_gravity="right"
-            android:background="@drawable/bg_header">
+            android:layout_marginRight="@dimen/content_margin">
         <ImageButton
             android:id="@+id/picture"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_gravity="center_vertical|right"
-            android:layout_marginRight="@dimen/content_margin"
+            android:layout_gravity="center_vertical"
             android:soundEffectsEnabled="false"/>
         </FrameLayout>
 

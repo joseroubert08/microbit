@@ -14,6 +14,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
+import android.content.pm.ActivityInfo;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.hardware.Camera;
@@ -43,6 +45,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 
+import android.drm.DrmManagerClient.OnInfoListener;
+import android.media.MediaScannerConnection;
+
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.plugin.CameraPlugin;
@@ -59,6 +64,7 @@ public class CameraActivity_OldAPI extends Activity {
 	private CameraPreview mPreview;
 	private ImageButton mButtonClick;
 	private Camera mCamera;
+	private int mCameraIdx;
 	private BroadcastReceiver mMessageReceiver;
 	private boolean mVideo = false;
 	private boolean mIsRecording = false;
@@ -140,7 +146,10 @@ public class CameraActivity_OldAPI extends Activity {
 					refreshGallery(mVideoFile);
 					releaseMediaRecorder(); // release the MediaRecorder object
 					mIsRecording = false;
-					finish();
+					mButtonClick.setBackgroundResource(R.drawable.start_record_icon);
+					releaseMediaRecorder();
+//					finish();
+					resetCam();
 				} else {
 					if (!prepareMediaRecorder()) {
 						sendCameraError();
@@ -160,7 +169,7 @@ public class CameraActivity_OldAPI extends Activity {
 							} catch (final Exception ex) {
 								sendCameraError();
 								//TODO Check that can be used
-								Log.e(TAG, "Error during video recording");
+								Log.e(TAG, "Error during video recording",ex);
 								finish();
 							}
 						}
@@ -199,10 +208,11 @@ public class CameraActivity_OldAPI extends Activity {
 		}
 
 		SurfaceView mSurfaceView = new SurfaceView(this);
-		mPreview = new CameraPreview(this, mSurfaceView, mCamera);
+		mPreview = new CameraPreview(this, mSurfaceView);
 		mPreview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 		((FrameLayout) findViewById(R.id.camera_preview_container)).addView(mPreview);
 		mPreview.setKeepScreenOn(true);
+		mPreview.setParentActivity(this);
 
 		mButtonClick = (ImageButton) findViewById(R.id.picture);
 //		mButtonClick.bringToFront();
@@ -288,17 +298,10 @@ public class CameraActivity_OldAPI extends Activity {
 		logi("onCreate() :: onResume");
 
 		super.onResume();
-		int camIdx = getFrontFacingCamera();
+		mCameraIdx = getFrontFacingCamera();
 		try {
-			mCamera = Camera.open(camIdx);
-			int mRotation = getCameraDisplayOrientation(camIdx,mCamera);
-			Camera.Parameters parameters = mCamera.getParameters();
-			parameters.setRotation(mRotation); //set rotation to save the picture
-			mCamera.setParameters(parameters);
-			mCamera.setDisplayOrientation(mRotation);
-			mCamera.startPreview();
-			mPreview.setCamera(mCamera);
-			//LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("TAKE_PIC"));
+			mCamera = Camera.open(mCameraIdx);
+			mPreview.setCamera(mCamera, mCameraIdx);
 
 			if(mVideo){
 				this.registerReceiver(mMessageReceiver, new IntentFilter("START_VIDEO"));
@@ -326,7 +329,7 @@ public class CameraActivity_OldAPI extends Activity {
 				mMessageReceiver);
 		if (mCamera != null) {
 			mCamera.stopPreview();
-			mPreview.setCamera(null);
+			mPreview.setCamera(null,-1);
 			mCamera.release();
 			mCamera = null;
 		}
@@ -335,7 +338,7 @@ public class CameraActivity_OldAPI extends Activity {
 
 	private void resetCam() {
 		mCamera.startPreview();
-		mPreview.setCamera(mCamera);
+		//mPreview.setCamera(mCamera);
 	}
 
 	private void refreshGallery(File file) {
@@ -427,46 +430,67 @@ public class CameraActivity_OldAPI extends Activity {
 	}
 
 	private void releaseMediaRecorder() {
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
 		if (mMediaRecorder != null) {
 			mMediaRecorder.reset(); // clear recorder configuration
 			mMediaRecorder.release(); // release the recorder object
 			mMediaRecorder = null;
 			mVideoFile = null;
 			//TODO Check that is not necessary
-			//mCamera.lock(); // lock camera for later use
+			mCamera.lock(); // lock camera for later use
 		}
 	}
 
 	private boolean prepareMediaRecorder() {
 
+		if(mCameraIdx<0 || mCamera==null)
+			return false;
+
+		int currentOrientation = getResources().getConfiguration().orientation;
+		if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE);
+		}
+		else {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT);
+		}
+
 		mMediaRecorder = new MediaRecorder();
 
 		mCamera.unlock();
 		mMediaRecorder.setCamera(mCamera);
-
 		mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
 		mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
+		//TODO Check because depending on the quality on some devices the MediaRecorder doesn't work
+		if(CamcorderProfile.hasProfile(mCameraIdx,CamcorderProfile.QUALITY_HIGH))
+			mMediaRecorder.setProfile(CamcorderProfile.get(mCameraIdx,CamcorderProfile.QUALITY_HIGH));
+		else if(CamcorderProfile.hasProfile(mCameraIdx,CamcorderProfile.QUALITY_LOW))
+			mMediaRecorder.setProfile(CamcorderProfile.get(mCameraIdx,CamcorderProfile.QUALITY_LOW));
+		else {
+			releaseMediaRecorder();
+			Log.e(TAG, "Error preparing media Recorder: no CamcorderProfile available");
+			return false;
+		}
+
+		//Setting output file
+		//TODO defining the file name
+		File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/Microbit/");
+		if(!dir.exists())
+			dir.mkdirs();
+		//TODO defining the file name
+		String fileName = String.format("%d.mp4", System.currentTimeMillis());
+		mVideoFile = new File(dir, fileName);
+		mMediaRecorder.setOutputFile(mVideoFile.getAbsolutePath());
+
+		//Setting fiel limits
+		//TODO Check File Limits
+		mMediaRecorder.setMaxDuration(600000); // Set max duration 60 sec.
+		mMediaRecorder.setMaxFileSize(50000000); // Set max file size 50M
+
+		int rotation = (360-getCameraDisplayOrientation(mCameraIdx,mCamera))%360;
+		mMediaRecorder.setOrientationHint(rotation);
+
 		try {
-			//TODO Check that the video quality is enough
-			mMediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_720P));
-
-			//TODO defining the file name
-			File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/Microbit/");
-
-			if(!dir.exists())
-				dir.mkdirs();
-
-			//TODO defining the file name
-			String fileName = String.format("%d.mp4", System.currentTimeMillis());
-			mVideoFile = new File(dir, fileName);
-
-			mMediaRecorder.setOutputFile(mVideoFile.getAbsolutePath());
-
-			//TODO Check File Limits
-			mMediaRecorder.setMaxDuration(600000); // Set max duration 60 sec.
-			mMediaRecorder.setMaxFileSize(50000000); // Set max file size 50M
-			mMediaRecorder.setOrientationHint(270);
 			mMediaRecorder.prepare();
 		} catch (IllegalStateException e) {
 			releaseMediaRecorder();
