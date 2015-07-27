@@ -128,6 +128,9 @@ public class PopUp {
         TextView messageTextView = (TextView)popUpView.findViewById(R.id.messageTxt);
         messageTextView.setText(message);
 
+        if (title.isEmpty())
+            titleTextView.setVisibility(View.GONE);
+
         ViewSwitcher switcher = (ViewSwitcher)popUpView.findViewById(R.id.switcher);
 
         progressBar = (ProgressBar) popUpView.findViewById(R.id.progressBar);

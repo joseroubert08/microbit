@@ -50,4 +50,5 @@
 	<dimen name="popup_paddingLeft">250dp</dimen>
 	<dimen name="popup_paddingRight">250dp</dimen>
 	<dimen name="popup_icon_size">100dp</dimen>
+	<dimen name="popup_spinner_paddingBottom">100dp</dimen>
 </resources>

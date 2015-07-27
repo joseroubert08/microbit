@@ -43,4 +43,5 @@
 	<dimen name="popup_paddingLeft">200dp</dimen>
 	<dimen name="popup_paddingRight">200dp</dimen>
 	<dimen name="popup_icon_size">100dp</dimen>
+	<dimen name="popup_spinner_paddingBottom">100dp</dimen>
 </resources>

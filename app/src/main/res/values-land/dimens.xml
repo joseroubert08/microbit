@@ -45,11 +45,12 @@
 	<dimen name="lv_txt_img_btn_width">120dp</dimen>
 
 	<!-- PopUp -->
-	<dimen name="popup_button_margin">20dp</dimen>
-	<dimen name="popup_button_size">100dp</dimen>
-	<dimen name="popup_paddingTop">250dp</dimen>
-	<dimen name="popup_paddingBottom">250dp</dimen>
-	<dimen name="popup_paddingLeft">200dp</dimen>
-	<dimen name="popup_paddingRight">200dp</dimen>
-	<dimen name="popup_icon_size">100dp</dimen>
+	<dimen name="popup_button_margin">10dp</dimen>
+	<dimen name="popup_button_size">60dp</dimen>
+	<dimen name="popup_paddingTop">10dp</dimen>
+	<dimen name="popup_paddingBottom">10dp</dimen>
+	<dimen name="popup_paddingLeft">20dp</dimen>
+	<dimen name="popup_paddingRight">20dp</dimen>
+	<dimen name="popup_icon_size">60dp</dimen>
+	<dimen name="popup_spinner_paddingBottom">60dp</dimen>
 </resources>
