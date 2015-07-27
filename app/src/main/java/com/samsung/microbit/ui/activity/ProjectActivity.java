@@ -263,6 +263,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 		projectAdapter = new ProjectAdapter(this, projectList);
 		projectListView.setAdapter(projectAdapter);
+		projectListView.setItemsCanFocus(true);
 	}
 
 	void projectListSortOrderChanged() {

@@ -10,6 +10,7 @@ public class Project {
 	public String codeUrl;
 	public boolean runStatus;
 	public boolean actionBarExpanded;
+	public boolean inEditMode;
 
 	public Project(String name, String filePath, long timestamp, String codeUrl, boolean runStatus) {
 		this.name = name;
