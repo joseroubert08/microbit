@@ -37,7 +37,9 @@ public class LEDAdapter extends BaseAdapter {
         if (convertView == null) {
             // if it's not recycled, initialize some attributes
             imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new GridView.LayoutParams(50, 50));
+            final float scale = mContext.getResources().getDisplayMetrics().density;
+            int pixels = (int) (50 * scale + 0.5f);
+            imageView.setLayoutParams(new GridView.LayoutParams(pixels, pixels));
         } else {
             imageView = (ImageView) convertView;
         }
