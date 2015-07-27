@@ -3,8 +3,9 @@
 android:layout_height="wrap_content"
 android:id="@+id/connectSearchView"
 android:layout_toRightOf="@id/prevDeviceView"
-android:layout_width="0dp"
+android:layout_width="match_parent"
 android:layout_weight="1"
+android:layout_below="@id/headerBar"
 android:visibility="gone">
 
 <TextView
@@ -13,7 +14,10 @@ android:visibility="gone">
     android:layout_height="wrap_content"
     android:text="@string/connectSearchingTitle"
     android:textSize="30sp"
-    android:textColor="@color/black_font_color"/>
+    android:textColor="@color/black_font_color"
+    android:gravity="center|center_horizontal"
+    android:layout_alignParentTop="true"
+    android:layout_centerHorizontal="true" />
 
 <RelativeLayout
     android:layout_height="match_parent"
@@ -35,12 +39,12 @@ android:visibility="gone">
         android:id="@+id/cancel_search_button"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="@dimen/content_margin"
+        android:layout_marginBottom="216dp"
         android:background="@drawable/red_circle_btn"
         android:src="@drawable/cross"
-        android:clickable="true"/>
+        android:clickable="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
 

@@ -111,7 +111,7 @@
     <string name="gamepad">Gamepad</string>
     <string name="connectNew">Connect to a new device</string>
     <string name="connectTipTitle">Get the pairing pattern</string>
-    <string name="connectTipText">To start pairing with a device Please click the marked buttons on your Micro:Bit</string>
+    <string name="connectTipText">To start pairing with a device:\nClick the marked buttons on your Micro:Bit</string>
     <string name="connectSearchingTitle">Connecting...</string>
     <!--Connect Popup messages -->
     <string name="pairingErrorTitle">Error</string>
@@ -154,5 +154,6 @@
     <string name="code">Change ID To VIEW</string>
 
     <string name="connect_to_mbit">Connect to your Micro:Bit</string>
+    <string name="title_activity_new_device">NewDevice</string>
 
 </resources>

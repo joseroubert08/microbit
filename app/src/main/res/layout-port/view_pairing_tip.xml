@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
     android:id="@+id/connectTipView"
-    android:layout_toRightOf="@id/prevDeviceView"
-    android:layout_width="0dp"
+    android:layout_width="match_parent"
     android:layout_weight="1"
+    android:layout_below="@id/headerBar"
     android:visibility="gone">
 
     <TextView
@@ -22,7 +22,7 @@
         android:layout_below="@id/connectTipTitle"
         android:layout_marginTop="@dimen/content_margin"
         android:background="#fff"
-        android:layout_alignParentEnd="true">
+        >
 
         <TextView
             android:layout_width="wrap_content"
@@ -33,7 +33,8 @@
             android:layout_marginTop="@dimen/content_margin"
             android:layout_marginLeft="@dimen/content_margin"
             android:textColor="@color/black_font_color"
-            android:layout_toStartOf="@+id/microbit_tip_image">
+            android:layout_toStartOf="@+id/microbit_tip_image"
+            android:layout_alignEnd="@+id/microbit_tip_image_back">
         </TextView>
 
         <ImageView
@@ -42,16 +43,17 @@
             android:layout_height="150dp"
             android:src="@drawable/tip_mb"
             android:layout_marginEnd="57dp"
-            android:layout_alignParentEnd="true"/>
+            android:layout_below="@+id/connectTipTextview"
+            android:layout_toEndOf="@+id/cancel_tip_button" />
 
         <ImageView
             android:id="@+id/microbit_tip_image_back"
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:src="@drawable/tip_mb_back"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="57dp"
-            android:layout_below="@id/microbit_tip_image"/>
+            android:layout_alignTop="@+id/microbit_tip_image"
+            android:layout_toEndOf="@+id/microbit_tip_image"
+	    android:layout_marginEnd="57dp"/>
 
         <ImageButton
             android:id="@+id/cancel_tip_button"

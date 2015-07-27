@@ -34,6 +34,7 @@
 
 	<!-- Connect UI -->
 	<dimen name="device_name_width">550dp</dimen>
+	<dimen name="led_gap">50dp</dimen>
 
 	<!-- Generic list view item -->
 	<dimen name="lv_btn_width">80dp</dimen>

@@ -121,6 +121,10 @@
 			</intent-filter>
 		</service>
 
+		<activity
+			android:name=".ui.activity.NewDevice"
+			android:label="@string/title_activity_new_device" >
+		</activity>
 	</application>
 
 </manifest>

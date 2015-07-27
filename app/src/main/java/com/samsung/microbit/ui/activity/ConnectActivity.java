@@ -9,8 +9,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,6 +35,7 @@ import com.google.gson.Gson;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.IPCMessageManager;
+import com.samsung.microbit.core.PreviousDeviceList;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.service.BLEService;
@@ -53,14 +52,12 @@ import java.util.List;
 
 
 public class ConnectActivity extends Activity implements View.OnClickListener {
-	private SharedPreferences preferences;
-	private final String PREFERENCES_PREVDEV_PREFNAME = "PreviousDevices";
-	private final String PREFERENCES_PREVDEV_KEY = "PreviousDevicesKey";
-	private final int PREVIOUS_DEVICES_MAX = 999;
+
+
 	private static boolean DISABLE_DEVICE_LIST = false;
 
 	ConnectedDevice[] prevDeviceArray;
-	ArrayList prevMicrobitList;
+	PreviousDeviceList  prevDevList;
 
 	private enum PAIRING_STATE {
 		PAIRING_STATE_CONNECT_BUTTON,
@@ -147,14 +144,15 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		logi("handleBLENotification()");
 		ConnectedDevice changedDev = Utils.getPairedMicrobit(this);
 
-		if(prevMicrobitList == null )
-			loadPrevMicrobits();
+		if(prevDevList == null ) {
+			prevDevList = PreviousDeviceList.getInstance(this);
+			prevDeviceArray = prevDevList.loadPrevMicrobits();
+		}
 
 		if (changedDev.mPattern != null && changedDev.mPattern.equals(prevDeviceArray[0].mPattern))
 		{
 			prevDeviceArray[0].mStatus=changedDev.mStatus;
-			prevMicrobitList.set(0, prevDeviceArray[0]);
-			storeMicrobits(prevMicrobitList, true);
+			prevDevList.changeMicrobitState(0, prevDeviceArray[0],prevDeviceArray[0].mStatus, true);
 
 		}
 
@@ -175,6 +173,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	public void onResume() {
 		super.onResume();
 		MBApp.setContext(this);
+        populateConnectedDeviceList(false);
 	}
 
 	@Override
@@ -183,9 +182,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		MBApp.setContext(this);
 
-		/* *************************************************
-		 * TODO setup to Handle BLE Notiification
-		 */
+
 		if (broadcastIntentFilter == null) {
 			broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
 			LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(broadcastReceiver, broadcastIntentFilter);
@@ -212,7 +209,10 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		}
 
 		mHandler = new Handler(Looper.getMainLooper());
-
+        if(prevDevList == null ) {
+            prevDevList = PreviousDeviceList.getInstance(this);
+            prevDeviceArray = prevDevList.loadPrevMicrobits();
+        }
 		//prevDeviceArray = new ConnectedDevice[PREVIOUS_DEVICES_MAX];
 		lvConnectedDevice = (ListView) findViewById(R.id.connectedDeviceList);
 		populateConnectedDeviceList(false);
@@ -342,9 +342,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		connectedDeviceList.clear();
 		int numOfPreviousItems = 0;
 		/* Get Previous connected devices */
-		prevMicrobitList = loadPrevMicrobits();
-		if (prevMicrobitList != null)
-			numOfPreviousItems = prevMicrobitList.size();
+		prevDeviceArray = prevDevList.loadPrevMicrobits();
+		if (prevDevList != null)
+			numOfPreviousItems = prevDevList.size();
 
 
 		for (int i = 0; i < numOfPreviousItems; i++) {
@@ -400,7 +400,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				newDeviceView.setVisibility(View.VISIBLE);
 				findViewById(R.id.cancel_name_button).setVisibility(View.VISIBLE);
 				findViewById(R.id.newDeviceTxt).setVisibility(View.VISIBLE);
-				findViewById(R.id.nameNewTxt).setVisibility(View.GONE);
+				//findViewById(R.id.nameNewTxt).setVisibility(View.GONE);
 				findViewById(R.id.nameNewEdit).setVisibility(View.GONE);
 				findViewById(R.id.ok_name_button).setVisibility(View.GONE);
 				break;
@@ -413,9 +413,10 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				findViewById(R.id.connectedDeviceList).setClickable(false);
 				newDeviceView.setVisibility(View.VISIBLE);
 				((EditText) findViewById(R.id.nameNewEdit)).setText(" ");
-				((TextView) findViewById(R.id.nameNewTxt)).setText(getString(R.string.name_device) + " " + newDeviceCode);
-				findViewById(R.id.nameNewTxt).setVisibility(View.VISIBLE);
+				//((TextView) findViewById(R.id.nameNewTxt)).setText(getString(R.string.name_device) + " " + newDeviceCode);
+				//findViewById(R.id.nameNewTxt).setVisibility(View.VISIBLE);
 				EditText editText = (EditText) findViewById(R.id.nameNewEdit);
+				editText.setText(newDeviceCode);
 				editText.setVisibility(View.VISIBLE);
 				editText.requestFocus();
 				findViewById(R.id.ok_name_button).setVisibility(View.VISIBLE);
@@ -442,7 +443,11 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 					state = PAIRING_STATE.PAIRING_STATE_TIP;
 					displayConnectScreen(PAIRING_STATE.PAIRING_STATE_TIP);
 				} else {
-					Toast.makeText(MBApp.getContext(), "Open portrait activity to connect", Toast.LENGTH_SHORT).show();
+					Intent intent = new Intent(this, NewDevice.class);
+                    /*Bundle b = new Bundle();
+                    b.putSerializable("PrevDeviceList", prevDevList);
+                    intent.putExtras(b);*/
+					startActivity(intent);
 				}
 				break;
 			case R.id.ok_connect_button:
@@ -467,7 +472,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				else {
 					hideKeyboard();
 					prevDeviceArray[0].mName = newname;
-					changeMicrobitName(0, prevDeviceArray[0]);
+					prevDevList.changeMicrobitName(0, prevDeviceArray[0]);
+					populateConnectedDeviceList(true);
 					state = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
 					displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
 				}
@@ -500,7 +506,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				}
 
 				prevDeviceArray[pos].mStatus = !currentState;
-				changeMicrobitState(pos, prevDeviceArray[pos], toTurnON);
+				prevDevList.changeMicrobitState(pos, prevDeviceArray[pos], toTurnON, false);
+				populateConnectedDeviceList(true);
 				if(debug) logi("onClick() :: connectBtn");
 				break;
 
@@ -528,7 +535,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 					@Override
 					public void onClick(View v) {
 						PopUp.hide();
-						removeMicrobit(pos);
+						prevDevList.removeMicrobit(pos);
+						populateConnectedDeviceList(true);
 					}
 				},//override click listener for ok button
 				null);//pass null to use default listener
@@ -549,17 +557,18 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		if(debug) logi("handle_pairing_failed() :: Start");
 
 		// dummy code to test addition of MBits
-		/* if(debug) {
+		/*if(debug) {
             if (!newDeviceCode.equalsIgnoreCase("vuvuv")) {
 
                 state = PAIRING_STATE.PAIRING_STATE_NEW_NAME;
                 displayConnectScreen(state);
                 ConnectedDevice newDev = new ConnectedDevice(null, newDeviceCode, false, "ab.cd.ef.gh.ij.56");
-                addMicrobit(newDev,PREVIOUS_DEVICES_MAX);
+                prevDevList.addMicrobit(newDev, prevDevList.PREVIOUS_DEVICES_MAX);
+				populateConnectedDeviceList(true);
                 return;
 
             }
-        } */
+        }*/
 
 		displayConnectScreen(PAIRING_STATE.PAIRING_STATE_ERROR);
 
@@ -593,8 +602,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 				getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 				//= new ConnectedDevice(null, newDeviceCode, true, device.getAddress() );
-				int oldId = checkDuplicateMicrobit(newDev);
-				addMicrobit(newDev, oldId);
+				int oldId = prevDevList.checkDuplicateMicrobit(newDev);
+				prevDevList.addMicrobit(newDev, oldId);
+				populateConnectedDeviceList(true);
 
 				if(debug) logi("mLeScanCallback.onLeScan() ::   Matching DEVICE FOUND, Pairing");
 				if(debug) logi("handle_pairing_successful() :: sending intent to BLEService.class");
@@ -609,48 +619,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 
 
-	void updateGlobalPairedDevice() {
 
-		ConnectedDevice currentDevice = Utils.getPairedMicrobit(MBApp.getContext());
-
-		if ((prevDeviceArray != null) && (prevDeviceArray[0] != null)) {
-
-			if((currentDevice.mPattern != null) && currentDevice.mPattern.equals(prevDeviceArray[0].mPattern))
-			{
-				// Update existing
-				if(currentDevice.mStatus != prevDeviceArray[0].mStatus)
-				{
-					// Status has changed
-					if(currentDevice.mStatus)
-						disconnectBluetooth();
-					else
-						connectBluetoothDevice();
-				}
-				Utils.setPairedMicrobit(MBApp.getContext(), prevDeviceArray[0]);
-			} else
-			{
-				// device changed, disconnect previous and connect new
-				disconnectBluetooth();
-				Utils.setPairedMicrobit(MBApp.getContext(), prevDeviceArray[0]);
-				connectBluetoothDevice();
-			}
-		} else {
-			//Disconnect existing Gatt connection
-			if(currentDevice.mPattern != null)
-				disconnectBluetooth();
-
-			// Remove existing Microbit
-			Utils.setPairedMicrobit(MBApp.getContext(), null);
-		}
-	}
-
-	void connectBluetoothDevice() {
-		IPCService.getInstance().bleConnect();
-	}
-
-	void disconnectBluetooth() {
-		IPCService.getInstance().bleDisconnect();
-	}
 	private void scanningFailed() {
 
 		if(debug) logi("scanningFailed() :: scanning Failed to find a matching device");
@@ -737,128 +706,5 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	}
 
 
-	/* Microbit list management */
-	private void storeMicrobits(ArrayList prevDevList, boolean fromBroadcast) {
-		// used for store arrayList in json format
-		SharedPreferences settings;
-		SharedPreferences.Editor editor;
-		settings = getSharedPreferences(PREFERENCES_PREVDEV_PREFNAME, MODE_PRIVATE);
-		editor = settings.edit();
-		Gson gson = new Gson();
-        int totalnum = prevDevList.size();
-        if(totalnum > 0 ) {
-            prevDeviceArray = (ConnectedDevice[]) prevDevList.toArray(new ConnectedDevice[totalnum]);
-            String jsonPrevDevices = gson.toJson(prevDeviceArray, ConnectedDevice[].class);
-            editor.putString(PREFERENCES_PREVDEV_KEY, jsonPrevDevices);
-        } else {
-            prevDeviceArray = null;
-            editor.clear();
-        }
-        editor.commit();
-		if(!fromBroadcast)
-		{
-			updateGlobalPairedDevice();
-		}
-		//connectedDeviceAdapter.notifyDataSetChanged();
-		populateConnectedDeviceList(true);
-	}
-
-	private ArrayList loadPrevMicrobits() {
-		// used for retrieving arraylist from json formatted string
-		SharedPreferences settings;
-		List prevMicrobitTemp;
-		settings = getSharedPreferences(PREFERENCES_PREVDEV_PREFNAME, MODE_PRIVATE);
-		if (settings.contains(PREFERENCES_PREVDEV_KEY)) {
-			String prevDevicesStr = settings.getString(PREFERENCES_PREVDEV_KEY, null);
-			if (!prevDevicesStr.equals(null)) {
-				Gson gson = new Gson();
-				prevDeviceArray = gson.fromJson(prevDevicesStr, ConnectedDevice[].class);
-				prevMicrobitTemp = Arrays.asList(prevDeviceArray);
-				prevMicrobitList = new ArrayList(prevMicrobitTemp);
-				prevMicrobitList.removeAll(Collections.singleton(null));
-				return (ArrayList) prevMicrobitList;
-			}
-
-		}
-
-		ConnectedDevice current = Utils.getPairedMicrobit(this);
-		if( (prevDeviceArray !=null) && ((current.mPattern != null) && current.mPattern.equals(prevDeviceArray[0].mPattern)))
-		{
-			if(current.mStatus != prevDeviceArray[0].mStatus)
-				prevDeviceArray[0].mStatus = current.mStatus;
-		}
-		return null;
-
-	}
-
-	public int checkDuplicateMicrobit(ConnectedDevice newMicrobit) {
-		int duplicateIndex = PREVIOUS_DEVICES_MAX;
-		if (prevMicrobitList == null)
-			return duplicateIndex;
-
-		for (int i = 0; i < prevMicrobitList.size(); i++) {
-			if ((prevDeviceArray[i] != null) && (prevDeviceArray[i].mPattern.equals(newMicrobit.mPattern))) {
-				return i;
-			}
-		}
-		return duplicateIndex;
-	}
-
-	public void addMicrobit(ConnectedDevice newMicrobit, int oldId) {
-		if (prevMicrobitList == null)
-			prevMicrobitList = new ArrayList(1);
-
-		// This device already exists in the list, so remove it and add as new
-		if (oldId != PREVIOUS_DEVICES_MAX) {
-			if (prevDeviceArray[oldId].mStatus) {
-				// Do nothing as this device is already in the list and is currently active
-				return;
-			} else {
-				// Remove from list and add again
-				prevMicrobitList.remove(oldId);
-			}
-		}
-
-		// new devices are added to top of the list
-		prevMicrobitList.add(0, newMicrobit);
-		storeMicrobits(prevMicrobitList, false);
-	}
-
-	public void changeMicrobitName(int index, ConnectedDevice modMicrobit) {
-
-		prevMicrobitList.set(index, modMicrobit);
-		storeMicrobits(prevMicrobitList, false);
-	}
-
-	public void changeMicrobitState(int index, ConnectedDevice modMicrobit, boolean isTurnedOn) {
-		prevMicrobitList.remove(index);
-		if (isTurnedOn)
-			prevMicrobitList.add(0, modMicrobit);  // Active should be first item
-		else
-			prevMicrobitList.add(index, modMicrobit);
-
-		String dbgDevices = "C ";
-		int ind = 0;
-		for (Iterator<ConnectedDevice> it = prevMicrobitList.iterator(); it.hasNext(); ) {
-			ConnectedDevice st = it.next();
-			if (isTurnedOn && (ind != index) && (prevDeviceArray[ind] != null)) {
-				if(prevDeviceArray[ind].mStatus) {
-					//disconnectBluetooth();
-					prevDeviceArray[ind].mStatus = false; // toggle previously connected BT OFF
-				}
-			}
-			ind++;
-		}
-
-		storeMicrobits(prevMicrobitList, false);
-	}
-
-	public void removeMicrobit(int index) {
-		if (prevMicrobitList != null) {
-			prevMicrobitList.remove(index);
-		//	prevMicrobitList.remove(null);
-			storeMicrobits(prevMicrobitList, false);
-		}
-	}
 
 }
