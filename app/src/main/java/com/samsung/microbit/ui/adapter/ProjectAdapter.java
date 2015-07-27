@@ -146,16 +146,10 @@ public class ProjectAdapter extends BaseAdapter {
 
 	private void changeActionBar(View v) {
 
-		RelativeLayout r = (RelativeLayout) v.getParent().getParent();
-		LinearLayout actionBarLayout = null;
-		if (r != null) {
-			actionBarLayout = (LinearLayout) r.findViewById(R.id.actionBarForProgram);
-			if (actionBarLayout != null) {  //Potrait Layout
-
-				int visibility = (actionBarLayout.getVisibility() == View.VISIBLE) ? View.GONE : View.VISIBLE;
-				actionBarLayout.setVisibility(visibility);
-			}
-		}
+		final int pos = (int) v.getTag(R.id.positionId);
+		Project proj = projects.get(pos);
+		proj.actionBarExpanded = (proj.actionBarExpanded) ? false : true;
+		notifyDataSetChanged();
 	}
 
 	private void renameProject(View v) {
@@ -244,6 +238,14 @@ public class ProjectAdapter extends BaseAdapter {
 
 		Button appNameButton = (Button) convertView.findViewById(R.id.appNameButton);
 		ExtendedEditText appNameEdit = (ExtendedEditText) convertView.findViewById(R.id.appNameEdit);
+
+		LinearLayout actionBarLayout = (LinearLayout) convertView.findViewById(R.id.actionBarForProgram);
+		if(actionBarLayout != null) {
+			if(p.actionBarExpanded)
+				actionBarLayout.setVisibility(View.VISIBLE);
+			else
+				actionBarLayout.setVisibility(View.GONE);
+		}
 
 		appNameButton.setTag(R.id.positionId, position);
 		appNameButton.setTag(R.id.textedit, appNameEdit);

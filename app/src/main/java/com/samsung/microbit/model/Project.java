@@ -9,6 +9,7 @@ public class Project {
 	public String filePath;
 	public String codeUrl;
 	public boolean runStatus;
+	public boolean actionBarExpanded;
 
 	public Project(String name, String filePath, long timestamp, String codeUrl, boolean runStatus) {
 		this.name = name;
@@ -16,5 +17,6 @@ public class Project {
 		this.timestamp = timestamp;
 		this.codeUrl = codeUrl;
 		this.runStatus = runStatus;
+		this.actionBarExpanded = false;
 	}
 }
