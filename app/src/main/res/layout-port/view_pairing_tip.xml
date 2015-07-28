@@ -7,23 +7,24 @@
     android:visibility="gone">
 
     <TextView
+        style="@style/h1"
         android:id="@+id/connectTipTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/connectTipTitle"
-        android:textSize="30sp"
-        android:textColor="@color/black_font_color"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/activity_top_margin"/>
 
     <TextView
+        style="@style/p1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/connectTipText"
-        android:textSize="25sp"
         android:id="@+id/connectTipTextview"
         android:layout_marginTop="@dimen/content_margin"
-        android:layout_marginLeft="@dimen/content_margin"
-        android:textColor="@color/black_font_color"
-        android:layout_below="@id/connectTipTitle" />
+        android:layout_below="@id/connectTipTitle"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"/>
 
     <RelativeLayout
         android:id="@+id/tipImageView"

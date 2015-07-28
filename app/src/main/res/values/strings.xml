@@ -103,17 +103,18 @@
 
     <!-- Connect Activity -->
     <string name="previous_devices">Previous devices</string>
-    <string name="new_devices_pattern_null">Repeat the pattern below</string>
+    <string name="new_devices_pattern_null">Enter your pattern</string>
     <string name="new_devices">Connect to a new device</string>
     <string name="name_device">Name device</string>
     <string name="name_empty_error">Please enter device name.</string>
     <string name="connect">Connect</string>
     <string name="gamepad">Gamepad</string>
     <string name="connectNew">Connect to a new device</string>
-    <string name="connectTipTitle">Get the pairing pattern</string>
-    <string name="connectTipText">To start pairing with a device:\nClick the marked buttons on your Micro:Bit</string>
+    <string name="connectTipTitle">How to pair device</string>
+    <string name="connectTipText">To start pairing with a device:\nPlease click the marked buttons\non your MicroBit</string>
     <string name="connectSearchingTitle">Connecting...</string>
     <string name="searchingTitle">Searching for device...</string>
+
     <!--Connect Popup messages -->
     <string name="pairingErrorTitle">Error</string>
     <string name="pairingErrorMessage">We cannot find that Micro:Bit\nPlease try again</string>

@@ -5,9 +5,7 @@ android:id="@+id/newDeviceView"
 android:layout_toRightOf="@id/prevDeviceView"
 android:layout_width="wrap_content"
 android:visibility="visible"
-android:layout_below="@id/headerBar"
-android:layout_marginTop="@dimen/project_main_margin"
-android:paddingBottom="@dimen/activity_bottom_margin">
+android:layout_below="@id/headerBar">
 
 <TextView
     style="@style/h1"
@@ -15,22 +13,23 @@ android:paddingBottom="@dimen/activity_bottom_margin">
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="@string/new_devices_pattern_null"
-    android:textColor="@color/black_font_color"/>
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="@dimen/activity_top_margin"/>
 
     <RelativeLayout
+        android:id="@+id/gridViewArea"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         android:layout_below="@id/newDeviceTxt"
-        android:layout_marginTop="@dimen/content_margin"
-        android:layout_alignParentBottom="true">
+        android:layout_marginTop="@dimen/activity_top_margin">
 
         <GridView
             android:id="@+id/gridview"
-            android:layout_width="260dp"
-            android:layout_height="260dp"
+            android:layout_width="@dimen/led_grid_width"
+            android:layout_height="@dimen/led_grid_width"
             android:numColumns="5"
-            android:verticalSpacing="2dp"
-            android:horizontalSpacing="2dp"
+            android:verticalSpacing="@dimen/led_gap"
+            android:horizontalSpacing="@dimen/led_gap"
             android:gravity="center"
             android:layout_marginLeft="@dimen/content_margin"
             android:layout_marginRight="@dimen/content_margin"
@@ -39,38 +38,40 @@ android:paddingBottom="@dimen/activity_bottom_margin">
         <EditText
             android:id="@+id/nameNewEdit"
             android:layout_marginTop="@dimen/widget_margin"
-            android:layout_width="fill_parent"
+            android:layout_width="@dimen/led_grid_width"
             android:layout_height="wrap_content"
-            android:layout_below="@id/gridview"
-            android:lines="3"
             android:background="@drawable/edit_box"
-            android:layout_marginRight="@dimen/content_margin"
-            android:textColor="@color/black_font_color"
             android:inputType="text|textCapCharacters"
-            android:visibility="visible"
-            android:layout_centerInParent="true" />
+            android:layout_below="@id/gridview"
+            android:visibility="invisible"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_top_margin"
+        android:layout_below="@id/gridViewArea"
+        android:layout_centerInParent="true">
 
         <ImageButton
             android:id="@+id/cancel_name_button"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
             android:src="@drawable/cross"
+            android:visibility="invisible"
             android:background="@drawable/popup_cancel_button"
-            android:visibility="visible"
-            android:clickable="true"
-            android:layout_alignParentBottom="true"
-            android:layout_alignStart="@+id/gridview" />
+            android:layout_marginRight="@dimen/button_gap_margin"/>
 
         <ImageButton
             android:id="@+id/ok_name_button"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_toRightOf="@id/cancel_name_button"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
             android:src="@drawable/tick"
-            android:background="@drawable/popup_ok_button"
-            android:clickable="true"
             android:visibility="invisible"
-            android:layout_alignParentBottom="true"
-            android:layout_alignEnd="@+id/gridview" />
+            android:background="@drawable/popup_ok_button" />
 
     </RelativeLayout>
 

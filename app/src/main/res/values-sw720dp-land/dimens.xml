@@ -35,10 +35,13 @@
 
 	<!-- Connect UI -->
 	<dimen name="device_name_width">380dp</dimen>
-	<dimen name="led_gap">2dp</dimen>
+	<dimen name="led_gap">10dp</dimen>
+	<integer name="led_size">45</integer>
 	<dimen name="divider_margin">20dp</dimen>
 	<dimen name="connect_ui_land_width">600dp</dimen>
-	<dimen name="led_grid_width">560dp</dimen>
+	<dimen name="led_grid_width">265dp</dimen>
+	<dimen name="mbit_tip_img_size">175dp</dimen>
+	<dimen name="button_gap_margin">75dp</dimen>
 
 	<!-- Generic list view item -->
 	<dimen name="lv_txt_img_btn_width">150dp</dimen>
