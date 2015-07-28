@@ -142,13 +142,14 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		if(prevDevList == null ) {
 			prevDevList = PreviousDeviceList.getInstance(this);
-			prevDeviceArray = prevDevList.loadPrevMicrobits();
 		}
+        prevDeviceArray = prevDevList.loadPrevMicrobits();
 
 		if (changedDev.mPattern != null && changedDev.mPattern.equals(prevDeviceArray[0].mPattern))
 		{
 			prevDeviceArray[0].mStatus=changedDev.mStatus;
 			prevDevList.changeMicrobitState(0, prevDeviceArray[0],prevDeviceArray[0].mStatus, true);
+            populateConnectedDeviceList(true);
 
 		}
 
@@ -259,10 +260,14 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 					if ((findViewById(R.id.ok_name_button).getVisibility() != View.VISIBLE)) {
 						findViewById(R.id.ok_name_button).setVisibility(View.VISIBLE);
 						findViewById(R.id.cancel_name_button).setVisibility(View.VISIBLE);
-						((TextView) findViewById(R.id.newDeviceTxt)).setText(R.string.new_devices);
 					}
+
 					boolean isOn = toggleLED((ImageView) v, position);
 					setCol(parent, position, isOn);
+
+                    if (!Arrays.asList(deviceCodeArray).contains("1")) {
+                        findViewById(R.id.ok_name_button).setVisibility(View.INVISIBLE);
+                    }
 					//Toast.makeText(MBApp.getContext(), "LED Clicked: " + position, Toast.LENGTH_SHORT).show();
 				}
 				//TODO KEEP TRACK OF ALL LED STATUS AND TOGGLE COLOR
@@ -297,9 +302,10 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		while(index >= 0)
 		{
-			 v = (ImageView) parent.getChildAt(index);
-			 v.setBackground(getApplication().getResources().getDrawable(R.drawable.white_red_led_btn));
+			v = (ImageView) parent.getChildAt(index);
+			v.setBackground(getApplication().getResources().getDrawable(R.drawable.white_red_led_btn));
 			v.setTag("0");
+            deviceCodeArray[index] = "0";
 			index -=5;
 		}
 		index = pos+5;
@@ -341,7 +347,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		for (int i = 0; i < numOfPreviousItems; i++) {
 			connectedDeviceList.add(prevDeviceArray[i]);
 		}
-		for (int i = numOfPreviousItems; i < 3; i++) {
+		for (int i = numOfPreviousItems; i < 1; i++) {
 			connectedDeviceList.add(new ConnectedDevice(null, null, false, null));
 		}
 

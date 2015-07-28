@@ -102,15 +102,15 @@
     <string name="alert">Alert...</string>
 
     <!-- Connect Activity -->
-    <string name="previous_devices">Previous devices</string>
+    <string name="previous_devices">Previously paired devices</string>
     <string name="new_devices_pattern_null">Enter your pattern</string>
     <string name="new_devices">Connect to a new device</string>
     <string name="name_device">Name device</string>
     <string name="name_empty_error">Please enter device name.</string>
     <string name="connect">Connect</string>
     <string name="gamepad">Gamepad</string>
-    <string name="connectNew">Connect to a new device</string>
-    <string name="connectTipTitle">How to pair device</string>
+    <string name="connectNew">Connect a new device</string>
+    <string name="connectTipTitle">How to pair your device</string>
     <string name="connectTipText">To start pairing with a device:\nPlease click the marked buttons\non your MicroBit</string>
     <string name="connectSearchingTitle">Connecting...</string>
     <string name="searchingTitle">Searching for device...</string>
@@ -135,7 +135,7 @@
     <string name="downloading">Downloading...</string>
     <string name="download_complete">Download complete.Flash to microbit ?</string>
     <string name="projects">Projects</string>
-    <string name="pair_my_device">Pair my device</string>
+    <string name="pair_my_device">Pair your device</string>
     <string name="flash">Flash</string>
     <string name="view">View</string>
     <string name="no_projects">No projects found!</string>
