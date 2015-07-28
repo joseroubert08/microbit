@@ -1,6 +1,4 @@
-# BBC micro:bit Android application
-
-<a href="" target="_blank"><img src="https://github.com/bbc/microbit-native-android/tree/master/img"/></a>
+![BBC micro:bit Android application](/img/banner.png)
 
 
 # Overview
