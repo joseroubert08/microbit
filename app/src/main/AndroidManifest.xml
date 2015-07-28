@@ -76,6 +76,11 @@
             android:configChanges="orientation|screenSize">
 		</activity>
 		<activity
+			android:name=".ui.activity.PopUpActivity"
+			android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+			android:windowSoftInputMode="adjustPan">
+		</activity>
+		<activity
 			android:name=".ui.activity.AudioRecorderActivity"
 			android:label="Audio Recorder"
 			android:launchMode="singleTask"
