@@ -25,20 +25,17 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.PreviousDeviceList;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.ConnectedDevice;
-import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.adapter.ConnectedDeviceAdapter;
@@ -46,8 +43,6 @@ import com.samsung.microbit.ui.adapter.LEDAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -443,7 +438,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 					state = PAIRING_STATE.PAIRING_STATE_TIP;
 					displayConnectScreen(PAIRING_STATE.PAIRING_STATE_TIP);
 				} else {
-					Intent intent = new Intent(this, NewDevice.class);
+					Intent intent = new Intent(this, NewDeviceActivity.class);
                     /*Bundle b = new Bundle();
                     b.putSerializable("PrevDeviceList", prevDevList);
                     intent.putExtras(b);*/

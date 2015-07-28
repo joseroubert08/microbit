@@ -3,8 +3,7 @@
 android:layout_height="fill_parent"
 android:id="@+id/connectButtonView"
 android:layout_toRightOf="@id/prevDeviceView"
-android:layout_width="0dp"
-android:layout_weight="1"
+android:layout_width="wrap_content"
 android:visibility="visible">
 
 <Button

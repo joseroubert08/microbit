@@ -2,7 +2,8 @@
 	<!-- Default screen margins, per the Android Design guidelines. -->
 	<dimen name="activity_horizontal_margin">10dp</dimen>
 	<dimen name="activity_vertical_margin">10dp</dimen>
-	<dimen name="activity_bottom_margin">16dp</dimen>
+	<dimen name="activity_bottom_margin">24dp</dimen>
+	<dimen name="activity_top_margin">24dp</dimen>
 
 	<!-- Generic margin TODO maybe rename -->
 	<dimen name="widget_margin">5dp</dimen>
@@ -37,6 +38,7 @@
 	<dimen name="device_main_margin">16dp</dimen>
 	<dimen name="device_lv_bottom_margin">70dp</dimen>
 	<dimen name="led_gap">2dp</dimen>
+	<dimen name="led_grid_width">260dp</dimen>
 
 	<!-- Generic list view item -->
 	<dimen name="lv_btn_width">60dp</dimen>

@@ -94,6 +94,12 @@
 			</intent-filter>
 		</activity>
 
+		<activity
+			android:name=".ui.activity.NewDeviceActivity"
+			android:label="@string/title_activity_new_device"
+			android:parentActivityName=".ui.activity.HomeActivity">
+		</activity>
+
 		<service
 			android:name=".service.DfuService"
 			android:enabled="true"/>
@@ -121,10 +127,6 @@
 			</intent-filter>
 		</service>
 
-		<activity
-			android:name=".ui.activity.NewDevice"
-			android:label="@string/title_activity_new_device" >
-		</activity>
 	</application>
 
 </manifest>

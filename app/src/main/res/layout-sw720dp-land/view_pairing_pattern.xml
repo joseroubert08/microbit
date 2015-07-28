@@ -3,8 +3,7 @@
 android:layout_height="fill_parent"
 android:id="@+id/newDeviceView"
 android:layout_toRightOf="@id/prevDeviceView"
-android:layout_width="0dp"
-android:layout_weight="1"
+android:layout_width="wrap_content"
 android:visibility="gone"
 android:layout_marginTop="@dimen/project_main_margin"
 android:paddingBottom="@dimen/activity_bottom_margin">

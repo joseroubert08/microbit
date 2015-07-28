@@ -38,7 +38,7 @@ import com.samsung.microbit.ui.adapter.LEDAdapter;
 
 import java.util.Arrays;
 
-public class NewDevice extends Activity implements View.OnClickListener {
+public class NewDeviceActivity extends Activity implements View.OnClickListener {
 
     private enum PAIRING_STATE {
         PAIRING_STATE_CONNECT_BUTTON,

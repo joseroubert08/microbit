@@ -113,6 +113,7 @@
     <string name="connectTipTitle">Get the pairing pattern</string>
     <string name="connectTipText">To start pairing with a device:\nClick the marked buttons on your Micro:Bit</string>
     <string name="connectSearchingTitle">Connecting...</string>
+    <string name="searchingTitle">Searching for device...</string>
     <!--Connect Popup messages -->
     <string name="pairingErrorTitle">Error</string>
     <string name="pairingErrorMessage">We cannot find that Micro:Bit\nPlease try again</string>
