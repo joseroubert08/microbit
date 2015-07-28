@@ -672,8 +672,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				if(debug) logi("mLeScanCallback.onLeScan() ::   Cannot Compare");
 			} else {
 				String s = device.getName().toLowerCase();
-				if (newDeviceName.toLowerCase().equals(s)
-					|| (s.contains(newDeviceCode.toLowerCase()) && s.contains("microbit"))) {
+				if (newDeviceName.toLowerCase().equals(s)) {
 
 					// if(debug) logi("mLeScanCallback.onLeScan() ::   deviceName == " + newDeviceName.toLowerCase());
 					if(debug) logi("mLeScanCallback.onLeScan() ::   device.getName() == " + device.getName().toLowerCase());
