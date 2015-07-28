@@ -72,7 +72,8 @@
 		<activity
 			android:name=".ui.activity.TouchDevActivity"
 			android:parentActivityName=".ui.activity.HomeActivity"
-			android:windowSoftInputMode="adjustResize">
+			android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|screenSize">
 		</activity>
 		<activity
 			android:name=".ui.activity.AudioRecorderActivity"
