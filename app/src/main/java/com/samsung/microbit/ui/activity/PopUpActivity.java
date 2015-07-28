@@ -39,6 +39,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener{
         messageTextView.setText(getIntent().getStringExtra("message"));
 
         inputText.setText(getIntent().getStringExtra("inputText"));
+        inputText.setSelection(inputText.getText().length());
     }
 
     @Override
