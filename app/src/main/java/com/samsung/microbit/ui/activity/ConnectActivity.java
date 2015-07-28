@@ -92,7 +92,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	RelativeLayout connectTipView;
 	RelativeLayout newDeviceView;
 	RelativeLayout connectSearchView;
-
+	RelativeLayout bottomConnectButton;
+	RelativeLayout prevDeviceView;
 
 	List<ConnectedDevice> connectedDeviceList = new ArrayList<ConnectedDevice>();
 	ConnectedDeviceAdapter connectedDeviceAdapter;
@@ -212,30 +213,25 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		lvConnectedDevice = (ListView) findViewById(R.id.connectedDeviceList);
 		populateConnectedDeviceList(false);
 
+		bottomConnectButton = (RelativeLayout) findViewById(R.id.bottomConnectButton);
+		prevDeviceView = (RelativeLayout) findViewById(R.id.prevDeviceView);
+
 		connectButtonView = (RelativeLayout) findViewById(R.id.connectButtonView);
+		connectTipView = (RelativeLayout) findViewById(R.id.connectTipView);
+		newDeviceView = (RelativeLayout) findViewById(R.id.newDeviceView);
+		connectSearchView = (RelativeLayout) findViewById(R.id.connectSearchView);
 
-		if(connectButtonView != null) {
-			connectButtonView = (RelativeLayout) findViewById(R.id.connectButtonView);
-			connectTipView = (RelativeLayout) findViewById(R.id.connectTipView);
-			newDeviceView = (RelativeLayout) findViewById(R.id.newDeviceView);
-			connectSearchView = (RelativeLayout) findViewById(R.id.connectSearchView);
+		displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+		findViewById(R.id.connectButton).setOnClickListener(this);
+		findViewById(R.id.cancel_tip_button).setOnClickListener(this);
+		findViewById(R.id.ok_name_button).setOnClickListener(this);
+		findViewById(R.id.cancel_name_button).setOnClickListener(this);
+		findViewById(R.id.cancel_search_button).setOnClickListener(this);
 
-			displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
-			findViewById(R.id.connectButton).setOnClickListener(this);
-			findViewById(R.id.cancel_tip_button).setOnClickListener(this);
-			findViewById(R.id.ok_name_button).setOnClickListener(this);
-			findViewById(R.id.cancel_name_button).setOnClickListener(this);
-			findViewById(R.id.cancel_search_button).setOnClickListener(this);
-
-			//Animation
-			WebView animation = (WebView) findViewById(R.id.animationwebView);
-			animation.setBackgroundColor(Color.TRANSPARENT);
-			animation.loadUrl("file:///android_asset/htmls/animation.html");
-		} else {
-			RelativeLayout connectButtonView = (RelativeLayout) findViewById(R.id.bottomConnectButton);
-			connectButtonView.setVisibility(View.VISIBLE);
-			findViewById(R.id.connectButton).setOnClickListener(this);
-		}
+		//Animation
+		WebView animation = (WebView) findViewById(R.id.animationwebView);
+		animation.setBackgroundColor(Color.TRANSPARENT);
+		animation.loadUrl("file:///android_asset/htmls/animation.html");
 	}
 
 	@Override
@@ -434,15 +430,12 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		switch (v.getId()) {
 			case R.id.connectButton:
+				if(bottomConnectButton != null) {
+					prevDeviceView.setVisibility(View.GONE);
+				}
 				if(connectButtonView != null) {
 					state = PAIRING_STATE.PAIRING_STATE_TIP;
 					displayConnectScreen(PAIRING_STATE.PAIRING_STATE_TIP);
-				} else {
-					Intent intent = new Intent(this, NewDeviceActivity.class);
-                    /*Bundle b = new Bundle();
-                    b.putSerializable("PrevDeviceList", prevDevList);
-                    intent.putExtras(b);*/
-					startActivity(intent);
 				}
 				break;
 			case R.id.ok_connect_button:
@@ -466,6 +459,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				}
 				else {
 					hideKeyboard();
+					if(bottomConnectButton != null) {
+						prevDeviceView.setVisibility(View.VISIBLE);
+					}
 					prevDeviceArray[0].mName = newname;
 					prevDevList.changeMicrobitName(0, prevDeviceArray[0]);
 					populateConnectedDeviceList(true);
@@ -476,10 +472,16 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				break;
 			case R.id.cancel_tip_button:
 			case R.id.cancel_name_button:
+				if(bottomConnectButton != null) {
+					prevDeviceView.setVisibility(View.VISIBLE);
+				}
 				displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
 				state = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
 				break;
 			case R.id.cancel_search_button:
+				if(bottomConnectButton != null) {
+					prevDeviceView.setVisibility(View.VISIBLE);
+				}
 				scanLeDevice(false);
 				displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
 				state = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
@@ -576,6 +578,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
+						if(bottomConnectButton != null) {
+							prevDeviceView.setVisibility(View.VISIBLE);
+						}
 						PopUp.hide();
 						state = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
 						displayConnectScreen(state);

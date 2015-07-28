@@ -14,6 +14,6 @@ android:visibility="visible">
     android:id="@+id/connectButton"
     android:background="@drawable/yellow_btn"
     android:text="@string/connectNew"
-    android:layout_alignParentBottom="true"/>
+    android:layout_centerInParent="true"/>
 
 </RelativeLayout>
