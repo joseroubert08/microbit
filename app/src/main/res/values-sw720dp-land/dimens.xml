@@ -58,4 +58,7 @@
 	<dimen name="popup_paddingRight">250dp</dimen>
 	<dimen name="popup_icon_size">100dp</dimen>
 	<dimen name="popup_spinner_paddingBottom">100dp</dimen>
+
+	<!-- Audio Recorder -->
+	<dimen name="audio_mic_size">260dp</dimen>
 </resources>

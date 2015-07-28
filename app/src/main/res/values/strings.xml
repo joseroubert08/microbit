@@ -129,6 +129,8 @@
     <!-- Popup message -->
     <string name="delete_project_message">Are you sure you want to want to remove this project?\r\nIt will be removed from this app but will still be available within your Micro:Bit account.</string>
     <string name="delete_project_title">Delete project?</string>
+    <string name="record_audio">Record Audio?</string>
+    <string name="audio_recorder_notification">micro:bit Audio Recorder</string>
 
     <string name="create_new_project">Create Project</string>
     <string name="download_existing">Download Existing</string>
