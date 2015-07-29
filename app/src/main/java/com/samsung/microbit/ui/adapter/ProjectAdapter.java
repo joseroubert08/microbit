@@ -1,9 +1,10 @@
 package com.samsung.microbit.ui.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -16,9 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
@@ -34,6 +33,7 @@ public class ProjectAdapter extends BaseAdapter {
 
 	private List<Project> projects;
 	private ProjectActivity projectActivity;
+	int currentEditableRow = -1;
 
 	protected String TAG = "ProjectAdapter";
 	protected boolean debug = true;
@@ -47,97 +47,39 @@ public class ProjectAdapter extends BaseAdapter {
 		@Override
 		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-			boolean handled = false;
+			logi("onEditorAction() :: currentEditableRow=" + currentEditableRow);
+			boolean handled = true;
+			int pos = (int) v.getTag(R.id.positionId);
+			Project project = projects.get(pos);
+			project.inEditMode = false;
+			currentEditableRow = -1;
+
 			if (actionId == EditorInfo.IME_ACTION_DONE) {
-				handled = true;
-				dismissKeyBoard(v, true);
+				dismissKeyBoard(v, true, true);
 			} else if (actionId == -1) {
-				hideControl(v, false);
+				dismissKeyBoard(v, true, false);
 			}
 
 			return handled;
 		}
 	};
 
-	private View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
-
-		@Override
-		public void onFocusChange(View v, boolean hasFocus) {
-
-			if (!hasFocus) {
-				final int pos = (int) v.getTag(R.id.positionId);
-				Project project = projects.get(pos);
-				project.inEditMode = false;
-				dismissKeyBoard(v, false);
-			} else {
-				final int pos = (int) v.getTag(R.id.positionId);
-				Project project = projects.get(pos);
-				project.inEditMode = true;
-				showKeyBoard(v);
-			}
-		}
-	};
-
-	private void hideControl(final View v, final boolean done) {
-
-		/*
-		 * We use this method for hiding a edit control, when users presses Done or cancels a editiing session,
-		 * to stop a screen flicker.
-		 */
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-
-				projectActivity.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						v.setVisibility(View.INVISIBLE);
-						if (done) {
-							EditText ed = (EditText) v;
-							int pos = (int) ed.getTag(R.id.positionId);
-							String newName = ed.getText().toString();
-							Project p = projects.get(pos);
-							if (newName != null && newName.length() > 0) {
-								if (p.name.compareToIgnoreCase(newName) != 0) {
-									projectActivity.renameFile(p.filePath, newName);
-								}
-							}
-						}
-					}
-				});
-			}
-		}).start();
-	}
-
-	private void dismissKeyBoard(View v, boolean done) {
-
-		InputMethodManager imm = (InputMethodManager) projectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
-		hideControl(v, done);
-	}
-
-	private void showKeyBoard(View v) {
-
-
-
-		v.setVisibility(View.VISIBLE);
-		InputMethodManager imm = (InputMethodManager) projectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
-	}
-
 	private View.OnClickListener appNameClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
 
+			logi("OnClickListener() :: " + v.getClass().getName());
 			if (v.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 				changeActionBar(v);
 			} else if (v.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-				renameProject(v);
+				if (currentEditableRow != -1) {
+					int i = (Integer) v.getTag(R.id.positionId);
+					if (i != currentEditableRow) {
+						renameProject(v);
+					}
+				} else {
+					renameProject(v);
+				}
 			}
 		}
 	};
@@ -146,27 +88,99 @@ public class ProjectAdapter extends BaseAdapter {
 		@Override
 		public boolean onLongClick(View v) {
 
+			logi("OnLongClickListener() :: " + v.getClass().getName());
+			boolean rc = false;
 			if (v.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 				renameProject(v);
+				rc = true;
 			}
 
-			return true;
+			return rc;
 		}
 	};
 
+	private void dismissKeyBoard(View v, boolean hide,boolean done) {
+
+		logi("dismissKeyBoard() :: ");
+		int pos = (Integer) v.getTag(R.id.positionId);
+		logi("dismissKeyBoard() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
+
+
+		InputMethodManager imm = (InputMethodManager) projectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
+
+		if(hide) {
+			v.setVisibility(View.INVISIBLE);
+		}
+
+		if (done) {
+			EditText ed = (EditText) v;
+			pos = (int) ed.getTag(R.id.positionId);
+			String newName = ed.getText().toString();
+			Project p = projects.get(pos);
+			if (newName != null && newName.length() > 0) {
+				if (p.name.compareToIgnoreCase(newName) != 0) {
+					projectActivity.renameFile(p.filePath, newName);
+				}
+			}
+		}
+	}
+
+	private void showKeyBoard(final View v) {
+
+		logi("showKeyBoard() :: " + v.getClass().getName());
+		int pos = (Integer) v.getTag(R.id.positionId);
+		logi("showKeyBoard() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
+
+		v.setVisibility(View.VISIBLE);
+		final InputMethodManager imm = (InputMethodManager) projectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+		v.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				imm.showSoftInput(v, 0);
+				v.requestFocus();
+			}
+		}, 100);
+	}
+
 	private void changeActionBar(View v) {
 
-		final int pos = (int) v.getTag(R.id.positionId);
+		logi("changeActionBar() :: ");
+
+		int pos = (int) v.getTag(R.id.positionId);
+		logi("changeActionBar() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
+
 		Project project = projects.get(pos);
 		project.actionBarExpanded = (project.actionBarExpanded) ? false : true;
+		if (currentEditableRow != -1) {
+			project = projects.get(currentEditableRow);
+			project.inEditMode = false;
+			currentEditableRow = -1;
+			dismissKeyBoard(v, false, false);
+		}
+
 		notifyDataSetChanged();
 	}
 
 	private void renameProject(View v) {
 
-		final int pos = (int) v.getTag(R.id.positionId);
-		Project project = projects.get(pos);
+		logi("renameProject() :: ");
+
+		int pos = (int) v.getTag(R.id.positionId);
+		logi("renameProject() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
+
+		Project project;
+		if (currentEditableRow != -1) {
+			project = projects.get(currentEditableRow);
+			project.inEditMode = false;
+			currentEditableRow = -1;
+		}
+
+		project = projects.get(pos);
 		project.inEditMode = (project.inEditMode) ? false : true;
+		currentEditableRow = pos;
+		View ev = (View) v.getTag(R.id.textEdit);
+		showKeyBoard(ev);
 		notifyDataSetChanged();
 	}
 
@@ -174,7 +188,7 @@ public class ProjectAdapter extends BaseAdapter {
 
 		@Override
 		public void onClick(View v) {
-			//Toast.makeText(MBApp.getContext(), "sendBtn Clicked: " + v.getTag(), Toast.LENGTH_SHORT).show();
+			logi("sendBtnClickListener() :: ");
 			((View.OnClickListener) projectActivity).onClick(v);
 
 		}
@@ -184,8 +198,8 @@ public class ProjectAdapter extends BaseAdapter {
 
 		@Override
 		public void onClick(View v) {
+			logi("codeBtnClickListener() :: ");
 			((View.OnClickListener) projectActivity).onClick(v);
-			//Toast.makeText(MBApp.getContext(), "codeBtn Clicked: " + v.getTag(), Toast.LENGTH_SHORT).show();
 		}
 	};
 
@@ -193,6 +207,7 @@ public class ProjectAdapter extends BaseAdapter {
 		@Override
 		public void onClick(View v) {
 
+			logi("deleteBtnClickListener() :: ");
 			final int pos = (int) v.getTag();
 			PopUp.show(MBApp.getContext(),
 				MBApp.getContext().getString(R.string.delete_project_message),
@@ -257,29 +272,27 @@ public class ProjectAdapter extends BaseAdapter {
 				actionBarLayout.setVisibility(View.GONE);
 		}
 
-
 		appNameButton.setText(project.name);
 		appNameButton.setTag(R.id.positionId, position);
-		appNameButton.setTag(R.id.textedit, appNameEdit);
+		appNameButton.setTag(R.id.textEdit, appNameEdit);
 		appNameButton.setOnClickListener(appNameClickListener);
 		appNameButton.setOnLongClickListener(appNameLongClickListener);
 
 		appNameEdit.setTag(R.id.positionId, position);
 		appNameEdit.setTag(R.id.editbutton, appNameButton);
 		appNameEdit.setOnEditorActionListener(editorOnActionListener);
-		appNameEdit.setOnFocusChangeListener(focusChangeListener);
-
 
 		if (project.inEditMode) {
 			appNameEdit.setVisibility(View.VISIBLE);
+
 			appNameEdit.setText(project.name);
-			appNameEdit.requestFocus();
 			appNameEdit.setSelection(project.name.length());
+			appNameEdit.requestFocus();
+
 		} else {
 			appNameEdit.setVisibility(View.INVISIBLE);
+			//dismissKeyBoard(appNameEdit, false);
 		}
-
-		//appNameEdit.setOnClickListener(appNameClickListener);
 
 		Button codeBtn = (Button) convertView.findViewById(R.id.codeBtn);
 		codeBtn.setTag(position);
