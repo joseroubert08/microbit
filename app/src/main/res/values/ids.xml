@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item type="id" name="positionId" />
-    <item type="id" name="textedit" />
+    <item type="id" name="textEdit" />
+	<item type="id" name="editbutton" />
 </resources>

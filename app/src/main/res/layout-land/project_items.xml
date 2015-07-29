@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="horizontal"
+	android:background="@drawable/white_btn">
+
+	<ImageButton
+		android:id="@+id/deleteBtn"
+		android:layout_width="@dimen/lv_btn_width"
+		android:layout_height="@dimen/lv_item_height"
+		android:background="@drawable/red_btn"
+		android:src="@drawable/delete"/>
+
+	<RelativeLayout
+		android:id="@+id/appName"
+		android:layout_width="@dimen/project_name_width"
+		android:layout_height="@dimen/lv_item_height"
+		android:layout_marginLeft="@dimen/lv_item_margin"
+		android:layout_toRightOf="@id/deleteBtn">
+
+		<Button
+			android:id="@+id/appNameButton"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:drawableRight="@drawable/edit_project_name"
+			android:background="@drawable/white_bg"
+			android:gravity="left|center_vertical"
+			android:textColor="@color/black_font_color"
+			android:textSize="12pt"/>
+
+		<com.samsung.microbit.ui.control.ExtendedEditText
+			android:id="@+id/appNameEdit"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:editable="true"
+			android:enabled="true"
+			android:focusable="true"
+			android:focusableInTouchMode="true"
+			android:background="@drawable/white_bg"
+			android:gravity="left|center_vertical"
+			android:inputType="textNoSuggestions|textVisiblePassword"
+			android:textColor="@color/black_font_color"
+			android:textSize="12pt"
+			android:visibility="invisible"/>
+	</RelativeLayout>
+
+	<Button
+		style="@style/p1"
+		android:id="@+id/sendBtn"
+		android:layout_width="@dimen/lv_txt_img_btn_width"
+		android:layout_height="@dimen/lv_item_height"
+		android:layout_marginLeft="@dimen/lv_item_margin"
+		android:layout_toRightOf="@id/appName"
+		android:background="@drawable/blue_btn"
+		android:drawableRight="@drawable/flashing"
+		android:gravity="left|center_vertical"
+		android:text="@string/flash"/>
+
+</RelativeLayout>

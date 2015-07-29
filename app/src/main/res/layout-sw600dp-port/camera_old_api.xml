@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/camera_preview_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <FrameLayout
+        android:id="@+id/camera_preview_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_port">
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <!-- Left Bar -->
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:layout_marginTop="@dimen/content_margin">
+            <!--android:background="@drawable/bg_header"-->
+            <ImageView
+                android:id="@+id/bbcLogo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginLeft="50dp"
+                android:src="@drawable/greetings_emojio"/>
+
+            <ImageView
+                android:id="@+id/samsungLogo"
+                android:layout_width="95dp"
+                android:layout_height="74dp"
+                android:layout_gravity="right"
+                android:layout_marginRight="50dp"
+                android:src="@drawable/sam_clear_logo"/>
+
+        </FrameLayout>
+
+        <!-- Overlay Smile Icon -->
+        <RelativeLayout
+            android:id="@+id/smiley_icon_overlay"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/smiley_icon"
+                android:layout_width="432dp"
+                android:layout_height="432dp"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/smiley_overlay"
+                android:layout_gravity="center" />
+            <TextView
+                android:id="@+id/smileText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Smile!!!"
+                android:textSize="90sp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/smiley_icon"
+                android:textColor="#ffe8eb1a" />
+
+        </RelativeLayout>
+
+
+        <!-- Right Bar -->
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="@dimen/content_margin">
+            <!--android:background="@drawable/bg_header"-->
+            <ImageButton
+                android:id="@+id/picture"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center_horizontal"
+                android:soundEffectsEnabled="false"/>
+        </FrameLayout>
+
+        <!-- Flash Rectangle -->
+
+        <ImageView
+            android:visibility="invisible"
+            android:id="@+id/blink_rectangle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/blink_rectangle"/>
+    </FrameLayout>
+</FrameLayout>

@@ -734,6 +734,7 @@ public abstract class DfuBaseService extends IntentService {
 	 */
 	private byte[] mReceivedData = null;
 
+	static NotificationCompat.Builder builder=null;
 	private final BroadcastReceiver mConnectionStateBroadcastReceiver = new BroadcastReceiver() {
 
 		@Override
@@ -808,9 +809,10 @@ public abstract class DfuBaseService extends IntentService {
 		@Override
 		public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
 			// Check whether an error occurred
+			logi("onConnectionStateChange() :: Start");
 			if (status == BluetoothGatt.GATT_SUCCESS) {
 				if (newState == BluetoothGatt.STATE_CONNECTED) {
-					logi("Connected to GATT server");
+					logi("onConnectionStateChange() :: Connected to GATT server");
 					mConnectionState = STATE_CONNECTED;
 
 					/*
@@ -828,7 +830,7 @@ public abstract class DfuBaseService extends IntentService {
 					if (gatt.getDevice().getBondState() == BluetoothDevice.BOND_BONDED) {
 						try {
 							synchronized (this) {
-								logd("Waiting 1600 ms for a possible Service Changed indication...");
+								logd("onConnectionStateChange() :: Waiting 1600 ms for a possible Service Changed indication...");
 								wait(1600);
 
 								// After 1.6s the services are already discovered so the following gatt.discoverServices() finishes almost immediately.
@@ -843,7 +845,7 @@ public abstract class DfuBaseService extends IntentService {
 
 					// Attempts to discover services after successful connection.
 					final boolean success = gatt.discoverServices();
-					logi("Attempting to start service discovery... " + (success ? "succeed" : "failed"));
+					logi("onConnectionStateChange() :: Attempting to start service discovery... " + (success ? "succeed" : "failed"));
 
 					if (!success) {
 						mError = ERROR_SERVICE_DISCOVERY_NOT_STARTED;
@@ -852,12 +854,12 @@ public abstract class DfuBaseService extends IntentService {
 						return;
 					}
 				} else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
-					logi("Disconnected from GATT server");
+					logi("onConnectionStateChange() :: Disconnected from GATT server");
 					mPaused = false;
 					mConnectionState = STATE_DISCONNECTED;
 				}
 			} else {
-				loge("Connection state change error: " + status + " newState: " + newState);
+				loge("onConnectionStateChange() :: Connection state change error: " + status + " newState: " + newState);
 				mPaused = false;
 				mError = ERROR_CONNECTION_STATE_MASK | status;
 				mConnectionState = STATE_DISCONNECTED;
@@ -872,12 +874,13 @@ public abstract class DfuBaseService extends IntentService {
 		@Override
 		public void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
 			// Notify waiting thread
+			logi("onServicesDiscovered() :: Start");
 			synchronized (mLock) {
 				if (status == BluetoothGatt.GATT_SUCCESS) {
-					logi("Services discovered");
+					logi("onServicesDiscovered() :: Services discovered");
 					mConnectionState = STATE_CONNECTED_AND_READY;
 				} else {
-					loge("Service discovery error: " + status);
+					loge("onServicesDiscovered() :: Service discovery error: " + status);
 					mError = ERROR_CONNECTION_MASK | status;
 				}
 
@@ -1050,7 +1053,7 @@ public abstract class DfuBaseService extends IntentService {
 				logi("FLashing code written notification");
 				//mBytesConfirmed = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 1);
 				//if(mBytesConfirmed != 0)
-					resultReceiver.send(0x33, null);
+				resultReceiver.send(0x33, null);
 
 			}
 
@@ -1185,7 +1188,6 @@ public abstract class DfuBaseService extends IntentService {
 
 		int phase = intent.getIntExtra(INTENT_REQUESTED_PHASE, 0) & 0x03;
 		resultReceiver = (ResultReceiver) intent.getParcelableExtra(INTENT_RESULT_RECEIVER);
-		;
 
 		int rc = 0;
 		if ((phase & 0x01) != 0) {
@@ -1399,6 +1401,13 @@ public abstract class DfuBaseService extends IntentService {
 
 		registerNotifications(true);
 
+		if (mConnectionState == STATE_DISCONNECTED) {
+			logi("Gatt disconnected");
+			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
+			terminateConnection(gatt, PROGRESS_ABORTED);
+			return 6;
+		}
+
 		logi("Phase1 e");
 		return 0;
 	}
@@ -1440,6 +1449,13 @@ public abstract class DfuBaseService extends IntentService {
 				logi("Calling phase 3");
 				mError = 0;
 				intent = phase3(intent);
+				resultReceiver = null;
+				gatt.disconnect();
+				waitUntilDisconnected();
+				//waitUntilConnected(10000);
+				//gatt.disconnect();
+				close(gatt);
+				gatt = null;
 				logi("End phase 3");
 			} while (intent != null);
 		}
@@ -2405,6 +2421,21 @@ public abstract class DfuBaseService extends IntentService {
 		}
 	}
 
+	private void waitUntilConnected(long timeout) {
+		logi("waitUntilConnected");
+		try {
+			synchronized (mLock) {
+				if (mConnectionState != STATE_CONNECTED && mError == 0) {
+					logi("waitUntilConnected : waiting");
+					mLock.wait(timeout);
+					logi("waitUntilConnected : wait:done");
+				}
+			}
+		} catch (final InterruptedException e) {
+			loge("Sleeping interrupted", e);
+		}
+	}
+
 	private void gattConnect(final BluetoothGatt gatt) {
 		try {
 			if (gatt.connect()) {
@@ -3095,9 +3126,10 @@ public abstract class DfuBaseService extends IntentService {
 		final String deviceName = mDeviceName != null ? mDeviceName : getString(R.string.dfu_unknown_name);
 
 		// final Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_stat_notify_dfu); <- this looks bad on Android 5
-
-		/*final NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setSmallIcon(android.R.drawable.stat_sys_upload).
-			setOnlyAlertOnce(true);//.setLargeIcon(largeIcon);
+		if(progress < 0) {
+			builder = new NotificationCompat.Builder(this).setSmallIcon(android.R.drawable.stat_sys_upload).
+					setOnlyAlertOnce(true);//.setLargeIcon(largeIcon);
+		}
 
 		// Android 5
 		builder.setColor(Color.GRAY);
@@ -3149,7 +3181,7 @@ public abstract class DfuBaseService extends IntentService {
 					final String text = (mFileType & TYPE_APPLICATION) > 0 ? getString(R.string.dfu_status_uploading_msg, deviceName) : getString(R.string.dfu_status_uploading_components_msg, deviceName);
 					builder.setOngoing(true).setContentTitle(title).setContentText(text).setProgress(100, progress, false);
 				}
-		}*/
+		}
 		// send progress or error broadcast
 		if (progress < ERROR_MASK)
 			sendProgressBroadcast(progress);
@@ -3163,18 +3195,18 @@ public abstract class DfuBaseService extends IntentService {
 		intent.putExtra(EXTRA_DEVICE_NAME, deviceName);
 		intent.putExtra(EXTRA_PROGRESS, progress); // this may contains ERROR_CONNECTION_MASK bit!
 		final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		//	builder.setContentIntent(pendingIntent);
+		builder.setContentIntent(pendingIntent);
 
 		// Add Abort action to the notification
 		if (progress != PROGRESS_ABORTED && progress != PROGRESS_COMPLETED && progress < ERROR_MASK) {
 			final Intent abortIntent = new Intent(BROADCAST_ACTION);
 			abortIntent.putExtra(EXTRA_ACTION, ACTION_ABORT);
 			final PendingIntent pendingAbortIntent = PendingIntent.getBroadcast(this, 1, abortIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-			//builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
+			builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
 		}
 
-		//final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		//manager.notify(NOTIFICATION_ID, builder.build());
+		final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		manager.notify(NOTIFICATION_ID, builder.build());
 	}
 
 	/**
@@ -3277,31 +3309,31 @@ public abstract class DfuBaseService extends IntentService {
 
 	private void loge(final String message) {
 		if (DEBUG) {
-			Log.e(TAG, "### " + message);
+			Log.e(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 		}
 	}
 
 	private void loge(final String message, final Throwable e) {
 		if (DEBUG) {
-			Log.e(TAG, "### " + message, e);
+			Log.e(TAG, "### " + Thread.currentThread().getId() + " # " + message, e);
 		}
 	}
 
 	private void logw(final String message) {
 		if (DEBUG) {
-			Log.w(TAG, "### " + message);
+			Log.w(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 		}
 	}
 
 	private void logi(final String message) {
 		if (DEBUG) {
-			Log.i(TAG, "### " + message);
+			Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 		}
 	}
 
 	private void logd(final String message) {
 		if (DEBUG) {
-			Log.d(TAG, "### " + message);
+			Log.d(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 		}
 	}
 

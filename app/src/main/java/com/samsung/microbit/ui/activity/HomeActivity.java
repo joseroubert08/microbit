@@ -1,9 +1,11 @@
 package com.samsung.microbit.ui.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -41,8 +43,12 @@ import com.samsung.microbit.ui.PopUp;
 import java.util.List;
 import java.util.logging.Handler;
 
-public class HomeActivity extends Activity {
+import static com.samsung.microbit.core.CommonGUI.commonAlertDialog;
 
+public class HomeActivity extends Activity implements View.OnClickListener {
+
+
+    SharedPreferences prefs = null;
 	/* *************************************************
 	 * TODO setup to Handle BLE Notiifications
 	 */
@@ -58,10 +64,10 @@ public class HomeActivity extends Activity {
 					@Override
 					public void run() {
 						PopUp.show(MBApp.getContext(),
-								MBApp.getContext().getString(R.string.micro_bit_reset_msg),
-								"",
-								0, 0,
-								PopUp.TYPE_ALERT, null, null);
+							MBApp.getContext().getString(R.string.micro_bit_reset_msg),
+							"",
+							0, 0,
+							PopUp.TYPE_ALERT, null, null);
 					}
 				});
 			}
@@ -86,6 +92,7 @@ public class HomeActivity extends Activity {
 			@Override
 			public void run() {
 				updateConnectBarView();
+				PopUp.hide();
 			}
 		});
 	}
@@ -94,12 +101,7 @@ public class HomeActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (getResources().getBoolean(R.bool.portrait_only)) {
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		} else {
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-		}
-
+		if (debug) logi("onCreate() :: ");
 		MBApp.setContext(this);
 		/* *************************************************
 		 * TODO setup to Handle BLE Notiification
@@ -130,14 +132,23 @@ public class HomeActivity extends Activity {
 
 		Intent intent = new Intent(this, PluginService.class);
 		startService(intent);
+
+        prefs = getSharedPreferences("com.samsung.microbit", MODE_PRIVATE);
+
 	}
 
-	public void onBtnClicked(View v) {
+	@Override
+	protected void onStart() {
+		super.onStart();
+	}
+
+
+	public void onClick(final View v) {
 		if (debug) logi("onBtnClicked() :: ");
-		if (v.getId() == R.id.addDevice) {
+		if (v.getId() == R.id.addDevice || v.getId() == R.id.addDeviceEmpty) {
 			Intent intent = new Intent(this, ConnectActivity.class);
 			startActivity(intent);
-		} else if (v.getId() == R.id.startNewProject) {
+		} else if (v.getId() == R.id.startNewProject || v.getId() == R.id.startNewProjectImg) {
 			Intent intent = new Intent(this, TouchDevActivity.class);
 			intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
 			startActivity(intent);
@@ -154,28 +165,52 @@ public class HomeActivity extends Activity {
 					IPCService.getInstance().bleDisconnect();
 				} else {
 					if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleConnect()");
+
+					// using MBApp.getContext() instead of this causes problem after flashing
+					PopUp.show(MBApp.getContext(),
+						getString(R.string.init_connection),
+						"",
+						R.drawable.mbit, R.drawable.blue_btn,
+						PopUp.TYPE_SPINNER,
+						null, null);
+
 					IPCService.getInstance().bleConnect();
 				}
+			} else {
+				PopUp.show(MBApp.getContext(),
+					getString(R.string.no_device_paired),
+					"",
+					R.drawable.mbit, R.drawable.blue_btn,
+					PopUp.TYPE_ALERT,
+					null, null);
 			}
 		}
 	}
 
 	private final void updateConnectBarView() {
 		Button addDeviceButton = (Button) findViewById(R.id.addDevice);
+		Button addDeviceEmpty = (Button) findViewById(R.id.addDeviceEmpty);
+		ImageButton connectButton = (ImageButton) findViewById(R.id.connectBtn);
 		ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
 
 		if (connectedDevice.mPattern != null) {
+			addDeviceButton.setVisibility(View.VISIBLE);
+			connectButton.setVisibility(View.VISIBLE);
 			String styledText = "<big><font color='blue'>"
 				+ (connectedDevice.mName != null ? connectedDevice.mName : "")
 				+ "</font>"
 				+ "<font color='blue'> (" + connectedDevice.mPattern + ")</font></big>";
 			addDeviceButton.setText(Html.fromHtml(styledText));
+			addDeviceEmpty.setVisibility(View.GONE);
+			addDeviceButton.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
 		} else {
-			addDeviceButton.setText("Connect to your Micro:Bit");
+			addDeviceButton.setVisibility(View.GONE);
+			connectButton.setVisibility(View.GONE);
+			addDeviceEmpty.setVisibility(View.VISIBLE);
+			addDeviceEmpty.setText(R.string.connect_to_mbit);
+			addDeviceEmpty.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
 		}
-		addDeviceButton.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
 
-		ImageButton connectButton = (ImageButton) findViewById(R.id.connectBtn);
 		if (connectedDevice.mPattern != null && connectedDevice.mStatus) {
 			connectButton.setImageResource(R.drawable.connected);
 			connectButton.setBackground(getResources().getDrawable(R.drawable.green_btn));
@@ -195,10 +230,29 @@ public class HomeActivity extends Activity {
 		numOfProjects.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
 	}
 
+	@Override
 	public void onResume() {
+		if (debug) logi("onResume() :: ");
 		super.onResume();
 
+
+        if (prefs.getBoolean("firstrun", true)) {
+            //First Run. Install the Sample applications
+            Toast.makeText(MBApp.getContext(), "Installing Sample HEX files. The projects number will be updated in some time" ,Toast.LENGTH_LONG).show();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Utils.installSamples();
+                    prefs.edit().putBoolean("firstrun", false).commit();
+                }
+            }).start();
+        } else {
+            logi("Not the first run");
+        }
+
+		MBApp.setContext(this);
 		updateConnectBarView();
-		updateProjectBarView();
+        updateProjectBarView();
+
 	}
 }

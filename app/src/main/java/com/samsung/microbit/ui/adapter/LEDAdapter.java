@@ -14,9 +14,11 @@ import com.samsung.microbit.R;
  */
 public class LEDAdapter extends BaseAdapter {
     private Context mContext;
+    private String mDeviceCodeArray[];
 
-    public LEDAdapter(Context c) {
+    public LEDAdapter(Context c, String deviceCodeArray[]) {
         mContext = c;
+        mDeviceCodeArray = deviceCodeArray;
     }
 
     public int getCount() {
@@ -28,7 +30,7 @@ public class LEDAdapter extends BaseAdapter {
     }
 
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     // create a new ImageView for each item referenced by the Adapter
@@ -37,12 +39,31 @@ public class LEDAdapter extends BaseAdapter {
         if (convertView == null) {
             // if it's not recycled, initialize some attributes
             imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new GridView.LayoutParams(50, 50));
+            final float scale = mContext.getResources().getDisplayMetrics().density;
+            int led_size = mContext.getResources().getInteger(R.integer.led_size);
+            int pixels = (int) (led_size * scale + 0.5f);
+            imageView.setLayoutParams(new GridView.LayoutParams(pixels, pixels));
         } else {
             imageView = (ImageView) convertView;
         }
 
-        imageView.setBackground(mContext.getResources().getDrawable(R.drawable.white_red_led_btn));
+        if(mDeviceCodeArray[position].equals("1")) {
+            imageView.setBackground(mContext.getResources().getDrawable(R.drawable.red_white_led_btn));
+
+        } else {
+
+            imageView.setBackground(mContext.getResources().getDrawable(R.drawable.white_red_led_btn));
+
+            int startIndex =  position -5;
+            while(startIndex >= 0) {
+                if(mDeviceCodeArray[startIndex].equals("1")){
+                    imageView.setBackground(mContext.getResources().getDrawable(R.drawable.red_white_led_btn));
+                }
+
+                startIndex-=5;
+            }
+        }
+
         return imageView;
     }
 }

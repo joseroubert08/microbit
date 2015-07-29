@@ -15,70 +15,76 @@
   -->
 
 <resources>
-    <string name="app_name">Companion</string>
-    <string name="poweredBy">Powered by\r\n SAMSUNG</string>
+	<string name="app_name">Companion</string>
+	<string name="poweredBy">Powered by\r\n SAMSUNG</string>
 
-    <string name="touchDevURLNew">https://test.microbit.co.uk/app/?fota=1</string>
+	<string name="touchDevURLNew">https://live.microbit.co.uk/app/?fota=1</string>
 
-    <string name="search_BLE_activity">Search Microbit</string>
-    <string name="device_details">Device_details</string>
-    <string name="dummy_section_text">Section %1d is just a dummy section.</string>
-    <string name="ble_not_supported">BLE is not supported</string>
+	<string name="search_BLE_activity">Search micro:bit</string>
+	<string name="device_details">Device_details</string>
+	<string name="dummy_section_text">Section %1d is just a dummy section.</string>
+	<string name="ble_not_supported">BLE is not supported</string>
 	<string name="phase1_complete_ok">Phase 1 completed. press button 1 followed by button on screen</string>
 	<string name="phase2_complete_ok">Phase 2 completed. Device should be flashed</string>
 	<string name="phase1_complete_not_ok">Device not found or in right mode or connection error</string>
 
-    <string name="label_data">Data:</string>
-    <string name="label_device_address">Device address:</string>
-    <string name="label_state">State:</string>
-    <string name="no_data">No data</string>
-    <string name="connected">Connected</string>
-    <string name="disconnected">Disconnected</string>
-    <string name="title_devices">MicroBit Device Scan</string>
-    <string name="title_activity_ledgrid">Find MicroBit</string>
-    <string name="title_activity_connect">Connect</string>
-    <string name="title_activity_gamepad">GamePad</string>
-    <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
-    <string name="microbit_not_found">Microbit not found. Please search.</string>
-    <string name="microbit_found">Use existing micro:bit?</string>
-    <string name="error_bluetooth_not_enabled">Bluetooth not enabled.</string>
-    <string name="devices_bluetooth_not_enabled">Click to enable Bluetooth.</string>
-    <string name="devices_initiate_process">Click to start.</string>
-    <string name="devices_find_microbit">Search</string>
-    <string name="devices_generate_code">Click to generate code.</string>
-    <string name="devices_scanning">Looking for Microbit, click to stop.</string>
-    <string name="devices_ble_unsupported">BLE Not supported on your device</string>
-    <string name="unknown_device">Unknown device</string>
-    <string name="unknown_characteristic">Unknown characteristic</string>
-    <string name="unknown_service">Unknown service</string>
+	<string name="downloading_file">Downloading file</string>
+
+	<string name="label_data">Data:</string>
+	<string name="label_device_address">Device address:</string>
+	<string name="label_state">State:</string>
+	<string name="no_data">No data</string>
+	<string name="connected">Connected</string>
+	<string name="disconnected">Disconnected</string>
+	<string name="title_devices">micro:bit Device Scan</string>
+	<string name="title_activity_ledgrid">Find micro:bit</string>
+	<string name="title_activity_connect">Connect</string>
+	<string name="title_activity_gamepad">GamePad</string>
+	<string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
+	<string name="microbit_not_found">micro:bit not found. Please search.</string>
+	<string name="microbit_found">Use existing micro:bit ?</string>
+	<string name="error_bluetooth_not_enabled">Bluetooth not enabled.</string>
+	<string name="devices_bluetooth_not_enabled">Click to enable Bluetooth.</string>
+	<string name="devices_initiate_process">Click to start.</string>
+	<string name="devices_find_microbit">Search</string>
+	<string name="devices_generate_code">Click to generate code.</string>
+	<string name="devices_scanning">Looking for micro:bit, click to stop.</string>
+	<string name="devices_ble_unsupported">BLE Not supported on your device</string>
+	<string name="unknown_device">Unknown device</string>
+	<string name="unknown_characteristic">Unknown characteristic</string>
+	<string name="unknown_service">Unknown service</string>
 
 	<string name="pattern_to_flash">Enter the pattern displayed on your micro:bit to flash</string>
 	<string name="pattern_to_pair">Enter the pattern displayed on your micro:bit to pair</string>
 
-    <string name="pairing_failed_message">No Microbit displaying the pattern you entered could be found. Please enter the pattern displayed on your Microbit and try again.</string>
-    <string name="pairing_failed_title">Linking Unsuccesful</string>
-    <string name="pairing_success_message_1">You have successfully linked with micro:bit </string>
-    <string name="pairing_success_title">micro:bit found</string>
-    <string name="run_code_button_name">Continue to Flash</string>
-    <string name="flashing_failed_not_found">Flashing Failed!Cannot read the file</string>
-    <string name="flashing_failed_io_error">Flashing Failed! Cannot find the file</string>
-    <string name="flashing_failed_message">Flashing Failed! No Programs Found</string>
-    <string name="flashing_failed_title">Flashing Unsuccesful</string>
-    <string name="flashing_success_message">You have successfully downloaded program to BBC Microbit</string>
-    <string name="flashing_success_title">Flashing Succesful</string>
+	<string name="pairing_failed_message">No micro:bit displaying the pattern you entered could be found. Please enter the pattern displayed on your micro:bit and try again.</string>
+	<string name="pairing_failed_title">Linking Unsuccesful</string>
+	<string name="pairing_success_message_1">You have successfully linked with micro:bit </string>
+	<string name="pairing_success_title">micro:bit found</string>
+	<string name="run_code_button_name">Continue to Flash</string>
+	<string name="flashing_failed_not_found">Flashing Failed!Cannot read the file</string>
+	<string name="flashing_failed_io_error">Flashing Failed! Cannot find the file</string>
+	<string name="flashing_failed_message">Flashing Failed! No Programs Found</string>
+	<string name="flashing_failed_title">Flashing Unsuccesful</string>
+	<string name="flashing_success_message">You have successfully downloaded program to BBC micro:bit</string>
+	<string name="flashing_success_title">Flashing Succesful</string>
+	<string name="flashing_error">Error</string>
+	<string name="flashing_failed_no_microbit">Please connect to a micro:bit before flashing </string>
+	<string name="flashing_tip_title">Put the micro:bit in Flashing mode</string>
+	<string name="flashing_tip"> Hold buttons A and B down and then press RESET.\n Wait for "BLUEZONE" to appear on micro:bit before releasing buttons </string>
 
-    <!-- Menu items -->
-    <string name="menu_connect">Connect</string>
-    <string name="menu_disconnect">Disconnect</string>
-    <string name="menu_scan">Scan</string>
-    <string name="menu_stop">Stop</string>
-    <string name="action_settings">Settings</string>
+	<!-- Menu items -->
+	<string name="menu_connect">Connect</string>
+	<string name="menu_disconnect">Disconnect</string>
+	<string name="menu_scan">Scan</string>
+	<string name="menu_stop">Stop</string>
+	<string name="action_settings">Settings</string>
 
-    <!-- Camera items -->
-    <string name="picture">Picture</string>
-    <string name="record">Record</string>
-    <string name="stop">Stop</string>
-    <string name="description_info">Info</string>
+	<!-- Camera items -->
+	<string name="picture">Picture</string>
+	<string name="record">Record</string>
+	<string name="stop">Stop</string>
+	<string name="description_info">Info</string>
     <string name="intro_message">
         <![CDATA[
 
@@ -86,59 +92,83 @@
 
         ]]>
     </string>
-    <string name="camera_not_found">Camera Not Found</string>
+	<string name="camera_not_found">Camera Not Found</string>
 
-    <string name="title_activity_about_us">about_us</string>
-    <string name="back_button">Take me Back</string>
-    <string name="about_us"> That\'s All !! Happy Coding </string>
+	<string name="title_activity_about_us">about_us</string>
+	<string name="back_button">Take me Back</string>
+	<string name="about_us"> That\'s All !! Happy Coding </string>
 
-    <!-- Alert plugin -->
-    <string name="vibrating_via_microbit">Vibrating via Microbit!</string>
-    <string name="findphone_via_microbit">Find my phone alert via Microbit!</string>
-    <string name="ringtone_via_microbit">Playing ringtone via Microbit!</string>
-    <string name="sound_via_microbit">Playing sound via Microbit!</string>
-    <string name="alert">Alert...</string>
+	<!-- Alert plugin -->
+	<string name="vibrating_via_microbit">Vibrating via micro:bit!</string>
+	<string name="findphone_via_microbit">Find my phone alert via micro:bit!</string>
+	<string name="ringtone_via_microbit">Playing ringtone via micro:bit!</string>
+	<string name="sound_via_microbit">Playing sound via micro:bit!</string>
+	<string name="alert">Alert...</string>
 
-    <!-- Connect Activity -->
-    <string name="previous_devices">Previous devices</string>
-    <string name="new_devices_pattern_null">Repeat the pattern below</string>
-    <string name="new_devices">Connect to a new device</string>
-    <string name="name_device">Name device</string>
-    <string name="name_empty_error">Please enter device name.</string>
-    <string name="connect">Connect</string>
-    <string name="gamepad">Gamepad</string>
-    <string name="connectNew">Connect to a new device</string>
-    <string name="connectTipTitle">Get the pairing pattern</string>
-    <string name="connectTipText">To start pairing with a device Please click the marked buttons on your Micro:Bit</string>
-    <string name="connectSearchingTitle">Connecting...</string>
-    <!--Connect Popup messages -->
-    <string name="pairingErrorTitle">Error</string>
-    <string name="pairingErrorMessage">We cannot find that Micro:Bit\nPlease try again</string>
-    <string name="deleteMicrobitTitle">Delete Microbit?</string>
-    <string name="deleteMicrobitMessage">Are you sure you want to remove this device?</string>
+	<!-- Connect Activity -->
+	<string name="previous_devices">Previously paired micro:bit(s)</string>
+	<string name="new_devices_pattern_null">Enter the pattern</string>
+	<string name="new_devices">Connect to a new device</string>
+	<string name="name_device">Name device</string>
+	<string name="name_empty_error">Please enter device name.</string>
+	<string name="connect">Connect</string>
+	<string name="gamepad">Gamepad</string>
+	<string name="connectNew">Connect a new micro:bit</string>
+	<string name="connectTipTitle">How to pair your micro:bit</string>
+	<string name="connectTipText">To know the pattern of your micro:bit :- \n Please hold A and B buttons down and then press RESET \non your micro:bit</string>
+	<string name="connectSearchingTitle">Connecting...</string>
+	<string name="searchingTitle">Searching for micro:bit...</string>
 
-    <string name="your_projects">Your projects</string>
-    <string name="start_new_project">Start a new project</string>
-    <string name="new_project">New Project</string>
-    <string name="loading_page_msg">Please wait. Page is loading...</string>
+	<!--Connect Popup messages -->
+	<string name="pairingErrorTitle">Error</string>
+	<string name="pairingErrorMessage">We cannot find that micro:bit\nPlease try again</string>
+	<string name="deleteMicrobitTitle">Delete micro:bit?</string>
+	<string name="deleteMicrobitMessage">Are you sure you want to remove this device?</string>
 
-    <!-- Popup message -->
-    <string name="delete_project_message">Are you sure you want to want to remove this project?\r\nIt will be removed from this app but will still be available within your Micro:Bit account.</string>
-    <string name="delete_project_title">Delete project?</string>
+	<string name="your_projects">Your projects</string>
+	<string name="start_new_project">Start a new project</string>
+	<string name="new_project">New Project</string>
+	<string name="loading_page_msg">Please wait. Page is loading...</string>
 
-    <string name="create_new_project">Create Project</string>
-    <string name="download_existing">Download Existing</string>
-    <string name="downloading">Downloading...</string>
-    <string name="download_complete">Download complete.</string>
-    <string name="projects">Projects</string>
-    <string name="send">Send</string>
-    <string name="code">Code</string>
-    <string name="no_projects">No projects found!</string>
-    <string name="connected_to">Connected to</string>
-    <string name="not_connected">Not Connected</string>
-    <string name="micro_bit_reset_msg">Microbit needs to be reset.</string>
+	<!-- Popup message -->
+	<string name="delete_project_message">Are you sure you want to want to remove this project?\r\nIt will be removed from this app but will still be available within your Micro:Bit account.</string>
+	<string name="delete_project_title">Delete project?</string>
+	<string name="record_audio">Record Audio?</string>
+	<string name="audio_recorder_notification">micro:bit Audio Recorder</string>
 
-    <string name="web_view_demo">Web View Demo</string>
-    <string name="sending_project">Sending project</string>
+	<string name="create_new_project">Create Project</string>
+
+	<string name="download_existing">Download Existing</string>
+	<string name="downloading">Downloading...</string>
+
+	<string name="q_overwrite_existing">A file with same name already exists. Overwrite the existing file?</string>
+	<string name="rename_file">Rename Download File</string>
+
+	<string name="download_complete">Download complete. Flash to micro:bit ?</string>
+	<string name="projects">Projects</string>
+	<string name="pair_my_device">Pair your micro:bit</string>
+	<string name="flash">Flash</string>
+	<string name="view">View</string>
+	<string name="no_projects">No projects found!</string>
+	<string name="connected_to">Connected to</string>
+	<string name="not_connected">Not Connected</string>
+	<string name="micro_bit_reset_msg">micro:bit needs to be reset.</string>
+	<string name="flashing_title">Flashing</string>
+	<string name="flashing_error_msg">micro:bit not in correct state</string>
+	<string name="flashing_phase1_msg">Finding the device..</string>
+	<string name="flashing_phase2_msg">Press button on micro:bit.</string>
+
+	<string name="web_view_demo">Web View Demo</string>
+	<string name="sending_project">Sending project</string>
+	<string name="send_project">Send Project</string>
+	<string name="init_connection">Initialising Connection..</string>
+
+	<string name="no_device_paired">Cannot connect.  No micro:bit paired</string>
+
+	<string name="send">Change ID To FLASH</string>
+	<string name="code">Change ID To VIEW</string>
+
+	<string name="connect_to_mbit">Connect to your micro:bit</string>
+	<string name="title_activity_new_device">NewDevice</string>
 
 </resources>

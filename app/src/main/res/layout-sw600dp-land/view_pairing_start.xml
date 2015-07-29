@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_height="fill_parent"
+android:id="@+id/connectButtonView"
+android:layout_toRightOf="@id/prevDeviceView"
+android:layout_width="wrap_content"
+android:visibility="visible">
+
+<Button
+    style="@style/h2"
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/button_height"
+    android:layout_marginTop="@dimen/widget_margin"
+    android:id="@+id/connectButton"
+    android:background="@drawable/yellow_btn"
+    android:text="@string/connectNew"
+    android:layout_centerInParent="true"/>
+
+</RelativeLayout>

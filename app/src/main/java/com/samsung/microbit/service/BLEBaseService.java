@@ -21,6 +21,8 @@ import java.util.UUID;
 
 public abstract class BLEBaseService extends Service {
 
+	public static final boolean AUTO_CONNECT = true;
+
 	protected BLEManager bleManager;
 	BluetoothManager bluetoothManager;
 	BluetoothAdapter bluetoothAdapter;
@@ -86,7 +88,7 @@ public abstract class BLEBaseService extends Service {
 					new UnexpectedConnectionEventListener() {
 						@Override
 						public void handleConnectionEvent(int event) {
-							if (debug) logi("setupBLE().CharacteristicChangeListener.onCharacteristicChanged()");
+							if (debug) logi("setupBLE().CharacteristicChangeListener.handleUnexpectedConnectionEvent()");
 							if (bleManager != null) {
 								handleUnexpectedConnectionEvent(event);
 							}
@@ -214,6 +216,15 @@ public abstract class BLEBaseService extends Service {
 		return rc;
 	}
 
+	public boolean isConnected() {
+
+		if (bleManager != null) {
+			return bleManager.isConnected();
+		}
+
+		return false;
+	}
+
 	public int getBleState() {
 
 		int rc = 99;
@@ -228,7 +239,7 @@ public abstract class BLEBaseService extends Service {
 
 		int rc = 99;
 		if (bleManager != null) {
-			rc = bleManager.connect(true);
+			rc = bleManager.connect(AUTO_CONNECT);
 			rc = interpretCode(rc, BLEManager.BLE_CONNECTED);
 		}
 

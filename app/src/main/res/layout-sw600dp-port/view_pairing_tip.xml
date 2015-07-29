@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:id="@+id/connectTipView"
+    android:layout_width="match_parent"
+    android:layout_below="@id/headerBar"
+    android:visibility="gone">
+
+    <TextView
+        style="@style/h1"
+        android:id="@+id/connectTipTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/connectTipTitle"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/activity_top_margin"/>
+
+    <TextView
+        style="@style/p1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/connectTipText"
+        android:id="@+id/connectTipTextview"
+        android:layout_marginTop="@dimen/content_margin"
+        android:layout_below="@id/connectTipTitle"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"/>
+
+    <RelativeLayout
+        android:id="@+id/tipImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_below="@+id/connectTipTextview"
+        android:layout_centerInParent="true">
+
+    <ImageView
+        android:id="@+id/microbit_tip_image"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:src="@drawable/tip_mb" />
+
+    <ImageView
+        android:id="@+id/microbit_tip_image_back"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:src="@drawable/tip_mb_back"
+        android:layout_below="@id/microbit_tip_image" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/tipImageView"
+        android:layout_centerInParent="true">
+
+    <ImageButton
+        android:id="@+id/cancel_tip_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/cross"
+        android:background="@drawable/popup_cancel_button"
+        android:layout_marginRight="50dp"/>
+
+    <ImageButton
+        android:id="@+id/ok_connect_button"
+        android:layout_toRightOf="@id/cancel_tip_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/tick"
+        android:background="@drawable/popup_ok_button" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

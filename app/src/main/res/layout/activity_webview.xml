@@ -1,46 +1,42 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent" android:layout_height="fill_parent"
-    android:background="@drawable/bg">
+    android:layout_width="fill_parent" android:layout_height="fill_parent">
 
     <RelativeLayout
-        android:id="@+id/topBar"
+        android:id="@+id/headerBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/content_margin"
-        android:layout_marginBottom="@dimen/content_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:clickable="true">
+        android:background="#ffff">
 
         <ImageButton
-            android:id="@+id/homeBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/home"
-            android:background="@drawable/green_btn"
-            android:layout_alignParentLeft="true"
-            android:onClick="onBtnClicked"/>
+            android:id="@+id/backBtn"
+            android:onClick="onClick"
+            android:layout_width="@dimen/header_btn_size"
+            android:layout_height="@dimen/header_btn_size"
+            android:src="@drawable/back"
+            android:background="@android:color/transparent"/>
 
         <TextView
-            android:id="@+id/title"
+            style="@style/h1"
+            android:id="@+id/titleTxt"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/header_title_height"
             android:text="@string/new_project"
-            android:layout_toRightOf="@id/homeBtn"
-            android:textSize="30sp"
-            android:textColor="@color/white_font_color"
-            android:layout_marginLeft="@dimen/content_margin"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"/>
+            android:layout_toRightOf="@id/backBtn"
+            android:gravity="center"/>
 
         <ImageButton
             android:id="@+id/refreshBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
             android:src="@drawable/refresh"
-            android:background="@drawable/green_btn"
-            android:onClick="onBtnClicked" />
+            android:background="@null"
+            android:scaleType="fitCenter"
+            android:onClick="onClick"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="3dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"/>
 
     </RelativeLayout>
 
@@ -48,8 +44,8 @@
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="fill_parent"
-        android:layout_height="10dp"
-        android:layout_below="@id/topBar"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/headerBar"
         android:progressDrawable="@drawable/green_progress_bar"/>
 
     <LinearLayout
@@ -64,7 +60,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/loading_page_msg"
-            android:layout_toRightOf="@id/homeBtn"
             android:textSize="40sp"
             android:textColor="@color/black_font_color"
             android:layout_alignParentRight="true"/>
@@ -73,7 +68,6 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:id="@+id/touchDevelopView"
-            android:background="#7CFC00"
             android:longClickable="true"
             android:windowSoftInputMode="adjustResize"
             android:hardwareAccelerated="true"/>

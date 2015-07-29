@@ -20,7 +20,7 @@
     <color name="gamepad_button_purple_up">#CC66FF</color>
     <color name="gamepad_button_purple_down">#A83FDE</color>
 
-    <color name="gamepad_button_blue_up">#3399CC</color>
+    <color name="gamepad_button_blue_up">#1cc6fd</color>
     <color name="gamepad_button_blue_down">#0C79B1</color>
 
     <color name="gamepad_button_yellow_up">#FDCA37</color>

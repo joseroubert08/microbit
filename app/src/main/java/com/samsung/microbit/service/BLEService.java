@@ -29,15 +29,6 @@ import java.util.UUID;
 
 public class BLEService extends BLEBaseService {
 
-	public static final int FORMAT_UINT8 = BluetoothGattCharacteristic.FORMAT_UINT8;
-	public static final int FORMAT_UINT16 = BluetoothGattCharacteristic.FORMAT_UINT16;
-	public static final int FORMAT_UINT32 = BluetoothGattCharacteristic.FORMAT_UINT32;
-
-	public static final int FORMAT_SINT8 = BluetoothGattCharacteristic.FORMAT_SINT8;
-	public static final int FORMAT_SINT16 = BluetoothGattCharacteristic.FORMAT_SINT16;
-	public static final int FORMAT_SINT32 = BluetoothGattCharacteristic.FORMAT_SINT32;
-
-
 	protected String TAG = "BLEService";
 	protected boolean debug = true;
 
@@ -174,12 +165,12 @@ public class BLEService extends BLEBaseService {
 	@Override
 	protected void handleUnexpectedConnectionEvent(int event) {
 
-		if (debug) logi("handleDisconnection() :: event = " + event);
+		if (debug) logi("handleUnexpectedConnectionEvent() :: event = " + event);
 		if ((event & BLEManager.BLE_CONNECTED) != 0) {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					if (debug) logi("handleDisconnection() :: BLE_CONNECTED");
+					if (debug) logi("handleUnexpectedConnectionEvent() :: BLE_CONNECTED");
 					discoverServices();
 					registerNotifications(true);
 					setNotification(true, 0);
@@ -187,7 +178,7 @@ public class BLEService extends BLEBaseService {
 			}).start();
 
 		} else if (event == BLEManager.BLE_DISCONNECTED) {
-			if (debug) logi("handleDisconnection() :: BLE_DISCONNECTED");
+			if (debug) logi("handleUnexpectedConnectionEvent() :: BLE_DISCONNECTED");
 			setNotification(false, 0);
 		}
 	}
@@ -251,8 +242,10 @@ public class BLEService extends BLEBaseService {
 	// ######################################################################
 
 	int lastEvent = Constants.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE;
+
 	void sendMessage(int eventSrc, int event) {
 
+		logi("eventSrc" + eventSrc + "  event=" + event);
 		int msgService = 0;
 		CmdArg cmd = null;
 		switch (eventSrc) {
@@ -261,11 +254,13 @@ public class BLEService extends BLEBaseService {
 			case Constants.SAMSUNG_AUDIO_RECORDER_ID:
 			case Constants.SAMSUNG_CAMERA_ID:
 
+				/*
 				// TODO remove thiese demo hacks
+
 				eventSrc = Constants.SAMSUNG_REMOTE_CONTROL_ID;
 				event = (event == Constants.SAMSUNG_REMOTE_CONTROL_EVT_FORWARD) ? Constants.SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK : Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY;
-				if(event == Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY) {
-					if(lastEvent == Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY) {
+				if (event == Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY) {
+					if (lastEvent == Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY) {
 						event = Constants.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE;
 					} else {
 						event = Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY;
@@ -273,6 +268,7 @@ public class BLEService extends BLEBaseService {
 
 					lastEvent = event;
 				}
+				*/
 
 				msgService = eventSrc;
 				cmd = new CmdArg(event, "1000");
@@ -284,7 +280,7 @@ public class BLEService extends BLEBaseService {
 		}
 
 		if (cmd != null) {
-			sendtoPluginService(IPCMessageManager.MICIROBIT_MESSAGE, msgService, cmd, null);
+			sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, msgService, cmd, null);
 		}
 	}
 
@@ -332,41 +328,27 @@ public class BLEService extends BLEBaseService {
 
 	public void sendIPCMessge(Class destService, int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
 
-		if (debug) logi("sendIPCMessge()");
 		IPCMessageManager inst = IPCMessageManager.getInstance();
 		if (!inst.isConnected(destService)) {
 			inst.configureServerConnection(destService, this);
 		}
 
+		if (mbsService != IPCMessageManager.ANDROID_MESSAGE && mbsService != IPCMessageManager.MICROBIT_MESSAGE) {
+			return;
+		}
+
 		Message msg = Message.obtain(null, mbsService);
 		msg.arg1 = functionCode;
 		Bundle bundle = new Bundle();
-		if (mbsService == IPCMessageManager.ANDROID_MESSAGE) {
-			if (debug) logi("sendIPCMessge() :: IPCMessageManager.ANDROID_MESSAGE functionCode=" + functionCode);
-			if (cmd != null) {
-				bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
-				bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
-			}
+		if (cmd != null) {
+			bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
+			bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
+		}
 
-			if (args != null) {
-				for (int i = 0; i < args.length; i++) {
-					bundle.putSerializable(args[i].getName(), args[i].getValue());
-				}
+		if (args != null) {
+			for (int i = 0; i < args.length; i++) {
+				bundle.putSerializable(args[i].getName(), args[i].getValue());
 			}
-
-		} else if (mbsService == IPCMessageManager.MICIROBIT_MESSAGE) {
-			if (debug) logi("sendIPCMessge() :: IPCMessageManager.MICIROBIT_MESSAGE functionCode=" + functionCode);
-			if (cmd != null) {
-				bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
-				bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
-				if (args != null) {
-					for (int i = 0; i < args.length; i++) {
-						bundle.putSerializable(args[i].getName(), args[i].getValue());
-					}
-				}
-			}
-		} else {
-			return;
 		}
 
 		msg.setData(bundle);
@@ -378,6 +360,10 @@ public class BLEService extends BLEBaseService {
 	}
 
 	public void writeCharacteristic(String serviceGuid, String characteristic, int value, int type) {
+
+		if (!isConnected()) {
+			return;
+		}
 
 		BluetoothGattService s = getService(UUID.fromString(serviceGuid));
 		if (s != null) {
@@ -420,6 +406,11 @@ public class BLEService extends BLEBaseService {
 
 					break;
 
+				default:
+			}
+		} else if (msg.what == IPCMessageManager.MICROBIT_MESSAGE) {
+			if (debug) logi("handleIncomingMessage() :: IPCMessageManager.MICROBIT_MESSAGE msg.arg1 = " + msg.arg1);
+			switch (msg.arg1) {
 				case IPCMessageManager.IPC_FUNCTION_WRITE_CHARACTERISTIC:
 					if (debug) logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_WRITE_CHARACTERISTIC = " + bleManager);
 					String service = (String) bundle.getSerializable(IPCMessageManager.BUNDLE_SERVICE_GUID);
@@ -428,10 +419,9 @@ public class BLEService extends BLEBaseService {
 					int type = (int) bundle.getSerializable(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE);
 					writeCharacteristic(service, characteristic, value, type);
 					break;
+
 				default:
 			}
-		} else if (msg.what == IPCMessageManager.MICIROBIT_MESSAGE) {
-			if (debug) logi("handleIncomingMessage() :: IPCMessageManager.MICIROBIT_MESSAGE msg.arg1 = " + msg.arg1);
 		}
 	}
 }

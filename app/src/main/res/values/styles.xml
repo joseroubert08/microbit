@@ -40,4 +40,5 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowFrame">@null</item>
     </style>
+
 </resources>
