@@ -164,7 +164,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 		if (fileToDownload != null) {
 			programToSend = new Project(fileToDownload, Constants.HEX_FILE_DIR + "/" + fileToDownload, 0, null, false);
-			initiateFlashing(programToSend);
+			adviceOnMicrobitState(programToSend);
 		}
 	}
 
@@ -312,7 +312,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			case R.id.sendBtn:
 				pos = (Integer) v.getTag();
 				Project toSend = (Project) projectAdapter.getItem(pos);
-				initiateFlashing(toSend);
+				adviceOnMicrobitState(toSend);
 				break;
 
 			case R.id.connectedIndicatorIcon:
@@ -337,6 +337,27 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		}
 	}
 
+    private void adviceOnMicrobitState(final Project toSend)
+    {
+        PopUp.show(MBApp.getContext(),
+                getString(R.string.flashing_tip), //message
+                getString(R.string.flashing_tip_title), //title
+                R.drawable.mbit, R.drawable.blue_btn, //image icon res id
+                PopUp.TYPE_CHOICE, //type of popup.
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PopUp.hide();
+                        initiateFlashing(toSend);
+                    }
+                },//override click listener for ok button
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PopUp.hide();
+                    }
+                });//pass null to use default listeneronClick
+    }
 	protected void initiateFlashing(Project toSend) {
 
 		ConnectedDevice currentMicrobit = Utils.getPairedMicrobit(this);
@@ -352,8 +373,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			state = STATE_START_FLASH;
 		} else if (currentMicrobit.mPattern == null) {
 			PopUp.show(MBApp.getContext(),
-				getString(R.string.flashing_error_msg), //message
-				getString(R.string.flashing_failed_title), //title
+				getString(R.string.flashing_failed_no_microbit), //message
+				getString(R.string.flashing_error), //title
 				R.drawable.exclamation, //image icon res id
 				0,
 				PopUp.TYPE_ALERT, //type of popup.
@@ -544,7 +565,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 								PopUp.show(MBApp.getContext(),
 									getString(R.string.flashing_success_message), //message
 									getString(R.string.flashing_success_title), //title
-									R.drawable.exclamation, 0,
+									R.drawable.mbit, R.drawable.blue_btn,
 									PopUp.TYPE_ALERT, //type of popup.
 									new View.OnClickListener() {
 										@Override
