@@ -96,8 +96,8 @@ public class AudioRecorderActivity extends Activity {
         PopUp.show(this,
                 "",
                 getString(R.string.record_audio),
-                R.drawable.microphone_on, //image icon res id (pass 0 to use default icon)
-                0, //image icon background res id (pass 0 if there is no background)
+                R.drawable.record_icon, //image icon res id (pass 0 to use default icon)
+                R.drawable.white_btn, //image icon background res id (pass 0 if there is no background)
                 PopUp.TYPE_CHOICE, //type of popup.
                 new View.OnClickListener() {
                     @Override
