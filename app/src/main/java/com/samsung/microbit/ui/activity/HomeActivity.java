@@ -45,7 +45,7 @@ import java.util.logging.Handler;
 
 import static com.samsung.microbit.core.CommonGUI.commonAlertDialog;
 
-public class HomeActivity extends Activity implements View.OnClickListener  {
+public class HomeActivity extends Activity implements View.OnClickListener {
 
 	/* *************************************************
 	 * TODO setup to Handle BLE Notiifications
@@ -172,7 +172,12 @@ public class HomeActivity extends Activity implements View.OnClickListener  {
 					IPCService.getInstance().bleConnect();
 				}
 			} else {
-				commonAlertDialog(this, "Alert", "<p>Cannot connect.</p><p>No microbit paired</p>");
+				PopUp.show(MBApp.getContext(),
+					getString(R.string.no_device_paired),
+					"",
+					R.drawable.mbit, R.drawable.blue_btn,
+					PopUp.TYPE_ALERT,
+					null, null);
 			}
 		}
 	}
