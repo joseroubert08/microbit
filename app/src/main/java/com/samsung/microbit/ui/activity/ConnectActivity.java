@@ -518,6 +518,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				break;
 			case R.id.backBtn:
                 Arrays.fill(deviceCodeArray,"0");
+                if(state == PAIRING_STATE.PAIRING_STATE_SEARCHING) {
+                    scanLeDevice(false);
+                }
                 state = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
 				finish();
 				break;
