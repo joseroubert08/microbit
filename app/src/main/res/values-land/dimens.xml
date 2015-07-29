@@ -50,7 +50,7 @@
 
 	<!-- PopUp -->
 	<dimen name="popup_button_margin">10dp</dimen>
-	<dimen name="popup_button_size">60dp</dimen>
+	<dimen name="popup_button_size">80dp</dimen>
 	<dimen name="popup_paddingTop">10dp</dimen>
 	<dimen name="popup_paddingBottom">10dp</dimen>
 	<dimen name="popup_paddingLeft">20dp</dimen>

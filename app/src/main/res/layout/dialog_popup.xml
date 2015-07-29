@@ -14,8 +14,7 @@
         android:id="@+id/imageIcon"
         android:src="@drawable/exclamation"
         android:background="@null"
-        android:scaleType="fitCenter"
-        android:layout_margin="10dp"
+        android:scaleType="center"
         android:layout_gravity="center" />
 
     <TextView
@@ -87,8 +86,7 @@
                 android:layout_height="@dimen/popup_button_size"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="@dimen/popup_button_margin"
-                android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
+                android:scaleType="center"
                 android:id="@+id/imageButtonCancel"
                 android:src="@drawable/cross"
                 android:background="@drawable/popup_cancel_button"
@@ -99,8 +97,7 @@
                 android:layout_height="@dimen/popup_button_size"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="@dimen/popup_button_margin"
-                android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
+                android:scaleType="center"
                 android:id="@+id/imageButtonOk"
                 android:src="@drawable/tick"
                 android:background="@drawable/popup_ok_button"
@@ -110,9 +107,8 @@
         <ImageButton
             android:layout_width="@dimen/popup_button_size"
             android:layout_height="@dimen/popup_button_size"
-            android:adjustViewBounds="true"
             android:layout_gravity="center"
-            android:scaleType="fitCenter"
+            android:scaleType="center"
             android:id="@+id/imageButton"
             android:src="@drawable/tick"
             android:background="@drawable/popup_ok_button"
