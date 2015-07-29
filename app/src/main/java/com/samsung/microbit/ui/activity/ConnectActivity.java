@@ -249,29 +249,33 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	private void displayLedGrid() {
 		GridView gridview = (GridView) findViewById(R.id.gridview);
-		gridview.setAdapter(new LEDAdapter(this));
+		gridview.setAdapter(new LEDAdapter(this, deviceCodeArray));
 		gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
-                if (state != PAIRING_STATE.PAIRING_STATE_NEW_NAME) {
+			public void onItemClick(AdapterView<?> parent, View v,
+									int position, long id) {
+				if (state != PAIRING_STATE.PAIRING_STATE_NEW_NAME) {
 
-                    if ((findViewById(R.id.ok_name_button).getVisibility() != View.VISIBLE)) {
-                        findViewById(R.id.ok_name_button).setVisibility(View.VISIBLE);
-                        findViewById(R.id.cancel_name_button).setVisibility(View.VISIBLE);
-                    }
+					if ((findViewById(R.id.ok_name_button).getVisibility() != View.VISIBLE)) {
+						findViewById(R.id.ok_name_button).setVisibility(View.VISIBLE);
+					}
 
-                    boolean isOn = toggleLED((ImageView) v, position);
-                    setCol(parent, position, isOn);
+					boolean isOn = toggleLED((ImageView) v, position);
+					setCol(parent, position, isOn);
+					//Toast.makeText(MBApp.getContext(), "LED Clicked: " + position, Toast.LENGTH_SHORT).show();
 
-                    if (!Arrays.asList(deviceCodeArray).contains("1")) {
-                        findViewById(R.id.ok_name_button).setVisibility(View.INVISIBLE);
-                    }
-                    //Toast.makeText(MBApp.getContext(), "LED Clicked: " + position, Toast.LENGTH_SHORT).show();
-                }
-                //TODO KEEP TRACK OF ALL LED STATUS AND TOGGLE COLOR
+					if (!Arrays.asList(deviceCodeArray).contains("1")) {
+						findViewById(R.id.ok_name_button).setVisibility(View.INVISIBLE);
+					}
+				}
+				//TODO KEEP TRACK OF ALL LED STATUS AND TOGGLE COLOR
 
-            }
+			}
         });
+
+		if (!Arrays.asList(deviceCodeArray).contains("1")) {
+			findViewById(R.id.ok_name_button).setVisibility(View.INVISIBLE);
+		} else
+			findViewById(R.id.ok_name_button).setVisibility(View.VISIBLE);
 	}
 
 	private void generateName() {
@@ -381,7 +385,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		newDeviceView.setVisibility(View.GONE);
 		connectSearchView.setVisibility(View.GONE);
 
-        Log.d("Microbit", "********** Connect: state from " +state + " to " +gotoState);
+		Log.d("Microbit", "********** Connect: state from " + state + " to " +gotoState);
         state = gotoState;
 
 		if(gotoState == PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON)
@@ -414,7 +418,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				findViewById(R.id.newDeviceTxt).setVisibility(View.VISIBLE);
 				findViewById(R.id.nameNewEdit).setVisibility(View.GONE);
 				findViewById(R.id.ok_name_button).setVisibility(View.GONE);
-                displayLedGrid();
+				displayLedGrid();
 				break;
 			case PAIRING_STATE_NEW_NAME:
 				findViewById(R.id.gridview).setEnabled(false);
@@ -427,6 +431,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				editText.requestFocus();
 				findViewById(R.id.ok_name_button).setVisibility(View.VISIBLE);
 				findViewById(R.id.cancel_name_button).setVisibility(View.VISIBLE);
+				displayLedGrid();
 				break;
 			case PAIRING_STATE_SEARCHING:
 				connectSearchView.setVisibility(View.VISIBLE);
@@ -517,7 +522,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				handleDeleteMicrobit(pos);
 				break;
 			case R.id.backBtn:
-                Arrays.fill(deviceCodeArray,"0");
+				Arrays.fill(deviceCodeArray,"0");
                 if(state == PAIRING_STATE.PAIRING_STATE_SEARCHING) {
                     scanLeDevice(false);
                 }
