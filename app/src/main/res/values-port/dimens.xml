@@ -55,7 +55,7 @@
 	<dimen name="popup_paddingBottom">50dp</dimen>
 	<dimen name="popup_paddingLeft">20dp</dimen>
 	<dimen name="popup_paddingRight">20dp</dimen>
-	<dimen name="popup_icon_size">100dp</dimen>
+	<dimen name="popup_icon_size">60dp</dimen>
 	<dimen name="popup_spinner_paddingBottom">100dp</dimen>
 
 	<!-- Audio Recorder -->

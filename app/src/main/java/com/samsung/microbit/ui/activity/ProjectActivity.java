@@ -309,32 +309,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				finish();
 				break;
 
-			case R.id.codeBtn:
-				pos = (Integer) v.getTag();
-				Project toOpen = (Project) projectAdapter.getItem(pos);
-				if (toOpen.codeUrl != null) {
-					intent = new Intent(this, TouchDevActivity.class);
-					intent.putExtra(toOpen.codeUrl, getString(R.string.touchDevURLNew));
-					startActivity(intent);
-				} else {
-					PopUp.show(this,
-						"Not available yet.. Coming soon..", //message
-						"Code Project", //title
-						R.drawable.exclamation, //image icon res id (pass 0 to use default icon)
-						0, //image icon background res id (pass 0 if there is no background)
-						PopUp.TYPE_ALERT, //type of popup.
-						new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								PopUp.hide();
-								//Write your own code
-							}
-						},//override click listener for ok button
-						null);//pass null to use default listener
-				}
-
-				break;
-
 			case R.id.sendBtn:
 				pos = (Integer) v.getTag();
 				Project toSend = (Project) projectAdapter.getItem(pos);

@@ -194,15 +194,6 @@ public class ProjectAdapter extends BaseAdapter {
 		}
 	};
 
-	private View.OnClickListener codeBtnClickListener = new View.OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			logi("codeBtnClickListener() :: ");
-			((View.OnClickListener) projectActivity).onClick(v);
-		}
-	};
-
 	private View.OnClickListener deleteBtnClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -294,9 +285,7 @@ public class ProjectAdapter extends BaseAdapter {
 			//dismissKeyBoard(appNameEdit, false);
 		}
 
-		Button codeBtn = (Button) convertView.findViewById(R.id.codeBtn);
-		codeBtn.setTag(position);
-		codeBtn.setOnClickListener(codeBtnClickListener);
+		//appNameEdit.setOnClickListener(appNameClickListener);
 
 		Button sendBtn = (Button) convertView.findViewById(R.id.sendBtn);
 		sendBtn.setTag(position);

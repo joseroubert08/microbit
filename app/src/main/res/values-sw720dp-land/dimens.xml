@@ -30,7 +30,7 @@
 	<dimen name="home_start_btn_width">240dp</dimen>
 
 	<!-- Project UI -->
-	<dimen name="project_name_width">800dp</dimen>
+	<dimen name="project_name_width">950dp</dimen>
 	<dimen name="project_main_margin">50dp</dimen>
 
 	<!-- Connect UI -->
@@ -44,7 +44,7 @@
 	<dimen name="button_gap_margin">75dp</dimen>
 
 	<!-- Generic list view item -->
-	<dimen name="lv_txt_img_btn_width">150dp</dimen>
+	<dimen name="lv_txt_img_btn_width">166dp</dimen>
 	<dimen name="lv_btn_width">80dp</dimen>
 	<dimen name="lv_item_height">80dp</dimen>
 	<dimen name="lv_item_margin">16dp</dimen>
@@ -56,7 +56,7 @@
 	<dimen name="popup_paddingBottom">150dp</dimen>
 	<dimen name="popup_paddingLeft">250dp</dimen>
 	<dimen name="popup_paddingRight">250dp</dimen>
-	<dimen name="popup_icon_size">100dp</dimen>
+	<dimen name="popup_icon_size">90dp</dimen>
 	<dimen name="popup_spinner_paddingBottom">100dp</dimen>
 
 	<!-- Audio Recorder -->

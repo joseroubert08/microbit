@@ -53,23 +53,11 @@
 
 		<Button
 			style="@style/p1"
-			android:id="@+id/codeBtn"
-			android:layout_width="@dimen/lv_txt_img_btn_width"
-			android:layout_height="@dimen/lv_item_height"
-			android:layout_marginLeft="@dimen/lv_item_margin"
-			android:layout_toRightOf="@id/deleteBtn"
-			android:background="@drawable/green_btn"
-			android:drawableRight="@drawable/view"
-			android:gravity="left|center_vertical"
-			android:text="@string/view" />
-
-		<Button
-			style="@style/p1"
 			android:id="@+id/sendBtn"
 			android:layout_width="@dimen/lv_txt_img_btn_width"
 			android:layout_height="@dimen/lv_item_height"
 			android:layout_marginLeft="@dimen/lv_item_margin"
-			android:layout_toRightOf="@id/codeBtn"
+			android:layout_toRightOf="@id/deleteBtn"
 			android:background="@drawable/blue_btn"
 			android:drawableRight="@drawable/flashing"
 			android:gravity="left|center_vertical"

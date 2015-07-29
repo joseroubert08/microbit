@@ -47,7 +47,7 @@
 	<dimen name="lv_btn_width">80dp</dimen>
 	<dimen name="lv_item_height">80dp</dimen>
 	<dimen name="lv_item_margin">16dp</dimen>
-	<dimen name="lv_txt_img_btn_width">315dp</dimen>
+	<dimen name="lv_txt_img_btn_width">646dp</dimen>
 
 	<!-- PopUp -->
 	<dimen name="popup_button_margin">20dp</dimen>
@@ -56,7 +56,7 @@
 	<dimen name="popup_paddingBottom">250dp</dimen>
 	<dimen name="popup_paddingLeft">200dp</dimen>
 	<dimen name="popup_paddingRight">200dp</dimen>
-	<dimen name="popup_icon_size">100dp</dimen>
+	<dimen name="popup_icon_size">90dp</dimen>
 	<dimen name="popup_spinner_paddingBottom">100dp</dimen>
 
 	<!-- Audio Recorder -->

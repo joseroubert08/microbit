@@ -30,7 +30,7 @@
 	<dimen name="home_start_btn_width">300dp</dimen>
 
 	<!-- Project UI -->
-	<dimen name="project_name_width">280dp</dimen>
+	<dimen name="project_name_width">406dp</dimen>
 	<dimen name="project_main_margin">50dp</dimen>
 
 	<!-- Connect UI -->
@@ -46,11 +46,11 @@
 	<dimen name="lv_btn_width">60dp</dimen>
 	<dimen name="lv_item_height">60dp</dimen>
 	<dimen name="lv_item_margin">6dp</dimen>
-	<dimen name="lv_txt_img_btn_width">120dp</dimen>
+	<dimen name="lv_txt_img_btn_width">246dp</dimen>
 
 	<!-- PopUp -->
 	<dimen name="popup_button_margin">10dp</dimen>
-	<dimen name="popup_button_size">60dp</dimen>
+	<dimen name="popup_button_size">80dp</dimen>
 	<dimen name="popup_paddingTop">10dp</dimen>
 	<dimen name="popup_paddingBottom">10dp</dimen>
 	<dimen name="popup_paddingLeft">20dp</dimen>
