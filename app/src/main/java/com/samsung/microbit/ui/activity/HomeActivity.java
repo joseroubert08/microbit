@@ -47,6 +47,8 @@ import static com.samsung.microbit.core.CommonGUI.commonAlertDialog;
 
 public class HomeActivity extends Activity implements View.OnClickListener {
 
+
+    SharedPreferences prefs = null;
 	/* *************************************************
 	 * TODO setup to Handle BLE Notiifications
 	 */
@@ -130,6 +132,9 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 
 		Intent intent = new Intent(this, PluginService.class);
 		startService(intent);
+
+        prefs = getSharedPreferences("com.samsung.microbit", MODE_PRIVATE);
+
 	}
 
 	@Override
@@ -230,8 +235,24 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		if (debug) logi("onResume() :: ");
 		super.onResume();
 
+
+        if (prefs.getBoolean("firstrun", true)) {
+            //First Run. Install the Sample applications
+            Toast.makeText(MBApp.getContext(), "Installing Sample HEX files. The projects number will be updated in some time" ,Toast.LENGTH_LONG).show();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Utils.installSamples();
+                    prefs.edit().putBoolean("firstrun", false).commit();
+                }
+            }).start();
+        } else {
+            logi("Not the first run");
+        }
+
 		MBApp.setContext(this);
 		updateConnectBarView();
-		updateProjectBarView();
+        updateProjectBarView();
+
 	}
 }

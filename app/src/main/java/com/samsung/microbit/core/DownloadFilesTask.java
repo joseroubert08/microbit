@@ -195,7 +195,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
 		PopUp.show(MBApp.getContext(),
 			MBApp.getContext().getString(R.string.download_complete),
 			"",
-			0, 0,
+			R.drawable.message, R.drawable.blue_btn,
 			PopUp.TYPE_CHOICE,
 			new View.OnClickListener() {
 				@Override

@@ -68,6 +68,10 @@
 	<string name="flashing_failed_title">Flashing Unsuccesful</string>
 	<string name="flashing_success_message">You have successfully downloaded program to BBC Microbit</string>
 	<string name="flashing_success_title">Flashing Succesful</string>
+	<string name="flashing_error">Error</string>
+	<string name="flashing_failed_no_microbit">Please connect to a microbit before flashing </string>
+	<string name="flashing_tip_title">Put the microbit in Flashing mode</string>
+	<string name="flashing_tip"> Hold buttons A and B down and then press RESET and wait for "BLUEZONE" to appear on Microbit to release buttons </string>
 
 	<!-- Menu items -->
 	<string name="menu_connect">Connect</string>
@@ -111,7 +115,7 @@
 	<string name="gamepad">Gamepad</string>
 	<string name="connectNew">Connect a new device</string>
 	<string name="connectTipTitle">How to pair your device</string>
-	<string name="connectTipText">To start pairing with a device:\nPlease click the marked buttons\non your MicroBit</string>
+	<string name="connectTipText">To know the pattern of your device:\n Please hold A and B buttons down and then press RESET \non your MicroBit</string>
 	<string name="connectSearchingTitle">Connecting...</string>
 	<string name="searchingTitle">Searching for device...</string>
 
