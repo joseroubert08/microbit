@@ -72,7 +72,13 @@
 		<activity
 			android:name=".ui.activity.TouchDevActivity"
 			android:parentActivityName=".ui.activity.HomeActivity"
-			android:windowSoftInputMode="adjustResize">
+			android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|screenSize">
+		</activity>
+		<activity
+			android:name=".ui.activity.PopUpActivity"
+			android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+			android:windowSoftInputMode="adjustPan">
 		</activity>
 		<activity
 			android:name=".ui.activity.AudioRecorderActivity"
@@ -121,10 +127,6 @@
 			</intent-filter>
 		</service>
 
-		<activity
-			android:name=".ui.activity.NewDevice"
-			android:label="@string/title_activity_new_device" >
-		</activity>
 	</application>
 
 </manifest>

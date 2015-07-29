@@ -1,53 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_height="wrap_content"
-android:id="@+id/newDeviceView"
-android:layout_below="@id/headerBar"
-android:layout_width="match_parent"
-android:layout_weight="1"
-android:visibility="gone">
-
-<TextView
-    android:id="@+id/newDeviceTxt"
-    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="@string/new_devices_pattern_null"
-    android:textSize="30sp"
-    android:textColor="@color/black_font_color"/>
+    android:id="@+id/newDeviceView"
+    android:layout_below="@id/headerBar"
+    android:layout_width="match_parent"
+    android:visibility="gone">
+
+    <TextView
+        android:id="@+id/newDeviceTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/new_devices_pattern_null"
+        android:textSize="30sp"
+        android:textColor="@color/black_font_color"/>
+
+    <GridView
+        android:id="@+id/gridview"
+        android:layout_width="260dp"
+        android:layout_height="260dp"
+        android:numColumns="5"
+        android:verticalSpacing="@dimen/led_gap"
+        android:horizontalSpacing="@dimen/led_gap"
+        android:layout_marginLeft="@dimen/content_margin"
+        android:layout_below="@id/newDeviceTxt"
+        android:layout_marginRight="@dimen/content_margin"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:id="@+id/nameNewEdit"
+        android:layout_marginTop="@dimen/widget_margin"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/gridview"
+        android:lines="3"
+        android:background="@drawable/edit_box"
+        android:layout_marginRight="@dimen/content_margin"
+        android:inputType="text|textCapCharacters"
+        android:visibility="invisible"/>
 
     <RelativeLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:layout_below="@id/newDeviceTxt"
-        android:layout_marginTop="@dimen/content_margin"
-        >
-
-        <GridView
-            android:id="@+id/gridview"
-            android:layout_width="260dp"
-            android:layout_height="260dp"
-            android:numColumns="5"
-            android:verticalSpacing="@dimen/led_gap"
-            android:horizontalSpacing="@dimen/led_gap"
-            android:gravity="center"
-            android:layout_marginLeft="@dimen/content_margin"
-
-            android:layout_marginRight="@dimen/content_margin"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true" />
-
-        <EditText
-            android:id="@+id/nameNewEdit"
-            android:layout_marginTop="@dimen/widget_margin"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/gridview"
-            android:lines="3"
-            android:background="@drawable/edit_box"
-            android:layout_marginRight="@dimen/content_margin"
-            android:textColor="@color/black_font_color"
-            android:inputType="text|textCapCharacters"
-            android:visibility="invisible"/>
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/nameNewEdit"
+        android:layout_centerInParent="true">
 
         <ImageButton
             android:id="@+id/cancel_name_button"
@@ -56,23 +52,15 @@ android:visibility="gone">
             android:src="@drawable/cross"
             android:background="@drawable/popup_cancel_button"
             android:visibility="invisible"
-            android:clickable="true"
-            android:layout_alignTop="@+id/ok_name_button"
-            android:layout_alignStart="@+id/gridview" />
-
+            android:layout_marginRight="50dp"/>
 
         <ImageButton
             android:id="@+id/ok_name_button"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_marginTop="15dp"
             android:src="@drawable/tick"
             android:background="@drawable/popup_ok_button"
-            android:clickable="true"
-            android:layout_centerVertical="true"
-            android:layout_below="@id/nameNewEdit"
             android:layout_toRightOf="@id/cancel_name_button"
-            android:layout_marginStart="90dp"
             android:visibility="invisible"/>
 
     </RelativeLayout>

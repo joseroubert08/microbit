@@ -25,20 +25,17 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.PreviousDeviceList;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.ConnectedDevice;
-import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.adapter.ConnectedDeviceAdapter;
@@ -46,8 +43,6 @@ import com.samsung.microbit.ui.adapter.LEDAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -66,18 +61,16 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		PAIRING_STATE_SEARCHING,
 		PAIRING_STATE_ERROR,
 		PAIRING_STATE_NEW_NAME
-	}
+	};
 
-	;
-
-	private PAIRING_STATE state;
+	private static PAIRING_STATE state=PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
 
 	private String newDeviceName;
 	private String newDeviceCode;
 	private String newDeviceDisplayName;
 
 	// @formatter:off
-    private String deviceCodeArray[] = {
+    private static String deviceCodeArray[] = {
             "0","0","0","0","0",
             "0","0","0","0","0",
             "0","0","0","0","0",
@@ -97,7 +90,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	RelativeLayout connectTipView;
 	RelativeLayout newDeviceView;
 	RelativeLayout connectSearchView;
-
+	RelativeLayout bottomConnectButton;
+	RelativeLayout prevDeviceView;
 
 	List<ConnectedDevice> connectedDeviceList = new ArrayList<ConnectedDevice>();
 	ConnectedDeviceAdapter connectedDeviceAdapter;
@@ -146,13 +140,14 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		if(prevDevList == null ) {
 			prevDevList = PreviousDeviceList.getInstance(this);
-			prevDeviceArray = prevDevList.loadPrevMicrobits();
 		}
+        prevDeviceArray = prevDevList.loadPrevMicrobits();
 
 		if (changedDev.mPattern != null && changedDev.mPattern.equals(prevDeviceArray[0].mPattern))
 		{
 			prevDeviceArray[0].mStatus=changedDev.mStatus;
 			prevDevList.changeMicrobitState(0, prevDeviceArray[0],prevDeviceArray[0].mStatus, true);
+            populateConnectedDeviceList(true);
 
 		}
 
@@ -217,30 +212,25 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		lvConnectedDevice = (ListView) findViewById(R.id.connectedDeviceList);
 		populateConnectedDeviceList(false);
 
+		bottomConnectButton = (RelativeLayout) findViewById(R.id.bottomConnectButton);
+		prevDeviceView = (RelativeLayout) findViewById(R.id.prevDeviceView);
+
 		connectButtonView = (RelativeLayout) findViewById(R.id.connectButtonView);
+		connectTipView = (RelativeLayout) findViewById(R.id.connectTipView);
+		newDeviceView = (RelativeLayout) findViewById(R.id.newDeviceView);
+		connectSearchView = (RelativeLayout) findViewById(R.id.connectSearchView);
 
-		if(connectButtonView != null) {
-			connectButtonView = (RelativeLayout) findViewById(R.id.connectButtonView);
-			connectTipView = (RelativeLayout) findViewById(R.id.connectTipView);
-			newDeviceView = (RelativeLayout) findViewById(R.id.newDeviceView);
-			connectSearchView = (RelativeLayout) findViewById(R.id.connectSearchView);
+		displayConnectScreen(state);
+		findViewById(R.id.connectButton).setOnClickListener(this);
+		findViewById(R.id.cancel_tip_button).setOnClickListener(this);
+		findViewById(R.id.ok_name_button).setOnClickListener(this);
+		findViewById(R.id.cancel_name_button).setOnClickListener(this);
+		findViewById(R.id.cancel_search_button).setOnClickListener(this);
 
-			displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
-			findViewById(R.id.connectButton).setOnClickListener(this);
-			findViewById(R.id.cancel_tip_button).setOnClickListener(this);
-			findViewById(R.id.ok_name_button).setOnClickListener(this);
-			findViewById(R.id.cancel_name_button).setOnClickListener(this);
-			findViewById(R.id.cancel_search_button).setOnClickListener(this);
-
-			//Animation
-			WebView animation = (WebView) findViewById(R.id.animationwebView);
-			animation.setBackgroundColor(Color.TRANSPARENT);
-			animation.loadUrl("file:///android_asset/htmls/animation.html");
-		} else {
-			RelativeLayout connectButtonView = (RelativeLayout) findViewById(R.id.bottomConnectButton);
-			connectButtonView.setVisibility(View.VISIBLE);
-			findViewById(R.id.connectButton).setOnClickListener(this);
-		}
+		//Animation
+		WebView animation = (WebView) findViewById(R.id.animationwebView);
+		animation.setBackgroundColor(Color.TRANSPARENT);
+		animation.loadUrl("file:///android_asset/htmls/animation.html");
 	}
 
 	@Override
@@ -261,23 +251,27 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		GridView gridview = (GridView) findViewById(R.id.gridview);
 		gridview.setAdapter(new LEDAdapter(this));
 		gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View v,
-									int position, long id) {
-				if (state != PAIRING_STATE.PAIRING_STATE_NEW_NAME) {
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+                if (state != PAIRING_STATE.PAIRING_STATE_NEW_NAME) {
 
-					if ((findViewById(R.id.ok_name_button).getVisibility() != View.VISIBLE)) {
-						findViewById(R.id.ok_name_button).setVisibility(View.VISIBLE);
-						findViewById(R.id.cancel_name_button).setVisibility(View.VISIBLE);
-						((TextView) findViewById(R.id.newDeviceTxt)).setText(R.string.new_devices);
-					}
-					boolean isOn = toggleLED((ImageView) v, position);
-					setCol(parent, position, isOn);
-					//Toast.makeText(MBApp.getContext(), "LED Clicked: " + position, Toast.LENGTH_SHORT).show();
-				}
-				//TODO KEEP TRACK OF ALL LED STATUS AND TOGGLE COLOR
+                    if ((findViewById(R.id.ok_name_button).getVisibility() != View.VISIBLE)) {
+                        findViewById(R.id.ok_name_button).setVisibility(View.VISIBLE);
+                        findViewById(R.id.cancel_name_button).setVisibility(View.VISIBLE);
+                    }
 
-			}
-		});
+                    boolean isOn = toggleLED((ImageView) v, position);
+                    setCol(parent, position, isOn);
+
+                    if (!Arrays.asList(deviceCodeArray).contains("1")) {
+                        findViewById(R.id.ok_name_button).setVisibility(View.INVISIBLE);
+                    }
+                    //Toast.makeText(MBApp.getContext(), "LED Clicked: " + position, Toast.LENGTH_SHORT).show();
+                }
+                //TODO KEEP TRACK OF ALL LED STATUS AND TOGGLE COLOR
+
+            }
+        });
 	}
 
 	private void generateName() {
@@ -306,9 +300,10 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		while(index >= 0)
 		{
-			 v = (ImageView) parent.getChildAt(index);
-			 v.setBackground(getApplication().getResources().getDrawable(R.drawable.white_red_led_btn));
+			v = (ImageView) parent.getChildAt(index);
+			v.setBackground(getApplication().getResources().getDrawable(R.drawable.white_red_led_btn));
 			v.setTag("0");
+            deviceCodeArray[index] = "0";
 			index -=5;
 		}
 		index = pos+5;
@@ -334,6 +329,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			image.setBackground(getApplication().getResources().getDrawable(R.drawable.white_red_led_btn));
 			image.setTag("0");
 			isOn=false;
+            // Update the code to consider the still ON LED below the toggled one
+            if(pos <20)
+                deviceCodeArray[pos+5] = "1";
 		}
 		return isOn;
 	}
@@ -350,7 +348,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		for (int i = 0; i < numOfPreviousItems; i++) {
 			connectedDeviceList.add(prevDeviceArray[i]);
 		}
-		for (int i = numOfPreviousItems; i < 3; i++) {
+		for (int i = numOfPreviousItems; i < 1; i++) {
 			connectedDeviceList.add(new ConnectedDevice(null, null, false, null));
 		}
 
@@ -369,12 +367,22 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		return DISABLE_DEVICE_LIST;
 	}
 
+    private void enablePortraitMode()
+    {
+        if(bottomConnectButton != null) {
+            prevDeviceView.setVisibility(View.GONE);
+        } else
+            prevDeviceView.setVisibility(View.VISIBLE);
+    }
 
 	private void displayConnectScreen(PAIRING_STATE gotoState) {
 		connectButtonView.setVisibility(View.GONE);
 		connectTipView.setVisibility(View.GONE);
 		newDeviceView.setVisibility(View.GONE);
 		connectSearchView.setVisibility(View.GONE);
+
+        Log.d("Microbit", "********** Connect: state from " +state + " to " +gotoState);
+        state = gotoState;
 
 		if(gotoState == PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON)
 			DISABLE_DEVICE_LIST = false;
@@ -383,8 +391,12 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		populateConnectedDeviceList(true);
 
+        if(DISABLE_DEVICE_LIST)
+            enablePortraitMode();
+
 		switch (gotoState) {
 			case PAIRING_STATE_CONNECT_BUTTON:
+            case PAIRING_STATE_ERROR:
 				connectButtonView.setVisibility(View.VISIBLE);
 				lvConnectedDevice.setEnabled(true);
 				Arrays.fill(deviceCodeArray, "0");
@@ -400,21 +412,15 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				newDeviceView.setVisibility(View.VISIBLE);
 				findViewById(R.id.cancel_name_button).setVisibility(View.VISIBLE);
 				findViewById(R.id.newDeviceTxt).setVisibility(View.VISIBLE);
-				//findViewById(R.id.nameNewTxt).setVisibility(View.GONE);
 				findViewById(R.id.nameNewEdit).setVisibility(View.GONE);
 				findViewById(R.id.ok_name_button).setVisibility(View.GONE);
+                displayLedGrid();
 				break;
-			/*case PAIRING_STATE_PATTERN_CHANGED:
-				//newDeviceView.setVisibility(View.VISIBLE);
-				findViewById(R.id.ok_pattern_button).setVisibility(View.VISIBLE);
-				break;*/
 			case PAIRING_STATE_NEW_NAME:
 				findViewById(R.id.gridview).setEnabled(false);
 				findViewById(R.id.connectedDeviceList).setClickable(false);
 				newDeviceView.setVisibility(View.VISIBLE);
 				((EditText) findViewById(R.id.nameNewEdit)).setText(" ");
-				//((TextView) findViewById(R.id.nameNewTxt)).setText(getString(R.string.name_device) + " " + newDeviceCode);
-				//findViewById(R.id.nameNewTxt).setVisibility(View.VISIBLE);
 				EditText editText = (EditText) findViewById(R.id.nameNewEdit);
 				editText.setText(newDeviceCode);
 				editText.setVisibility(View.VISIBLE);
@@ -424,10 +430,6 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				break;
 			case PAIRING_STATE_SEARCHING:
 				connectSearchView.setVisibility(View.VISIBLE);
-				break;
-			case PAIRING_STATE_ERROR:
-				connectSearchView.setVisibility(View.GONE);
-				newDeviceView.setVisibility(View.VISIBLE);
 				break;
 		}
 		;
@@ -439,28 +441,21 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		switch (v.getId()) {
 			case R.id.connectButton:
+				if(bottomConnectButton != null) {
+					prevDeviceView.setVisibility(View.GONE);
+				}
 				if(connectButtonView != null) {
-					state = PAIRING_STATE.PAIRING_STATE_TIP;
 					displayConnectScreen(PAIRING_STATE.PAIRING_STATE_TIP);
-				} else {
-					Intent intent = new Intent(this, NewDevice.class);
-                    /*Bundle b = new Bundle();
-                    b.putSerializable("PrevDeviceList", prevDevList);
-                    intent.putExtras(b);*/
-					startActivity(intent);
 				}
 				break;
 			case R.id.ok_connect_button:
-				state = PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY;
 				displayConnectScreen(PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY);
-				displayLedGrid();
 				break;
 			case R.id.ok_name_button:
 				if(state == PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY) {
-					state = PAIRING_STATE.PAIRING_STATE_SEARCHING;
 					generateName();
 					scanLeDevice(true);
-					displayConnectScreen(state);
+					displayConnectScreen(PAIRING_STATE.PAIRING_STATE_SEARCHING);
 					break;
 				}
 				EditText editText = (EditText) findViewById(R.id.nameNewEdit);
@@ -471,23 +466,29 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				}
 				else {
 					hideKeyboard();
+					if(bottomConnectButton != null) {
+						prevDeviceView.setVisibility(View.VISIBLE);
+					}
 					prevDeviceArray[0].mName = newname;
 					prevDevList.changeMicrobitName(0, prevDeviceArray[0]);
 					populateConnectedDeviceList(true);
-					state = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
 					displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
 				}
 
 				break;
 			case R.id.cancel_tip_button:
 			case R.id.cancel_name_button:
+				if(bottomConnectButton != null) {
+					prevDeviceView.setVisibility(View.VISIBLE);
+				}
 				displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
-				state = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
 				break;
 			case R.id.cancel_search_button:
+				if(bottomConnectButton != null) {
+					prevDeviceView.setVisibility(View.VISIBLE);
+				}
 				scanLeDevice(false);
 				displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
-				state = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
 				break;
 
 			case R.id.connectBtn:
@@ -516,6 +517,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				handleDeleteMicrobit(pos);
 				break;
 			case R.id.backBtn:
+                Arrays.fill(deviceCodeArray,"0");
+                state = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
 				finish();
 				break;
 			default:
@@ -570,7 +573,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
             }
         }*/
 
-		displayConnectScreen(PAIRING_STATE.PAIRING_STATE_ERROR);
+        displayConnectScreen(PAIRING_STATE.PAIRING_STATE_ERROR);
 
 		PopUp.show(this,
 				getString(R.string.pairingErrorMessage), //message
@@ -581,9 +584,11 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
+						if(bottomConnectButton != null) {
+							prevDeviceView.setVisibility(View.VISIBLE);
+						}
 						PopUp.hide();
-						state = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
-						displayConnectScreen(state);
+						displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
 					}
 				},//override click listener for ok button
 				null);//pass null to use default listener
@@ -609,8 +614,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				if(debug) logi("mLeScanCallback.onLeScan() ::   Matching DEVICE FOUND, Pairing");
 				if(debug) logi("handle_pairing_successful() :: sending intent to BLEService.class");
 
-				state = PAIRING_STATE.PAIRING_STATE_NEW_NAME;
-				displayConnectScreen(state);
+				displayConnectScreen(PAIRING_STATE.PAIRING_STATE_NEW_NAME);
 
 			}
 		};
@@ -672,8 +676,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				if(debug) logi("mLeScanCallback.onLeScan() ::   Cannot Compare");
 			} else {
 				String s = device.getName().toLowerCase();
-				if (newDeviceName.toLowerCase().equals(s)
-					|| (s.contains(newDeviceCode.toLowerCase()) && s.contains("microbit"))) {
+				if (newDeviceName.toLowerCase().equals(s)) {
 
 					// if(debug) logi("mLeScanCallback.onLeScan() ::   deviceName == " + newDeviceName.toLowerCase());
 					if(debug) logi("mLeScanCallback.onLeScan() ::   device.getName() == " + device.getName().toLowerCase());
@@ -695,6 +698,10 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+        connectButtonView.setVisibility(View.GONE);
+        connectTipView.setVisibility(View.GONE);
+        newDeviceView.setVisibility(View.GONE);
+        connectSearchView.setVisibility(View.GONE);
 	}
 
 

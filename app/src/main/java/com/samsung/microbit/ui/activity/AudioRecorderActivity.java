@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -21,6 +22,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.samsung.microbit.R;
@@ -39,6 +42,7 @@ public class AudioRecorderActivity extends Activity {
 
     static final int NOTIFICATION_ID = 1;
 
+    private LinearLayout layout;
     private TextView filenameTxt;
     private Chronometer chronometer;
     private ImageView imageMic;
@@ -58,10 +62,13 @@ public class AudioRecorderActivity extends Activity {
     private void create()
     {
         setContentView(R.layout.activity_audio_recorder);
-
+        layout = (LinearLayout)findViewById(R.id.layout);
         filenameTxt = (TextView)findViewById(R.id.filenameTxt);
         chronometer = (Chronometer)findViewById(R.id.chronometer);
         imageMic = (ImageView)findViewById(R.id.imageMic);
+
+        setBackground();
+
         //preallocate to avoid memory leak
         drawable_mic_off = getResources().getDrawable(R.drawable.microphone_off);
         drawable_mic_on = getResources().getDrawable(R.drawable.microphone_on);
@@ -74,8 +81,8 @@ public class AudioRecorderActivity extends Activity {
         mBuilder = new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setLargeIcon(notificationLargeIconBitmapRecordingOff)
-                        .setTicker("Micro:bit Audio Recorder")//TODO: use string id
-                .setContentTitle("Micro:bit Audio Recorder");//TODO: use string id
+                        .setTicker(getString(R.string.audio_recorder_notification))
+                .setContentTitle(getString(R.string.audio_recorder_notification));
 
         processIntent(getIntent());
     }
@@ -87,8 +94,8 @@ public class AudioRecorderActivity extends Activity {
         mLaunchActivity = false;
 
         PopUp.show(this,
-                "Accept Audio Recording?\nClick Yes to allow", //message
-                "Privacy", //title
+                "",
+                getString(R.string.record_audio),
                 R.drawable.microphone_on, //image icon res id (pass 0 to use default icon)
                 0, //image icon background res id (pass 0 if there is no background)
                 PopUp.TYPE_CHOICE, //type of popup.
@@ -185,11 +192,26 @@ public class AudioRecorderActivity extends Activity {
         mNotifyMgr.cancel(NOTIFICATION_ID);
     }
 
+    private void setBackground()
+    {
+        Drawable d;
+
+        if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+            d = getResources().getDrawable(R.drawable.bg_port);
+        else
+            d = getResources().getDrawable(R.drawable.bg_land);
+
+        d.setAlpha(90);
+        layout.setBackground(d);
+    }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         //handle orientation change to prevent re-creation of activity.
         //i.e. while recording we need to preserve state of recorder
         super.onConfigurationChanged(newConfig);
+
+        setBackground();
     }
 
     @Override

@@ -67,7 +67,7 @@
         android:layout_below="@+id/currentStatus"
         android:layout_centerHorizontal="true"
         android:paddingTop="10dp"
-        android:paddingBottom="100dp"
+        android:paddingBottom="@dimen/popup_spinner_paddingBottom"
         />
 
     <ViewSwitcher

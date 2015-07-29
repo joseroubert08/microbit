@@ -191,6 +191,12 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
         touchDevelopView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         touchDevelopView.getSettings().setJavaScriptEnabled(true);
 
+
+        String userAgent = touchDevelopView.getSettings().getUserAgentString();
+        userAgent += " SamsungBrowser/microbit";
+        touchDevelopView.getSettings().setUserAgentString(userAgent);
+        LOG.d(TAG, userAgent);
+
         Config.init(this);
 
         loadingTxt = (TextView) findViewById(R.id.loadingTxt);

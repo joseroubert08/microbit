@@ -66,18 +66,13 @@
         android:paddingLeft="@dimen/device_main_margin"
         android:paddingRight="@dimen/device_main_margin"
         android:layout_marginBottom="2dp"
-        android:layout_alignParentBottom="true"
-        android:visibility="gone">
+        android:layout_below="@id/headerBar"
+        android:visibility="visible">
 
-        <Button
-            style="@style/h2"
-            android:layout_width="fill_parent"
-            android:layout_height="@dimen/button_height"
-            android:layout_marginTop="@dimen/widget_margin"
-            android:id="@+id/connectButton"
-            android:background="@drawable/yellow_btn"
-            android:text="@string/connectNew"
-            android:layout_centerInParent="true"/>
+        <include layout="@layout/view_pairing_start"/>
+        <include layout="@layout/view_pairing_tip"/>
+        <include layout="@layout/view_pairing_pattern"/>
+        <include layout="@layout/view_pairing_searching"/>
 
     </RelativeLayout>
 

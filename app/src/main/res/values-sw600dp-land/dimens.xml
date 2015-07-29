@@ -3,6 +3,7 @@
 	<dimen name="activity_horizontal_margin">16dp</dimen>
 	<dimen name="activity_vertical_margin">16dp</dimen>
 	<dimen name="activity_bottom_margin">24dp</dimen>
+	<dimen name="activity_top_margin">24dp</dimen>
 
 	<!-- Generic margin TODO maybe rename -->
 	<dimen name="widget_margin">5dp</dimen>
@@ -10,6 +11,7 @@
 
 	<!-- Generic Buttons TODO maybe remove-->
 	<dimen name="button_text_size">25sp</dimen>
+	<dimen name="button_size">80dp</dimen>
 	<dimen name="button_height">80dp</dimen>
 
 	<!-- Header bar -->
@@ -20,14 +22,26 @@
 
 	<!-- Home UI -->
 	<dimen name="samsung_logo_bottom_marging">30dp</dimen>
+	<dimen name="home_connect_title_width">250dp</dimen>
+	<dimen name="home_project_title_width">250dp</dimen>
+	<dimen name="home_device_name_width">500dp</dimen>
+	<dimen name="home_device_name_empty_width">585dp</dimen>
+	<dimen name="home_no_project_btn_width">340dp</dimen>
+	<dimen name="home_start_btn_width">240dp</dimen>
 
 	<!-- Project UI -->
 	<dimen name="project_name_width">800dp</dimen>
 	<dimen name="project_main_margin">50dp</dimen>
 
 	<!-- Connect UI -->
-	<dimen name="device_name_width">320dp</dimen>
-	<dimen name="led_gap">2dp</dimen>
+	<dimen name="device_name_width">380dp</dimen>
+	<dimen name="led_gap">5dp</dimen>
+	<integer name="led_size">45</integer>
+	<dimen name="divider_margin">20dp</dimen>
+	<dimen name="connect_ui_land_width">600dp</dimen>
+	<dimen name="led_grid_width">265dp</dimen>
+	<dimen name="mbit_tip_img_size">175dp</dimen>
+	<dimen name="button_gap_margin">75dp</dimen>
 
 	<!-- Generic list view item -->
 	<dimen name="lv_txt_img_btn_width">150dp</dimen>
@@ -36,11 +50,15 @@
 	<dimen name="lv_item_margin">16dp</dimen>
 
 	<!-- PopUp -->
-	<dimen name="popup_button_margin">20dp</dimen>
+	<dimen name="popup_button_margin">150dp</dimen>
 	<dimen name="popup_button_size">100dp</dimen>
-	<dimen name="popup_paddingTop">250dp</dimen>
-	<dimen name="popup_paddingBottom">250dp</dimen>
-	<dimen name="popup_paddingLeft">200dp</dimen>
-	<dimen name="popup_paddingRight">200dp</dimen>
+	<dimen name="popup_paddingTop">100dp</dimen>
+	<dimen name="popup_paddingBottom">150dp</dimen>
+	<dimen name="popup_paddingLeft">250dp</dimen>
+	<dimen name="popup_paddingRight">250dp</dimen>
 	<dimen name="popup_icon_size">100dp</dimen>
+	<dimen name="popup_spinner_paddingBottom">100dp</dimen>
+
+	<!-- Audio Recorder -->
+	<dimen name="audio_mic_size">260dp</dimen>
 </resources>
