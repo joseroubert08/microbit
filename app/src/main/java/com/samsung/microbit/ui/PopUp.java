@@ -149,7 +149,7 @@ public class PopUp {
         context.startActivity(intent);
     }
 
-    //pass 0 to imageResId to use default exclamation icon
+    //pass 0 to imageResId to use default icon
     //pass 0 to imageBackgroundResId if no background needed for icon
     public static void show(Context context, String message, String title,
                             int imageResId, int imageBackgroundResId, int type,

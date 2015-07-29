@@ -375,8 +375,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			PopUp.show(MBApp.getContext(),
 				getString(R.string.flashing_failed_no_microbit), //message
 				getString(R.string.flashing_error), //title
-				R.drawable.exclamation, //image icon res id
-				0,
+				R.drawable.error, //image icon res id
+				R.drawable.red_btn,
 				PopUp.TYPE_ALERT, //type of popup.
 				new View.OnClickListener() {
 					@Override
@@ -456,8 +456,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		PopUp.show(this,
 			getString(R.string.flashing_phase2_msg), //message
 			getString(R.string.flashing_title), //title
-			R.drawable.exclamation, //image icon res id
-			0,
+			R.drawable.flashing, //image icon res id
+			R.drawable.blue_btn,
 			PopUp.TYPE_NOBUTTON, //type of popup.
 			null,//override click listener for ok button
 			null);//pass null to use default listener
@@ -471,8 +471,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		PopUp.show(MBApp.getContext(),
 			getString(R.string.flashing_error_msg), //message
 			getString(R.string.flashing_failed_title), //title
-			R.drawable.exclamation, //image icon res id
-			0,
+			R.drawable.error, //image icon res id
+			R.drawable.red_btn,
 			PopUp.TYPE_ALERT, //type of popup.
 			new View.OnClickListener() {
 				@Override
@@ -517,8 +517,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 					PopUp.show(MBApp.getContext(),
 						getString(R.string.flashing_error_msg), //message
 						getString(R.string.flashing_failed_title), //title
-						R.drawable.exclamation, //image icon res id
-						0,
+						R.drawable.error, //image icon res id
+						R.drawable.red_btn,
 						PopUp.TYPE_ALERT, //type of popup.
 						new View.OnClickListener() {
 							@Override
@@ -592,7 +592,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 								PopUp.show(MBApp.getContext(),
 									error_message, //message
 									getString(R.string.flashing_failed_title), //title
-									R.drawable.exclamation, 0,
+									R.drawable.error, R.drawable.red_btn,
 									PopUp.TYPE_ALERT, //type of popup.
 									new View.OnClickListener() {
 										@Override
@@ -657,7 +657,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				PopUp.show(MBApp.getContext(),
 					error_message, //message
 					getString(R.string.flashing_failed_title), //title
-					R.drawable.exclamation, 0,
+					R.drawable.error, R.drawable.red_btn,
 					PopUp.TYPE_ALERT, //type of popup.
 					new View.OnClickListener() {
 						@Override

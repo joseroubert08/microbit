@@ -612,8 +612,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		PopUp.show(this,
 			getString(R.string.pairingErrorMessage), //message
 			getString(R.string.pairingErrorTitle), //title
-			R.drawable.exclamation, //image icon res id
-			0,
+			R.drawable.error, //image icon res id
+			R.drawable.red_btn,
 			PopUp.TYPE_ALERT, //type of popup.
 			new View.OnClickListener() {
 				@Override

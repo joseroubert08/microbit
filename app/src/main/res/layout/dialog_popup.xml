@@ -12,7 +12,7 @@
         android:layout_width="@dimen/popup_icon_size"
         android:layout_height="@dimen/popup_icon_size"
         android:id="@+id/imageIcon"
-        android:src="@drawable/exclamation"
+        android:src="@drawable/message"
         android:background="@null"
         android:scaleType="center"
         android:layout_gravity="center" />
