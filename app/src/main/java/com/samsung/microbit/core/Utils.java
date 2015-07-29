@@ -2,18 +2,28 @@ package com.samsung.microbit.core;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
+import android.os.Environment;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.samsung.microbit.MBApp;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.model.Project;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class Utils {
 
@@ -90,11 +100,10 @@ public class Utils {
 				if (fileName.endsWith(".hex")) {
 
 					//Beautify the filename
-					String parsedFileName;
-
-					int dot = fileName.lastIndexOf(".");
-					parsedFileName = fileName.substring(0, dot);
-					parsedFileName = parsedFileName.replace('_', ' ');
+					String parsedFileName ;
+                    int dot = fileName.lastIndexOf(".");
+                    parsedFileName = fileName.substring(0, dot);
+                    parsedFileName = parsedFileName.replace('_', ' ');
 
 					if (prettyFileNameMap != null)
 						prettyFileNameMap.put(parsedFileName, fileName);
@@ -106,9 +115,52 @@ public class Utils {
 				}
 			}
 		}
-
-		return totalPrograms;
+        return totalPrograms;
 	}
+    private static void dirChecker(String dir) {
+        File f = new File(android.os.Environment.DIRECTORY_DOWNLOADS + dir);
+
+        if(!f.isDirectory()) {
+            f.mkdirs();
+        }
+    }
+    public static boolean installSamples(){
+        try  {
+            Resources resources = MBApp.getContext().getResources();
+            final int ZIP_INTERNAL = resources.getIdentifier(Constants.ZIP_INTERNAL_NAME, "raw", MBApp.getContext().getPackageName());
+            final String OUTPUT_DIR = Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+            Log.d("MicroBit", "Resource id: " + ZIP_INTERNAL);
+            AssetFileDescriptor afd = resources.openRawResourceFd(ZIP_INTERNAL);
+            //Unzip the file now
+            ZipInputStream zin = new ZipInputStream(resources.openRawResource(ZIP_INTERNAL));
+            ZipEntry ze = null;
+            while ((ze = zin.getNextEntry()) != null) {
+                Log.v("MicroBit", "Unzipping " + ze.getName());
+
+                if(ze.isDirectory()) {
+                    dirChecker(ze.getName());
+                } else {
+                    FileOutputStream fout = new FileOutputStream(OUTPUT_DIR + File.separator + ze.getName());
+                    for (int c = zin.read(); c != -1; c = zin.read()) {
+                        fout.write(c);
+                    }
+                    zin.closeEntry();
+                    fout.close();
+                }
+            }
+            zin.close();
+        }
+        catch(Resources.NotFoundException e)
+        {
+            Log.e("MicroBit", "No internal zipfile present", e);
+            return false;
+        }
+        catch(Exception e) {
+            Log.e("MicroBit", "unzip", e);
+            return false;
+        }
+        return true;
+    }
 
 	public static int renameFile(String filePath, String newName) {
 

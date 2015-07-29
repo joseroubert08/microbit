@@ -235,4 +235,6 @@ public class Constants {
 	public static File HEX_FILE_DIR = Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
 	//public static File HEX_FILE_DIR = MBApp.getContext().getFilesDir();
 
+    public static String ZIP_INTERNAL_NAME = "raw/samples";
+
 }
