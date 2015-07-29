@@ -47,7 +47,7 @@
 	<dimen name="lv_btn_width">80dp</dimen>
 	<dimen name="lv_item_height">80dp</dimen>
 	<dimen name="lv_item_margin">16dp</dimen>
-	<dimen name="lv_txt_img_btn_width">315dp</dimen>
+	<dimen name="lv_txt_img_btn_width">646dp</dimen>
 
 	<!-- PopUp -->
 	<dimen name="popup_button_margin">20dp</dimen>
