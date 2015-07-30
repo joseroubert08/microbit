@@ -59,7 +59,7 @@ android:layout_below="@id/headerBar">
             android:id="@+id/cancel_name_button"
             android:layout_width="@dimen/button_size"
             android:layout_height="@dimen/button_size"
-            android:src="@drawable/cross"
+            android:src="@drawable/white_cross"
             android:visibility="invisible"
             android:background="@drawable/popup_cancel_button"
             android:layout_marginRight="@dimen/button_gap_margin"/>
@@ -69,7 +69,7 @@ android:layout_below="@id/headerBar">
             android:layout_toRightOf="@id/cancel_name_button"
             android:layout_width="@dimen/button_size"
             android:layout_height="@dimen/button_size"
-            android:src="@drawable/tick"
+            android:src="@drawable/white_tick"
             android:visibility="invisible"
             android:background="@drawable/popup_ok_button" />
 

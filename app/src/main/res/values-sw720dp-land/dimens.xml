@@ -21,7 +21,8 @@
 	<dimen name="header_title_height">100dp</dimen>
 
 	<!-- Home UI -->
-	<dimen name="samsung_logo_bottom_marging">30dp</dimen>
+	<dimen name="logo_area_margin">100dp</dimen>
+	<dimen name="logo_gap_margin">75dp</dimen>
 	<dimen name="home_connect_title_width">250dp</dimen>
 	<dimen name="home_project_title_width">250dp</dimen>
 	<dimen name="home_device_name_width">500dp</dimen>

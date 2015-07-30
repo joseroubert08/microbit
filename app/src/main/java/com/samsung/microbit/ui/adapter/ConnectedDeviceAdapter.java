@@ -89,10 +89,10 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
             deviceName.setEnabled(false);
 
             if(!entry.mStatus) {
-                connectBtn.setImageResource(R.drawable.disconnected);
+                connectBtn.setImageResource(R.drawable.disconnect_device);
                 connectBtn.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.red_btn));
             } else {
-                connectBtn.setImageResource(R.drawable.connected);
+                connectBtn.setImageResource(R.drawable.device_connected);
                 connectBtn.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.green_btn));
             }
             deviceName.setTag(pos);
