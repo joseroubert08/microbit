@@ -138,7 +138,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 						PopUp.show(MBApp.getContext(),
 							MBApp.getContext().getString(R.string.micro_bit_reset_msg),
 							"",
-							0, 0,
+							R.drawable.error_face, R.drawable.red_btn,
 							PopUp.TYPE_ALERT, null, null);
 					}
 				});

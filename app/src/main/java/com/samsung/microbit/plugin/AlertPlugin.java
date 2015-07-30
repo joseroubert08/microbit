@@ -43,7 +43,7 @@ public class AlertPlugin {
 				PopUp.show(context,
 						cmd.getValue(),
 						"Message from Micro:Bit",
-						0, 0,
+						R.drawable.message_face, R.drawable.blue_btn,
 						PopUp.TYPE_ALERT, null, null);
 				break;
 
@@ -63,7 +63,7 @@ public class AlertPlugin {
 				PopUp.show(context,
 						context.getString(R.string.findphone_via_microbit),
 						"Message from Micro:Bit",
-						0, 0,
+						R.drawable.message_face, R.drawable.blue_btn,
 						PopUp.TYPE_ALERT, null, null);
 				findPhone();
 				break;
