@@ -47,7 +47,7 @@
             style="@style/p1"
             android:id="@+id/addDeviceEmpty"
             android:layout_width="@dimen/home_device_name_empty_width"
-            android:layout_height="@dimen/button_height"
+            android:layout_height="@dimen/home_button_height"
             android:layout_margin="@dimen/widget_margin"
             android:textColor="@color/black_font_color"
             android:background="@drawable/white_btn"
@@ -60,7 +60,7 @@
             style="@style/p1"
             android:id="@+id/addDevice"
             android:layout_width="@dimen/home_device_name_width"
-            android:layout_height="@dimen/button_height"
+            android:layout_height="@dimen/home_button_height"
             android:layout_margin="@dimen/widget_margin"
             android:background="@drawable/white_btn"
             android:layout_below="@id/title"
@@ -72,7 +72,7 @@
             style="@style/p1"
             android:id="@+id/connectBtn"
             android:layout_width="@dimen/button_size"
-            android:layout_height="@dimen/button_size"
+            android:layout_height="@dimen/home_button_height"
             android:src="@drawable/device_connected"
             android:layout_margin="@dimen/widget_margin"
             android:onClick="onClick"
@@ -104,7 +104,7 @@
             style="@style/p1"
             android:id="@+id/numOfProjects"
             android:layout_width="@dimen/home_no_project_btn_width"
-            android:layout_height="@dimen/button_height"
+            android:layout_height="@dimen/home_button_height"
             android:layout_margin="@dimen/widget_margin"
             android:background="@drawable/white_btn"
             android:layout_below="@id/projects"
@@ -114,7 +114,7 @@
             style="@style/p1"
             android:id="@+id/startNewProject"
             android:layout_width="@dimen/home_start_btn_width"
-            android:layout_height="@dimen/button_height"
+            android:layout_height="@dimen/home_button_height"
             android:layout_margin="@dimen/widget_margin"
             android:background="@drawable/yellow_btn"
             android:text="@string/create_new_project"
@@ -122,7 +122,7 @@
             android:drawableRight="@drawable/new_project"
             android:layout_below="@id/projects"
             android:onClick="onClick"
-            android:gravity="left"/>
+            android:gravity="left|center"/>
 
     </RelativeLayout>
 
