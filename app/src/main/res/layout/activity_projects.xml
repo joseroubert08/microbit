@@ -8,8 +8,8 @@
 		android:id="@+id/headerBar"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:background="#ffff">
-
+		android:background="#ffffff"
+        android:elevation="@dimen/activity_bottom_margin">
 		<ImageButton
 			android:id="@+id/backBtn"
 			android:onClick="onClick"
@@ -111,7 +111,8 @@
 			android:layout_gravity="center"
 			android:layout_below="@id/createProject"
 			android:gravity="center"
-			android:text="@string/no_projects" />
+			android:text="@string/no_projects"
+            android:backgroundTintMode="screen" />
 
 	</RelativeLayout>
 

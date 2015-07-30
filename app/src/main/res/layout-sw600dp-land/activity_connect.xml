@@ -8,7 +8,8 @@
         android:id="@+id/headerBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#ffff">
+        android:background="#ffffff"
+        android:elevation="@dimen/activity_bottom_margin">
 
         <ImageButton
             android:id="@+id/backBtn"
