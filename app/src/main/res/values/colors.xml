@@ -7,6 +7,7 @@
     <color name="divider_color">#ff000000</color>
     <color name="black_font_color">#ff000000</color>
     <color name="white_font_color">#ffffff</color>
+    <color name="gray_font_color">#ff8f8f8f</color>
 
     <color name="ok_button_up">#ff02ec00</color>
     <color name="ok_button_down">#3A871F</color>
