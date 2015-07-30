@@ -32,8 +32,7 @@
             android:src="@drawable/refresh"
             android:background="@null"
             android:onClick="onClick"
-            android:layout_marginTop="@dimen/refresh_btn_margin_top"
-            android:layout_marginBottom="@dimen/refresh_btn_margin_bottom"
+            android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
             android:layout_marginRight="@dimen/activity_horizontal_margin"/>
 
