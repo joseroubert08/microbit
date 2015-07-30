@@ -120,7 +120,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
 		PopUp.show(parent,
 			"",
 			parent.getResources().getString(R.string.q_overwrite_existing),
-			R.drawable.mbit, R.drawable.blue_btn,
+			R.drawable.message_face, R.drawable.blue_btn,
 			PopUp.TYPE_CHOICE,
 			new View.OnClickListener() {
 				@Override
@@ -148,7 +148,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
 		PopUp.show(parent,
 			"",
 			parent.getResources().getString(R.string.rename_file),
-			R.drawable.mbit, R.drawable.blue_btn,
+			R.drawable.message_face, R.drawable.blue_btn,
 			PopUp.TYPE_INPUTTEXT,
 			new View.OnClickListener() {
 				@Override
@@ -195,7 +195,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
 		PopUp.show(MBApp.getContext(),
 			MBApp.getContext().getString(R.string.download_complete),
 			"",
-			R.drawable.message, R.drawable.blue_btn,
+			R.drawable.message_face, R.drawable.blue_btn,
 			PopUp.TYPE_CHOICE,
 			new View.OnClickListener() {
 				@Override

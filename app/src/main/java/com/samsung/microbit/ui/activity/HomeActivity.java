@@ -148,7 +148,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		if (v.getId() == R.id.addDevice || v.getId() == R.id.addDeviceEmpty) {
 			Intent intent = new Intent(this, ConnectActivity.class);
 			startActivity(intent);
-		} else if (v.getId() == R.id.startNewProject || v.getId() == R.id.startNewProjectImg) {
+		} else if (v.getId() == R.id.startNewProject) {
 			Intent intent = new Intent(this, TouchDevActivity.class);
 			intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
 			startActivity(intent);
@@ -170,7 +170,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 					PopUp.show(MBApp.getContext(),
 						getString(R.string.init_connection),
 						"",
-						R.drawable.mbit, R.drawable.blue_btn,
+						R.drawable.message_face, R.drawable.blue_btn,
 						PopUp.TYPE_SPINNER,
 						null, null);
 
@@ -180,7 +180,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 				PopUp.show(MBApp.getContext(),
 					getString(R.string.no_device_paired),
 					"",
-					R.drawable.mbit, R.drawable.blue_btn,
+					R.drawable.message_face, R.drawable.blue_btn,
 					PopUp.TYPE_ALERT,
 					null, null);
 			}
@@ -212,10 +212,10 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		}
 
 		if (connectedDevice.mPattern != null && connectedDevice.mStatus) {
-			connectButton.setImageResource(R.drawable.connected);
+			connectButton.setImageResource(R.drawable.device_connected);
 			connectButton.setBackground(getResources().getDrawable(R.drawable.green_btn));
 		} else {
-			connectButton.setImageResource(R.drawable.disconnected);
+			connectButton.setImageResource(R.drawable.disconnect_device);
 			connectButton.setBackground(getResources().getDrawable(R.drawable.red_btn));
 		}
 	}

@@ -36,7 +36,7 @@ android:visibility="gone">
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="@dimen/activity_bottom_margin"
         android:background="@drawable/red_circle_btn"
-        android:src="@drawable/cross"
+        android:src="@drawable/white_cross"
         android:clickable="true"/>
 
 </RelativeLayout>

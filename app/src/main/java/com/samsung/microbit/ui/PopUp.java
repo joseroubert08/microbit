@@ -36,7 +36,7 @@ To show the popup from service, you must call the popup from an activity
 PopUp.show(context,
         "Accept Audio Recording?\nClick Yes to allow", //message
         "Privacy", //title
-        R.drawable.microphone_on, //image icon res id (pass 0 to use default icon)
+        R.drawable.recording, //image icon res id (pass 0 to use default icon)
 		0, //image icon background res id (pass 0 if there is no background)
         PopUp.TYPE_CHOICE, //type of popup.
         new View.OnClickListener(){

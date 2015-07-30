@@ -136,7 +136,7 @@
 	<string name="record_audio">Record Audio?</string>
 	<string name="audio_recorder_notification">micro:bit Audio Recorder</string>
 
-	<string name="create_new_project">Create Project</string>
+	<string name="create_new_project">Create\na new project</string>
 
 	<string name="download_existing">Download Existing</string>
 	<string name="downloading">Downloading...</string>

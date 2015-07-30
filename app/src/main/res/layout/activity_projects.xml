@@ -52,7 +52,7 @@
 				android:layout_toRightOf="@id/connectedIndicatorText"
 				android:background="@drawable/project_connect_btn"
 				android:onClick="onClick"
-				android:src="@drawable/connected"/>
+				android:src="@drawable/device_connected"/>
 
 		</RelativeLayout>
 
@@ -74,7 +74,7 @@
 			android:layout_height="@dimen/button_height"
 			android:layout_marginBottom="8dp"
 			android:background="@drawable/yellow_btn"
-			android:drawableRight="@drawable/light_bulb"
+			android:drawableRight="@drawable/new_project"
 			android:gravity="center_vertical|left"
 			android:text="@string/create_new_project"
 			android:onClick="onClick"

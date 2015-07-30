@@ -4,27 +4,33 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:background="@drawable/bg_land">
 
-    <ImageView
-        android:id="@+id/bbcLogo"
+    <RelativeLayout
+        android:id="@+id/logoArea"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/microbit_logo"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/logo_area_margin"
+        android:layout_marginBottom="@dimen/logo_area_margin">
+        <ImageView
+            android:id="@+id/bbcLogo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/bbc_microbit"
+            android:layout_marginRight="@dimen/logo_gap_margin"/>
 
-    <ImageView
-        android:id="@+id/samsungLogo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/samsung"
-        android:layout_marginBottom="@dimen/samsung_logo_bottom_marging"
-        android:layout_below="@id/bbcLogo"
-        android:layout_centerHorizontal="true"/>
+        <ImageView
+            android:id="@+id/samsungLogo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/samsung"
+            android:layout_toRightOf="@id/bbcLogo" />
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/connectBarView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/samsungLogo"
+        android:layout_below="@id/logoArea"
         android:layout_centerHorizontal="true"
         android:background="@drawable/white_bg">
 
@@ -46,7 +52,7 @@
             android:textColor="@color/black_font_color"
             android:background="@drawable/white_btn"
             android:layout_toRightOf="@id/title"
-            android:drawableRight="@drawable/connected_grey"
+            android:drawableRight="@drawable/connect_device"
             android:onClick="onClick"
             android:visibility="visible"/>
 
@@ -59,7 +65,7 @@
             android:textColor="@color/black_font_color"
             android:background="@drawable/white_btn"
             android:layout_toRightOf="@id/title"
-            android:drawableRight="@drawable/plus_add"
+            android:drawableRight="@drawable/add_device"
             android:onClick="onClick"
             android:visibility="gone"/>
 
@@ -68,7 +74,7 @@
             android:id="@+id/connectBtn"
             android:layout_width="@dimen/button_size"
             android:layout_height="@dimen/button_size"
-            android:src="@drawable/connected"
+            android:src="@drawable/device_connected"
             android:layout_margin="@dimen/widget_margin"
 			android:onClick="onClick"
             android:background="@drawable/white_btn"
@@ -112,9 +118,11 @@
             android:layout_height="@dimen/button_height"
             android:layout_margin="@dimen/widget_margin"
             android:background="@drawable/yellow_btn"
-            android:text="@string/start_new_project"
+            android:text="@string/create_new_project"
             android:layout_toRightOf="@id/numOfProjects"
-            android:onClick="onClick"/>
+            android:drawableRight="@drawable/new_project"
+            android:onClick="onClick"
+            android:gravity="left"/>
 
     </RelativeLayout>
 

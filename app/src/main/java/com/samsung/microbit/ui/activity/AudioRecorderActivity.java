@@ -70,13 +70,13 @@ public class AudioRecorderActivity extends Activity {
         setBackground();
 
         //preallocate to avoid memory leak
-        drawable_mic_off = getResources().getDrawable(R.drawable.microphone_off);
-        drawable_mic_on = getResources().getDrawable(R.drawable.microphone_on);
+        drawable_mic_off = getResources().getDrawable(R.drawable.recording_off);
+        drawable_mic_on = getResources().getDrawable(R.drawable.recording);
 
         backPressed = false;
 
-        notificationLargeIconBitmapRecordingOn = BitmapFactory.decodeResource(getResources(), R.drawable.microphone_on);
-        notificationLargeIconBitmapRecordingOff = BitmapFactory.decodeResource(getResources(), R.drawable.microphone_off);
+        notificationLargeIconBitmapRecordingOn = BitmapFactory.decodeResource(getResources(), R.drawable.recording);
+        notificationLargeIconBitmapRecordingOff = BitmapFactory.decodeResource(getResources(), R.drawable.recording_off);
 
         mBuilder = new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_launcher)
