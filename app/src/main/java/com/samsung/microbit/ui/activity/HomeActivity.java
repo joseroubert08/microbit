@@ -66,7 +66,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 						PopUp.show(MBApp.getContext(),
 							MBApp.getContext().getString(R.string.micro_bit_reset_msg),
 							"",
-							0, 0,
+							R.drawable.error_face, R.drawable.red_btn,
 							PopUp.TYPE_ALERT, null, null);
 					}
 				});
@@ -170,7 +170,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 					PopUp.show(MBApp.getContext(),
 						getString(R.string.init_connection),
 						"",
-						R.drawable.message_face, R.drawable.blue_btn,
+						R.drawable.flash_face, R.drawable.blue_btn,
 						PopUp.TYPE_SPINNER,
 						null, null);
 
@@ -180,7 +180,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 				PopUp.show(MBApp.getContext(),
 					getString(R.string.no_device_paired),
 					"",
-					R.drawable.message_face, R.drawable.blue_btn,
+					R.drawable.error_face, R.drawable.red_btn,
 					PopUp.TYPE_ALERT,
 					null, null);
 			}
