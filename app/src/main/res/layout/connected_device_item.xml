@@ -14,21 +14,21 @@
         android:background="@drawable/white_btn"/>
 
     <ImageButton
-        android:id="@+id/connectBtn"
-        android:layout_width="@dimen/lv_btn_width"
-        android:layout_height="@dimen/lv_item_height"
-        android:src="@drawable/disconnect_device"
-        android:background="@drawable/red_btn"
-        android:layout_marginLeft="@dimen/lv_item_margin"
-        android:layout_toRightOf="@id/deviceName"/>
-
-    <ImageButton
         android:id="@+id/deleteBtn"
         android:layout_width="@dimen/lv_btn_width"
         android:layout_height="@dimen/lv_item_height"
         android:src="@drawable/delete_project"
         android:background="@drawable/red_btn"
         android:layout_marginLeft="@dimen/lv_item_margin"
-        android:layout_toRightOf="@id/connectBtn"/>
+        android:layout_toRightOf="@id/deviceName"/>
+
+    <ImageButton
+        android:id="@+id/connectBtn"
+        android:layout_width="@dimen/lv_btn_width"
+        android:layout_height="@dimen/lv_item_height"
+        android:src="@drawable/disconnect_device"
+        android:background="@drawable/red_btn"
+        android:layout_marginLeft="@dimen/lv_item_margin"
+        android:layout_toRightOf="@id/deleteBtn"/>
 
 </RelativeLayout>

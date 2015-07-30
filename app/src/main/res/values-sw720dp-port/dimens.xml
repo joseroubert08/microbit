@@ -62,4 +62,8 @@
 
 	<!-- Audio Recorder -->
 	<dimen name="audio_mic_size">260dp</dimen>
+
+    <!-- Web View -->
+    <dimen name="refresh_btn_margin_top">10dp</dimen>
+    <dimen name="refresh_btn_margin_bottom">3dp</dimen>
 </resources>

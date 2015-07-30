@@ -59,7 +59,7 @@
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:divider="@android:color/transparent"
-                android:dividerHeight="5dp"
+                android:dividerHeight="@dimen/content_margin"
                 android:clickable="false"/>
 
         </RelativeLayout>
