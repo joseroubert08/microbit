@@ -15,6 +15,7 @@
   -->
 
 <resources>
+
 	<string name="app_name">Companion</string>
 	<string name="poweredBy">Powered by\r\n SAMSUNG</string>
 

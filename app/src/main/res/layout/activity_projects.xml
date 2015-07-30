@@ -70,15 +70,29 @@
 		<Button
 			style="@style/p1"
 			android:id="@+id/createProject"
-			android:layout_width="fill_parent"
+			android:layout_width="wrap_content"
 			android:layout_height="@dimen/button_height"
-			android:layout_marginBottom="@dimen/content_margin"
 			android:background="@drawable/yellow_btn"
 			android:drawableRight="@drawable/new_project"
 			android:gravity="center_vertical|left"
 			android:text="@string/create_new_project_project"
 			android:onClick="onClick"
-			android:textSize="@dimen/button_text_size"/>
+			android:textSize="@dimen/button_text_size"
+			android:layout_alignParentTop="true"
+			android:layout_alignParentStart="true"
+			android:layout_toStartOf="@+id/sortProjects"
+			android:layout_marginRight="10dp"/>
+
+		<Spinner
+			android:id="@+id/sortProjects"
+			android:layout_width="180dp"
+			android:layout_height="@dimen/button_height"
+			android:layout_marginBottom="@dimen/content_margin"
+			android:spinnerMode="dropdown"
+			android:textSize="@dimen/button_text_size"
+			android:layout_alignParentTop="true"
+			android:layout_alignEnd="@+id/projectListView"
+			android:background="@drawable/yellow_btn"/>
 
 		<ListView
 			android:id="@+id/projectListView"

@@ -25,10 +25,13 @@ import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -140,12 +143,37 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_projects);
 
-		RelativeLayout layout = (RelativeLayout)findViewById(R.id.layout);
+		RelativeLayout layout = (RelativeLayout) findViewById(R.id.layout);
 
-		if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-			layout.setBackground( getResources().getDrawable(R.drawable.bg_port));
+		if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+			layout.setBackground(getResources().getDrawable(R.drawable.bg_port));
 		else
-			layout.setBackground( getResources().getDrawable(R.drawable.bg_land));
+			layout.setBackground(getResources().getDrawable(R.drawable.bg_land));
+
+		boolean showSortMenu = getResources().getBoolean(R.bool.showSortMenu);
+
+		if (showSortMenu) {
+			Spinner sortList = (Spinner) findViewById(R.id.sortProjects);
+			sortList.setPrompt("Sort by");
+			ArrayAdapter<CharSequence> sortAdapter = ArrayAdapter.createFromResource(this, R.array.projectListSortOrder,
+				android.R.layout.simple_spinner_item);
+
+			sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			sortList.setAdapter(sortAdapter);
+			sortList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+					Toast.makeText(MBApp.getContext(), "sort by " + position, Toast.LENGTH_SHORT).show();
+					projectListSortOrder = position;
+					projectListSortOrderChanged();
+				}
+
+				@Override
+				public void onNothingSelected(AdapterView<?> parent) {
+				}
+			});
+		}
+
 
 		projectListView = (ListView) findViewById(R.id.projectListView);
 		updateProjectsListSortOrder(true);
@@ -337,27 +365,27 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		}
 	}
 
-    private void adviceOnMicrobitState(final Project toSend)
-    {
-        PopUp.show(MBApp.getContext(),
-                getString(R.string.flashing_tip), //message
-                getString(R.string.flashing_tip_title), //title
-                R.drawable.flash_face, R.drawable.blue_btn, //image icon res id
-                PopUp.TYPE_CHOICE, //type of popup.
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        PopUp.hide();
-                        initiateFlashing(toSend);
-                    }
-                },//override click listener for ok button
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        PopUp.hide();
-                    }
-                });//pass null to use default listeneronClick
-    }
+	private void adviceOnMicrobitState(final Project toSend) {
+		PopUp.show(MBApp.getContext(),
+			getString(R.string.flashing_tip), //message
+			getString(R.string.flashing_tip_title), //title
+			R.drawable.flash_face, R.drawable.blue_btn, //image icon res id
+			PopUp.TYPE_CHOICE, //type of popup.
+			new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					PopUp.hide();
+					initiateFlashing(toSend);
+				}
+			},//override click listener for ok button
+			new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					PopUp.hide();
+				}
+			});//pass null to use default listeneronClick
+	}
+
 	protected void initiateFlashing(Project toSend) {
 
 		ConnectedDevice currentMicrobit = Utils.getPairedMicrobit(this);
