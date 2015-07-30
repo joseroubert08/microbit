@@ -76,7 +76,7 @@
 			android:background="@drawable/yellow_btn"
 			android:drawableRight="@drawable/new_project"
 			android:gravity="center_vertical|left"
-			android:text="@string/create_new_project"
+			android:text="@string/create_new_project_project"
 			android:onClick="onClick"
 			android:textSize="@dimen/button_text_size"/>
 
