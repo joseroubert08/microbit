@@ -152,8 +152,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 		boolean showSortMenu = getResources().getBoolean(R.bool.showSortMenu);
 
+		Spinner sortList = (Spinner) findViewById(R.id.sortProjects);
 		if (showSortMenu) {
-			Spinner sortList = (Spinner) findViewById(R.id.sortProjects);
+
 			sortList.setPrompt("Sort by");
 			ArrayAdapter<CharSequence> sortAdapter = ArrayAdapter.createFromResource(this, R.array.projectListSortOrder,
 				android.R.layout.simple_spinner_item);
@@ -172,8 +173,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				public void onNothingSelected(AdapterView<?> parent) {
 				}
 			});
+		} else {
+			sortList.setVisibility(View.GONE);
 		}
-
 
 		projectListView = (ListView) findViewById(R.id.projectListView);
 		updateProjectsListSortOrder(true);
