@@ -72,7 +72,7 @@
 			android:id="@+id/createProject"
 			android:layout_width="fill_parent"
 			android:layout_height="@dimen/button_height"
-			android:layout_marginBottom="8dp"
+			android:layout_marginBottom="@dimen/content_margin"
 			android:background="@drawable/yellow_btn"
 			android:drawableRight="@drawable/light_bulb"
 			android:gravity="center_vertical|left"
@@ -87,7 +87,7 @@
 			android:layout_weight="1"
 			android:layout_below="@id/createProject"
 			android:divider="@android:color/transparent"
-			android:dividerHeight="5dp"/>
+			android:dividerHeight="@dimen/content_margin"/>
 
 		<TextView
 			style="@style/h1"
