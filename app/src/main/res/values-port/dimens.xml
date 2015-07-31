@@ -22,6 +22,7 @@
 
 	<!-- Home UI -->
 	<dimen name="logo_area_margin">50dp</dimen>
+    <dimen name="logo_gap_margin">100dp</dimen>
 	<dimen name="home_connect_title_width">250dp</dimen>
 	<dimen name="home_project_title_width">250dp</dimen>
 	<dimen name="home_device_name_width">500dp</dimen>
@@ -30,6 +31,8 @@
 	<dimen name="home_start_btn_width">150dp</dimen>
 
 	<!-- Project UI -->
+    <bool name="showSortMenu">true</bool>
+
 	<dimen name="project_name_width">800dp</dimen>
 	<dimen name="project_main_margin">20dp</dimen>
 
