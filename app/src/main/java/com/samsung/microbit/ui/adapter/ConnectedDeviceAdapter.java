@@ -7,6 +7,7 @@ package com.samsung.microbit.ui.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.text.Html;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -77,14 +78,9 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
         }
         else {
             String styledText;
-
-            if(entry.mName != null) {
-                styledText = "<font color='blue'><big>" + entry.mName + "</big> </font><br/>"
-                        + "<font color='blue'><small>(" + entry.mPattern + ")</small> </font>";
-            } else {
-                styledText = "<font color='blue'><big>" + entry.mPattern + "</big> </font>";
-            }
-            deviceName.setText(Html.fromHtml(styledText));
+            styledText = entry.mName;
+            deviceName.setText(styledText);
+            deviceName.setTextAppearance(parentActivity, R.style.p1);
             deviceName.setGravity(Gravity.LEFT);
             deviceName.setEnabled(false);
 
