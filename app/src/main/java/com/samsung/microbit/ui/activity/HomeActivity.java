@@ -162,7 +162,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 			Intent intent = new Intent(this, TouchDevActivity.class);
 			intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
 			startActivity(intent);
-		} else if (v.getId() == R.id.numOfProjects) {
+		} else if (v.getId() == R.id.numOfProjectsHolder) {
 			Intent intent = new Intent(this, ProjectActivity.class);
 			startActivity(intent);
 		} else if (v.getId() == R.id.connectBtn) {
@@ -231,13 +231,8 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 	}
 
 	private final void updateProjectBarView() {
-		Button numOfProjects = (Button) findViewById(R.id.numOfProjects);
-		String styledText = "<big>"
-			+ Integer.toString(Utils.findProgramsAndPopulate(null, null))
-			+ " saved projects"
-			+ "</big>";
-		numOfProjects.setText(Html.fromHtml(styledText));
-		numOfProjects.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+		TextView numOfProjects = (TextView) findViewById(R.id.numOfProjects);
+		numOfProjects.setText(Integer.toString(Utils.findProgramsAndPopulate(null, null)));
 	}
 
 	@Override
