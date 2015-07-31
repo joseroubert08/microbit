@@ -400,11 +400,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		return DISABLE_DEVICE_LIST;
 	}
 
-	private void enablePortraitMode() {
-		if (bottomConnectButton != null) {
-			prevDeviceView.setVisibility(View.GONE);
-		} else
-			prevDeviceView.setVisibility(View.VISIBLE);
+    private boolean isPortraitMode() {
+        return (bottomConnectButton != null);
 	}
 
 	private void displayConnectScreen(PAIRING_STATE gotoState) {
@@ -421,10 +418,12 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		else
 			DISABLE_DEVICE_LIST = true;
 
-		populateConnectedDeviceList(true);
-
-		if (DISABLE_DEVICE_LIST)
-			enablePortraitMode();
+		if(isPortraitMode() && (disableListView()))
+			prevDeviceView.setVisibility(View.GONE);
+		else {
+			populateConnectedDeviceList(true);
+			prevDeviceView.setVisibility(View.VISIBLE);
+		}
 
 		switch (gotoState) {
 			case PAIRING_STATE_CONNECT_BUTTON:
@@ -505,12 +504,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 					editText.setError(getString(R.string.name_empty_error));
 				} else {
 					hideKeyboard();
-					if (bottomConnectButton != null) {
-						prevDeviceView.setVisibility(View.VISIBLE);
-					}
 					prevDeviceArray[0].mName = newname;
 					prevDevList.changeMicrobitName(0, prevDeviceArray[0]);
-					populateConnectedDeviceList(true);
 					displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
 				}
 
@@ -556,8 +551,13 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
                 if(state == PAIRING_STATE.PAIRING_STATE_SEARCHING) {
                     scanLeDevice(false);
                 }
-                state = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
-				finish();
+                if(!isPortraitMode()) {
+                    state =PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
+                    finish();
+                } else if  (isPortraitMode() && state == PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON)
+                    finish();
+                else
+                    displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
 				break;
 			default:
 				Toast.makeText(MBApp.getContext(), "Default Item Clicked: " + v.getId(), Toast.LENGTH_SHORT).show();
@@ -622,9 +622,6 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if (bottomConnectButton != null) {
-						prevDeviceView.setVisibility(View.VISIBLE);
-					}
 					PopUp.hide();
 					displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
 				}
