@@ -8,6 +8,7 @@
     <color name="black_color">#ff000000</color>
     <color name="white_color">#ffffff</color>
     <color name="gray_color">#666666</color>
+    <color name="light_gray_color">#dcdcdc</color>
     <color name="darkgray_color">#414141</color>
 
     <color name="ok_button_up">#00ec00</color>
