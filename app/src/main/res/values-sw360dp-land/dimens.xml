@@ -11,7 +11,7 @@
 
 	<!-- Generic Buttons TODO maybe remove-->
 	<dimen name="button_text_size">25sp</dimen>
-	<dimen name="button_size">100dp</dimen>
+	<dimen name="button_size">80dp</dimen>
 	<dimen name="button_height">60dp</dimen>
 
 	<!-- Header bar -->
@@ -38,14 +38,18 @@
 	<dimen name="project_main_margin">50dp</dimen>
 
 	<!-- Connect UI -->
-	<dimen name="device_name_width">380dp</dimen>
-	<dimen name="led_gap">10dp</dimen>
+	<dimen name="connect_device_name_width">380dp</dimen>
+	<dimen name="led_gap">2dp</dimen>
 	<integer name="led_size">45</integer>
 	<dimen name="divider_margin">20dp</dimen>
 	<dimen name="connect_ui_land_width">600dp</dimen>
 	<dimen name="led_grid_width">265dp</dimen>
 	<dimen name="mbit_tip_img_size">175dp</dimen>
 	<dimen name="button_gap_margin">75dp</dimen>
+    <dimen name="connect_lv_btn_width">50dp</dimen>
+    <dimen name="connect_lv_item_height">50dp</dimen>
+    <dimen name="connect_content_margin">5dp</dimen>
+    <dimen name="connect_tip_btn_margin_top">10dp</dimen>
 
 	<!-- Generic list view item -->
 	<dimen name="lv_txt_img_btn_width">166dp</dimen>

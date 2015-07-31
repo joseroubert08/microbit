@@ -55,7 +55,7 @@
             android:layout_weight="1"
             android:layout_below="@id/prevDeviceTxt"
             android:divider="@android:color/transparent"
-            android:dividerHeight="@dimen/content_margin"
+            android:dividerHeight="@dimen/connect_content_margin"
             android:clickable="false"/>
 
     </RelativeLayout>

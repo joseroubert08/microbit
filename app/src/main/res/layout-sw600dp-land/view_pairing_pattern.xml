@@ -4,7 +4,7 @@ android:layout_height="fill_parent"
 android:id="@+id/newDeviceView"
 android:layout_toRightOf="@id/prevDeviceView"
 android:layout_width="wrap_content"
-android:visibility="visible"
+android:visibility="gone"
 android:layout_below="@id/headerBar">
 
 <TextView

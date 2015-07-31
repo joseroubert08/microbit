@@ -100,7 +100,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	private Handler mHandler;
 
 	// Stops scanning after 10 seconds.
-	private static final long SCAN_PERIOD = 15000;
+	private static final long SCAN_PERIOD = 1500;
 	private ProgressDialog pairingProgressDialog;
 	private Boolean isBLuetoothEnabled = false;
 
@@ -598,7 +598,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		if (debug) logi("handle_pairing_failed() :: Start");
 
 		// dummy code to test addition of MBits
-		/*if(debug) {
+		if(debug) {
 			if (!newDeviceCode.equalsIgnoreCase("vuvuv")) {
 
                 state = PAIRING_STATE.PAIRING_STATE_NEW_NAME;
@@ -609,7 +609,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
                 return;
 
             }
-        }*/
+        }
 
 		displayConnectScreen(PAIRING_STATE.PAIRING_STATE_ERROR);
 
