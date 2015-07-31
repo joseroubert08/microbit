@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
@@ -96,6 +97,15 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 			}
 		});
 	}
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        //handle orientation change to prevent re-creation of activity.
+        //i.e. while recording we need to preserve state of recorder
+        super.onConfigurationChanged(newConfig);
+
+        //setBackground();
+    }
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
