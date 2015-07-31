@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:text="@string/connectTipTitle"
         android:textSize="30sp"
-        android:textColor="@color/black_font_color"/>
+        android:textColor="@color/black_color"/>
 
     <TextView
         android:layout_width="400dp"
@@ -22,7 +22,7 @@
         android:id="@+id/connectTipTextview"
         android:layout_marginTop="@dimen/content_margin"
         android:layout_marginLeft="@dimen/content_margin"
-        android:textColor="@color/black_font_color"
+        android:textColor="@color/black_color"
         android:layout_below="@id/connectTipTitle" />
 
     <RelativeLayout

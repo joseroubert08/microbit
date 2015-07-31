@@ -26,7 +26,7 @@
         android:layout_gravity="center"
         android:gravity="center|bottom"
         android:text="Title"
-        android:textColor="@color/white_font_color"
+        android:textColor="@color/white_color"
         android:textSize="50sp" />
 
     <TextView
@@ -39,7 +39,7 @@
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:layout_gravity="center"
-        android:textColor="@color/white_font_color"
+        android:textColor="@color/white_color"
         android:gravity="center"
         android:text="Message"
         android:textSize="30sp"

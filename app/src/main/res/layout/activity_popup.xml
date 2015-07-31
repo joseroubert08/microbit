@@ -28,7 +28,7 @@
         android:layout_centerHorizontal="true"
         android:text="Title"
         android:gravity="center"
-        android:textColor="@color/white_font_color"
+        android:textColor="@color/white_color"
         android:textSize="50sp" />
 
     <TextView
@@ -41,7 +41,7 @@
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:layout_centerHorizontal="true"
-        android:textColor="@color/white_font_color"
+        android:textColor="@color/white_color"
         android:gravity="center"
         android:text="Message"
         android:textSize="30sp"
@@ -86,7 +86,7 @@
         android:gravity="left|center_vertical"
         android:layout_centerHorizontal="true"
         android:inputType="textNoSuggestions|textVisiblePassword"
-        android:textColor="@color/black_font_color"
+        android:textColor="@color/black_color"
         android:drawableRight="@drawable/rename"
         />
 
