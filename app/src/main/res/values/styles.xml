@@ -16,11 +16,8 @@
     </style>
 
 
-    <style name="FullscreenTheme" parent="android:Theme.NoTitleBar">
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowBackground">@null</item>
-        <item name="metaButtonBarStyle">@style/ButtonBar</item>
-        <item name="metaButtonBarButtonStyle">@style/ButtonBarButton</item>
+    <style name="PopUpTheme" parent="android:Theme.Translucent.NoTitleBar.Fullscreen">
+        <item name="android:windowAnimationStyle">@android:style/Animation.Activity</item>
     </style>
 
     <!-- Backward-compatible version of ?android:attr/buttonBarStyle -->
@@ -34,13 +31,6 @@
 
     <!-- Backward-compatible version of ?android:attr/buttonBarButtonStyle -->
     <style name="ButtonBarButton" />
-
-    <style name="PopUpDialog" parent="android:style/Theme.Dialog">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowFrame">@null</item>
-    </style>
-
 
     <!--h1 font style -->
     <style name="h1" parent="@android:style/TextAppearance">
@@ -89,5 +79,4 @@
         <item name="android:textSize">44sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
-
 </resources>

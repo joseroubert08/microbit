@@ -1,61 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootLayout"
+    android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="match_parent"
-    android:paddingTop="@dimen/popup_paddingTop"
-    android:paddingBottom="@dimen/popup_paddingBottom"
-    android:paddingLeft="@dimen/popup_paddingLeft"
-    android:paddingRight="@dimen/popup_paddingRight"
-    android:background="#CC000000"
+    android:layout_height="fill_parent"
+    android:gravity="center"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:background="#DD000000"
     >
 
-    <ImageView
-        android:layout_width="@dimen/popup_icon_size"
-        android:layout_height="@dimen/popup_icon_size"
-        android:id="@+id/imageIcon"
-        android:src="@drawable/overwrite_face"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/blue_btn"
-        android:layout_margin="10dp"
-        />
+    <RelativeLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="@dimen/popup_icon_size"
+            android:layout_height="@dimen/popup_icon_size"
+            android:id="@+id/imageIcon"
+            android:src="@drawable/overwrite_face"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/blue_btn"
+            android:scaleType="center"
+            android:layout_margin="10dp"
+            />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/bodyLayout"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
 
     <TextView
         style="@style/h2"
         android:id="@+id/titleTxt"
-        android:layout_below="@id/imageIcon"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:text="Title"
         android:gravity="center"
-        android:textColor="@color/white_color"
-        android:textSize="50sp" />
-
-    <TextView
-        style="@style/p1"
-        android:id="@+id/messageTxt"
-        android:layout_below="@id/titleTxt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:layout_centerHorizontal="true"
-        android:textColor="@color/white_color"
-        android:gravity="center"
-        android:text="Message"
-        android:textSize="30sp"
+        android:visibility="gone"
         />
 
     <ProgressBar
         android:id="@+id/progressBar"
-        android:layout_below="@id/messageTxt"
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:paddingTop="10dp"
-        android:paddingBottom="100dp"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
         android:indeterminate="false"
         android:max="100"
         android:progress="0"
@@ -64,47 +60,59 @@
 
     <ProgressBar
         android:id="@+id/spinnerBar"
-        android:layout_below="@id/messageTxt"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:paddingTop="10dp"
         android:visibility="gone"
-        android:paddingBottom="@dimen/popup_spinner_paddingBottom"
+        android:paddingBottom="10dp"
+        />
+
+    <TextView
+        style="@style/p1"
+        android:id="@+id/messageTxt"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:gravity="center"
+        android:text="Message Message Message Message Message "
+        android:visibility="gone"
         />
 
     <com.samsung.microbit.ui.control.ExtendedEditText
         style="@style/p2"
         android:id="@+id/inputText"
-        android:layout_below="@id/messageTxt"
         android:layout_width="fill_parent"
         android:layout_height="60dp"
         android:editable="true"
         android:enabled="true"
-
+        android:visibility="gone"
         android:background="@drawable/white_bg"
         android:gravity="left|center_vertical"
-        android:layout_centerHorizontal="true"
         android:inputType="textNoSuggestions|textVisiblePassword"
         android:textColor="@color/black_color"
         android:drawableRight="@drawable/rename"
         />
 
+    </LinearLayout>
+
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_below="@id/inputText"
-        android:layout_centerHorizontal="true"
-        android:layout_width="fill_parent"
+        android:id="@+id/bottomLayout"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:paddingTop="40dp">
+        android:visibility="gone"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
 
         <ImageButton
             android:layout_width="@dimen/popup_button_size"
             android:layout_height="@dimen/popup_button_size"
             android:layout_alignParentLeft="true"
-            android:layout_marginLeft="@dimen/popup_button_margin"
             android:id="@+id/imageButtonCancel"
             android:src="@drawable/white_cross"
             android:onClick="onClick"
+            android:visibility="gone"
             android:background="@drawable/popup_cancel_button"
             />
 
@@ -112,12 +120,24 @@
             android:layout_width="@dimen/popup_button_size"
             android:layout_height="@dimen/popup_button_size"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="@dimen/popup_button_margin"
             android:id="@+id/imageButtonOk"
             android:src="@drawable/white_tick"
             android:onClick="onClick"
+            android:visibility="gone"
             android:background="@drawable/popup_ok_button"
             />
+
+        <ImageButton
+            android:layout_width="@dimen/popup_button_size"
+            android:layout_height="@dimen/popup_button_size"
+            android:layout_centerInParent="true"
+            android:id="@+id/imageButton"
+            android:src="@drawable/white_tick"
+            android:onClick="onClick"
+            android:visibility="gone"
+            android:background="@drawable/popup_ok_button"
+            />
+
     </RelativeLayout>
 
-</RelativeLayout>
+</LinearLayout>

@@ -57,10 +57,7 @@
 	<dimen name="lv_txt_img_btn_width">120dp</dimen>
 
 	<!-- PopUp -->
-	<dimen name="popup_button_margin">20dp</dimen>
-	<dimen name="popup_button_size">80dp</dimen>
-	<dimen name="popup_paddingTop">50dp</dimen>
-	<dimen name="popup_paddingBottom">50dp</dimen>
+	<dimen name="popup_button_size">60dp</dimen>
 	<dimen name="popup_paddingLeft">20dp</dimen>
 	<dimen name="popup_paddingRight">20dp</dimen>
 	<dimen name="popup_icon_size">60dp</dimen>
