@@ -1,49 +1,52 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools" android:layout_width="fill_parent"
+<RelativeLayout
+	android:id="@+id/layout"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="fill_parent"
 	android:layout_height="match_parent"
-	tools:context=".MainActivity"
-	android:id="@+id/layout">
+	tools:context=".MainActivity">
 
 	<RelativeLayout
 		android:id="@+id/headerBar"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:background="#ffffff"
-        android:elevation="@dimen/activity_bottom_margin">
+		android:elevation="@dimen/activity_bottom_margin">
+
 		<ImageButton
 			android:id="@+id/backBtn"
-			android:onClick="onClick"
 			android:layout_width="@dimen/header_btn_size"
 			android:layout_height="@dimen/header_btn_size"
-			android:src="@drawable/back"
-			android:background="@android:color/transparent"/>
+			android:background="@android:color/transparent"
+			android:onClick="onClick"
+			android:src="@drawable/back"/>
 
 		<TextView
-			style="@style/h1"
 			android:id="@+id/titleTxt"
+			style="@style/h1"
 			android:layout_width="wrap_content"
 			android:layout_height="@dimen/header_title_height"
-			android:text="@string/projects"
 			android:layout_toRightOf="@id/backBtn"
-			android:gravity="center"/>
+			android:gravity="center"
+			android:text="@string/projects"/>
 
 		<RelativeLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_marginTop="0dp"
-			android:layout_marginBottom="0dp"
 			android:layout_alignParentEnd="true"
-			android:layout_marginRight="@dimen/activity_horizontal_margin">
+			android:layout_marginBottom="0dp"
+			android:layout_marginRight="@dimen/activity_horizontal_margin"
+			android:layout_marginTop="0dp">
 
 			<TextView
 				android:id="@+id/connectedIndicatorText"
 				android:layout_width="wrap_content"
-				android:maxWidth="@dimen/header_device_name_max"
-				android:minWidth="@dimen/header_device_name_min"
 				android:layout_height="@dimen/header_title_height"
 				android:background="@drawable/project_text_box"
 				android:editable="false"
-				android:gravity="top"/>
+				android:gravity="top"
+				android:maxWidth="@dimen/header_device_name_max"
+				android:minWidth="@dimen/header_device_name_min"/>
 
 			<ImageButton
 				android:id="@+id/connectedIndicatorIcon"
@@ -61,58 +64,26 @@
 	<RelativeLayout
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:orientation="vertical"
 		android:layout_below="@id/headerBar"
 		android:layout_marginTop="@dimen/content_margin"
+		android:orientation="vertical"
 		android:paddingLeft="@dimen/activity_horizontal_margin"
 		android:paddingRight="@dimen/activity_horizontal_margin">
 
-		<Button
-			style="@style/p1"
-			android:id="@+id/createProject"
-			android:layout_width="wrap_content"
-			android:layout_height="@dimen/button_height"
-			android:background="@drawable/yellow_btn"
-			android:drawableRight="@drawable/new_project"
-			android:gravity="center_vertical|left"
-			android:text="@string/create_new_project_project"
-			android:onClick="onClick"
-			android:textSize="@dimen/button_text_size"
-			android:layout_alignParentTop="true"
-			android:layout_alignParentStart="true"
-			android:layout_toStartOf="@+id/sortProjects"/>
-
-		<Spinner
-			android:id="@+id/sortProjects"
-			android:layout_width="180dp"
-			android:layout_height="@dimen/button_height"
-			android:layout_marginBottom="@dimen/content_margin"
-			android:spinnerMode="dropdown"
-			android:textSize="@dimen/button_text_size"
-			android:layout_alignParentTop="true"
-			android:layout_alignEnd="@+id/projectListView"
-			android:layout_marginLeft="10dp"
-			android:background="@drawable/yellow_btn"/>
-
-		<ListView
-			android:id="@+id/projectListView"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:layout_below="@id/createProject"
-			android:divider="@android:color/transparent"
-			android:dividerHeight="@dimen/content_margin"/>
+		<include
+			android:id="@+id/createProjectC"
+			layout="@layout/create_project"/>
 
 		<TextView
-			style="@style/h1"
 			android:id="@android:id/empty"
+			style="@style/h1"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_below="@id/createProjectC"
 			android:layout_gravity="center"
-			android:layout_below="@id/createProject"
+			android:backgroundTintMode="screen"
 			android:gravity="center"
-			android:text="@string/no_projects"
-            android:backgroundTintMode="screen" />
+			android:text="@string/no_projects"/>
 
 	</RelativeLayout>
 

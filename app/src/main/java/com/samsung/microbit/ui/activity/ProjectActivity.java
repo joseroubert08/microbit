@@ -149,17 +149,18 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		setContentView(R.layout.activity_projects);
 
 		RelativeLayout layout = (RelativeLayout) findViewById(R.id.layout);
+		/*
 		if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 			layout.setBackground(getResources().getDrawable(R.drawable.bg_port));
-		}
-		else {
+		} else {
 			layout.setBackground(getResources().getDrawable(R.drawable.bg_land));
 		}
+		*/
 
 		boolean showSortMenu = false;
 		try {
 			showSortMenu = getResources().getBoolean(R.bool.showSortMenu);
-		} catch (Exception e){
+		} catch (Exception e) {
 		}
 
 		Spinner sortList = (Spinner) findViewById(R.id.sortProjects);
@@ -182,8 +183,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				public void onNothingSelected(AdapterView<?> parent) {
 				}
 			});
-		} else {
-			sortList.setVisibility(View.GONE);
 		}
 
 		projectListView = (ListView) findViewById(R.id.projectListView);
