@@ -598,6 +598,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		if (debug) logi("handle_pairing_failed() :: Start");
 
 		// dummy code to test addition of MBits
+		/*
 		if(debug) {
 			if (!newDeviceCode.equalsIgnoreCase("vuvuv")) {
 
@@ -610,6 +611,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
             }
         }
+        */
 
 		displayConnectScreen(PAIRING_STATE.PAIRING_STATE_ERROR);
 
