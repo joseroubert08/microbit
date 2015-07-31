@@ -100,7 +100,7 @@
             android:text="@string/your_projects"
             android:layout_margin="@dimen/widget_margin" />
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="@dimen/home_no_project_btn_width"
             android:layout_height="@dimen/home_button_height"
             android:id="@+id/numOfProjectsHolder"
@@ -113,14 +113,17 @@
                     android:id="@+id/numOfProjects"
                     style="@style/h3"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical"/>
                 <TextView
                     style="@style/p1"
                     android:layout_marginLeft="@dimen/content_margin"
+                    android:layout_toRightOf="@id/numOfProjects"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical"
                     android:text="@string/saved_projects" />
-        </LinearLayout>
+        </RelativeLayout>
         <Button
             style="@style/p1"
             android:id="@+id/startNewProject"
