@@ -11,7 +11,7 @@
 
 	<!-- Generic Buttons TODO maybe remove-->
 	<dimen name="button_text_size">25sp</dimen>
-	<dimen name="button_size">80dp</dimen>
+	<dimen name="button_size">100dp</dimen>
 	<dimen name="button_height">80dp</dimen>
 
 	<!-- Header bar -->
@@ -26,12 +26,12 @@
 	<dimen name="home_connect_title_width">250dp</dimen>
 	<dimen name="home_project_title_width">250dp</dimen>
 	<dimen name="home_tile_bar_height">150dp</dimen>
-	<dimen name="home_device_name_width">725dp</dimen>
+	<dimen name="home_device_name_width">690dp</dimen>
 	<dimen name="home_device_name_empty_width">800dp</dimen>
 	<dimen name="home_no_project_btn_width">395dp</dimen>
 	<dimen name="home_start_btn_width">395dp</dimen>
 	<dimen name="home_activity_margin">80dp</dimen>
-	<dimen name="home_button_height">130dp</dimen>
+	<dimen name="home_button_height">100dp</dimen>
 
 	<!-- Project UI -->
 	<bool name="showSortMenu">true</bool>
