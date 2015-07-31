@@ -31,8 +31,6 @@
 	<dimen name="home_start_btn_width">300dp</dimen>
 
 	<!-- Project UI -->
-	<bool name="showSortMenu">false</bool>
-
 	<dimen name="project_name_width">406dp</dimen>
 	<dimen name="project_main_margin">50dp</dimen>
 

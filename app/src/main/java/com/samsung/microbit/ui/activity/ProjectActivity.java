@@ -1,5 +1,6 @@
 package com.samsung.microbit.ui.activity;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -23,10 +24,13 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -137,6 +141,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		logi("onCreate() :: ");
 		MBApp.setContext(this);
 
 		//Remove title bar
@@ -144,13 +149,18 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		setContentView(R.layout.activity_projects);
 
 		RelativeLayout layout = (RelativeLayout) findViewById(R.id.layout);
-
-		if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+		if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 			layout.setBackground(getResources().getDrawable(R.drawable.bg_port));
-		else
+		}
+		else {
 			layout.setBackground(getResources().getDrawable(R.drawable.bg_land));
+		}
 
-		boolean showSortMenu = getResources().getBoolean(R.bool.showSortMenu);
+		boolean showSortMenu = false;
+		try {
+			showSortMenu = getResources().getBoolean(R.bool.showSortMenu);
+		} catch (Exception e){
+		}
 
 		Spinner sortList = (Spinner) findViewById(R.id.sortProjects);
 		if (showSortMenu) {

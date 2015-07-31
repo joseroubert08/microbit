@@ -80,8 +80,7 @@
 			android:textSize="@dimen/button_text_size"
 			android:layout_alignParentTop="true"
 			android:layout_alignParentStart="true"
-			android:layout_toStartOf="@+id/sortProjects"
-			android:layout_marginRight="10dp"/>
+			android:layout_toStartOf="@+id/sortProjects"/>
 
 		<Spinner
 			android:id="@+id/sortProjects"
@@ -92,6 +91,7 @@
 			android:textSize="@dimen/button_text_size"
 			android:layout_alignParentTop="true"
 			android:layout_alignEnd="@+id/projectListView"
+			android:layout_marginLeft="10dp"
 			android:background="@drawable/yellow_btn"/>
 
 		<ListView
