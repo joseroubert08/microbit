@@ -34,6 +34,8 @@
 	<dimen name="home_button_height">120dp</dimen>
 
 	<!-- Project UI -->
+	<bool name="showSortMenu">false</bool>
+
 	<dimen name="project_name_width">800dp</dimen>
 	<dimen name="project_main_margin">20dp</dimen>
 
