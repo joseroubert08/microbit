@@ -194,12 +194,7 @@ public class AudioRecorderActivity extends Activity {
 
     private void setBackground()
     {
-        Drawable d;
-
-        if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-            d = getResources().getDrawable(R.drawable.bg_port);
-        else
-            d = getResources().getDrawable(R.drawable.bg_land);
+        Drawable d = getResources().getDrawable(R.drawable.bg);
 
         d.setAlpha(90);
         layout.setBackground(d);
