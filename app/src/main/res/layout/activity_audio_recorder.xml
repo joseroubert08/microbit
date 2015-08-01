@@ -20,7 +20,7 @@
         android:layout_weight="1"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="Ready"
+        android:text="Ready?"
         android:textColor="@color/white_color"
         />
 

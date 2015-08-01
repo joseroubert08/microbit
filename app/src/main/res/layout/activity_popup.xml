@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rootLayout"
-    android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:gravity="center"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
+    android:paddingLeft="@dimen/popup_paddingLeft"
+    android:paddingRight="@dimen/popup_paddingRight"
     android:background="#DD000000"
-    >
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/headerLayout"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/popup_header_section_marginBottom"
+        >
 
         <ImageView
             android:layout_width="@dimen/popup_icon_size"
@@ -23,7 +24,6 @@
             android:layout_centerHorizontal="true"
             android:background="@drawable/blue_btn"
             android:scaleType="center"
-            android:layout_margin="10dp"
             />
 
     </RelativeLayout>
@@ -33,13 +33,16 @@
         android:orientation="vertical"
         android:gravity="center_horizontal"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
     <TextView
         style="@style/h2"
         android:id="@+id/titleTxt"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="@dimen/popup_body_view_paddingVertical"
+        android:paddingBottom="@dimen/popup_body_view_paddingVertical"
         android:text="Title"
         android:gravity="center"
         android:visibility="gone"
@@ -50,8 +53,8 @@
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="0dp"
-        android:paddingBottom="0dp"
+        android:paddingTop="@dimen/popup_body_view_paddingVertical"
+        android:paddingBottom="@dimen/popup_body_view_paddingVertical"
         android:indeterminate="false"
         android:max="100"
         android:progress="0"
@@ -62,9 +65,9 @@
         android:id="@+id/spinnerBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp"
+        android:paddingTop="@dimen/popup_body_view_paddingVertical"
+        android:paddingBottom="@dimen/popup_body_view_paddingVertical"
         android:visibility="gone"
-        android:paddingBottom="10dp"
         />
 
     <TextView
@@ -73,18 +76,20 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
+        android:paddingTop="@dimen/popup_body_view_paddingVertical"
+        android:paddingBottom="@dimen/popup_body_view_paddingVertical"
         android:gravity="center"
-        android:text="Message Message Message Message Message "
+        android:text="Message A B C D E F G H I J K L M N O P Q R S T U V W X Y Z Message"
         android:visibility="gone"
         />
 
     <com.samsung.microbit.ui.control.ExtendedEditText
         style="@style/p2"
         android:id="@+id/inputText"
-        android:layout_width="fill_parent"
+        android:layout_width="@dimen/popup_textinput_width"
         android:layout_height="60dp"
+        android:paddingTop="@dimen/popup_body_view_paddingVertical"
+        android:paddingBottom="@dimen/popup_body_view_paddingVertical"
         android:editable="true"
         android:enabled="true"
         android:visibility="gone"
@@ -99,11 +104,11 @@
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/bottomLayout"
-        android:layout_width="300dp"
+        android:layout_width="@dimen/popup_buttons_area_width"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp">
+        android:visibility="invisible"
+        android:paddingTop="@dimen/popup_buttons_section_paddingTop"
+        >
 
         <ImageButton
             android:layout_width="@dimen/popup_button_size"
@@ -130,11 +135,11 @@
         <ImageButton
             android:layout_width="@dimen/popup_button_size"
             android:layout_height="@dimen/popup_button_size"
-            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
             android:id="@+id/imageButton"
             android:src="@drawable/white_tick"
             android:onClick="onClick"
-            android:visibility="gone"
+            android:visibility="invisible"
             android:background="@drawable/popup_ok_button"
             />
 
