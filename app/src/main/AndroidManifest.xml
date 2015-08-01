@@ -77,6 +77,11 @@
             android:configChanges="orientation|screenSize">
 		</activity>
 		<activity
+			android:name=".ui.activity.PopUpHolderActivity"
+			android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+			android:launchMode="singleTask">
+		</activity>
+		<activity
 			android:name=".ui.activity.PopUpActivity"
 			android:theme="@style/PopUpTheme"
 			android:launchMode="singleTask"

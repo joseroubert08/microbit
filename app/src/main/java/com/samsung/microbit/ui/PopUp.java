@@ -1,13 +1,16 @@
 package com.samsung.microbit.ui;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.View;
 
 import com.samsung.microbit.ui.activity.PopUpActivity;
+import com.samsung.microbit.ui.activity.PopUpHolderActivity;
 
 /**
  * Created by frederic.ma on 23/06/2015.
@@ -15,10 +18,8 @@ import com.samsung.microbit.ui.activity.PopUpActivity;
 /*
 How to use:
 
-Note that the "context" has to be activity or application based.
-Passing service "context" will not work anymore because TYPE_SYSTEM_ALERT has to be disabled
-in order to fix the overlap bug with the system power dialog.
-To show the popup from service, you must call the popup from an activity
+To show a popup from an application/activity context, call the below.
+To show a popup from a Plugin class or service context, use showFromService function.
 
 PopUp.show(context,
         "Accept Audio Recording?\nClick Yes to allow", //message
@@ -99,16 +100,36 @@ public class PopUp {
         inputText = text;
     }
 
+    //Interface function for showing a popup inside a service plugin class
+    //only supports TYPE_ALERT popup for now.
+    public static void showFromService(Context context, String message, String title,
+                                       int imageResId, int imageBackgroundResId, int type) {
+        Intent intent = new Intent(context, PopUpHolderActivity.class);
+        intent.putExtra(PopUpHolderActivity.INTENT_EXTRA_POPUP_TYPE, type);
+        intent.putExtra(PopUpHolderActivity.INTENT_EXTRA_POPUP_TITLE, title);
+        intent.putExtra(PopUpHolderActivity.INTENT_EXTRA_POPUP_MESSAGE, message);
+        intent.putExtra(PopUpHolderActivity.INTENT_EXTRA_POPUP_ICON, imageResId);
+        intent.putExtra(PopUpHolderActivity.INTENT_EXTRA_POPUP_ICONBG, imageBackgroundResId);
+        // keep same instance of activity
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
+    //Interface function for showing popup inside an application activity
     //pass 0 to imageResId to use default icon
     //pass 0 to imageBackgroundResId if no background needed for icon
-    public static void show(Context context, String message, String title,
+    public static boolean show(Context context, String message, String title,
                             int imageResId, int imageBackgroundResId, int type,
                             View.OnClickListener okListener, View.OnClickListener cancelListener)
     {
+        if (!(context instanceof Activity)) {
+            Log.e("PopUp","Cannot show popup because context is not an activity. PopUp.show must be called from an activity");
+            return false;
+        }
         ctx = context;
         //if blocking popup is already displayed, do not show another popup
         if (isBlockingPopUpDisplayed())
-            return;
+            return false;
 
         PopUp.hide();
 
@@ -135,5 +156,7 @@ public class PopUp {
         // keep same instance of activity
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
+
+        return true;
     }
 }
