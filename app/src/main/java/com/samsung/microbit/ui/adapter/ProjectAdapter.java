@@ -68,6 +68,9 @@ public class ProjectAdapter extends BaseAdapter {
 		@Override
 		public void onClick(View v) {
 
+            //changeActionBar(v);
+
+
 			logi("OnClickListener() :: " + v.getClass().getName());
 			if (v.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 				changeActionBar(v);

@@ -15,10 +15,12 @@
 	<dimen name="button_height">60dp</dimen>
 
 	<!-- Header bar -->
+    <dimen name="header_right_margin">10dp</dimen>
 	<dimen name="header_btn_size">60dp</dimen>
 	<dimen name="header_device_name_max">500dp</dimen>
 	<dimen name="header_device_name_min">300dp</dimen>
 	<dimen name="header_title_height">60dp</dimen>
+    <dimen name="header_title_width">100dp</dimen>
 
 	<!-- Home UI -->
 	<dimen name="logo_area_margin">10dp</dimen>
