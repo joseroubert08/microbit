@@ -154,7 +154,6 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
 				@Override
 				public void onClick(View v) {
 					synchronized (locker) {
-						Toast.makeText(MBApp.getContext(), "Ok Clicked: " + PopUp.getInputText(), Toast.LENGTH_SHORT).show();
 						state = 10;
 						currentFileName = PopUp.getInputText();
 						locker.notify();
@@ -165,7 +164,6 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
 				@Override
 				public void onClick(View v) {
 					synchronized (locker) {
-						Toast.makeText(MBApp.getContext(), "Cancel Clicked: " + PopUp.getInputText(), Toast.LENGTH_SHORT).show();
 						locker.notify();
 					}
 				}
