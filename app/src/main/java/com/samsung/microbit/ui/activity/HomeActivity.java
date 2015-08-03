@@ -166,7 +166,6 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 			Intent intent = new Intent(this, ProjectActivity.class);
 			startActivity(intent);
 		} else if (v.getId() == R.id.connectBtn) {
-
 			updateConnectBarView();
 			ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
 			if (connectedDevice.mPattern != null) {
