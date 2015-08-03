@@ -61,8 +61,8 @@
 	<dimen name="lv_txt_img_btn_width">205dp</dimen>
 
 	<!-- PopUp -->
-	<dimen name="popup_header_section_marginBottom">50dp</dimen>
-	<dimen name="popup_buttons_section_paddingTop">50dp</dimen>
+	<dimen name="popup_header_section_marginTop">100dp</dimen>
+	<dimen name="popup_buttons_section_paddingBottom">100dp</dimen>
 	<dimen name="popup_textinput_width">340dp</dimen>
 	<dimen name="popup_buttons_area_width">240dp</dimen> <!-- distance between left button edge and right button edge -->
 	<dimen name="popup_button_size">80dp</dimen>
