@@ -30,7 +30,7 @@
         >
 
     <TextView
-        style="@style/h2"
+        style="@style/h3"
         android:id="@+id/titleTxt"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -77,7 +77,7 @@
         />
 
     <com.samsung.microbit.ui.control.ExtendedEditText
-        style="@style/p2"
+        style="@style/p1"
         android:id="@+id/inputText"
         android:layout_width="@dimen/popup_textinput_width"
         android:layout_height="60dp"
