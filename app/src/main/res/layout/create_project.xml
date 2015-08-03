@@ -18,8 +18,7 @@
 		android:drawableRight="@drawable/new_project"
 		android:gravity="center_vertical|left"
 		android:onClick="onClick"
-		android:text="@string/create_new_project_project"
-		android:textSize="@dimen/button_text_size"/>
+		android:text="@string/create_new_project_project"/>
 
 	<ListView
 		android:id="@+id/projectListView"
