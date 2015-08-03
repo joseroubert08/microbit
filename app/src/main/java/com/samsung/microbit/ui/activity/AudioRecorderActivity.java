@@ -67,8 +67,6 @@ public class AudioRecorderActivity extends Activity {
         chronometer = (Chronometer)findViewById(R.id.chronometer);
         imageMic = (ImageView)findViewById(R.id.imageMic);
 
-        setBackground();
-
         //preallocate to avoid memory leak
         drawable_mic_off = getResources().getDrawable(R.drawable.recording_off);
         drawable_mic_on = getResources().getDrawable(R.drawable.recording);
@@ -79,7 +77,7 @@ public class AudioRecorderActivity extends Activity {
         notificationLargeIconBitmapRecordingOff = BitmapFactory.decodeResource(getResources(), R.drawable.recording_off);
 
         mBuilder = new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setSmallIcon(R.mipmap.ic_launcher)
                         .setLargeIcon(notificationLargeIconBitmapRecordingOff)
                         .setTicker(getString(R.string.audio_recorder_notification))
                 .setContentTitle(getString(R.string.audio_recorder_notification));
@@ -192,21 +190,11 @@ public class AudioRecorderActivity extends Activity {
         mNotifyMgr.cancel(NOTIFICATION_ID);
     }
 
-    private void setBackground()
-    {
-        Drawable d = getResources().getDrawable(R.drawable.bg);
-
-        d.setAlpha(90);
-        layout.setBackground(d);
-    }
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         //handle orientation change to prevent re-creation of activity.
         //i.e. while recording we need to preserve state of recorder
         super.onConfigurationChanged(newConfig);
-
-        setBackground();
     }
 
     @Override

@@ -70,9 +70,12 @@
 	<dimen name="popup_body_view_paddingVertical">5dp</dimen> <!-- spacing top/bottom between each view inside body section -->
 
 	<!-- Audio Recorder -->
-	<dimen name="audio_mic_size">120dp</dimen>
+	<dimen name="audio_mic_size">100dp</dimen>
+	<dimen name="audio_mic_paddingBottom">10dp</dimen>
+	<dimen name="audio_chrono_paddingTop">10dp</dimen>
 
     <!-- Web View -->
     <dimen name="refresh_btn_margin_top">10dp</dimen>
     <dimen name="refresh_btn_margin_bottom">8dp</dimen>
 </resources>
+
