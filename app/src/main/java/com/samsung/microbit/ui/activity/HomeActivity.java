@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
@@ -66,7 +67,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 						PopUp.show(MBApp.getContext(),
 							MBApp.getContext().getString(R.string.micro_bit_reset_msg),
 							"",
-							0, 0,
+							R.drawable.error_face, R.drawable.red_btn,
 							PopUp.TYPE_ALERT, null, null);
 					}
 				});
@@ -96,6 +97,15 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 			}
 		});
 	}
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        //handle orientation change to prevent re-creation of activity.
+        //i.e. while recording we need to preserve state of recorder
+        super.onConfigurationChanged(newConfig);
+
+        //setBackground();
+    }
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -148,11 +158,11 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		if (v.getId() == R.id.addDevice || v.getId() == R.id.addDeviceEmpty) {
 			Intent intent = new Intent(this, ConnectActivity.class);
 			startActivity(intent);
-		} else if (v.getId() == R.id.startNewProject || v.getId() == R.id.startNewProjectImg) {
+		} else if (v.getId() == R.id.startNewProject) {
 			Intent intent = new Intent(this, TouchDevActivity.class);
 			intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
 			startActivity(intent);
-		} else if (v.getId() == R.id.numOfProjects) {
+		} else if (v.getId() == R.id.numOfProjectsHolder) {
 			Intent intent = new Intent(this, ProjectActivity.class);
 			startActivity(intent);
 		} else if (v.getId() == R.id.connectBtn) {
@@ -170,7 +180,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 					PopUp.show(MBApp.getContext(),
 						getString(R.string.init_connection),
 						"",
-						R.drawable.mbit, R.drawable.blue_btn,
+						R.drawable.flash_face, R.drawable.blue_btn,
 						PopUp.TYPE_SPINNER,
 						null, null);
 
@@ -180,7 +190,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 				PopUp.show(MBApp.getContext(),
 					getString(R.string.no_device_paired),
 					"",
-					R.drawable.mbit, R.drawable.blue_btn,
+					R.drawable.error_face, R.drawable.red_btn,
 					PopUp.TYPE_ALERT,
 					null, null);
 			}
@@ -196,38 +206,30 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		if (connectedDevice.mPattern != null) {
 			addDeviceButton.setVisibility(View.VISIBLE);
 			connectButton.setVisibility(View.VISIBLE);
-			String styledText = "<big><font color='blue'>"
-				+ (connectedDevice.mName != null ? connectedDevice.mName : "")
-				+ "</font>"
-				+ "<font color='blue'> (" + connectedDevice.mPattern + ")</font></big>";
-			addDeviceButton.setText(Html.fromHtml(styledText));
+			if (connectedDevice.mName!= null)
+				addDeviceButton.setText(connectedDevice.mName + " (" + connectedDevice.mPattern + ")" );
+			else
+				addDeviceButton.setText("");
 			addDeviceEmpty.setVisibility(View.GONE);
-			addDeviceButton.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
 		} else {
 			addDeviceButton.setVisibility(View.GONE);
 			connectButton.setVisibility(View.GONE);
 			addDeviceEmpty.setVisibility(View.VISIBLE);
-			addDeviceEmpty.setText(R.string.connect_to_mbit);
-			addDeviceEmpty.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+            addDeviceEmpty.setText(R.string.connect_to_mbit);
 		}
 
 		if (connectedDevice.mPattern != null && connectedDevice.mStatus) {
-			connectButton.setImageResource(R.drawable.connected);
+			connectButton.setImageResource(R.drawable.device_connected);
 			connectButton.setBackground(getResources().getDrawable(R.drawable.green_btn));
 		} else {
-			connectButton.setImageResource(R.drawable.disconnected);
+			connectButton.setImageResource(R.drawable.disconnect_device);
 			connectButton.setBackground(getResources().getDrawable(R.drawable.red_btn));
 		}
 	}
 
 	private final void updateProjectBarView() {
-		Button numOfProjects = (Button) findViewById(R.id.numOfProjects);
-		String styledText = "<big>"
-			+ Integer.toString(Utils.findProgramsAndPopulate(null, null))
-			+ " saved projects"
-			+ "</big>";
-		numOfProjects.setText(Html.fromHtml(styledText));
-		numOfProjects.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+		TextView numOfProjects = (TextView) findViewById(R.id.numOfProjects);
+		numOfProjects.setText(Integer.toString(Utils.findProgramsAndPopulate(null, null)));
 	}
 
 	@Override

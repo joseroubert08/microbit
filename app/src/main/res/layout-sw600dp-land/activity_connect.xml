@@ -2,13 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="fill_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="@drawable/bg_land">
+    android:background="@drawable/bg">
 
     <RelativeLayout
         android:id="@+id/headerBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#ffff">
+        android:background="#ffffff"
+        android:elevation="@dimen/activity_bottom_margin">
 
         <ImageButton
             android:id="@+id/backBtn"
@@ -59,7 +60,7 @@
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:divider="@android:color/transparent"
-                android:dividerHeight="5dp"
+                android:dividerHeight="@dimen/content_margin"
                 android:clickable="false"/>
 
         </RelativeLayout>

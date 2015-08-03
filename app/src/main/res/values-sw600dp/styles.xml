@@ -1,0 +1,52 @@
+<resources>
+    <!--h1 font style -->
+    <style name="h1" parent="@android:style/TextAppearance">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textSize">27sp</item>
+    </style>
+
+    <!--h2 font style -->
+    <style name="h2" parent="@android:style/TextAppearance">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <!--h3 font style -->
+    <style name="h3" parent="@android:style/TextAppearance">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">36sp</item>
+    </style>
+
+    <!--h4 font style -->
+    <style name="h4" parent="@android:style/TextAppearance">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textSize">66sp</item>
+    </style>
+
+
+    <!--h5 font style -->
+    <style name="h5" parent="@android:style/TextAppearance">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">36sp</item>
+    </style>
+
+    <!--p1 font style -->
+    <style name="p1" parent="@android:style/TextAppearance">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textSize">27sp</item>
+    </style>
+
+    <!--p2 font style -->
+    <style name="p2" parent="@android:style/TextAppearance">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <!--p2 font style -->
+    <style name="p3" parent="@android:style/TextAppearance">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+
+</resources>
+

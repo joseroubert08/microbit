@@ -95,7 +95,7 @@ public class CameraActivity_OldAPI extends Activity {
 
 	private void setButtonForPicture() {
 
-		mButtonClick.setBackgroundResource(R.drawable.camera_icon);
+		mButtonClick.setBackgroundResource(R.drawable.camera);
 		mButtonClick.invalidate();
 		mButtonClick.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {

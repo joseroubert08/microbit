@@ -120,7 +120,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
 		PopUp.show(parent,
 			"",
 			parent.getResources().getString(R.string.q_overwrite_existing),
-			R.drawable.mbit, R.drawable.blue_btn,
+			R.drawable.overwrite_face, R.drawable.blue_btn,
 			PopUp.TYPE_CHOICE,
 			new View.OnClickListener() {
 				@Override
@@ -148,13 +148,12 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
 		PopUp.show(parent,
 			"",
 			parent.getResources().getString(R.string.rename_file),
-			R.drawable.mbit, R.drawable.blue_btn,
+			R.drawable.overwrite_face, R.drawable.blue_btn,
 			PopUp.TYPE_INPUTTEXT,
 			new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					synchronized (locker) {
-						Toast.makeText(MBApp.getContext(), "Ok Clicked: " + PopUp.getInputText(), Toast.LENGTH_SHORT).show();
 						state = 10;
 						currentFileName = PopUp.getInputText();
 						locker.notify();
@@ -165,7 +164,6 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
 				@Override
 				public void onClick(View v) {
 					synchronized (locker) {
-						Toast.makeText(MBApp.getContext(), "Cancel Clicked: " + PopUp.getInputText(), Toast.LENGTH_SHORT).show();
 						locker.notify();
 					}
 				}
@@ -180,7 +178,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
 			public void run() {
 				if (show) {
 					PopUp.show(MBApp.getContext(), MBApp.getContext().getString(R.string.downloading),
-						MBApp.getContext().getString(R.string.downloading_file), 0, 0, PopUp.TYPE_SPINNER, null, null);
+						MBApp.getContext().getString(R.string.downloading_file), R.drawable.flash_face, R.drawable.blue_btn, PopUp.TYPE_SPINNER, null, null);
 				} else {
 					PopUp.hide();
 				}
@@ -195,7 +193,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
 		PopUp.show(MBApp.getContext(),
 			MBApp.getContext().getString(R.string.download_complete),
 			"",
-			R.drawable.message, R.drawable.blue_btn,
+			R.drawable.message_face, R.drawable.blue_btn,
 			PopUp.TYPE_CHOICE,
 			new View.OnClickListener() {
 				@Override

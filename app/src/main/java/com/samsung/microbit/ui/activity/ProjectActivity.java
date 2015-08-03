@@ -1,5 +1,6 @@
 package com.samsung.microbit.ui.activity;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -23,12 +24,18 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -95,7 +102,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 						PopUp.show(MBApp.getContext(),
 							MBApp.getContext().getString(R.string.micro_bit_reset_msg),
 							"",
-							0, 0,
+							R.drawable.error_face, R.drawable.red_btn,
 							PopUp.TYPE_ALERT, null, null);
 					}
 				});
@@ -134,18 +141,49 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		logi("onCreate() :: ");
 		MBApp.setContext(this);
 
 		//Remove title bar
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_projects);
 
-		RelativeLayout layout = (RelativeLayout)findViewById(R.id.layout);
+		RelativeLayout layout = (RelativeLayout) findViewById(R.id.layout);
+		/*
+		if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+			layout.setBackground(getResources().getDrawable(R.drawable.bg_port));
+		} else {
+			layout.setBackground(getResources().getDrawable(R.drawable.bg_land));
+		}
+		*/
 
-		if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-			layout.setBackground( getResources().getDrawable(R.drawable.bg_port));
-		else
-			layout.setBackground( getResources().getDrawable(R.drawable.bg_land));
+		boolean showSortMenu = false;
+		try {
+			showSortMenu = getResources().getBoolean(R.bool.showSortMenu);
+		} catch (Exception e) {
+		}
+
+		Spinner sortList = (Spinner) findViewById(R.id.sortProjects);
+		if (showSortMenu) {
+
+			sortList.setPrompt("Sort by");
+			ArrayAdapter<CharSequence> sortAdapter = ArrayAdapter.createFromResource(this, R.array.projectListSortOrder,
+				android.R.layout.simple_spinner_item);
+
+			sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			sortList.setAdapter(sortAdapter);
+			sortList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+					projectListSortOrder = position;
+					projectListSortOrderChanged();
+				}
+
+				@Override
+				public void onNothingSelected(AdapterView<?> parent) {
+				}
+			});
+		}
 
 		projectListView = (ListView) findViewById(R.id.projectListView);
 		updateProjectsListSortOrder(true);
@@ -165,7 +203,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		if (fileToDownload != null) {
 			programToSend = new Project(fileToDownload, Constants.HEX_FILE_DIR + "/" + fileToDownload, 0, null, false);
 			adviceOnMicrobitState(programToSend);
-		}
+        }
 	}
 
 	private void setConnectedDeviceText() {
@@ -180,7 +218,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		Spannable span = null;
 		ConnectedDevice device = Utils.getPairedMicrobit(this);
 		if (!device.mStatus) {
-			connectedIndicatorIcon.setImageResource(R.drawable.disconnected);
+			connectedIndicatorIcon.setImageResource(R.drawable.disconnect_device);
 			connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_disconnect_btn));
 			connectedIndicatorText.setText(getString(R.string.not_connected));
 			startIndex = getString(R.string.not_connected).length();
@@ -189,7 +227,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			span = new SpannableString(getString(R.string.not_connected) + "\n" + device.mName + "\n(" + device.mPattern + ")");
 		} else {
 			startIndex = getString(R.string.connected_to).length();
-			connectedIndicatorIcon.setImageResource(R.drawable.connected);
+			connectedIndicatorIcon.setImageResource(R.drawable.device_connected);
 			connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_connect_btn));
 
 			//TODO Add a formatted string in string resource KK
@@ -325,7 +363,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 						PopUp.show(MBApp.getContext(),
 							getString(R.string.init_connection),
 							"",
-							R.drawable.mbit, R.drawable.blue_btn,
+							R.drawable.flash_face, R.drawable.blue_btn,
 							PopUp.TYPE_SPINNER,
 							null, null);
 
@@ -337,27 +375,27 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		}
 	}
 
-    private void adviceOnMicrobitState(final Project toSend)
-    {
-        PopUp.show(MBApp.getContext(),
-                getString(R.string.flashing_tip), //message
-                getString(R.string.flashing_tip_title), //title
-                R.drawable.mbit, R.drawable.blue_btn, //image icon res id
-                PopUp.TYPE_CHOICE, //type of popup.
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        PopUp.hide();
-                        initiateFlashing(toSend);
-                    }
-                },//override click listener for ok button
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        PopUp.hide();
-                    }
-                });//pass null to use default listeneronClick
-    }
+	private void adviceOnMicrobitState(final Project toSend) {
+		PopUp.show(MBApp.getContext(),
+			getString(R.string.flashing_tip), //message
+			getString(R.string.flashing_tip_title), //title
+			R.drawable.flash_face, R.drawable.blue_btn, //image icon res id
+			PopUp.TYPE_CHOICE, //type of popup.
+			new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					PopUp.hide();
+					initiateFlashing(toSend);
+				}
+			},//override click listener for ok button
+			new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					PopUp.hide();
+				}
+			});//pass null to use default listeneronClick
+	}
+
 	protected void initiateFlashing(Project toSend) {
 
 		ConnectedDevice currentMicrobit = Utils.getPairedMicrobit(this);
@@ -375,7 +413,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			PopUp.show(MBApp.getContext(),
 				getString(R.string.flashing_failed_no_microbit), //message
 				getString(R.string.flashing_error), //title
-				R.drawable.error, //image icon res id
+				R.drawable.error_face,//image icon res id
 				R.drawable.red_btn,
 				PopUp.TYPE_ALERT, //type of popup.
 				new View.OnClickListener() {
@@ -414,9 +452,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 		PopUp.show(this,
 			getString(R.string.flashing_phase1_msg), //message
-			getString(R.string.flashing_title), //title
-			R.drawable.mbit, R.drawable.blue_btn,
-			PopUp.TYPE_NOBUTTON, //type of popup.
+			String.format(MBApp.getContext().getString(R.string.flashing_project), programToSend.name), //title
+			R.drawable.flash_face, R.drawable.blue_btn,
+			PopUp.TYPE_SPINNER, //type of popup.
 			null,//override click listener for ok button,
 			null);//pass null to use default listener
 	}
@@ -456,7 +494,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		PopUp.show(this,
 			getString(R.string.flashing_phase2_msg), //message
 			getString(R.string.flashing_title), //title
-			R.drawable.flashing, //image icon res id
+			R.drawable.flash_face, //image icon res id
 			R.drawable.blue_btn,
 			PopUp.TYPE_NOBUTTON, //type of popup.
 			null,//override click listener for ok button
@@ -471,7 +509,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		PopUp.show(MBApp.getContext(),
 			getString(R.string.flashing_error_msg), //message
 			getString(R.string.flashing_failed_title), //title
-			R.drawable.error, //image icon res id
+			R.drawable.error_face, //image icon res id
 			R.drawable.red_btn,
 			PopUp.TYPE_ALERT, //type of popup.
 			new View.OnClickListener() {
@@ -517,7 +555,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 					PopUp.show(MBApp.getContext(),
 						getString(R.string.flashing_error_msg), //message
 						getString(R.string.flashing_failed_title), //title
-						R.drawable.error, //image icon res id
+						R.drawable.error_face, //image icon res id
 						R.drawable.red_btn,
 						PopUp.TYPE_ALERT, //type of popup.
 						new View.OnClickListener() {
@@ -565,7 +603,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 								PopUp.show(MBApp.getContext(),
 									getString(R.string.flashing_success_message), //message
 									getString(R.string.flashing_success_title), //title
-									R.drawable.mbit, R.drawable.blue_btn,
+									R.drawable.message_face, R.drawable.blue_btn,
 									PopUp.TYPE_ALERT, //type of popup.
 									new View.OnClickListener() {
 										@Override
@@ -592,7 +630,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 								PopUp.show(MBApp.getContext(),
 									error_message, //message
 									getString(R.string.flashing_failed_title), //title
-									R.drawable.error, R.drawable.red_btn,
+									R.drawable.error_face, R.drawable.red_btn,
 									PopUp.TYPE_ALERT, //type of popup.
 									new View.OnClickListener() {
 										@Override
@@ -613,7 +651,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 								PopUp.show(MBApp.getContext(),
 									getString(R.string.init_connection), //message
 									getString(R.string.send_project), //title
-									R.drawable.mbit, R.drawable.blue_btn,
+									R.drawable.flash_face, R.drawable.blue_btn,
 									PopUp.TYPE_SPINNER, //type of popup.
 									new View.OnClickListener() {
 										@Override
@@ -633,9 +671,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 					if (!inProgress) {
 						// TODO Update progress bar check if correct.(my3)
 						PopUp.show(MBApp.getContext(),
-							"",
-							MBApp.getContext().getString(R.string.sending_project),
-							R.drawable.mbit, R.drawable.blue_btn,
+							MBApp.getContext().getString(R.string.flashing_progress_message),
+							String.format(MBApp.getContext().getString(R.string.flashing_project), programToSend.name),
+							R.drawable.flash_face, R.drawable.blue_btn,
 							PopUp.TYPE_PROGRESS, null, null);
 
 						inProgress = true;
@@ -657,7 +695,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				PopUp.show(MBApp.getContext(),
 					error_message, //message
 					getString(R.string.flashing_failed_title), //title
-					R.drawable.error, R.drawable.red_btn,
+					R.drawable.error_face, R.drawable.red_btn,
 					PopUp.TYPE_ALERT, //type of popup.
 					new View.OnClickListener() {
 						@Override

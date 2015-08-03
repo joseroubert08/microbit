@@ -67,19 +67,17 @@ public class AudioRecorderActivity extends Activity {
         chronometer = (Chronometer)findViewById(R.id.chronometer);
         imageMic = (ImageView)findViewById(R.id.imageMic);
 
-        setBackground();
-
         //preallocate to avoid memory leak
-        drawable_mic_off = getResources().getDrawable(R.drawable.microphone_off);
-        drawable_mic_on = getResources().getDrawable(R.drawable.microphone_on);
+        drawable_mic_off = getResources().getDrawable(R.drawable.recording_off);
+        drawable_mic_on = getResources().getDrawable(R.drawable.recording);
 
         backPressed = false;
 
-        notificationLargeIconBitmapRecordingOn = BitmapFactory.decodeResource(getResources(), R.drawable.microphone_on);
-        notificationLargeIconBitmapRecordingOff = BitmapFactory.decodeResource(getResources(), R.drawable.microphone_off);
+        notificationLargeIconBitmapRecordingOn = BitmapFactory.decodeResource(getResources(), R.drawable.recording);
+        notificationLargeIconBitmapRecordingOff = BitmapFactory.decodeResource(getResources(), R.drawable.recording_off);
 
         mBuilder = new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setSmallIcon(R.mipmap.ic_launcher)
                         .setLargeIcon(notificationLargeIconBitmapRecordingOff)
                         .setTicker(getString(R.string.audio_recorder_notification))
                 .setContentTitle(getString(R.string.audio_recorder_notification));
@@ -93,7 +91,7 @@ public class AudioRecorderActivity extends Activity {
 
         mLaunchActivity = false;
 
-        PopUp.show(this,
+        if (!PopUp.show(this,
                 "",
                 getString(R.string.record_audio),
                 R.drawable.record_icon, //image icon res id (pass 0 to use default icon)
@@ -102,7 +100,6 @@ public class AudioRecorderActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        PopUp.hide();
                         AudioRecorderActivity.this.create();
                         mLaunchActivity = true;
                     }
@@ -110,10 +107,11 @@ public class AudioRecorderActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        PopUp.hide();
                         AudioRecorderActivity.this.finish();
                     }
-                });//pass null to use default listener
+                })) {//pass null to use default listener
+            finish();
+        }
     }
 
     @Override
@@ -192,26 +190,11 @@ public class AudioRecorderActivity extends Activity {
         mNotifyMgr.cancel(NOTIFICATION_ID);
     }
 
-    private void setBackground()
-    {
-        Drawable d;
-
-        if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-            d = getResources().getDrawable(R.drawable.bg_port);
-        else
-            d = getResources().getDrawable(R.drawable.bg_land);
-
-        d.setAlpha(90);
-        layout.setBackground(d);
-    }
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         //handle orientation change to prevent re-creation of activity.
         //i.e. while recording we need to preserve state of recorder
         super.onConfigurationChanged(newConfig);
-
-        setBackground();
     }
 
     @Override

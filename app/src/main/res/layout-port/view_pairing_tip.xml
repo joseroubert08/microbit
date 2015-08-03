@@ -30,7 +30,7 @@
         android:id="@+id/tipImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="60dp"
         android:layout_below="@+id/connectTipTextview"
         android:layout_centerInParent="true">
 
@@ -59,18 +59,18 @@
 
     <ImageButton
         android:id="@+id/cancel_tip_button"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:src="@drawable/cross"
+        android:layout_width="@dimen/header_btn_size"
+        android:layout_height="@dimen/header_btn_size"
+        android:src="@drawable/white_cross"
         android:background="@drawable/popup_cancel_button"
         android:layout_marginRight="50dp"/>
 
     <ImageButton
         android:id="@+id/ok_connect_button"
         android:layout_toRightOf="@id/cancel_tip_button"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:src="@drawable/tick"
+        android:layout_width="@dimen/header_btn_size"
+        android:layout_height="@dimen/header_btn_size"
+        android:src="@drawable/white_tick"
         android:background="@drawable/popup_ok_button" />
 
     </RelativeLayout>

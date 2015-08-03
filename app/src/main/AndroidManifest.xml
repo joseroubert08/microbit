@@ -17,7 +17,7 @@
 <manifest package="com.samsung.microbit"
 		  xmlns:android="http://schemas.android.com/apk/res/android"
 		  android:versionCode="1"
-		  android:versionName="1.0">
+		  android:versionName="1.2">
 
 	<uses-sdk android:minSdkVersion="19"/>
 
@@ -49,7 +49,8 @@
 		android:hardwareAccelerated="true">
 		<activity
 			android:name=".ui.activity.HomeActivity"
-			>
+			android:launchMode="singleTask"
+			android:configChanges="orientation">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 
@@ -67,7 +68,7 @@
 			android:name=".ui.activity.ConnectActivity"
 			android:label="@string/title_activity_connect"
 			android:parentActivityName=".ui.activity.HomeActivity"
-			android:windowSoftInputMode="adjustPan">
+			android:windowSoftInputMode="stateHidden|adjustPan">
 		</activity>
 		<activity
 			android:name=".ui.activity.TouchDevActivity"
@@ -76,16 +77,21 @@
             android:configChanges="orientation|screenSize">
 		</activity>
 		<activity
-			android:name=".ui.activity.PopUpActivity"
+			android:name=".ui.activity.PopUpHolderActivity"
 			android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+			android:launchMode="singleTask">
+		</activity>
+		<activity
+			android:name=".ui.activity.PopUpActivity"
+			android:theme="@style/PopUpTheme"
+			android:launchMode="singleTask"
 			android:windowSoftInputMode="adjustPan">
 		</activity>
 		<activity
 			android:name=".ui.activity.AudioRecorderActivity"
 			android:label="Audio Recorder"
 			android:launchMode="singleTask"
-			android:configChanges="orientation|screenSize"
-			android:theme="@android:style/Theme.Holo">
+			android:configChanges="orientation|screenSize">
 		</activity>
 		<activity
 			android:name=".ui.activity.CameraActivity_OldAPI"

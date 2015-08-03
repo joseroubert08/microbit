@@ -40,11 +40,10 @@ public class AlertPlugin {
 		context = ctx;
 		switch (cmd.getCMD()) {
 			case Constants.SAMSUNG_ALERT_EVT_DISPLAY_TOAST:
-				PopUp.show(context,
-						cmd.getValue(),
-						"Message from Micro:Bit",
-						0, 0,
-						PopUp.TYPE_ALERT, null, null);
+				PopUp.showFromService(context,cmd.getValue(),
+									"Message from Micro:Bit",
+									R.drawable.message_face, R.drawable.blue_btn,
+									PopUp.TYPE_ALERT);
 				break;
 
 			case Constants.SAMSUNG_ALERT_EVT_VIBRATE:
@@ -60,11 +59,11 @@ public class AlertPlugin {
 				break;
 
 			case Constants.SAMSUNG_ALERT_EVT_FIND_MY_PHONE:
-				PopUp.show(context,
+				PopUp.showFromService(context,
 						context.getString(R.string.findphone_via_microbit),
 						"Message from Micro:Bit",
-						0, 0,
-						PopUp.TYPE_ALERT, null, null);
+						R.drawable.message_face, R.drawable.blue_btn,
+						PopUp.TYPE_ALERT);
 				findPhone();
 				break;
 

@@ -14,32 +14,47 @@
         android:verticalSpacing="@dimen/led_gap"
         android:horizontalSpacing="@dimen/led_gap"
         android:layout_marginLeft="@dimen/content_margin"
-        android:layout_marginRight="@dimen/content_margin" />
+        android:layout_marginRight="@dimen/content_margin"
+        android:layout_marginTop="@dimen/activity_top_margin"/>
 
     <RelativeLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/gridview"
         android:layout_centerInParent="true">
 
     <TextView
+        style="@style/h1"
         android:id="@+id/newDeviceTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/new_devices_pattern_null"
-        android:textSize="30sp"
-        android:textColor="@color/black_font_color"/>
+        android:textColor="@color/black_color"
+        android:layout_centerHorizontal="true"/>
 
+        <Button
+            android:id="@+id/nameNewButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:drawableRight="@drawable/rename"
+            android:background="@drawable/white_bg"
+            android:clickable="true"
+            android:textColor="@color/black_color"
+            android:textSize="12pt"
+            android:layout_below="@id/newDeviceTxt"
+            android:layout_marginTop="@dimen/widget_margin"
+            android:layout_marginRight="@dimen/content_margin"
+            android:visibility="invisible"/>
     <EditText
         android:id="@+id/nameNewEdit"
-        android:layout_marginTop="@dimen/widget_margin"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/newDeviceTxt"
         android:lines="3"
         android:background="@drawable/edit_box"
+        android:layout_marginTop="@dimen/widget_margin"
         android:layout_marginRight="@dimen/content_margin"
-        android:inputType="text|textCapCharacters"
+        android:inputType="textVisiblePassword|textNoSuggestions"
         android:visibility="invisible"/>
 
     <RelativeLayout
@@ -53,7 +68,7 @@
             android:id="@+id/cancel_name_button"
             android:layout_width="@dimen/button_size"
             android:layout_height="@dimen/button_size"
-            android:src="@drawable/cross"
+            android:src="@drawable/white_cross"
             android:background="@drawable/popup_cancel_button"
             android:visibility="invisible"
             android:layout_marginRight="50dp"/>
@@ -62,7 +77,7 @@
             android:id="@+id/ok_name_button"
             android:layout_width="@dimen/button_size"
             android:layout_height="@dimen/button_size"
-            android:src="@drawable/tick"
+            android:src="@drawable/white_tick"
             android:background="@drawable/popup_ok_button"
             android:layout_toRightOf="@id/cancel_name_button"
             android:visibility="invisible"/>

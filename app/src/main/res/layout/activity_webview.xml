@@ -5,7 +5,8 @@
         android:id="@+id/headerBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#ffff">
+        android:background="#ffffff"
+        android:elevation="@dimen/activity_bottom_margin" >
 
         <ImageButton
             android:id="@+id/backBtn"
@@ -30,11 +31,8 @@
             android:layout_height="@dimen/button_size"
             android:src="@drawable/refresh"
             android:background="@null"
-            android:scaleType="fitCenter"
             android:onClick="onClick"
             android:layout_centerVertical="true"
-            android:layout_marginTop="3dp"
-            android:layout_marginBottom="3dp"
             android:layout_alignParentEnd="true"
             android:layout_marginRight="@dimen/activity_horizontal_margin"/>
 
@@ -60,8 +58,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/loading_page_msg"
-            android:textSize="40sp"
-            android:textColor="@color/black_font_color"
+            style="@style/h2"
             android:layout_alignParentRight="true"/>
 
         <org.apache.cordova.CordovaWebView

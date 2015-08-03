@@ -2,29 +2,36 @@
     android:layout_width="fill_parent" android:layout_height="fill_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:background="@drawable/bg_port">
+    android:background="@drawable/bg">
 
-    <ImageView
-        android:id="@+id/bbcLogo"
+    <RelativeLayout
+        android:id="@+id/logoArea"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/microbit_logo"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/logo_area_margin"
+        android:layout_marginBottom="@dimen/header_btn_size">
 
-    <ImageView
-        android:id="@+id/samsungLogo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/samsung"
-        android:layout_marginBottom="@dimen/samsung_logo_bottom_marging"
-        android:layout_below="@id/bbcLogo"
-        android:layout_centerHorizontal="true"/>
+        <ImageView
+            android:id="@+id/bbcLogo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/bbc_microbit_vertical"
+            android:layout_marginBottom="@dimen/logo_gap_margin"/>
+
+        <ImageView
+            android:id="@+id/samsungLogo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/samsung"
+            android:layout_below="@id/bbcLogo" />
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/connectBarView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/samsungLogo"
+        android:layout_below="@id/logoArea"
         android:layout_centerHorizontal="true"
         android:background="@drawable/white_bg">
 
@@ -40,12 +47,13 @@
             style="@style/p1"
             android:id="@+id/addDeviceEmpty"
             android:layout_width="@dimen/home_device_name_empty_width"
-            android:layout_height="@dimen/button_height"
+            android:layout_height="@dimen/home_button_height"
             android:layout_margin="@dimen/widget_margin"
-            android:textColor="@color/black_font_color"
+            android:textColor="@color/gray_color"
             android:background="@drawable/white_btn"
             android:layout_below="@id/title"
-            android:drawableRight="@drawable/connected_grey"
+            android:drawableRight="@drawable/connect_device"
+            android:gravity="left|center_vertical"
             android:onClick="onClick"
             android:visibility="visible"/>
 
@@ -53,11 +61,13 @@
             style="@style/p1"
             android:id="@+id/addDevice"
             android:layout_width="@dimen/home_device_name_width"
-            android:layout_height="@dimen/button_height"
+            android:layout_height="@dimen/home_button_height"
             android:layout_margin="@dimen/widget_margin"
             android:background="@drawable/white_btn"
+            android:textColor="@color/blue_button_up"
             android:layout_below="@id/title"
-            android:drawableRight="@drawable/plus_add"
+            android:drawableRight="@drawable/add_device"
+            android:gravity="left|center_vertical"
             android:onClick="onClick"
             android:visibility="gone"/>
 
@@ -65,8 +75,8 @@
             style="@style/p1"
             android:id="@+id/connectBtn"
             android:layout_width="@dimen/button_size"
-            android:layout_height="@dimen/button_size"
-            android:src="@drawable/connected"
+            android:layout_height="@dimen/home_button_height"
+            android:src="@drawable/device_connected"
             android:layout_margin="@dimen/widget_margin"
             android:onClick="onClick"
             android:background="@drawable/white_btn"
@@ -93,39 +103,42 @@
             android:text="@string/your_projects"
             android:layout_margin="@dimen/widget_margin" />
 
-        <Button
-            style="@style/p1"
-            android:id="@+id/numOfProjects"
+        <RelativeLayout
             android:layout_width="@dimen/home_no_project_btn_width"
-            android:layout_height="@dimen/button_height"
-            android:layout_margin="@dimen/widget_margin"
-            android:background="@drawable/white_btn"
+            android:layout_height="@dimen/home_button_height"
+            android:id="@+id/numOfProjectsHolder"
             android:layout_below="@id/projects"
-            android:onClick="onClick"/>
-
-        <Button
+            android:layout_margin="@dimen/widget_margin"
+            android:layout_centerVertical="true"
+            android:background="@drawable/white_btn"
+            android:onClick="onClick">
+                <TextView
+                    android:id="@+id/numOfProjects"
+                    style="@style/h3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical"/>
+                <TextView
+                    style="@style/p1"
+                    android:layout_marginLeft="@dimen/content_margin"
+                    android:layout_toRightOf="@id/numOfProjects"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical"
+                    android:text="@string/saved_projects" />
+        </RelativeLayout>
+        <ImageButton
             style="@style/p1"
             android:id="@+id/startNewProject"
             android:layout_width="@dimen/home_start_btn_width"
-            android:layout_height="@dimen/button_height"
+            android:layout_height="@dimen/home_button_height"
             android:layout_margin="@dimen/widget_margin"
             android:background="@drawable/yellow_btn"
-            android:text="@string/start_new_project"
-            android:layout_toRightOf="@id/numOfProjects"
+            android:layout_toRightOf="@id/numOfProjectsHolder"
+            android:src="@drawable/new_project"
             android:layout_below="@id/projects"
-            android:onClick="onClick"/>
-
-        <ImageButton
-            android:id="@+id/startNewProjectImg"
-            android:layout_width="@dimen/button_size"
-            android:layout_height="@dimen/button_size"
-            android:layout_margin="@dimen/widget_margin"
-            android:background="@drawable/yellow_btn"
-            android:layout_toRightOf="@id/numOfProjects"
-            android:layout_below="@id/projects"
-            android:src="@drawable/light_bulb"
             android:onClick="onClick"
-            android:visibility="gone"/>
+            android:gravity="left|center"/>
 
     </RelativeLayout>
 

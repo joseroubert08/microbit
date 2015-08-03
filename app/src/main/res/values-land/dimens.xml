@@ -15,13 +15,16 @@
 	<dimen name="button_height">60dp</dimen>
 
 	<!-- Header bar -->
+    <dimen name="header_right_margin">10dp</dimen>
 	<dimen name="header_btn_size">60dp</dimen>
 	<dimen name="header_device_name_max">500dp</dimen>
 	<dimen name="header_device_name_min">300dp</dimen>
 	<dimen name="header_title_height">60dp</dimen>
+    <dimen name="header_title_width">100dp</dimen>
 
 	<!-- Home UI -->
-	<dimen name="samsung_logo_bottom_marging">10dp</dimen>
+	<dimen name="logo_area_margin">10dp</dimen>
+	<dimen name="logo_gap_margin">75dp</dimen>
 	<dimen name="home_connect_title_width">150dp</dimen>
 	<dimen name="home_project_title_width">150dp</dimen>
 	<dimen name="home_device_name_width">500dp</dimen>
@@ -32,15 +35,22 @@
 	<!-- Project UI -->
 	<dimen name="project_name_width">406dp</dimen>
 	<dimen name="project_main_margin">50dp</dimen>
+    <bool name="expandProjectItem">true</bool>
 
 	<!-- Connect UI -->
-	<dimen name="device_name_width">450dp</dimen>
+	<dimen name="connect_device_name_width">450dp</dimen>
 	<dimen name="device_main_margin">16dp</dimen>
 	<dimen name="device_lv_bottom_margin">70dp</dimen>
 	<dimen name="led_gap">2dp</dimen>
 	<integer name="led_size">50</integer>
 	<dimen name="led_grid_width">260dp</dimen>
 	<dimen name="mbit_tip_img_size">175dp</dimen>
+    <dimen name="tip_title_width">400dp</dimen>
+    <dimen name="tip_text_width">300dp</dimen>
+    <dimen name="connect_lv_btn_width">60dp</dimen>
+    <dimen name="connect_lv_item_height">60dp</dimen>
+    <dimen name="connect_content_margin">6dp</dimen>
+    <dimen name="connect_tip_btn_margin_top">10dp</dimen>
 
 	<!-- Generic list view item -->
 	<dimen name="lv_btn_width">60dp</dimen>
@@ -49,15 +59,23 @@
 	<dimen name="lv_txt_img_btn_width">246dp</dimen>
 
 	<!-- PopUp -->
-	<dimen name="popup_button_margin">10dp</dimen>
-	<dimen name="popup_button_size">80dp</dimen>
-	<dimen name="popup_paddingTop">10dp</dimen>
-	<dimen name="popup_paddingBottom">10dp</dimen>
+	<dimen name="popup_header_section_marginTop">10dp</dimen>
+	<dimen name="popup_buttons_section_paddingBottom">10dp</dimen>
+	<dimen name="popup_textinput_width">460dp</dimen>
+	<dimen name="popup_buttons_area_width">180dp</dimen> <!-- distance between left button edge and right button edge -->
+	<dimen name="popup_button_size">60dp</dimen>
 	<dimen name="popup_paddingLeft">20dp</dimen>
 	<dimen name="popup_paddingRight">20dp</dimen>
 	<dimen name="popup_icon_size">60dp</dimen>
-	<dimen name="popup_spinner_paddingBottom">60dp</dimen>
+	<dimen name="popup_body_view_paddingVertical">5dp</dimen> <!-- spacing top/bottom between each view inside body section -->
 
 	<!-- Audio Recorder -->
-	<dimen name="audio_mic_size">120dp</dimen>
+	<dimen name="audio_mic_size">100dp</dimen>
+	<dimen name="audio_mic_paddingBottom">10dp</dimen>
+	<dimen name="audio_chrono_paddingTop">10dp</dimen>
+
+    <!-- Web View -->
+    <dimen name="refresh_btn_margin_top">10dp</dimen>
+    <dimen name="refresh_btn_margin_bottom">8dp</dimen>
 </resources>
+
