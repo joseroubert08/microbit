@@ -67,6 +67,7 @@
 	<string name="flashing_failed_io_error">Flashing Failed! Cannot find the file</string>
 	<string name="flashing_failed_message">Flashing Failed! No Programs Found</string>
 	<string name="flashing_failed_title">Flashing Unsuccesful</string>
+	<string name="flashing_progress_message">Please do not interact with micro:bit before flashing process is complete</string>
 	<string name="flashing_success_message">You have successfully downloaded program to BBC micro:bit</string>
 	<string name="flashing_success_title">Flashing Succesful</string>
 	<string name="flashing_error">Error</string>
@@ -162,6 +163,7 @@
 	<string name="flashing_phase2_msg">Press button on micro:bit.</string>
 
 	<string name="web_view_demo">Web View Demo</string>
+	<string name="flashing_project">Flashing \'%s\'</string>
 	<string name="sending_project">Sending project</string>
 	<string name="send_project">Send Project</string>
 	<string name="init_connection">Initialising Connection..</string>

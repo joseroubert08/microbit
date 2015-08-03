@@ -454,7 +454,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 		PopUp.show(this,
 			getString(R.string.flashing_phase1_msg), //message
-			getString(R.string.flashing_title), //title
+			String.format(MBApp.getContext().getString(R.string.flashing_project), programToSend.name), //title
 			R.drawable.flash_face, R.drawable.blue_btn,
 			PopUp.TYPE_SPINNER, //type of popup.
 			null,//override click listener for ok button,
@@ -673,8 +673,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 					if (!inProgress) {
 						// TODO Update progress bar check if correct.(my3)
 						PopUp.show(MBApp.getContext(),
-							"",
-							MBApp.getContext().getString(R.string.sending_project),
+							MBApp.getContext().getString(R.string.flashing_progress_message),
+							String.format(MBApp.getContext().getString(R.string.flashing_project), programToSend.name),
 							R.drawable.flash_face, R.drawable.blue_btn,
 							PopUp.TYPE_PROGRESS, null, null);
 
