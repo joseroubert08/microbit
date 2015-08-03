@@ -55,6 +55,7 @@
             android:background="@drawable/white_btn"
             android:layout_toRightOf="@id/title"
             android:drawableRight="@drawable/connect_device"
+            android:gravity="left|center_vertical"
             android:onClick="onClick"
             android:visibility="visible"
             android:layout_centerVertical="true"/>
