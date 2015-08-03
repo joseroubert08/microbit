@@ -41,6 +41,7 @@
             android:layout_width="@dimen/home_connect_title_width"
             android:layout_height="wrap_content"
             android:text="@string/connect"
+            android:singleLine="true"
             android:layout_margin="@dimen/widget_margin"/>
 
         <Button
@@ -55,7 +56,10 @@
             android:drawableRight="@drawable/connect_device"
             android:gravity="left|center_vertical"
             android:onClick="onClick"
-            android:visibility="visible"/>
+            android:visibility="visible"
+            android:ellipsize="end"
+            android:scrollHorizontally="true"
+            android:lines="1"/>
 
         <Button
             style="@style/p1"
@@ -69,7 +73,10 @@
             android:drawableRight="@drawable/add_device"
             android:gravity="left|center_vertical"
             android:onClick="onClick"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:ellipsize="end"
+            android:scrollHorizontally="true"
+            android:lines="1"/>
 
         <ImageButton
             style="@style/p1"
@@ -101,6 +108,7 @@
             android:layout_width="@dimen/home_project_title_width"
             android:layout_height="wrap_content"
             android:text="@string/your_projects"
+            android:singleLine="true"
             android:layout_margin="@dimen/widget_margin" />
 
         <RelativeLayout
@@ -125,6 +133,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
                     android:gravity="center_vertical"
+                    android:singleLine="true"
                     android:text="@string/saved_projects" />
         </RelativeLayout>
         <ImageButton
