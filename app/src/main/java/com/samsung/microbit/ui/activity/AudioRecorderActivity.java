@@ -93,7 +93,7 @@ public class AudioRecorderActivity extends Activity {
 
         mLaunchActivity = false;
 
-        PopUp.show(this,
+        if (!PopUp.show(this,
                 "",
                 getString(R.string.record_audio),
                 R.drawable.record_icon, //image icon res id (pass 0 to use default icon)
@@ -102,7 +102,6 @@ public class AudioRecorderActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        PopUp.hide();
                         AudioRecorderActivity.this.create();
                         mLaunchActivity = true;
                     }
@@ -110,10 +109,11 @@ public class AudioRecorderActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        PopUp.hide();
                         AudioRecorderActivity.this.finish();
                     }
-                });//pass null to use default listener
+                })) {//pass null to use default listener
+            finish();
+        }
     }
 
     @Override
@@ -194,12 +194,7 @@ public class AudioRecorderActivity extends Activity {
 
     private void setBackground()
     {
-        Drawable d;
-
-        if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-            d = getResources().getDrawable(R.drawable.bg_port);
-        else
-            d = getResources().getDrawable(R.drawable.bg_land);
+        Drawable d = getResources().getDrawable(R.drawable.bg);
 
         d.setAlpha(90);
         layout.setBackground(d);

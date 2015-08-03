@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="fill_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="@drawable/bg_port">
+    android:background="@drawable/bg">
 
     <RelativeLayout
         android:id="@+id/headerBar"
@@ -55,7 +55,7 @@
             android:layout_weight="1"
             android:layout_below="@id/prevDeviceTxt"
             android:divider="@android:color/transparent"
-            android:dividerHeight="@dimen/content_margin"
+            android:dividerHeight="@dimen/connect_content_margin"
             android:clickable="false"/>
 
     </RelativeLayout>

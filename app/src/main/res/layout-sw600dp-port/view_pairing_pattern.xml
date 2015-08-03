@@ -4,7 +4,7 @@
     android:id="@+id/newDeviceView"
     android:layout_below="@id/headerBar"
     android:layout_width="match_parent"
-    android:visibility="visible">
+    android:visibility="gone">
 
     <TextView
         style="@style/h1"

@@ -14,7 +14,8 @@
         android:verticalSpacing="@dimen/led_gap"
         android:horizontalSpacing="@dimen/led_gap"
         android:layout_marginLeft="@dimen/content_margin"
-        android:layout_marginRight="@dimen/content_margin" />
+        android:layout_marginRight="@dimen/content_margin"
+        android:layout_marginTop="@dimen/activity_top_margin"/>
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -28,7 +29,8 @@
         android:layout_height="wrap_content"
         android:text="@string/new_devices_pattern_null"
         android:textSize="30sp"
-        android:textColor="@color/black_font_color"/>
+        android:textColor="@color/black_color"
+        android:layout_centerHorizontal="true"/>
 
     <EditText
         android:id="@+id/nameNewEdit"

@@ -202,8 +202,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 		if (fileToDownload != null) {
 			programToSend = new Project(fileToDownload, Constants.HEX_FILE_DIR + "/" + fileToDownload, 0, null, false);
-			adviceOnMicrobitState(programToSend);
-		}
+			//adviceOnMicrobitState(programToSend);
+		    initiateFlashing(programToSend);
+        }
 	}
 
 	private void setConnectedDeviceText() {
@@ -350,7 +351,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			case R.id.sendBtn:
 				pos = (Integer) v.getTag();
 				Project toSend = (Project) projectAdapter.getItem(pos);
-				adviceOnMicrobitState(toSend);
+				//adviceOnMicrobitState(toSend);
+                initiateFlashing(toSend);
 				break;
 
 			case R.id.connectedIndicatorIcon:
