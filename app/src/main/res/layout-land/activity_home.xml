@@ -44,7 +44,8 @@
             android:text="@string/connect"
             android:layout_margin="@dimen/widget_margin"
             android:singleLine="true"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            />
 
         <Button
             style="@style/p1"
@@ -62,7 +63,8 @@
             android:layout_centerVertical="true"
             android:ellipsize="end"
             android:scrollHorizontally="true"
-            android:lines="1"/>
+            android:lines="1"
+            android:elevation="@dimen/elevation"/>
 
         <Button
             style="@style/p1"
@@ -80,7 +82,8 @@
             android:layout_centerVertical="true"
             android:ellipsize="end"
             android:scrollHorizontally="true"
-            android:lines="1"/>
+            android:lines="1"
+            android:elevation="@dimen/elevation"/>
 
         <ImageButton
             style="@style/p1"
@@ -93,7 +96,8 @@
             android:background="@drawable/white_btn"
             android:layout_toRightOf="@id/addDevice"
             android:visibility="gone"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:elevation="@dimen/elevation"/>
 
     </RelativeLayout>
 
@@ -116,7 +120,8 @@
             android:text="@string/your_projects"
             android:singleLine="true"
             android:layout_margin="@dimen/widget_margin"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            />
 
         <RelativeLayout
             android:layout_width="@dimen/home_no_project_btn_width"
@@ -126,7 +131,8 @@
             android:layout_toRightOf="@id/projects"
             android:layout_margin="@dimen/widget_margin"
             android:layout_centerVertical="true"
-            android:onClick="onClick">
+            android:onClick="onClick"
+            android:elevation="@dimen/elevation">
             <TextView
                 android:id="@+id/numOfProjects"
                 style="@style/h3"
@@ -154,7 +160,8 @@
             android:src="@drawable/new_project"
             android:onClick="onClick"
             android:gravity="left|center"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:elevation="@dimen/elevation"/>
 
     </RelativeLayout>
 

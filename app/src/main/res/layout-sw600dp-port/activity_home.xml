@@ -55,7 +55,8 @@
             android:drawableRight="@drawable/connect_device"
             android:gravity="left|center_vertical"
             android:onClick="onClick"
-            android:visibility="visible"/>
+            android:visibility="visible"
+            android:elevation="@dimen/elevation"/>
 
         <Button
             style="@style/p1"
@@ -69,7 +70,8 @@
             android:gravity="left|center_vertical"
             android:drawableRight="@drawable/add_device"
             android:onClick="onClick"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:elevation="@dimen/elevation"/>
 
         <ImageButton
             style="@style/p1"
@@ -82,7 +84,8 @@
             android:background="@drawable/white_btn"
             android:layout_below="@id/title"
             android:layout_toRightOf="@id/addDevice"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:elevation="@dimen/elevation"/>
 
     </RelativeLayout>
 
@@ -111,7 +114,8 @@
             android:layout_margin="@dimen/widget_margin"
             android:layout_centerVertical="true"
             android:background="@drawable/white_btn"
-            android:onClick="onClick">
+            android:onClick="onClick"
+            android:elevation="@dimen/elevation">
                 <TextView
                     android:id="@+id/numOfProjects"
                     style="@style/h3"
@@ -139,7 +143,8 @@
             android:drawableRight="@drawable/new_project"
             android:layout_below="@id/projects"
             android:onClick="onClick"
-            android:gravity="left|center"/>
+            android:gravity="left|center"
+            android:elevation="@dimen/elevation"/>
 
     </RelativeLayout>
 

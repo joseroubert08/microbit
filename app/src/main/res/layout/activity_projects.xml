@@ -12,7 +12,7 @@
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:background="#ffffff"
-		android:elevation="@dimen/activity_bottom_margin">
+		android:elevation="@dimen/activity_vertical_margin">
 
 		<ImageButton
 			android:id="@+id/backBtn"
