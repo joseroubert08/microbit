@@ -37,6 +37,7 @@
 
 	<!-- Project UI -->
 	<bool name="showSortMenu">true</bool>
+    <bool name="expandProjectItem">true</bool>
 
 	<dimen name="project_name_width">800dp</dimen>
 	<dimen name="project_main_margin">20dp</dimen>

@@ -38,6 +38,7 @@
 	<!-- Project UI -->
 	<dimen name="project_name_width">800dp</dimen>
 	<dimen name="project_main_margin">20dp</dimen>
+    <bool name="expandProjectItem">true</bool>
 
 	<!-- Connect UI -->
 	<dimen name="connect_device_name_width">150dp</dimen>

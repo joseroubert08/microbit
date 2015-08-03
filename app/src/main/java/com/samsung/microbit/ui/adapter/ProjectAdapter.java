@@ -68,9 +68,28 @@ public class ProjectAdapter extends BaseAdapter {
 		@Override
 		public void onClick(View v) {
 
-            //changeActionBar(v);
+            logi("OnClickListener() :: " + v.getClass().getName());
 
+            boolean expandProjectItem = false;
+            try {
+                expandProjectItem = projectActivity.getResources().getBoolean(R.bool.expandProjectItem);
+            } catch (Exception e) {
+            }
 
+            if (expandProjectItem) {
+                changeActionBar(v);
+            }
+            else{
+                if (currentEditableRow != -1) {
+                    int i = (Integer) v.getTag(R.id.positionId);
+                    if (i != currentEditableRow) {
+                        renameProject(v);
+                    }
+                } else {
+                    renameProject(v);
+                }
+            }
+            /*
 			logi("OnClickListener() :: " + v.getClass().getName());
 			if (v.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 				changeActionBar(v);
@@ -83,7 +102,7 @@ public class ProjectAdapter extends BaseAdapter {
 				} else {
 					renameProject(v);
 				}
-			}
+			}*/
 		}
 	};
 
@@ -93,10 +112,10 @@ public class ProjectAdapter extends BaseAdapter {
 
 			logi("OnLongClickListener() :: " + v.getClass().getName());
 			boolean rc = false;
-			if (v.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+			//if (v.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 				renameProject(v);
 				rc = true;
-			}
+			//}
 
 			return rc;
 		}
