@@ -58,15 +58,15 @@
 	<dimen name="lv_txt_img_btn_width">246dp</dimen>
 
 	<!-- PopUp -->
-	<dimen name="popup_header_section_marginBottom">10dp</dimen>
-	<dimen name="popup_buttons_section_paddingTop">10dp</dimen>
+	<dimen name="popup_header_section_marginTop">10dp</dimen>
+	<dimen name="popup_buttons_section_paddingBottom">10dp</dimen>
 	<dimen name="popup_textinput_width">460dp</dimen>
 	<dimen name="popup_buttons_area_width">180dp</dimen> <!-- distance between left button edge and right button edge -->
 	<dimen name="popup_button_size">60dp</dimen>
 	<dimen name="popup_paddingLeft">20dp</dimen>
 	<dimen name="popup_paddingRight">20dp</dimen>
 	<dimen name="popup_icon_size">60dp</dimen>
-	<dimen name="popup_body_view_paddingVertical">6dp</dimen> <!-- spacing top/bottom between each view inside body section -->
+	<dimen name="popup_body_view_paddingVertical">5dp</dimen> <!-- spacing top/bottom between each view inside body section -->
 
 	<!-- Audio Recorder -->
 	<dimen name="audio_mic_size">120dp</dimen>

@@ -1,36 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rootLayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:gravity="center"
     android:paddingLeft="@dimen/popup_paddingLeft"
     android:paddingRight="@dimen/popup_paddingRight"
     android:background="#DD000000"
-    android:orientation="vertical">
+    >
 
-    <RelativeLayout
-        android:id="@+id/headerLayout"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/popup_header_section_marginBottom"
-        >
-
-        <ImageView
-            android:layout_width="@dimen/popup_icon_size"
-            android:layout_height="@dimen/popup_icon_size"
-            android:id="@+id/imageIcon"
-            android:src="@drawable/overwrite_face"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/blue_btn"
-            android:scaleType="center"
-            />
-
-    </RelativeLayout>
+    <ImageView
+        android:layout_width="@dimen/popup_icon_size"
+        android:layout_height="@dimen/popup_icon_size"
+        android:layout_gravity="top"
+        android:layout_marginTop="@dimen/popup_header_section_marginTop"
+        android:id="@+id/imageIcon"
+        android:src="@drawable/overwrite_face"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/blue_btn"
+        android:scaleType="center"
+        />
 
     <LinearLayout
         android:id="@+id/bodyLayout"
         android:orientation="vertical"
+        android:layout_centerInParent="true"
         android:gravity="center_horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -106,14 +99,17 @@
         android:id="@+id/bottomLayout"
         android:layout_width="@dimen/popup_buttons_area_width"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:paddingBottom="@dimen/popup_buttons_section_paddingBottom"
         android:visibility="invisible"
-        android:paddingTop="@dimen/popup_buttons_section_paddingTop"
         >
 
         <ImageButton
             android:layout_width="@dimen/popup_button_size"
             android:layout_height="@dimen/popup_button_size"
             android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
             android:id="@+id/imageButtonCancel"
             android:src="@drawable/white_cross"
             android:onClick="onClick"
@@ -145,4 +141,4 @@
 
     </RelativeLayout>
 
-</LinearLayout>
+</RelativeLayout>
