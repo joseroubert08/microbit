@@ -147,9 +147,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	private void handleBLENotification(Context context, Intent intent) {
 
-		logi("handleBLENotification()");
 		ConnectedDevice changedDev = Utils.getPairedMicrobit(this);
-
+        logi("handleBLENotification() "+ changedDev.mPattern + "[" + changedDev.mStatus + "]");
 		if (prevDevList == null) {
 			prevDevList = PreviousDeviceList.getInstance(this);
 		}
@@ -592,7 +591,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 				prevDeviceArray[pos].mStatus = !currentState;
 				prevDevList.changeMicrobitState(pos, prevDeviceArray[pos], toTurnON, false);
-				populateConnectedDeviceList(true);
+				//populateConnectedDeviceList(true);
 				if (debug) logi("onClick() :: connectBtn");
 				break;
 
@@ -829,6 +828,26 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		connectSearchView.setVisibility(View.GONE);
 	}
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if ((keyCode == KeyEvent.KEYCODE_BACK))
+        {
+            Arrays.fill(deviceCodeArray,"0");
+            if(state == PAIRING_STATE.PAIRING_STATE_SEARCHING) {
+                scanLeDevice(false);
+            }
+            if(!isPortraitMode()) {
+                state =PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
+                finish();
+            } else if  (isPortraitMode() && state == PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON)
+                finish();
+            else
+                displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
