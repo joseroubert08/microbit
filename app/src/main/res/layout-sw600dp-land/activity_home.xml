@@ -132,14 +132,16 @@
                 android:gravity="center_vertical"/>
         </RelativeLayout>
 
-        <ImageButton
+        <Button
+            style="@style/p1"
             android:id="@+id/startNewProject"
             android:layout_width="@dimen/home_start_btn_width"
             android:layout_height="@dimen/home_button_height"
             android:layout_margin="@dimen/widget_margin"
             android:background="@drawable/yellow_btn"
+            android:text="@string/create_new_project"
             android:layout_toRightOf="@id/numOfProjectsHolder"
-            android:src="@drawable/new_project"
+            android:drawableRight="@drawable/new_project"
             android:onClick="onClick"
             android:gravity="left|center"
             android:layout_centerVertical="true"/>
