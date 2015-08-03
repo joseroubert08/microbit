@@ -206,19 +206,16 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		if (connectedDevice.mPattern != null) {
 			addDeviceButton.setVisibility(View.VISIBLE);
 			connectButton.setVisibility(View.VISIBLE);
-			String styledText = "<big><font color='blue'>"
-				+ (connectedDevice.mName != null ? connectedDevice.mName : "")
-				+ "</font>"
-				+ "<font color='blue'> (" + connectedDevice.mPattern + ")</font></big>";
-			addDeviceButton.setText(Html.fromHtml(styledText));
+			if (connectedDevice.mName!= null)
+				addDeviceButton.setText(connectedDevice.mName + " (" + connectedDevice.mPattern + ")" );
+			else
+				addDeviceButton.setText("");
 			addDeviceEmpty.setVisibility(View.GONE);
-			addDeviceButton.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
 		} else {
 			addDeviceButton.setVisibility(View.GONE);
 			connectButton.setVisibility(View.GONE);
 			addDeviceEmpty.setVisibility(View.VISIBLE);
-			addDeviceEmpty.setText(R.string.connect_to_mbit);
-			addDeviceEmpty.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+            addDeviceEmpty.setText(R.string.connect_to_mbit);
 		}
 
 		if (connectedDevice.mPattern != null && connectedDevice.mStatus) {

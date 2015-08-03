@@ -66,8 +66,10 @@
             android:layout_height="@dimen/home_button_height"
             android:layout_margin="@dimen/widget_margin"
             android:background="@drawable/white_btn"
+            android:textColor="@color/blue_button_up"
             android:layout_toRightOf="@id/title"
             android:drawableRight="@drawable/add_device"
+            android:gravity="left|center_vertical"
             android:onClick="onClick"
             android:visibility="gone"
             android:layout_centerVertical="true"/>

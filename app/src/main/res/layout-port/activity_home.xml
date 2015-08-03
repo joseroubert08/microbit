@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/logo_area_margin"
-        android:layout_marginBottom="@dimen/logo_area_margin">
+        android:layout_marginBottom="@dimen/header_btn_size">
 
         <ImageView
             android:id="@+id/bbcLogo"
@@ -53,6 +53,7 @@
             android:background="@drawable/white_btn"
             android:layout_below="@id/title"
             android:drawableRight="@drawable/connect_device"
+            android:gravity="left|center_vertical"
             android:onClick="onClick"
             android:visibility="visible"/>
 
@@ -63,8 +64,10 @@
             android:layout_height="@dimen/home_button_height"
             android:layout_margin="@dimen/widget_margin"
             android:background="@drawable/white_btn"
+            android:textColor="@color/blue_button_up"
             android:layout_below="@id/title"
             android:drawableRight="@drawable/add_device"
+            android:gravity="left|center_vertical"
             android:onClick="onClick"
             android:visibility="gone"/>
 

@@ -33,7 +33,7 @@
 	<dimen name="home_no_project_btn_width">150dp</dimen>
 	<dimen name="home_start_btn_width">150dp</dimen>
 	<dimen name="home_activity_margin">50dp</dimen>
-	<dimen name="home_button_height">100dp</dimen>
+	<dimen name="home_button_height">80dp</dimen>
 
 	<!-- Project UI -->
 	<dimen name="project_name_width">800dp</dimen>
