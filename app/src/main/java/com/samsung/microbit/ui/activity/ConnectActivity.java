@@ -677,14 +677,14 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			R.drawable.error_face, //image icon res id
 			R.drawable.red_btn,
 			PopUp.TYPE_ALERT, //type of popup.
-			new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					PopUp.hide();
-					displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
-				}
-			},//override click listener for ok button
-			null);//pass null to use default listener
+			null,//override click listener for ok button
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PopUp.hide();
+                    displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                }
+            });//pass null to use default listener
 
 	}
 
