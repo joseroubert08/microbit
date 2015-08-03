@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_height="wrap_content"
+android:layout_height="fill_parent"
 android:id="@+id/connectSearchView"
 android:layout_toRightOf="@id/prevDeviceView"
-android:layout_width="wrap_content"
+android:layout_width="fill_parent"
 android:layout_below="@id/headerBar"
 android:visibility="gone">
 
@@ -16,17 +16,17 @@ android:visibility="gone">
     android:layout_marginTop="@dimen/activity_top_margin"
     android:layout_centerHorizontal="true" />
 
+    <WebView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:id="@+id/animationwebView"
+        android:layout_centerInParent="true"/>
 <RelativeLayout
     android:layout_height="fill_parent"
     android:layout_width="fill_parent"
     android:id="@+id/connectSearchImage"
     android:layout_below="@id/connectSearchTitle">
 
-    <WebView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:id="@+id/animationwebView"
-        android:layout_centerInParent="true"/>
 
     <ImageButton
         android:id="@+id/cancel_search_button"

@@ -52,6 +52,7 @@
     <dimen name="connect_lv_item_height">60dp</dimen>
     <dimen name="connect_content_margin">10dp</dimen>
     <dimen name="connect_tip_btn_margin_top">10dp</dimen>
+    <dimen name="connect_margin_top">50dp</dimen>
 
 	<!-- Generic list view item -->
 	<dimen name="lv_btn_width">60dp</dimen>

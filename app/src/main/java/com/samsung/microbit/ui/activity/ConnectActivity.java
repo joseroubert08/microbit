@@ -1,7 +1,6 @@
 package com.samsung.microbit.ui.activity;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -15,13 +14,16 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -60,9 +62,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		PAIRING_STATE_SEARCHING,
 		PAIRING_STATE_ERROR,
 		PAIRING_STATE_NEW_NAME
-	}
-
-	;
+	};
 
 	private static PAIRING_STATE state = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
 
@@ -100,8 +100,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	private Handler mHandler;
 
 	// Stops scanning after 10 seconds.
-	private static final long SCAN_PERIOD = 1500;
-	private ProgressDialog pairingProgressDialog;
+	private static final long SCAN_PERIOD = 15000;
 	private Boolean isBLuetoothEnabled = false;
 
 	final private int REQUEST_BT_ENABLE = 1;
@@ -447,8 +446,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				newDeviceView.setVisibility(View.VISIBLE);
 				findViewById(R.id.cancel_name_button).setVisibility(View.VISIBLE);
 				findViewById(R.id.newDeviceTxt).setVisibility(View.VISIBLE);
-				findViewById(R.id.nameNewEdit).setVisibility(View.GONE);
 				findViewById(R.id.ok_name_button).setVisibility(View.GONE);
+                findViewById(R.id.nameNewButton).setVisibility(View.GONE);
+                findViewById(R.id.nameNewEdit).setVisibility(View.GONE);
 				displayLedGrid();
 				break;
 
@@ -456,11 +456,21 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				findViewById(R.id.gridview).setEnabled(false);
 				findViewById(R.id.connectedDeviceList).setClickable(false);
 				newDeviceView.setVisibility(View.VISIBLE);
-				((EditText) findViewById(R.id.nameNewEdit)).setText(" ");
-				EditText editText = (EditText) findViewById(R.id.nameNewEdit);
-				editText.setText(newDeviceCode);
-				editText.setVisibility(View.VISIBLE);
-				editText.requestFocus();
+				Button newNameButton = (Button) findViewById(R.id.nameNewButton);
+                EditText newNameEdit = (EditText) findViewById(R.id.nameNewEdit);
+                newNameButton.setTag(R.id.textEdit, newNameEdit);
+                newNameButton.setOnClickListener(microbitRenameClickListener);
+                newNameEdit.setTag(R.id.editbutton, newNameButton);
+                newNameEdit.setOnEditorActionListener(editorOnActionListener);
+                if((prevDeviceArray == null) || (prevDeviceArray[0].mName == null) || (prevDeviceArray[0].mName.equals(""))) {
+                    newNameButton.setText(newDeviceCode);
+                    newNameEdit.setText(newDeviceCode);
+                }else {
+                    newNameButton.setText(prevDeviceArray[0].mName);
+                    newNameEdit.setText(prevDeviceArray[0].mName);
+                }
+                newNameButton.setVisibility(View.VISIBLE);
+                newNameEdit.setVisibility(View.INVISIBLE);
 				findViewById(R.id.ok_name_button).setVisibility(View.VISIBLE);
 				findViewById(R.id.cancel_name_button).setVisibility(View.VISIBLE);
 				displayLedGrid();
@@ -472,6 +482,50 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		}
 	}
 
+    private TextView.OnEditorActionListener editorOnActionListener = new TextView.OnEditorActionListener() {
+        @Override
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            boolean handled = true;
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                dismissKeyBoard(v, true, true);
+            } else if (actionId == -1) {
+                dismissKeyBoard(v, true, false);
+            }
+            return handled;
+        }
+    };
+    private void dismissKeyBoard(View v, boolean hide,boolean done) {
+        if (done) {
+            EditText ed = (EditText) v;
+            String newName = ed.getText().toString().trim();
+			if (newName.isEmpty()) {
+				ed.setText("");
+				ed.setError(getString(R.string.name_empty_error));
+            } else {
+				hideKeyboard(v);
+				prevDeviceArray[0].mName = newName;
+				prevDevList.changeMicrobitName(0, prevDeviceArray[0]);
+                populateConnectedDeviceList(true);
+                Button newNameButton = (Button) findViewById(R.id.nameNewButton);
+                newNameButton.setText(newName);
+                newNameButton.setVisibility(View.VISIBLE);
+                ed.setVisibility(View.INVISIBLE);
+            }
+        }
+    }
+    private View.OnClickListener microbitRenameClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Button newNameButton = (Button) findViewById(R.id.nameNewButton);
+            EditText newNameEdit = (EditText) findViewById(R.id.nameNewEdit);
+            newNameEdit.setVisibility(View.VISIBLE);
+            newNameButton.setVisibility(View.INVISIBLE);
+            newNameEdit.setText(newDeviceCode);
+            newNameEdit.setSelection(newDeviceCode.length());
+            newNameEdit.requestFocus();
+            showKeyboard();
+        }
+    };
 	public void onClick(final View v) {
 
 		int pos;
@@ -503,7 +557,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 					editText.setText("");
 					editText.setError(getString(R.string.name_empty_error));
 				} else {
-					hideKeyboard();
+					hideKeyboard(editText);
 					prevDeviceArray[0].mName = newname;
 					prevDevList.changeMicrobitName(0, prevDeviceArray[0]);
 					displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
@@ -565,6 +619,14 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		}
 	}
+    public void hideKeyboard(View v) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
+    }
+    public void showKeyboard() {
+        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+	}
 
 	private void handleDeleteMicrobit(final int pos) {
 		PopUp.show(this,
@@ -584,12 +646,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	}
 
-	public void hideKeyboard() {
-		InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
-		inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-			InputMethodManager.HIDE_NOT_ALWAYS);
-	}
 
 	private volatile boolean deviceFound = false;
 
@@ -598,20 +655,19 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		if (debug) logi("handle_pairing_failed() :: Start");
 
 		// dummy code to test addition of MBits
-		/*
-		if(debug) {
-			if (!newDeviceCode.equalsIgnoreCase("vuvuv")) {
 
-                state = PAIRING_STATE.PAIRING_STATE_NEW_NAME;
-                displayConnectScreen(state);
+		/*if(debug) {
+			if (!newDeviceCode.equalsIgnoreCase("vuvuv")) {
                 ConnectedDevice newDev = new ConnectedDevice(null, newDeviceCode, false, "ab.cd.ef.gh.ij.56");
-                prevDevList.addMicrobit(newDev, prevDevList.PREVIOUS_DEVICES_MAX);
-				populateConnectedDeviceList(true);
+                int oldId = prevDevList.checkDuplicateMicrobit(newDev);
+                prevDevList.addMicrobit(newDev,oldId);
+                populateConnectedDeviceList(true);
+                displayConnectScreen(PAIRING_STATE.PAIRING_STATE_NEW_NAME);
                 return;
 
             }
-        }
-        */
+        }*/
+
 
 		displayConnectScreen(PAIRING_STATE.PAIRING_STATE_ERROR);
 

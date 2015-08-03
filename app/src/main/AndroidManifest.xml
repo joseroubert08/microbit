@@ -68,7 +68,7 @@
 			android:name=".ui.activity.ConnectActivity"
 			android:label="@string/title_activity_connect"
 			android:parentActivityName=".ui.activity.HomeActivity"
-			android:windowSoftInputMode="adjustPan">
+			android:windowSoftInputMode="stateHidden|adjustPan">
 		</activity>
 		<activity
 			android:name=".ui.activity.TouchDevActivity"

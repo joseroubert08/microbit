@@ -78,7 +78,10 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
         }
         else {
             String styledText;
-            styledText = entry.mName;
+            if(entry.mName !=null)
+            	styledText = entry.mName;
+            else
+                styledText = entry.mPattern;
             deviceName.setText(styledText);
             deviceName.setTextAppearance(parentActivity, R.style.p1);
             deviceName.setGravity(Gravity.LEFT);
