@@ -203,7 +203,6 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
         touchDevelopView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         touchDevelopView.getSettings().setJavaScriptEnabled(true);
         touchDevelopView.setBackgroundColor(Color.argb(1, 0, 0, 0));
-        touchDevelopView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
 
         String userAgent = touchDevelopView.getSettings().getUserAgentString();
