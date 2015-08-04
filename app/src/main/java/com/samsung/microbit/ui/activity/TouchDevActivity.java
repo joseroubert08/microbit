@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.GestureDetector;
@@ -13,6 +12,7 @@ import android.view.View;
 import android.webkit.HttpAuthHandler;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
+import android.webkit.PermissionRequest;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -45,6 +45,7 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
     GestureDetector gestureScanner;
     private static final int SWIPE_THRESHOLD = 10;
     private static final int SWIPE_VELOCITY_THRESHOLD = 10;
+    private String baseURL = null;
 
     String TAG = "TouchDevActivity";
 
@@ -146,6 +147,12 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
             }
             return false;
         }
+        @Override
+        public void	onReceivedError(WebView view, int errorCode, String description, String failingUrl){
+            //TODO Add proper page for each error
+            touchDevelopView.stopLoading();
+            touchDevelopView.loadUrl("file:///android_asset/www/error.html");
+        }
     }
 
     private class myWebViewChromeClient extends CordovaChromeClient{
@@ -154,7 +161,7 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
             super(cordova);
         }
         public void onProgressChanged(WebView view, int newProgress) {
-            LOG.d(TAG, "onProgressChanged");
+            LOG.d(TAG, "onProgressChanged" + newProgress);
             TouchDevActivity.this.setValue(newProgress);
             super.onProgressChanged(view, newProgress);
         }
@@ -167,9 +174,13 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
 
         @Override
         public boolean onJsPrompt(WebView view, String origin, String message, String defaultValue, JsPromptResult result){
-            //TODO 1. Why do I need to write all these functions?
-            //     2. Beautify this
-            return false;
+            LOG.d(TAG, "onJsPrompt");
+            return super.onJsPrompt(view,origin,message,defaultValue,result);
+        }
+        @Override
+        public void	onPermissionRequest(PermissionRequest request){
+            LOG.d(TAG, "onPermissionRequest");
+            super.onPermissionRequest(request);
         }
     }
 
@@ -210,13 +221,14 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
         gestureScanner = new GestureDetector(new myGestureScanner());
 
         Intent intent = getIntent();
-        String url = intent.getStringExtra(Constants.URL);
+        baseURL = intent.getStringExtra(Constants.URL);
 
         //Load URL now
-        if(url == null) {
+        if(baseURL == null) {
             touchDevelopView.loadUrl(getString(R.string.touchDevURLNew));
+            baseURL = getString(R.string.touchDevURLNew);
         } else {
-            touchDevelopView.loadUrl(url);
+            touchDevelopView.loadUrl(baseURL);
         }
         touchDevelopView.setWebChromeClient(new myWebViewChromeClient(this));
         touchDevelopView.setWebViewClient(new myWebViewClient(this, touchDevelopView));
@@ -257,7 +269,7 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
         if(v.getId() == R.id.backBtn){
             finish();
         } else if(v.getId() == R.id.refreshBtn){
-            touchDevelopView.reload();
+            touchDevelopView.loadUrl(baseURL);
         }
     }
 
@@ -294,9 +306,6 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
                     touchDevelopProgress.setVisibility(View.INVISIBLE);
                     loadingTxt.setVisibility(View.INVISIBLE);
                 }
-                break;
-            case "onReceivedError":
-                touchDevelopView.loadUrl("file:///android_asset/www/error.html");
                 break;
         }
         return null;
