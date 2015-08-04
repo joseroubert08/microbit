@@ -20,6 +20,7 @@
 	<string name="poweredBy">Powered by\r\n SAMSUNG</string>
 
 	<string name="touchDevURLNew">https://live.microbit.co.uk/app/?fota=1</string>
+    <string name="user_agent">SamsungBrowser/microbit Profile/OTA-DFU1.0</string>
 
 	<string name="search_BLE_activity">Search micro:bit</string>
 	<string name="device_details">Device_details</string>
