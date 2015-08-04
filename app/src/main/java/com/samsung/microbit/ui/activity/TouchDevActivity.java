@@ -295,6 +295,9 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
                     loadingTxt.setVisibility(View.INVISIBLE);
                 }
                 break;
+            case "onReceivedError":
+                touchDevelopView.loadUrl("file:///android_asset/www/error.html");
+                break;
         }
         return null;
     }
