@@ -591,7 +591,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
                 mPrevDeviceArray[pos].mStatus = !currentState;
                 mPrevDevList.changeMicrobitState(pos, mPrevDeviceArray[pos], toTurnON, false);
-				//populateConnectedDeviceList(true);
+                if (!toTurnON)
+				   populateConnectedDeviceList(true);
 				if (debug) logi("onClick() :: connectBtn");
 				break;
 
