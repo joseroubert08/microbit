@@ -16,7 +16,7 @@
 	<dimen name="elevation">4dp</dimen>
 
 	<!-- Header bar -->
-    <dimen name="header_right_margin">10dp</dimen>
+    <dimen name="header_right_margin">0dp</dimen>
 	<dimen name="header_btn_size">60dp</dimen>
 	<dimen name="header_device_name_max">500dp</dimen>
 	<dimen name="header_device_name_min">300dp</dimen>
@@ -57,7 +57,7 @@
 	<dimen name="lv_btn_width">60dp</dimen>
 	<dimen name="lv_item_height">60dp</dimen>
 	<dimen name="lv_item_margin">6dp</dimen>
-	<dimen name="lv_txt_img_btn_width">246dp</dimen>
+	<dimen name="lv_txt_img_btn_width">365dp</dimen>
 
 	<!-- PopUp -->
 	<dimen name="popup_header_section_marginTop">10dp</dimen>

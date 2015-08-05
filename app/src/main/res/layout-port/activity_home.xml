@@ -83,7 +83,7 @@
         <ImageButton
             style="@style/p1"
             android:id="@+id/connectBtn"
-            android:layout_width="@dimen/button_size"
+            android:layout_width="@dimen/home_start_btn_width"
             android:layout_height="@dimen/home_button_height"
             android:src="@drawable/device_connected"
             android:layout_margin="@dimen/widget_margin"
