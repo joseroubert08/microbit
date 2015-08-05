@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/logo_area_margin"
-        android:layout_marginBottom="@dimen/header_btn_size">
+        android:layout_marginBottom="@dimen/logo_bottom_margin">
 
         <ImageView
             android:id="@+id/bbcLogo"
@@ -101,6 +101,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/content_margin"
+        android:layout_marginBottom="@dimen/content_margin"
         android:layout_below="@id/connectBarView"
         android:layout_centerHorizontal="true"
         android:background="@drawable/white_bg">

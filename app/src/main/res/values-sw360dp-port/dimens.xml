@@ -26,6 +26,7 @@
 	<!-- Home UI -->
 	<dimen name="logo_area_margin">100dp</dimen>
 	<dimen name="logo_gap_margin">40dp</dimen>
+	<dimen name="logo_bottom_margin">60dp</dimen>
 	<dimen name="home_connect_title_width">340dp</dimen>
 	<dimen name="home_project_title_width">340dp</dimen>
 	<dimen name="home_tile_bar_height">50dp</dimen>
