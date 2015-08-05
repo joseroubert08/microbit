@@ -49,11 +49,12 @@
 	<dimen name="led_gap">2dp</dimen>
 	<integer name="led_size">50</integer>
 	<dimen name="led_grid_width">300dp</dimen>
-	<dimen name="mbit_tip_img_size">175dp</dimen>
+	<dimen name="mbit_tip_img_size">150dp</dimen>
 	<dimen name="button_gap_margin">75dp</dimen>
     <dimen name="connect_lv_btn_width">50dp</dimen>
     <dimen name="connect_lv_item_height">50dp</dimen>
     <dimen name="connect_content_margin">5dp</dimen>
+    <dimen name="connect_tip_image_margin_top">60dp</dimen>
     <dimen name="connect_tip_btn_margin_top">20dp</dimen>
 
 	<!-- Generic list view item -->

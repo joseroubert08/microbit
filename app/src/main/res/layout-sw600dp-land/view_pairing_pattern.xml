@@ -36,6 +36,7 @@ android:layout_below="@id/headerBar">
             android:layout_centerHorizontal="true" />
 
         <Button
+            style="@style/p1"
             android:id="@+id/nameNewButton"
             android:layout_width="@dimen/led_grid_width"
             android:layout_height="wrap_content"
@@ -43,7 +44,6 @@ android:layout_below="@id/headerBar">
             android:background="@drawable/white_bg"
             android:clickable="true"
             android:textColor="@color/black_color"
-            android:textSize="12pt"
             android:layout_below="@id/gridview"
             android:layout_marginTop="@dimen/widget_margin"
             android:layout_centerInParent="true"
