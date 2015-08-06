@@ -54,6 +54,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	ConnectedDevice[]  mPrevDeviceArray;
 	PreviousDeviceList mPrevDevList;
+    ConnectedDevice    mCurrentDevice;
 
 	private enum PAIRING_STATE {
 		PAIRING_STATE_CONNECT_BUTTON,
@@ -147,17 +148,17 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	private void handleBLENotification(Context context, Intent intent) {
 
-		ConnectedDevice changedDev = Utils.getPairedMicrobit(this);
-        logi("handleBLENotification() "+ changedDev.mPattern + "[" + changedDev.mStatus + "]");
+        mCurrentDevice = Utils.getPairedMicrobit(this);
+        logi("handleBLENotification() "+ mCurrentDevice.mPattern + "[" + mCurrentDevice.mStatus + "]");
 		if (mPrevDevList == null) {
             mPrevDevList = PreviousDeviceList.getInstance(this);
 		}
         mPrevDeviceArray = mPrevDevList.loadPrevMicrobits();
 
-		if (changedDev.mPattern != null && changedDev.mPattern.equals(mPrevDeviceArray[0].mPattern)) {
-            mPrevDeviceArray[0].mStatus = changedDev.mStatus;
+		if (mCurrentDevice.mPattern != null && mCurrentDevice.mPattern.equals(mPrevDeviceArray[0].mPattern)) {
+            mPrevDeviceArray[0].mStatus = mCurrentDevice.mStatus;
             mPrevDevList.changeMicrobitState(0, mPrevDeviceArray[0], mPrevDeviceArray[0].mStatus, true);
-			populateConnectedDeviceList(true);
+			populateConnectedDeviceList(false);
 
 		}
 
@@ -178,7 +179,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	public void onResume() {
 		super.onResume();
 		MBApp.setContext(this);
-		populateConnectedDeviceList(false);
+       populateConnectedDeviceList(false);
 	}
 
 	public ConnectActivity() {
@@ -375,6 +376,11 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		if (mPrevDevList != null)
 			numOfPreviousItems = mPrevDevList.size();
 
+        if((numOfPreviousItems > 0) && (mCurrentDevice!=null) &&
+                (mPrevDeviceArray[0].mPattern.equals(mCurrentDevice.mPattern)))
+        {
+            mPrevDeviceArray[0].mStatus=mCurrentDevice.mStatus;
+        }
 
 		for (int i = 0; i < numOfPreviousItems; i++) {
 			connectedDeviceList.add(mPrevDeviceArray[i]);
@@ -386,12 +392,12 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		if (isupdate) {
 			connectedDeviceAdapter.updateAdapter(connectedDeviceList);
-			lvConnectedDevice.setAdapter(connectedDeviceAdapter);
 
 		} else {
 			connectedDeviceAdapter = new ConnectedDeviceAdapter(this, connectedDeviceList);
 			lvConnectedDevice.setAdapter(connectedDeviceAdapter);
 		}
+
 	}
 
 	public static boolean disableListView() {
@@ -408,10 +414,11 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
         mNewDeviceView.setVisibility(View.GONE);
         mConnectSearchView.setVisibility(View.GONE);
 
-		Log.d("Microbit", "********** Connect: state from " + mState + " to " +gotoState);
+		Log.d("Microbit", "********** Connect: state from " + mState + " to " + gotoState);
         mState = gotoState;
 
-		if (gotoState == PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON)
+		if ((gotoState == PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON) ||
+                (gotoState == PAIRING_STATE.PAIRING_STATE_ERROR))
 			DISABLE_DEVICE_LIST = false;
 		else
 			DISABLE_DEVICE_LIST = true;
@@ -576,7 +583,6 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 			case R.id.connectBtn:
 				pos = (Integer) v.getTag();
-				boolean toTurnON = false;
 				boolean currentState = mPrevDeviceArray[pos].mStatus;
 				if (!currentState) {
 					PopUp.show(MBApp.getContext(),
@@ -585,14 +591,14 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 						R.drawable.message_face, R.drawable.blue_btn,
 						PopUp.TYPE_SPINNER,
 						null, null);
+                    IPCService.getInstance().bleConnect();
 
-					toTurnON = true;
-				}
+				} else {
 
                 mPrevDeviceArray[pos].mStatus = !currentState;
-                mPrevDevList.changeMicrobitState(pos, mPrevDeviceArray[pos], toTurnON, false);
-                if (!toTurnON)
-				   populateConnectedDeviceList(true);
+                    mPrevDevList.changeMicrobitState(pos, mPrevDeviceArray[pos], false, false);
+                    populateConnectedDeviceList(true);
+                }
 				if (debug) logi("onClick() :: connectBtn");
 				break;
 

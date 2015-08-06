@@ -69,6 +69,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	int STATE_START_FLASH = 1;
 	int STATE_PHASE1_COMPLETE = 2;
 
+    boolean  isDisconnectedForFlash=false;
 	Handler mHandler;
 	private Runnable handleResetMicrobit;
 
@@ -376,6 +377,22 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	}
 
 	private void adviceOnMicrobitState(final Project toSend) {
+        ConnectedDevice currentMicrobit = Utils.getPairedMicrobit(this);
+        if (currentMicrobit.mPattern == null) {
+            PopUp.show(MBApp.getContext(),
+                    getString(R.string.flashing_failed_no_microbit), //message
+                    getString(R.string.flashing_error), //title
+                    R.drawable.error_face,//image icon res id
+                    R.drawable.red_btn,
+                    PopUp.TYPE_ALERT, //type of popup.
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            PopUp.hide();
+                        }
+                    },//override click listener for ok button
+                    null);//pass null to use default listeneronClick
+        } else {
 		PopUp.show(MBApp.getContext(),
 			getString(R.string.flashing_tip), //message
 			getString(R.string.flashing_tip_title), //title
@@ -395,6 +412,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				}
 			});//pass null to use default listeneronClick
 	}
+	}
 
 	protected void initiateFlashing(Project toSend) {
 
@@ -409,21 +427,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			// Disconnect Existing Gatt
 			IPCService.getInstance().bleDisconnect();
 			state = STATE_START_FLASH;
-		} else if (currentMicrobit.mPattern == null) {
-			PopUp.show(MBApp.getContext(),
-				getString(R.string.flashing_failed_no_microbit), //message
-				getString(R.string.flashing_error), //title
-				R.drawable.error_face,//image icon res id
-				R.drawable.red_btn,
-				PopUp.TYPE_ALERT, //type of popup.
-				new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						PopUp.hide();
-
-					}
-				},//override click listener for ok button
-				null);//pass null to use default listeneronClick
+            isDisconnectedForFlash = true;
 		} else {
 			startFlashingPhase1();
 		}
@@ -512,14 +516,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			R.drawable.error_face, //image icon res id
 			R.drawable.red_btn,
 			PopUp.TYPE_ALERT, //type of popup.
-			new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					PopUp.hide();
-
-				}
-			},//override click listener for ok button
-			null);//pass null to use default listener
+			popupOkHandler,//override click listener for ok button
+			popupOkHandler);//pass null to use default listener
 		LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
 	}
 
@@ -558,14 +556,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 						R.drawable.error_face, //image icon res id
 						R.drawable.red_btn,
 						PopUp.TYPE_ALERT, //type of popup.
-						new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								PopUp.hide();
-
-							}
-						},//override click listener for ok button
-						null);//pass null to use default listener
+                        popupOkHandler,//override click listener for ok button
+                        popupOkHandler);//pass null to use default listener
 				}
 			}
 
@@ -577,6 +569,16 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		}
 	};
 
+
+    View.OnClickListener popupOkHandler = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(isDisconnectedForFlash) {
+                IPCService.getInstance().bleConnect();
+                isDisconnectedForFlash = false;
+            }
+        }
+    };
 
 	class DFUResultReceiver extends BroadcastReceiver {
 
@@ -605,18 +607,14 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 									getString(R.string.flashing_success_title), //title
 									R.drawable.message_face, R.drawable.blue_btn,
 									PopUp.TYPE_ALERT, //type of popup.
-									new View.OnClickListener() {
-										@Override
-										public void onClick(View v) {
-											PopUp.hide();
-										}
-									},//override click listener for ok button
-									null);//pass null to use default listener
+									popupOkHandler,//override click listener for ok button
+                                    popupOkHandler);//pass null to use default listener
 							}
 
 							isCompleted = true;
 							inInit = false;
 							inProgress = false;
+
 							break;
 
 						case DfuService.PROGRESS_DISCONNECTING:
@@ -632,14 +630,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 									getString(R.string.flashing_failed_title), //title
 									R.drawable.error_face, R.drawable.red_btn,
 									PopUp.TYPE_ALERT, //type of popup.
-									new View.OnClickListener() {
-										@Override
-										public void onClick(View v) {
-											PopUp.hide();
-
-										}
-									},//override click listener for ok button
-									null);//pass null to use default listener
+                                    popupOkHandler,//override click listener for ok button
+                                    popupOkHandler);//pass null to use default listener
 
 								LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
 							}
@@ -697,14 +689,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 					getString(R.string.flashing_failed_title), //title
 					R.drawable.error_face, R.drawable.red_btn,
 					PopUp.TYPE_ALERT, //type of popup.
-					new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							PopUp.hide();
-
-						}
-					},//override click listener for ok button
-					null);//pass null to use default listener
+                    popupOkHandler,//override click listener for ok button
+                    popupOkHandler);//pass null to use default listener
 
 				LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
 				dfuResultReceiver = null;
