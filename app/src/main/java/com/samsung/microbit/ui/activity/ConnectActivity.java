@@ -591,6 +591,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 						R.drawable.message_face, R.drawable.blue_btn,
 						PopUp.TYPE_SPINNER,
 						null, null);
+                    mPrevDevList.changeMicrobitState(pos, mPrevDeviceArray[pos], true, false);
                     IPCService.getInstance().bleConnect();
 
 				} else {
@@ -816,7 +817,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				deviceFound = true;
 				scanLeDevice(false);
 
-				ConnectedDevice newDev = new ConnectedDevice(null, mNewDeviceCode.toUpperCase(), false, device.getAddress());
+				ConnectedDevice newDev = new ConnectedDevice(mNewDeviceCode.toUpperCase(), mNewDeviceCode.toUpperCase(), false, device.getAddress());
 				handle_pairing_successful(newDev);
 			} else {
 				if (debug) logi("mLeScanCallback.onLeScan() ::   non-matching - deviceName == " + mNewDeviceName.toLowerCase());
