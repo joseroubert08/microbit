@@ -107,7 +107,7 @@
 
         <activity
             android:name=".ui.activity.GeneralWebView"
-            android:label="@string/title_activity_general_web_view"
+            android:label="General Webview"
             android:parentActivityName=".ui.activity.HomeActivity"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize" >
