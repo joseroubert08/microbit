@@ -39,6 +39,7 @@ import com.samsung.microbit.core.PreviousDeviceList;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.service.IPCService;
+import com.samsung.microbit.ui.BluetoothSwitch;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.adapter.ConnectedDeviceAdapter;
 import com.samsung.microbit.ui.adapter.LEDAdapter;
@@ -227,11 +228,6 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		/*
 		 * =================================================================
 		 */
-
-		if (!mBluetoothAdapter.isEnabled()) {
-			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-			startActivityForResult(enableBtIntent, REQUEST_BT_ENABLE);
-		}
 
 		mHandler = new Handler(Looper.getMainLooper());
 		if (mPrevDevList == null) {
@@ -538,6 +534,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		switch (v.getId()) {
 			case R.id.connectButton:
+                if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
+                    return;
+                }
 				if (mBottomConnectButton != null) {
                     mPrevDeviceView.setVisibility(View.GONE);
 				}
@@ -582,6 +581,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				break;
 
 			case R.id.connectBtn:
+                if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
+                    return;
+                }
 				pos = (Integer) v.getTag();
 				boolean currentState = mPrevDeviceArray[pos].mStatus;
 				if (!currentState) {

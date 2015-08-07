@@ -177,4 +177,7 @@
 	<string name="connect_to_mbit">Connect to your micro:bit</string>
 	<string name="title_activity_new_device">NewDevice</string>
 
+	<string name="turn_on_bluetooth">Turn your bluetooth on?</string>
+	<string name="bluetooth_turn_on_guide">Please click the green tick to turn on your Bluetooth</string>
+
 </resources>

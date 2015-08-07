@@ -43,6 +43,7 @@ import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.service.PluginService;
+import com.samsung.microbit.ui.BluetoothSwitch;
 import com.samsung.microbit.ui.PopUp;
 
 import java.util.List;
@@ -207,6 +208,9 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		} else if (v.getId() == R.id.connectBtn) {
 			updateConnectBarView();
 			ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
+			if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
+				return;
+			}
 			if (connectedDevice.mPattern != null) {
 				if (connectedDevice.mStatus) {
 					if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleDisconnect()");

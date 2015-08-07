@@ -48,6 +48,7 @@ import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.model.Project;
 import com.samsung.microbit.service.DfuService;
 import com.samsung.microbit.service.IPCService;
+import com.samsung.microbit.ui.BluetoothSwitch;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.adapter.ProjectAdapter;
 
@@ -349,12 +350,19 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				break;
 
 			case R.id.sendBtn:
+				if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
+					return;
+				}
 				pos = (Integer) v.getTag();
 				Project toSend = (Project) projectAdapter.getItem(pos);
 				adviceOnMicrobitState(toSend);
 				break;
 
 			case R.id.connectedIndicatorIcon:
+                if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
+                    return;
+                }
+
 				ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
 				if (connectedDevice.mPattern != null) {
 					if (connectedDevice.mStatus) {
