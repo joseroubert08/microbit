@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -204,6 +205,9 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
         touchDevelopView.getSettings().setJavaScriptEnabled(true);
         touchDevelopView.setBackgroundColor(Color.argb(1, 0, 0, 0));
 
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ){
+            touchDevelopView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
 
         String userAgent = touchDevelopView.getSettings().getUserAgentString();
         userAgent += " " + R.string.user_agent;
