@@ -29,7 +29,7 @@
 	<dimen name="home_connect_title_width">150dp</dimen>
 	<dimen name="home_project_title_width">150dp</dimen>
 	<dimen name="home_tile_bar_height">80dp</dimen>
-	<dimen name="home_device_name_width">500dp</dimen>
+	<dimen name="home_device_name_width">180dp</dimen>
 	<dimen name="home_device_name_empty_width">585dp</dimen>
 	<dimen name="home_no_project_btn_width">180dp</dimen>
 	<dimen name="home_start_btn_width">300dp</dimen>
