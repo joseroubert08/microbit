@@ -23,9 +23,13 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,6 +54,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 
 
     SharedPreferences prefs = null;
+    ListView helpList = null ;
 	/* *************************************************
 	 * TODO setup to Handle BLE Notiifications
 	 */
@@ -145,6 +150,26 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 
         prefs = getSharedPreferences("com.samsung.microbit", MODE_PRIVATE);
 
+        helpList = (ListView) findViewById(R.id.moreItems);
+        if (helpList != null){
+            String [] items= getResources().getStringArray(R.array.moreListItems);
+            helpList.setAdapter(new ArrayAdapter<String>(this, R.layout.aligned_right, items));
+
+            helpList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    switch (position) {
+                        case 0:
+                            Toast.makeText(MBApp.getContext(), "Help Selected", Toast.LENGTH_LONG).show();
+                            break;
+                        case 1:
+                            Toast.makeText(MBApp.getContext(), "About Selected", Toast.LENGTH_LONG).show();
+                            break;
+                    }
+                }
+            });
+        }
+
 	}
 
 	@Override
@@ -193,7 +218,17 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 					PopUp.TYPE_ALERT,
 					null, null);
 			}
-		}
+		} else if (v.getId() == R.id.moreButton){
+            //Display the ListView
+            if (helpList != null){
+                if (helpList.getVisibility() == View.INVISIBLE) {
+                    helpList.setVisibility(View.VISIBLE);
+                    helpList.bringToFront();
+                }  else {
+                    helpList.setVisibility(View.INVISIBLE);
+                }
+            }
+        }
 	}
 
 	private final void updateConnectBarView() {

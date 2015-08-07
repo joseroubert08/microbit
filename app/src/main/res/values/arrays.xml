@@ -6,4 +6,9 @@
 		<item>Name ascending</item>
 		<item>Name descending</item>
 	</array>
+
+    <array name="moreListItems">
+        <item>Help</item>
+        <item>About</item>
+    </array>
 </resources>

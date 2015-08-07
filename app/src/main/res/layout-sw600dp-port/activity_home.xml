@@ -4,6 +4,27 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:background="@drawable/bg">
 
+    <ImageButton
+        android:id="@+id/moreButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="@dimen/activity_top_margin"
+        android:src="@drawable/ic_more_vert"
+        android:onClick="onClick"
+        android:background="@null"/>
+
+    <ListView
+        android:id="@+id/moreItems"
+        android:layout_width="@dimen/home_no_project_btn_width"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:clickable="true"
+        android:layout_below="@id/moreButton"
+        android:visibility="invisible"
+        android:fastScrollEnabled="false"
+        android:alpha="1" />
+
     <RelativeLayout
         android:id="@+id/logoArea"
         android:layout_width="wrap_content"

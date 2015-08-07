@@ -152,13 +152,20 @@ public class BLEService extends BLEBaseService {
 	@Override
 	protected void handleCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 
+
+        String UUID = characteristic.getUuid().toString();
+
 		int value = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
 		int eventSrc = value & 0x0ffff;
+        logi("Characteristic UUID = " + UUID);
+        logi("Characteristic Value = " + value);
+        logi("eventSrc = " + eventSrc) ;
 		if (eventSrc < 1001) {
 			return;
 		}
 
 		int event = (value >> 16) & 0x0ffff;
+        logi("event = " + event) ;
 		sendMessage(eventSrc, event);
 	}
 
@@ -253,23 +260,7 @@ public class BLEService extends BLEBaseService {
 			case Constants.SAMSUNG_ALERTS_ID:
 			case Constants.SAMSUNG_AUDIO_RECORDER_ID:
 			case Constants.SAMSUNG_CAMERA_ID:
-
-				/*
-				// TODO remove thiese demo hacks
-
-				eventSrc = Constants.SAMSUNG_REMOTE_CONTROL_ID;
-				event = (event == Constants.SAMSUNG_REMOTE_CONTROL_EVT_FORWARD) ? Constants.SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK : Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY;
-				if (event == Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY) {
-					if (lastEvent == Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY) {
-						event = Constants.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE;
-					} else {
-						event = Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY;
-					}
-
-					lastEvent = event;
-				}
-				*/
-
+                //TODO Rohit - This is not actually storing the value from the msg. Rectify this.
 				msgService = eventSrc;
 				cmd = new CmdArg(event, "1000");
 				break;
