@@ -1,0 +1,36 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:context="com.samsung.microbit.ui.activity.GeneralWebView">
+    <RelativeLayout
+        android:id="@+id/headerBar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:elevation="@dimen/activity_bottom_margin" >
+        <ImageButton
+            android:id="@+id/backBtn"
+            android:onClick="onClick"
+            android:layout_width="@dimen/header_btn_size"
+            android:layout_height="@dimen/header_btn_size"
+            android:src="@drawable/back"
+            android:background="@android:color/transparent"
+            />
+
+        <TextView
+            style="@style/h1"
+            android:id="@+id/titleTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/header_title_height"
+            android:layout_toRightOf="@id/backBtn"
+            android:gravity="center"/>
+    </RelativeLayout>
+
+    <WebView
+        android:id="@+id/generalView"
+        android:layout_below="@id/headerBar"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:windowSoftInputMode="adjustResize"
+        android:hardwareAccelerated="true"/>
+</RelativeLayout>

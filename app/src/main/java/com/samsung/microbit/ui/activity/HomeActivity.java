@@ -55,6 +55,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 
     SharedPreferences prefs = null;
     ListView helpList = null ;
+    ArrayAdapter adapter = null ;
 	/* *************************************************
 	 * TODO setup to Handle BLE Notiifications
 	 */
@@ -145,7 +146,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		Intent bleIntent = new Intent(this, BLEService.class);
 		startService(bleIntent);
 
-		Intent intent = new Intent(this, PluginService.class);
+		final Intent intent = new Intent(this, PluginService.class);
 		startService(intent);
 
         prefs = getSharedPreferences("com.samsung.microbit", MODE_PRIVATE);
@@ -153,26 +154,39 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         helpList = (ListView) findViewById(R.id.moreItems);
         if (helpList != null){
             String [] items= getResources().getStringArray(R.array.moreListItems);
-            helpList.setAdapter(new ArrayAdapter<String>(this, R.layout.aligned_right, items));
+            adapter = new ArrayAdapter<String>(this, R.layout.aligned_right, items) ;
+            helpList.setAdapter(adapter);
 
             helpList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     switch (position) {
                         case 0:
-                            Toast.makeText(MBApp.getContext(), "Help Selected", Toast.LENGTH_LONG).show();
-                            break;
                         case 1:
-                            Toast.makeText(MBApp.getContext(), "About Selected", Toast.LENGTH_LONG).show();
+                            startGeneralView(position);
+                            helpList.setVisibility(View.INVISIBLE);
                             break;
                     }
                 }
             });
         }
-
 	}
 
-	@Override
+    private void startGeneralView(int position) {
+        Intent i = new Intent(this, GeneralWebView.class);
+        switch (position){
+            case 0:
+                i.putExtra("url", "file:///android_asset/www/help.html");
+                break;
+            case 1:
+                i.putExtra("url", "file:///android_asset/www/about.html");
+                break;
+        }
+        i.putExtra("title", adapter.getItem(position).toString());
+        startActivity(i);
+    }
+
+    @Override
 	protected void onStart() {
 		super.onStart();
 	}
