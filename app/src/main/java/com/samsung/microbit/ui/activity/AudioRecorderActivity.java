@@ -84,6 +84,7 @@ public class AudioRecorderActivity extends Activity {
                 .setContentTitle(getString(R.string.audio_recorder_notification));
 
         Drawable d = getResources().getDrawable(R.drawable.bg);
+        d.mutate();//prevent affecting all instances of that drawable with color filter
         d.setColorFilter(Color.argb(187,0,0,0), PorterDuff.Mode.SRC_OVER);
         layout.setBackground(d);
 
