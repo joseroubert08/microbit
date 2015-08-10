@@ -1427,7 +1427,21 @@ public abstract class DfuBaseService extends IntentService {
 		logi("Phase2 s");
 		int rc = 1;
 		final BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
+		if (fps == null) {
+			logi("Upload aborted");
+			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
+			terminateConnection(gatt, PROGRESS_ABORTED);
+			return 6;
+		}
+
 		final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
+        if (sfpc == null) {
+            logi("Upload aborted");
+            sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
+            terminateConnection(gatt, PROGRESS_ABORTED);
+            return 6;
+        }
+
 		sfpc.setValue(1, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 		try {
 			writeCharacteristic(gatt, sfpc);
