@@ -77,7 +77,6 @@
         </activity>
         <activity
             android:name=".ui.activity.PopUpHolderActivity"
-            android:launchMode="singleTask"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" >
         </activity>
         <activity

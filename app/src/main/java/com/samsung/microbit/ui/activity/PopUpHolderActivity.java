@@ -1,7 +1,12 @@
 package com.samsung.microbit.ui.activity;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 
 import com.samsung.microbit.R;
@@ -34,9 +39,22 @@ public class PopUpHolderActivity extends Activity{
         }
     };
 
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(PopUpActivity.INTENT_ACTION_CLOSE)) {
+                finish();
+            }
+        }
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(PopUpActivity.INTENT_ACTION_CLOSE));
 
         if (!PopUp.show(this,
                 getIntent().getStringExtra(INTENT_EXTRA_POPUP_MESSAGE),
@@ -47,5 +65,12 @@ public class PopUpHolderActivity extends Activity{
                 defaultListener, defaultListener)) {//if callback are needed later for specific operations, they will have to be defined in this class
             finish();//if popup could not be shown exit activity
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
     }
 }

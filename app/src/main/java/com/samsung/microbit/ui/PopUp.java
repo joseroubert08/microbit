@@ -110,7 +110,7 @@ public class PopUp {
         intent.putExtra(PopUpHolderActivity.INTENT_EXTRA_POPUP_MESSAGE, message);
         intent.putExtra(PopUpHolderActivity.INTENT_EXTRA_POPUP_ICON, imageResId);
         intent.putExtra(PopUpHolderActivity.INTENT_EXTRA_POPUP_ICONBG, imageBackgroundResId);
-        // keep same instance of activity
+        // flag required in background mode
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
