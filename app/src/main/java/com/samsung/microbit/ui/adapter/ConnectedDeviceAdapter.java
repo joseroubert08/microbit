@@ -39,6 +39,8 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
     public void updateAdapter(List<ConnectedDevice> list)
     {
         mListConnectedDevice = list;
+        notifyDataSetChanged();;
+
     }
     @Override
     public int getCount() {

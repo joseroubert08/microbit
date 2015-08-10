@@ -5,9 +5,6 @@
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
     android:gravity="center"
-    android:background="@drawable/bg"
-    android:backgroundTint="#88000000"
-    android:backgroundTintMode="src_over"
     android:id="@+id/layout">
 
     <ImageView

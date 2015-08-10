@@ -1321,6 +1321,10 @@ public abstract class DfuBaseService extends IntentService {
 		mPartCurrent = intent.getIntExtra(EXTRA_PART_CURRENT, 1);
 		mPartsTotal = intent.getIntExtra(EXTRA_PARTS_TOTAL, 1);
 
+
+        mDeviceAddress = deviceAddress;
+        mDeviceName = deviceName;
+
 		// Check file type and mime-type
 		if ((fileType & ~(TYPE_SOFT_DEVICE | TYPE_BOOTLOADER | TYPE_APPLICATION)) > 0 || !(MIME_TYPE_ZIP.equals(mimeType) || MIME_TYPE_OCTET_STREAM.equals(mimeType))) {
 			logw("File type or file mime-type not supported");
@@ -1415,12 +1419,29 @@ public abstract class DfuBaseService extends IntentService {
 	private int phase2(Intent intent) {
 		final String deviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
 
+        mDeviceAddress = deviceAddress;
+        mDeviceName = intent.getStringExtra(EXTRA_DEVICE_NAME);
+
 		makeGattConnection(deviceAddress);
 
 		logi("Phase2 s");
 		int rc = 1;
 		final BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
+		if (fps == null) {
+			logi("Upload aborted");
+			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
+			terminateConnection(gatt, PROGRESS_ABORTED);
+			return 6;
+		}
+
 		final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
+        if (sfpc == null) {
+            logi("Upload aborted");
+            sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
+            terminateConnection(gatt, PROGRESS_ABORTED);
+            return 6;
+        }
+
 		sfpc.setValue(1, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 		try {
 			writeCharacteristic(gatt, sfpc);
@@ -3197,16 +3218,23 @@ public abstract class DfuBaseService extends IntentService {
 		final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		builder.setContentIntent(pendingIntent);
 
+        final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
 		// Add Abort action to the notification
-		if (progress != PROGRESS_ABORTED && progress != PROGRESS_COMPLETED && progress < ERROR_MASK) {
+        //Rohit - Disabled Cancel for now
+        /*
+		if (progress != PROGRESS_ABORTED && progress != PROGRESS_COMPLETED && progress <  0) { //ERROR_MASK) {
 			final Intent abortIntent = new Intent(BROADCAST_ACTION);
 			abortIntent.putExtra(EXTRA_ACTION, ACTION_ABORT);
-			final PendingIntent pendingAbortIntent = PendingIntent.getBroadcast(this, 1, abortIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-			builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
+            final PendingIntent pendingAbortIntent = PendingIntent.getBroadcast(this, 1, abortIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            manager.cancel(NOTIFICATION_ID);
+            builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
 		}
+		*/
+        if(progress>0)
+            builder.addAction(0,null,null);
 
-		final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		manager.notify(NOTIFICATION_ID, builder.build());
+        manager.notify(NOTIFICATION_ID, builder.build());
 	}
 
 	/**

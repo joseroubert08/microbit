@@ -152,13 +152,20 @@ public class BLEService extends BLEBaseService {
 	@Override
 	protected void handleCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 
+
+        String UUID = characteristic.getUuid().toString();
+
 		int value = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
 		int eventSrc = value & 0x0ffff;
+        logi("Characteristic UUID = " + UUID);
+        logi("Characteristic Value = " + value);
+        logi("eventSrc = " + eventSrc) ;
 		if (eventSrc < 1001) {
 			return;
 		}
 
 		int event = (value >> 16) & 0x0ffff;
+        logi("event = " + event) ;
 		sendMessage(eventSrc, event);
 	}
 
@@ -187,8 +194,10 @@ public class BLEService extends BLEBaseService {
 	protected void setNotification(boolean isConnected, int errorCode) {
 
 		if (debug) logi("setNotification() :: isConnected = " + isConnected);
+        if (debug) logi("setNotification() :: errorCode = " + errorCode);
 		NotificationManager notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		int notificationId = 1001;
+		String notificationString = null;
+        boolean onGoingNotification = false;
 
 		NameValuePair[] args = new NameValuePair[2];
 		args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
@@ -206,38 +215,42 @@ public class BLEService extends BLEBaseService {
 					bluetoothDevice = null;
 				}
 			}
-
-			NotificationCompat.Builder mBuilder =
-				new NotificationCompat.Builder(this)
-					.setSmallIcon(R.drawable.ble_connection_off)
-					.setContentTitle("Micro:bit companion")
-					.setOngoing(true)
-					.setContentText("micro:bit Disconnected");
-
-			Intent intent = new Intent(this, ConnectActivity.class);
-			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-			mBuilder.setContentIntent(resultPendingIntent);
-			notifyMgr.notify(notificationId, mBuilder.build());
+            notificationString = getString(R.string.tray_notification_failure) ;
+            onGoingNotification = false;
 
 			sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED, null, args);
 			sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED, null, args);
 		} else {
-			NotificationCompat.Builder mBuilder =
-				new NotificationCompat.Builder(this)
-					.setSmallIcon(R.drawable.ble_connection_on)
-					.setContentTitle("Micro:bit companion")
-					.setOngoing(true)
-					.setContentText("micro:bit Connected");
-
-			Intent intent = new Intent(this, ConnectActivity.class);
-			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-			mBuilder.setContentIntent(resultPendingIntent);
-			notifyMgr.notify(notificationId, mBuilder.build());
+            notificationString = getString(R.string.tray_notification_sucsess);
+            onGoingNotification = true;
 
 			sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null, args);
 			sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null, args);
 		}
-	}
+
+        if (!isConnected && 99 == errorCode){
+            //Diconnected for flashing. Remove the icon
+            if (notifyMgr!= null) {
+                if (debug) logi("Removing Notifcation as we are now flashing the device ");
+                notifyMgr.cancel(Constants.NOTIFICATION_ID);
+            }
+        }
+        else {
+            //Update the tray message
+            NotificationCompat.Builder mBuilder =
+                    new NotificationCompat.Builder(this)
+                            .setSmallIcon(isConnected ? R.drawable.ble_connection_on : R.drawable.ble_connection_off)
+                            .setContentTitle("micro:bit companion")
+                            .setOngoing(onGoingNotification)
+                            .setContentText(notificationString);
+
+            Intent intent = new Intent(this, ConnectActivity.class);
+            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            mBuilder.setContentIntent(resultPendingIntent);
+            notifyMgr.notify(Constants.NOTIFICATION_ID, mBuilder.build());
+        }
+
+    }
 
 	// ######################################################################
 
@@ -253,23 +266,7 @@ public class BLEService extends BLEBaseService {
 			case Constants.SAMSUNG_ALERTS_ID:
 			case Constants.SAMSUNG_AUDIO_RECORDER_ID:
 			case Constants.SAMSUNG_CAMERA_ID:
-
-				/*
-				// TODO remove thiese demo hacks
-
-				eventSrc = Constants.SAMSUNG_REMOTE_CONTROL_ID;
-				event = (event == Constants.SAMSUNG_REMOTE_CONTROL_EVT_FORWARD) ? Constants.SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK : Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY;
-				if (event == Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY) {
-					if (lastEvent == Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY) {
-						event = Constants.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE;
-					} else {
-						event = Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY;
-					}
-
-					lastEvent = event;
-				}
-				*/
-
+                //TODO Rohit - This is not actually storing the value from the msg. Rectify this.
 				msgService = eventSrc;
 				cmd = new CmdArg(event, "1000");
 				break;
@@ -405,6 +402,12 @@ public class BLEService extends BLEBaseService {
 					}
 
 					break;
+                case IPCMessageManager.IPC_FUNCTION_DISCONNECT_FOR_FLASH:
+                    if (debug) logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_DISCONNECT_FOR_FLASH = " + bleManager);
+                    if (reset()) {
+                        setNotification(false, 99);
+                    }
+                    break;
 
 				default:
 			}

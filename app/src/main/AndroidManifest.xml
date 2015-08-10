@@ -14,125 +14,129 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<manifest package="com.samsung.microbit"
-		  xmlns:android="http://schemas.android.com/apk/res/android"
-		  android:versionCode="1"
-		  android:versionName="1.2">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.samsung.microbit"
+    android:versionCode="1"
+    android:versionName="1.2" >
 
-	<uses-sdk android:minSdkVersion="19"/>
+    <uses-sdk android:minSdkVersion="19" />
 
-	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-	<uses-permission android:name="android.permission.INTERNET"/>
-	<uses-permission android:name="android.permission.BLUETOOTH"/>
-	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
 
-	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-	<uses-permission android:name="android.permission.VIBRATE"/>
-	<uses-permission android:name="android.permission.RECORD_AUDIO"/>
-	<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-	<uses-permission android:name="android.permission.CAMERA"/>
-	<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
-	<uses-permission android:name="android.permission.INTERACT_ACROSS_USERS"/>
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
-	<uses-feature
-		android:name="android.hardware.bluetooth_le"
-		android:required="true"/>
-	<uses-feature
-		android:name="android.hardware.camera"
-		android:required="false"/>
-
-	<application
-		android:icon="@mipmap/ic_launcher"
-		android:theme="@style/AppTheme"
+    <application
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-		android:hardwareAccelerated="true">
-		<activity
-			android:name=".ui.activity.HomeActivity"
-			android:launchMode="singleTask"
-			android:configChanges="orientation">
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN"/>
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".ui.activity.HomeActivity"
+            android:configChanges="orientation"
+            android:launchMode="singleTask" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-				<category android:name="android.intent.category.LAUNCHER"/>
-			</intent-filter>
-		</activity>
-		<activity
-			android:name=".ui.activity.ProjectActivity"
-			android:parentActivityName=".ui.activity.HomeActivity"
-			android:windowSoftInputMode="adjustResize"/>
-		<activity
-			android:name=".ui.activity.NotificationActivity"
-			android:label="@string/device_details"/>
-		<activity
-			android:name=".ui.activity.ConnectActivity"
-			android:label="@string/title_activity_connect"
-			android:parentActivityName=".ui.activity.HomeActivity"
-			android:windowSoftInputMode="stateHidden|adjustPan">
-		</activity>
-		<activity
-			android:name=".ui.activity.TouchDevActivity"
-			android:parentActivityName=".ui.activity.HomeActivity"
-			android:windowSoftInputMode="adjustResize"
-            android:configChanges="orientation|screenSize">
-		</activity>
-		<activity
-			android:name=".ui.activity.PopUpHolderActivity"
-			android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
-			android:launchMode="singleTask">
-		</activity>
-		<activity
-			android:name=".ui.activity.PopUpActivity"
-			android:theme="@style/PopUpTheme"
-			android:launchMode="singleTask"
-			android:windowSoftInputMode="adjustPan">
-		</activity>
-		<activity
-			android:name=".ui.activity.AudioRecorderActivity"
-			android:label="Audio Recorder"
-			android:launchMode="singleTask"
-			android:configChanges="orientation|screenSize">
-		</activity>
-		<activity
-			android:name=".ui.activity.CameraActivity_OldAPI"
-			android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
-			android:label="Camera Microbit"
-			android:launchMode="singleTask">
-			<intent-filter>
-				<action android:name="com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_PIC"/>
-			</intent-filter>
-			<intent-filter>
-				<action android:name="com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_VIDEO"/>
-			</intent-filter>
-		</activity>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.activity.ProjectActivity"
+            android:parentActivityName=".ui.activity.HomeActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activity.NotificationActivity"
+            android:label="@string/device_details" />
+        <activity
+            android:name=".ui.activity.ConnectActivity"
+            android:label="@string/title_activity_connect"
+            android:parentActivityName=".ui.activity.HomeActivity"
+            android:windowSoftInputMode="stateHidden|adjustPan" >
+        </activity>
+        <activity
+            android:name=".ui.activity.TouchDevActivity"
+            android:configChanges="orientation|screenSize"
+            android:parentActivityName=".ui.activity.HomeActivity"
+            android:windowSoftInputMode="adjustResize" >
+        </activity>
+        <activity
+            android:name=".ui.activity.PopUpHolderActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" >
+        </activity>
+        <activity
+            android:name=".ui.activity.PopUpActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/PopUpTheme"
+            android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity
+            android:name=".ui.activity.AudioRecorderActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="Audio Recorder"
+            android:launchMode="singleTask" >
+        </activity>
+        <activity
+            android:name=".ui.activity.CameraActivity_OldAPI"
+            android:label="Camera Microbit"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_PIC" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_VIDEO" />
+            </intent-filter>
+        </activity>
 
-		<service
-			android:name=".service.DfuService"
-			android:enabled="true"/>
+        <activity
+            android:name=".ui.activity.GeneralWebView"
+            android:label="General Webview"
+            android:parentActivityName=".ui.activity.HomeActivity"
+            android:configChanges="orientation|screenSize"
+            android:windowSoftInputMode="adjustResize" >
+            >
+        </activity>
 
-		<service
-			android:name=".service.PluginService"
-			android:process=":PluginService">
-			<intent-filter>
-				<action android:name="com.samsung.microbit.service.PluginService"/>
-			</intent-filter>
-		</service>
 
-		<service
-			android:name=".service.BLEService"
-			android:process=":BLEService">
-			<intent-filter>
-				<action android:name="com.samsung.microbit.service.BLEService"/>
-			</intent-filter>
-		</service>
+        <service
+            android:name=".service.DfuService"
+            android:enabled="true" />
+        <service
+            android:name=".service.PluginService"
+            android:process=":PluginService" >
+            <intent-filter>
+                <action android:name="com.samsung.microbit.service.PluginService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".service.BLEService"
+            android:process=":BLEService" >
+            <intent-filter>
+                <action android:name="com.samsung.microbit.service.BLEService" />
+            </intent-filter>
+        </service>
+        <service android:name=".service.IPCService" >
+            <intent-filter>
+                <action android:name="com.samsung.microbit.service.IPCService" />
+            </intent-filter>
+        </service>
 
-		<service
-			android:name=".service.IPCService">
-			<intent-filter>
-				<action android:name="com.samsung.microbit.service.IPCService"/>
-			</intent-filter>
-		</service>
-
-	</application>
+    </application>
 
 </manifest>

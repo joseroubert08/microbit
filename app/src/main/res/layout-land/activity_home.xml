@@ -4,6 +4,27 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:background="@drawable/bg">
 
+    <ImageButton
+        android:id="@+id/moreButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="@dimen/activity_top_margin"
+        android:src="@drawable/ic_more_vert"
+        android:onClick="onClick"
+        android:background="@null"/>
+
+    <ListView
+        android:id="@+id/moreItems"
+        android:layout_width="@dimen/home_no_project_btn_width"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:clickable="true"
+        android:layout_below="@id/moreButton"
+        android:visibility="invisible"
+        android:fastScrollEnabled="false"
+        android:alpha="1" />
+
     <RelativeLayout
         android:id="@+id/logoArea"
         android:layout_width="wrap_content"
@@ -43,7 +64,9 @@
             android:layout_height="wrap_content"
             android:text="@string/connect"
             android:layout_margin="@dimen/widget_margin"
-            android:layout_centerVertical="true"/>
+            android:singleLine="true"
+            android:layout_centerVertical="true"
+            />
 
         <Button
             style="@style/p1"
@@ -58,7 +81,11 @@
             android:gravity="left|center_vertical"
             android:onClick="onClick"
             android:visibility="visible"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:ellipsize="end"
+            android:scrollHorizontally="true"
+            android:lines="1"
+            android:elevation="@dimen/elevation"/>
 
         <Button
             style="@style/p1"
@@ -73,7 +100,11 @@
             android:gravity="left|center_vertical"
             android:onClick="onClick"
             android:visibility="gone"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:ellipsize="end"
+            android:scrollHorizontally="true"
+            android:lines="1"
+            android:elevation="@dimen/elevation"/>
 
         <ImageButton
             style="@style/p1"
@@ -86,7 +117,8 @@
             android:background="@drawable/white_btn"
             android:layout_toRightOf="@id/addDevice"
             android:visibility="gone"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:elevation="@dimen/elevation"/>
 
     </RelativeLayout>
 
@@ -107,8 +139,10 @@
             android:layout_width="@dimen/home_project_title_width"
             android:layout_height="wrap_content"
             android:text="@string/your_projects"
+            android:singleLine="true"
             android:layout_margin="@dimen/widget_margin"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            />
 
         <RelativeLayout
             android:layout_width="@dimen/home_no_project_btn_width"
@@ -118,7 +152,8 @@
             android:layout_toRightOf="@id/projects"
             android:layout_margin="@dimen/widget_margin"
             android:layout_centerVertical="true"
-            android:onClick="onClick">
+            android:onClick="onClick"
+            android:elevation="@dimen/elevation">
             <TextView
                 android:id="@+id/numOfProjects"
                 style="@style/h3"
@@ -130,6 +165,7 @@
                 android:layout_marginLeft="@dimen/content_margin"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
+                android:singleLine="true"
                 android:layout_toRightOf="@id/numOfProjects"
                 android:text="@string/saved_projects"
                 android:gravity="center_vertical"/>
@@ -145,7 +181,8 @@
             android:src="@drawable/new_project"
             android:onClick="onClick"
             android:gravity="left|center"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:elevation="@dimen/elevation"/>
 
     </RelativeLayout>
 

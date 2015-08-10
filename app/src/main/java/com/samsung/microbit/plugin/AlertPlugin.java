@@ -31,11 +31,6 @@ public class AlertPlugin {
 	private static AlertDialog customDialog = null;
 	private static MediaPlayer mediaPlayer = null;
 
-	//Sound file to play
-	public static final int ALARAM = 0;
-	public static final int TARDIS = 1;
-	public static final int YOUREFIRED = 2;
-
 	public static void pluginEntry(Context ctx, CmdArg cmd) {
 		context = ctx;
 		switch (cmd.getCMD()) {
@@ -51,7 +46,7 @@ public class AlertPlugin {
 				break;
 
 			case Constants.SAMSUNG_ALERT_EVT_PLAY_SOUND:
-				playSound(Integer.parseInt(cmd.getValue()));
+				playNotification();
 				break;
 
 			case Constants.SAMSUNG_ALERT_EVT_PLAY_RINGTONE:
@@ -78,40 +73,6 @@ public class AlertPlugin {
 		toast.show();
 	}
 
-	private static void playSound(int sound) {
-		switch(sound) {
-			case TARDIS:
-			case YOUREFIRED:
-				playSoundFile(sound);
-				break;
-			default:
-				playAlarm();
-				break;
-		}
-	}
-
-	private static void playSoundFile(int sound) {
-		int duration = 500;
-		resetMediaPlayer();
-
-		switch(sound) {
-			case 1:
-				mediaPlayer = MediaPlayer.create(context, R.raw.tardis);
-				break;
-			case 2:
-				mediaPlayer = MediaPlayer.create(context, R.raw.yourefired);
-				break;
-		}
-
-		duration = mediaPlayer.getDuration();
-
-		if(mediaPlayer != null) {
-			showDialog(context.getString(R.string.sound_via_microbit));
-			mediaPlayer.start();
-			dialogTimer(duration);
-		}
-	}
-
 	private static void playAlarm() {
 		showDialog(context.getString(R.string.sound_via_microbit));
 		Uri alarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
@@ -133,6 +94,15 @@ public class AlertPlugin {
 
 	private static void playRingTone() {
 		showDialog(context.getString(R.string.ringtone_via_microbit));
+		Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+		int duration = getDuration(ringtone);
+		Ringtone r = RingtoneManager.getRingtone(context, ringtone);
+		r.play();
+		dialogTimer(duration);
+	}
+
+	private static void playNotification() {
+		showDialog(context.getString(R.string.sound_via_microbit));
 		Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 		int duration = getDuration(ringtone);
 		Ringtone r = RingtoneManager.getRingtone(context, ringtone);

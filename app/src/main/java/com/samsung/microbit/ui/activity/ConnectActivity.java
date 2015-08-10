@@ -39,6 +39,7 @@ import com.samsung.microbit.core.PreviousDeviceList;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.service.IPCService;
+import com.samsung.microbit.ui.BluetoothSwitch;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.adapter.ConnectedDeviceAdapter;
 import com.samsung.microbit.ui.adapter.LEDAdapter;
@@ -52,8 +53,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	private static boolean DISABLE_DEVICE_LIST = false;
 
-	ConnectedDevice[] prevDeviceArray;
-	PreviousDeviceList prevDevList;
+	ConnectedDevice[]  mPrevDeviceArray;
+	PreviousDeviceList mPrevDevList;
+    ConnectedDevice    mCurrentDevice;
 
 	private enum PAIRING_STATE {
 		PAIRING_STATE_CONNECT_BUTTON,
@@ -64,10 +66,10 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		PAIRING_STATE_NEW_NAME
 	};
 
-	private static PAIRING_STATE state = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
+	private static PAIRING_STATE mState = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
 
-	private static String newDeviceName;
-	private static String newDeviceCode;
+	private static String mNewDeviceName;
+	private static String mNewDeviceCode;
 
 	// @formatter:off
     private static String deviceCodeArray[] = {
@@ -86,12 +88,12 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
     // @formatter:on
 
 
-	RelativeLayout connectButtonView;
-	RelativeLayout connectTipView;
-	RelativeLayout newDeviceView;
-	RelativeLayout connectSearchView;
-	RelativeLayout bottomConnectButton;
-	RelativeLayout prevDeviceView;
+	RelativeLayout mConnectButtonView;
+	RelativeLayout mConnectTipView;
+	RelativeLayout mNewDeviceView;
+	RelativeLayout mConnectSearchView;
+	RelativeLayout mBottomConnectButton;
+	RelativeLayout mPrevDeviceView;
 
 	List<ConnectedDevice> connectedDeviceList = new ArrayList<ConnectedDevice>();
 	ConnectedDeviceAdapter connectedDeviceAdapter;
@@ -147,18 +149,17 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	private void handleBLENotification(Context context, Intent intent) {
 
-		logi("handleBLENotification()");
-		ConnectedDevice changedDev = Utils.getPairedMicrobit(this);
-
-		if (prevDevList == null) {
-			prevDevList = PreviousDeviceList.getInstance(this);
+        mCurrentDevice = Utils.getPairedMicrobit(this);
+        logi("handleBLENotification() "+ mCurrentDevice.mPattern + "[" + mCurrentDevice.mStatus + "]");
+		if (mPrevDevList == null) {
+            mPrevDevList = PreviousDeviceList.getInstance(this);
 		}
-		prevDeviceArray = prevDevList.loadPrevMicrobits();
+        mPrevDeviceArray = mPrevDevList.loadPrevMicrobits();
 
-		if (changedDev.mPattern != null && changedDev.mPattern.equals(prevDeviceArray[0].mPattern)) {
-			prevDeviceArray[0].mStatus = changedDev.mStatus;
-			prevDevList.changeMicrobitState(0, prevDeviceArray[0], prevDeviceArray[0].mStatus, true);
-			populateConnectedDeviceList(true);
+		if (mCurrentDevice.mPattern != null && mCurrentDevice.mPattern.equals(mPrevDeviceArray[0].mPattern)) {
+            mPrevDeviceArray[0].mStatus = mCurrentDevice.mStatus;
+            mPrevDevList.changeMicrobitState(0, mPrevDeviceArray[0], mPrevDeviceArray[0].mStatus, true);
+			populateConnectedDeviceList(false);
 
 		}
 
@@ -179,7 +180,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	public void onResume() {
 		super.onResume();
 		MBApp.setContext(this);
-		populateConnectedDeviceList(false);
+       populateConnectedDeviceList(false);
 	}
 
 	public ConnectActivity() {
@@ -228,29 +229,24 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		 * =================================================================
 		 */
 
-		if (!mBluetoothAdapter.isEnabled()) {
-			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-			startActivityForResult(enableBtIntent, REQUEST_BT_ENABLE);
-		}
-
 		mHandler = new Handler(Looper.getMainLooper());
-		if (prevDevList == null) {
-			prevDevList = PreviousDeviceList.getInstance(this);
-			prevDeviceArray = prevDevList.loadPrevMicrobits();
+		if (mPrevDevList == null) {
+            mPrevDevList = PreviousDeviceList.getInstance(this);
+            mPrevDeviceArray = mPrevDevList.loadPrevMicrobits();
 		}
-		//prevDeviceArray = new ConnectedDevice[PREVIOUS_DEVICES_MAX];
+		//mPrevDeviceArray = new ConnectedDevice[PREVIOUS_DEVICES_MAX];
 		lvConnectedDevice = (ListView) findViewById(R.id.connectedDeviceList);
 		populateConnectedDeviceList(false);
 
-		bottomConnectButton = (RelativeLayout) findViewById(R.id.bottomConnectButton);
-		prevDeviceView = (RelativeLayout) findViewById(R.id.prevDeviceView);
+        mBottomConnectButton = (RelativeLayout) findViewById(R.id.bottomConnectButton);
+        mPrevDeviceView = (RelativeLayout) findViewById(R.id.prevDeviceView);
 
-		connectButtonView = (RelativeLayout) findViewById(R.id.connectButtonView);
-		connectTipView = (RelativeLayout) findViewById(R.id.connectTipView);
-		newDeviceView = (RelativeLayout) findViewById(R.id.newDeviceView);
-		connectSearchView = (RelativeLayout) findViewById(R.id.connectSearchView);
+        mConnectButtonView = (RelativeLayout) findViewById(R.id.connectButtonView);
+        mConnectTipView = (RelativeLayout) findViewById(R.id.connectTipView);
+        mNewDeviceView = (RelativeLayout) findViewById(R.id.newDeviceView);
+		mConnectSearchView = (RelativeLayout) findViewById(R.id.connectSearchView);
 
-		displayConnectScreen(state);
+		displayConnectScreen(mState);
 		findViewById(R.id.connectButton).setOnClickListener(this);
 		findViewById(R.id.cancel_tip_button).setOnClickListener(this);
 		findViewById(R.id.ok_name_button).setOnClickListener(this);
@@ -283,7 +279,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 									int position, long id) {
-				if (state != PAIRING_STATE.PAIRING_STATE_NEW_NAME) {
+				if (mState != PAIRING_STATE.PAIRING_STATE_NEW_NAME) {
 
 					if ((findViewById(R.id.ok_name_button).getVisibility() != View.VISIBLE)) {
 						findViewById(R.id.ok_name_button).setVisibility(View.VISIBLE);
@@ -310,21 +306,21 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	private void generateName() {
 
-		newDeviceName = "";
-		newDeviceCode = "";
+		mNewDeviceName = "";
+        mNewDeviceCode = "";
 		//Columns
 		for (int col = 0; col < 5; col++) {
 			//Rows
 			for (int row = 0; row < 5; row++) {
 				if (deviceCodeArray[(col + (5 * row))] == "1") {
-					newDeviceName += deviceNameMapArray[(col + (5 * row))];
+                    mNewDeviceName += deviceNameMapArray[(col + (5 * row))];
 					break;
 				}
 			}
 		}
-		newDeviceCode = newDeviceName;
-		newDeviceName = "BBC microbit [" + newDeviceName + "]";
-		//Toast.makeText(this, "Pattern :"+newDeviceCode, Toast.LENGTH_SHORT).show();
+        mNewDeviceCode = mNewDeviceName;
+        mNewDeviceName = "BBC microbit [" + mNewDeviceName + "]";
+		//Toast.makeText(this, "Pattern :"+mNewDeviceCode, Toast.LENGTH_SHORT).show();
 	}
 
 	private void setCol(AdapterView<?> parent, int pos, boolean enabledlandscape) {
@@ -372,13 +368,18 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		connectedDeviceList.clear();
 		int numOfPreviousItems = 0;
 		/* Get Previous connected devices */
-		prevDeviceArray = prevDevList.loadPrevMicrobits();
-		if (prevDevList != null)
-			numOfPreviousItems = prevDevList.size();
+        mPrevDeviceArray = mPrevDevList.loadPrevMicrobits();
+		if (mPrevDevList != null)
+			numOfPreviousItems = mPrevDevList.size();
 
+        if((numOfPreviousItems > 0) && (mCurrentDevice!=null) &&
+                (mPrevDeviceArray[0].mPattern.equals(mCurrentDevice.mPattern)))
+        {
+            mPrevDeviceArray[0].mStatus=mCurrentDevice.mStatus;
+        }
 
 		for (int i = 0; i < numOfPreviousItems; i++) {
-			connectedDeviceList.add(prevDeviceArray[i]);
+			connectedDeviceList.add(mPrevDeviceArray[i]);
 		}
 		for (int i = numOfPreviousItems; i < 1; i++) {
 			connectedDeviceList.add(new ConnectedDevice(null, null, false, null));
@@ -387,12 +388,12 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		if (isupdate) {
 			connectedDeviceAdapter.updateAdapter(connectedDeviceList);
-			lvConnectedDevice.setAdapter(connectedDeviceAdapter);
 
 		} else {
 			connectedDeviceAdapter = new ConnectedDeviceAdapter(this, connectedDeviceList);
 			lvConnectedDevice.setAdapter(connectedDeviceAdapter);
 		}
+
 	}
 
 	public static boolean disableListView() {
@@ -400,50 +401,51 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	}
 
     private boolean isPortraitMode() {
-        return (bottomConnectButton != null);
+        return (mBottomConnectButton != null);
 	}
 
 	private void displayConnectScreen(PAIRING_STATE gotoState) {
-		connectButtonView.setVisibility(View.GONE);
-		connectTipView.setVisibility(View.GONE);
-		newDeviceView.setVisibility(View.GONE);
-		connectSearchView.setVisibility(View.GONE);
+        mConnectButtonView.setVisibility(View.GONE);
+        mConnectTipView.setVisibility(View.GONE);
+        mNewDeviceView.setVisibility(View.GONE);
+        mConnectSearchView.setVisibility(View.GONE);
 
-		Log.d("Microbit", "********** Connect: state from " + state + " to " +gotoState);
-        state = gotoState;
+		Log.d("Microbit", "********** Connect: state from " + mState + " to " + gotoState);
+        mState = gotoState;
 
-		if (gotoState == PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON)
+		if ((gotoState == PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON) ||
+                (gotoState == PAIRING_STATE.PAIRING_STATE_ERROR))
 			DISABLE_DEVICE_LIST = false;
 		else
 			DISABLE_DEVICE_LIST = true;
 
 		if(isPortraitMode() && (disableListView()))
-			prevDeviceView.setVisibility(View.GONE);
+            mPrevDeviceView.setVisibility(View.GONE);
 		else {
 			populateConnectedDeviceList(true);
-			prevDeviceView.setVisibility(View.VISIBLE);
+            mPrevDeviceView.setVisibility(View.VISIBLE);
 		}
 
 		switch (gotoState) {
 			case PAIRING_STATE_CONNECT_BUTTON:
 			case PAIRING_STATE_ERROR:
-				connectButtonView.setVisibility(View.VISIBLE);
+                mConnectButtonView.setVisibility(View.VISIBLE);
 				lvConnectedDevice.setEnabled(true);
 				Arrays.fill(deviceCodeArray, "0");
 				findViewById(R.id.gridview).setEnabled(true);
-                newDeviceName = "";
-                newDeviceCode = "";
+                mNewDeviceName = "";
+                mNewDeviceCode = "";
 				break;
 
 			case PAIRING_STATE_TIP:
-				connectTipView.setVisibility(View.VISIBLE);
+                mConnectTipView.setVisibility(View.VISIBLE);
 				findViewById(R.id.ok_connect_button).setOnClickListener(this);
 				break;
 
 			case PAIRING_STATE_PATTERN_EMPTY:
 				findViewById(R.id.gridview).setEnabled(true);
 				findViewById(R.id.connectedDeviceList).setClickable(true);
-				newDeviceView.setVisibility(View.VISIBLE);
+                mNewDeviceView.setVisibility(View.VISIBLE);
 				findViewById(R.id.cancel_name_button).setVisibility(View.VISIBLE);
 				findViewById(R.id.newDeviceTxt).setVisibility(View.VISIBLE);
 				findViewById(R.id.ok_name_button).setVisibility(View.GONE);
@@ -455,19 +457,19 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			case PAIRING_STATE_NEW_NAME:
 				findViewById(R.id.gridview).setEnabled(false);
 				findViewById(R.id.connectedDeviceList).setClickable(false);
-				newDeviceView.setVisibility(View.VISIBLE);
+                mNewDeviceView.setVisibility(View.VISIBLE);
 				Button newNameButton = (Button) findViewById(R.id.nameNewButton);
                 EditText newNameEdit = (EditText) findViewById(R.id.nameNewEdit);
                 newNameButton.setTag(R.id.textEdit, newNameEdit);
                 newNameButton.setOnClickListener(microbitRenameClickListener);
                 newNameEdit.setTag(R.id.editbutton, newNameButton);
                 newNameEdit.setOnEditorActionListener(editorOnActionListener);
-                if((prevDeviceArray == null) || (prevDeviceArray[0].mName == null) || (prevDeviceArray[0].mName.equals(""))) {
-                    newNameButton.setText(newDeviceCode);
-                    newNameEdit.setText(newDeviceCode);
+                if((mPrevDeviceArray == null) || (mPrevDeviceArray[0].mName == null) || (mPrevDeviceArray[0].mName.equals(""))) {
+                    newNameButton.setText(mNewDeviceCode);
+                    newNameEdit.setText(mNewDeviceCode);
                 }else {
-                    newNameButton.setText(prevDeviceArray[0].mName);
-                    newNameEdit.setText(prevDeviceArray[0].mName);
+                    newNameButton.setText(mPrevDeviceArray[0].mName);
+                    newNameEdit.setText(mPrevDeviceArray[0].mName);
                 }
                 newNameButton.setVisibility(View.VISIBLE);
                 newNameEdit.setVisibility(View.INVISIBLE);
@@ -477,7 +479,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				break;
 
 			case PAIRING_STATE_SEARCHING:
-				connectSearchView.setVisibility(View.VISIBLE);
+                mConnectSearchView.setVisibility(View.VISIBLE);
 				break;
 		}
 	}
@@ -503,8 +505,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				ed.setError(getString(R.string.name_empty_error));
             } else {
 				hideKeyboard(v);
-				prevDeviceArray[0].mName = newName;
-				prevDevList.changeMicrobitName(0, prevDeviceArray[0]);
+                mPrevDeviceArray[0].mName = newName;
+                mPrevDevList.changeMicrobitName(0, mPrevDeviceArray[0]);
                 populateConnectedDeviceList(true);
                 Button newNameButton = (Button) findViewById(R.id.nameNewButton);
                 newNameButton.setText(newName);
@@ -520,8 +522,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
             EditText newNameEdit = (EditText) findViewById(R.id.nameNewEdit);
             newNameEdit.setVisibility(View.VISIBLE);
             newNameButton.setVisibility(View.INVISIBLE);
-            newNameEdit.setText(newDeviceCode);
-            newNameEdit.setSelection(newDeviceCode.length());
+            newNameEdit.setText(mNewDeviceCode);
+            newNameEdit.setSelection(mNewDeviceCode.length());
             newNameEdit.requestFocus();
             showKeyboard();
         }
@@ -532,10 +534,13 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		switch (v.getId()) {
 			case R.id.connectButton:
-				if (bottomConnectButton != null) {
-					prevDeviceView.setVisibility(View.GONE);
+                if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
+                    return;
+                }
+				if (mBottomConnectButton != null) {
+                    mPrevDeviceView.setVisibility(View.GONE);
 				}
-				if (connectButtonView != null) {
+				if (mConnectButtonView != null) {
 					displayConnectScreen(PAIRING_STATE.PAIRING_STATE_TIP);
 				}
 				break;
@@ -545,7 +550,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				break;
 
 			case R.id.ok_name_button:
-				if (state == PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY) {
+				if (mState == PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY) {
 					generateName();
 					scanLeDevice(true);
 					displayConnectScreen(PAIRING_STATE.PAIRING_STATE_SEARCHING);
@@ -558,8 +563,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 					editText.setError(getString(R.string.name_empty_error));
 				} else {
 					hideKeyboard(editText);
-					prevDeviceArray[0].mName = newname;
-					prevDevList.changeMicrobitName(0, prevDeviceArray[0]);
+                    mPrevDeviceArray[0].mName = newname;
+                    mPrevDevList.changeMicrobitName(0, mPrevDeviceArray[0]);
 					displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
 				}
 
@@ -576,9 +581,11 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				break;
 
 			case R.id.connectBtn:
+                if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
+                    return;
+                }
 				pos = (Integer) v.getTag();
-				boolean toTurnON = false;
-				boolean currentState = prevDeviceArray[pos].mStatus;
+				boolean currentState = mPrevDeviceArray[pos].mStatus;
 				if (!currentState) {
 					PopUp.show(MBApp.getContext(),
 						getString(R.string.init_connection),
@@ -586,13 +593,15 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 						R.drawable.message_face, R.drawable.blue_btn,
 						PopUp.TYPE_SPINNER,
 						null, null);
+                    mPrevDevList.changeMicrobitState(pos, mPrevDeviceArray[pos], true, false);
+                    IPCService.getInstance().bleConnect();
 
-					toTurnON = true;
-				}
+				} else {
 
-				prevDeviceArray[pos].mStatus = !currentState;
-				prevDevList.changeMicrobitState(pos, prevDeviceArray[pos], toTurnON, false);
-				populateConnectedDeviceList(true);
+                mPrevDeviceArray[pos].mStatus = !currentState;
+                    mPrevDevList.changeMicrobitState(pos, mPrevDeviceArray[pos], false, false);
+                    populateConnectedDeviceList(true);
+                }
 				if (debug) logi("onClick() :: connectBtn");
 				break;
 
@@ -602,13 +611,13 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				break;
 			case R.id.backBtn:
 				Arrays.fill(deviceCodeArray,"0");
-                if(state == PAIRING_STATE.PAIRING_STATE_SEARCHING) {
+                if(mState == PAIRING_STATE.PAIRING_STATE_SEARCHING) {
                     scanLeDevice(false);
                 }
                 if(!isPortraitMode()) {
-                    state =PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
+                    mState =PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
                     finish();
-                } else if  (isPortraitMode() && state == PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON)
+                } else if  (isPortraitMode() && mState == PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON)
                     finish();
                 else
                     displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
@@ -638,7 +647,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				@Override
 				public void onClick(View v) {
 					PopUp.hide();
-					prevDevList.removeMicrobit(pos);
+                    mPrevDevList.removeMicrobit(pos);
 					populateConnectedDeviceList(true);
 				}
 			},//override click listener for ok button
@@ -657,10 +666,10 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		// dummy code to test addition of MBits
 
 		/*if(debug) {
-			if (!newDeviceCode.equalsIgnoreCase("vuvuv")) {
-                ConnectedDevice newDev = new ConnectedDevice(null, newDeviceCode, false, "ab.cd.ef.gh.ij.56");
-                int oldId = prevDevList.checkDuplicateMicrobit(newDev);
-                prevDevList.addMicrobit(newDev,oldId);
+			if (!mNewDeviceCode.equalsIgnoreCase("vuvuv")) {
+                ConnectedDevice newDev = new ConnectedDevice(null, mNewDeviceCode, false, "ab.cd.ef.gh.ij.56");
+                int oldId = mPrevDevList.checkDuplicateMicrobit(newDev);
+                mPrevDevList.addMicrobit(newDev,oldId);
                 populateConnectedDeviceList(true);
                 displayConnectScreen(PAIRING_STATE.PAIRING_STATE_NEW_NAME);
                 return;
@@ -699,9 +708,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			public void run() {
 
 				getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-				//= new ConnectedDevice(null, newDeviceCode, true, device.getAddress() );
-				int oldId = prevDevList.checkDuplicateMicrobit(newDev);
-				prevDevList.addMicrobit(newDev, oldId);
+				//= new ConnectedDevice(null, mNewDeviceCode, true, device.getAddress() );
+				int oldId = mPrevDevList.checkDuplicateMicrobit(newDev);
+                mPrevDevList.addMicrobit(newDev, oldId);
 				populateConnectedDeviceList(true);
 
 				if (debug) logi("mLeScanCallback.onLeScan() ::   Matching DEVICE FOUND, Pairing");
@@ -797,23 +806,23 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			return;
 		}
 
-		if ((newDeviceName.isEmpty()) || (device.getName() == null)) {
+		if ((mNewDeviceName.isEmpty()) || (device.getName() == null)) {
 			if (debug) logi("mLeScanCallback.onLeScan() ::   Cannot Compare");
 		} else {
 			String s = device.getName().toLowerCase();
-			if (newDeviceName.toLowerCase().equals(s)) {
+			if (mNewDeviceName.toLowerCase().equals(s)) {
 
-				// if(debug) logi("mLeScanCallback.onLeScan() ::   deviceName == " + newDeviceName.toLowerCase());
+				// if(debug) logi("mLeScanCallback.onLeScan() ::   deviceName == " + mNewDeviceName.toLowerCase());
 				if (debug) logi("mLeScanCallback.onLeScan() ::   device.getName() == " + device.getName().toLowerCase());
 
 				// Stop scanning as device is found.
 				deviceFound = true;
 				scanLeDevice(false);
 
-				ConnectedDevice newDev = new ConnectedDevice(null, newDeviceCode.toUpperCase(), false, device.getAddress());
+				ConnectedDevice newDev = new ConnectedDevice(mNewDeviceCode.toUpperCase(), mNewDeviceCode.toUpperCase(), false, device.getAddress());
 				handle_pairing_successful(newDev);
 			} else {
-				if (debug) logi("mLeScanCallback.onLeScan() ::   non-matching - deviceName == " + newDeviceName.toLowerCase());
+				if (debug) logi("mLeScanCallback.onLeScan() ::   non-matching - deviceName == " + mNewDeviceName.toLowerCase());
 				if (debug)
 					logi("mLeScanCallback.onLeScan() ::   non-matching found - device.getName() == " + device.getName().toLowerCase());
 			}
@@ -823,12 +832,32 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		connectButtonView.setVisibility(View.GONE);
-		connectTipView.setVisibility(View.GONE);
-		newDeviceView.setVisibility(View.GONE);
-		connectSearchView.setVisibility(View.GONE);
+        mConnectButtonView.setVisibility(View.GONE);
+		mConnectTipView.setVisibility(View.GONE);
+		mNewDeviceView.setVisibility(View.GONE);
+        mConnectSearchView.setVisibility(View.GONE);
 	}
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if ((keyCode == KeyEvent.KEYCODE_BACK))
+        {
+            Arrays.fill(deviceCodeArray,"0");
+            if(mState == PAIRING_STATE.PAIRING_STATE_SEARCHING) {
+                scanLeDevice(false);
+            }
+            if(!isPortraitMode()) {
+                mState =PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
+                finish();
+            } else if  (isPortraitMode() && mState == PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON)
+                finish();
+            else
+                displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

@@ -30,20 +30,20 @@
         android:id="@+id/tipImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="@dimen/connect_tip_image_margin_top"
         android:layout_below="@+id/connectTipTextview"
         android:layout_centerInParent="true">
 
     <ImageView
         android:id="@+id/microbit_tip_image"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="@dimen/mbit_tip_img_size"
+        android:layout_height="@dimen/mbit_tip_img_size"
         android:src="@drawable/tip_mb" />
 
     <ImageView
         android:id="@+id/microbit_tip_image_back"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="@dimen/mbit_tip_img_size"
+        android:layout_height="@dimen/mbit_tip_img_size"
         android:src="@drawable/tip_mb_back"
         android:layout_toRightOf="@id/microbit_tip_image"
         android:layout_marginStart="10dp" />

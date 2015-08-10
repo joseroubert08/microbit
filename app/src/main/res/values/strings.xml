@@ -20,6 +20,7 @@
 	<string name="poweredBy">Powered by\r\n SAMSUNG</string>
 
 	<string name="touchDevURLNew">https://live.microbit.co.uk/app/?fota=1</string>
+    <string name="user_agent">SamsungBrowser/microbit Profile/OTA-DFU1.0</string>
 
 	<string name="search_BLE_activity">Search micro:bit</string>
 	<string name="device_details">Device_details</string>
@@ -59,17 +60,17 @@
 	<string name="pattern_to_pair">Enter the pattern displayed on your micro:bit to pair</string>
 
 	<string name="pairing_failed_message">No micro:bit displaying the pattern you entered could be found. Please enter the pattern displayed on your micro:bit and try again.</string>
-	<string name="pairing_failed_title">Linking Unsuccesful</string>
+	<string name="pairing_failed_title">Linking unsuccessful</string>
 	<string name="pairing_success_message_1">You have successfully linked with micro:bit </string>
 	<string name="pairing_success_title">micro:bit found</string>
 	<string name="run_code_button_name">Continue to Flash</string>
 	<string name="flashing_failed_not_found">Flashing Failed!Cannot read the file</string>
 	<string name="flashing_failed_io_error">Flashing Failed! Cannot find the file</string>
 	<string name="flashing_failed_message">Flashing Failed! No Programs Found</string>
-	<string name="flashing_failed_title">Flashing Unsuccesful</string>
+	<string name="flashing_failed_title">Flashing unsuccessful</string>
 	<string name="flashing_progress_message">Please do not interact with micro:bit before flashing process is complete</string>
 	<string name="flashing_success_message">You have successfully downloaded program to BBC micro:bit</string>
-	<string name="flashing_success_title">Flashing Succesful</string>
+	<string name="flashing_success_title">Flashing successful</string>
 	<string name="flashing_error">Error</string>
 	<string name="flashing_failed_no_microbit">Please connect to a micro:bit before flashing </string>
 	<string name="flashing_tip_title">Put the micro:bit in Flashing mode</string>
@@ -175,5 +176,10 @@
 
 	<string name="connect_to_mbit">Connect to your micro:bit</string>
 	<string name="title_activity_new_device">NewDevice</string>
+
+	<string name="turn_on_bluetooth">Turn your bluetooth on?</string>
+	<string name="bluetooth_turn_on_guide">Please click the green tick to turn on your Bluetooth</string>
+	<string name="tray_notification_failure">micro:bit Disconnected. Click to connect</string>
+    <string name="tray_notification_sucsess">micro:bit Connected. Click to disconnect</string>
 
 </resources>

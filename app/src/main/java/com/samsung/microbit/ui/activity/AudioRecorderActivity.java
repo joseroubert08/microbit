@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -81,6 +82,11 @@ public class AudioRecorderActivity extends Activity {
                         .setLargeIcon(notificationLargeIconBitmapRecordingOff)
                         .setTicker(getString(R.string.audio_recorder_notification))
                 .setContentTitle(getString(R.string.audio_recorder_notification));
+
+        Drawable d = getResources().getDrawable(R.drawable.bg);
+        d.mutate();//prevent affecting all instances of that drawable with color filter
+        d.setColorFilter(Color.argb(187,0,0,0), PorterDuff.Mode.SRC_OVER);
+        layout.setBackground(d);
 
         processIntent(getIntent());
     }

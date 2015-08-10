@@ -4,6 +4,27 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:background="@drawable/bg">
 
+    <ImageButton
+        android:id="@+id/moreButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="@dimen/activity_top_margin"
+        android:src="@drawable/ic_more_vert"
+        android:onClick="onClick"
+        android:background="@null"/>
+
+    <ListView
+        android:id="@+id/moreItems"
+        android:layout_width="@dimen/home_no_project_btn_width"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:clickable="true"
+        android:layout_below="@id/moreButton"
+        android:visibility="invisible"
+        android:fastScrollEnabled="false"
+        android:alpha="1" />
+
     <RelativeLayout
         android:id="@+id/logoArea"
         android:layout_width="wrap_content"
@@ -55,7 +76,8 @@
             android:drawableRight="@drawable/connect_device"
             android:gravity="left|center_vertical"
             android:onClick="onClick"
-            android:visibility="visible"/>
+            android:visibility="visible"
+            android:elevation="@dimen/elevation"/>
 
         <Button
             style="@style/p1"
@@ -69,7 +91,8 @@
             android:gravity="left|center_vertical"
             android:drawableRight="@drawable/add_device"
             android:onClick="onClick"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:elevation="@dimen/elevation"/>
 
         <ImageButton
             style="@style/p1"
@@ -82,7 +105,8 @@
             android:background="@drawable/white_btn"
             android:layout_below="@id/title"
             android:layout_toRightOf="@id/addDevice"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:elevation="@dimen/elevation"/>
 
     </RelativeLayout>
 
@@ -111,7 +135,8 @@
             android:layout_margin="@dimen/widget_margin"
             android:layout_centerVertical="true"
             android:background="@drawable/white_btn"
-            android:onClick="onClick">
+            android:onClick="onClick"
+            android:elevation="@dimen/elevation">
                 <TextView
                     android:id="@+id/numOfProjects"
                     style="@style/h3"
@@ -139,7 +164,8 @@
             android:drawableRight="@drawable/new_project"
             android:layout_below="@id/projects"
             android:onClick="onClick"
-            android:gravity="left|center"/>
+            android:gravity="left|center"
+            android:elevation="@dimen/elevation"/>
 
     </RelativeLayout>
 

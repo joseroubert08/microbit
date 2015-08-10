@@ -23,9 +23,13 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +43,7 @@ import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.service.PluginService;
+import com.samsung.microbit.ui.BluetoothSwitch;
 import com.samsung.microbit.ui.PopUp;
 
 import java.util.List;
@@ -50,6 +55,8 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 
 
     SharedPreferences prefs = null;
+    ListView helpList = null ;
+    ArrayAdapter adapter = null ;
 	/* *************************************************
 	 * TODO setup to Handle BLE Notiifications
 	 */
@@ -140,14 +147,47 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		Intent bleIntent = new Intent(this, BLEService.class);
 		startService(bleIntent);
 
-		Intent intent = new Intent(this, PluginService.class);
+		final Intent intent = new Intent(this, PluginService.class);
 		startService(intent);
 
         prefs = getSharedPreferences("com.samsung.microbit", MODE_PRIVATE);
 
+        helpList = (ListView) findViewById(R.id.moreItems);
+        if (helpList != null){
+            String [] items= getResources().getStringArray(R.array.moreListItems);
+            adapter = new ArrayAdapter<String>(this, R.layout.aligned_right, items) ;
+            helpList.setAdapter(adapter);
+
+            helpList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    switch (position) {
+                        case 0:
+                        case 1:
+                            startGeneralView(position);
+                            helpList.setVisibility(View.INVISIBLE);
+                            break;
+                    }
+                }
+            });
+        }
 	}
 
-	@Override
+    private void startGeneralView(int position) {
+        Intent i = new Intent(this, GeneralWebView.class);
+        switch (position){
+            case 0:
+                i.putExtra("url", "file:///android_asset/www/help.html");
+                break;
+            case 1:
+                i.putExtra("url", "file:///android_asset/www/about.html");
+                break;
+        }
+        i.putExtra("title", adapter.getItem(position).toString());
+        startActivity(i);
+    }
+
+    @Override
 	protected void onStart() {
 		super.onStart();
 	}
@@ -166,9 +206,11 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 			Intent intent = new Intent(this, ProjectActivity.class);
 			startActivity(intent);
 		} else if (v.getId() == R.id.connectBtn) {
-
 			updateConnectBarView();
 			ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
+			if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
+				return;
+			}
 			if (connectedDevice.mPattern != null) {
 				if (connectedDevice.mStatus) {
 					if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleDisconnect()");
@@ -194,7 +236,17 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 					PopUp.TYPE_ALERT,
 					null, null);
 			}
-		}
+		} else if (v.getId() == R.id.moreButton){
+            //Display the ListView
+            if (helpList != null){
+                if (helpList.getVisibility() == View.INVISIBLE) {
+                    helpList.setVisibility(View.VISIBLE);
+                    helpList.bringToFront();
+                }  else {
+                    helpList.setVisibility(View.INVISIBLE);
+                }
+            }
+        }
 	}
 
 	private final void updateConnectBarView() {

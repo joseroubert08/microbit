@@ -13,6 +13,7 @@
 	<dimen name="button_text_size">25sp</dimen>
 	<dimen name="button_size">80dp</dimen>
 	<dimen name="button_height">80dp</dimen>
+	<dimen name="elevation">4dp</dimen>
 
 	<!-- Header bar -->
     <dimen name="header_right_margin">16dp</dimen>
@@ -67,6 +68,7 @@
 	<dimen name="popup_paddingRight">40dp</dimen>
 	<dimen name="popup_icon_size">90dp</dimen>
 	<dimen name="popup_body_view_paddingVertical">10dp</dimen> <!-- spacing top/bottom between each view inside body section -->
+	<dimen name="popup_progressbar_height">25dp</dimen>
 
 	<!-- Audio Recorder -->
 	<dimen name="audio_mic_size">300dp</dimen>
