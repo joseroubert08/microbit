@@ -237,4 +237,6 @@ public class Constants {
 
     public static String ZIP_INTERNAL_NAME = "raw/samples";
 
+	public static int NOTIFICATION_ID = 1001 ;
+
 }

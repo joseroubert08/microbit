@@ -179,5 +179,7 @@
 
 	<string name="turn_on_bluetooth">Turn your bluetooth on?</string>
 	<string name="bluetooth_turn_on_guide">Please click the green tick to turn on your Bluetooth</string>
+	<string name="tray_notification_failure">micro:bit Disconnected. Click to connect</string>
+    <string name="tray_notification_sucsess">micro:bit Connected. Click to disconnect</string>
 
 </resources>

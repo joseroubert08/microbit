@@ -433,7 +433,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		programToSend = toSend;
 		if (currentMicrobit.mStatus) {
 			// Disconnect Existing Gatt
-			IPCService.getInstance().bleDisconnect();
+			IPCService.getInstance().bleDisconnectForFlash();
 			state = STATE_START_FLASH;
             isDisconnectedForFlash = true;
 		} else {

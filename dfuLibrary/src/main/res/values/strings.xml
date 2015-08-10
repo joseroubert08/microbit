@@ -6,7 +6,7 @@
     <string name="dfu_action_abort">Cancel</string>
 
     <string name="dfu_status_initializing">Initializing&#8230;</string>
-    <string name="dfu_status_connecting">Connecting&#8230;</string>
+    <string name="dfu_status_connecting">Finding &#8230;</string>
     <string name="dfu_status_starting">Starting DFU&#8230;</string>
     <string name="dfu_status_switching_to_dfu">Starting Flash mode&#8230;</string>
     <string name="dfu_status_uploading">Flashing&#8230;</string>
@@ -18,7 +18,7 @@
     <string name="dfu_status_aborting">Cancelling&#8230;</string>
     <string name="dfu_status_error">Flashing unsuccessful</string>
     
-    <string name="dfu_status_connecting_msg">Connecting to %s&#8230;</string>
+    <string name="dfu_status_connecting_msg">Finding micro:bit - %s&#8230;</string>
     <string name="dfu_status_starting_msg">Initializing flashing process&#8230;</string>
     <string name="dfu_status_switching_to_dfu_msg">Waiting for flash mode&#8230;</string>
     <string name="dfu_status_uploading_components_msg">Transmitting components to %s&#8230;</string>

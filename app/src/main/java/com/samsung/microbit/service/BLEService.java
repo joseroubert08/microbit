@@ -194,8 +194,10 @@ public class BLEService extends BLEBaseService {
 	protected void setNotification(boolean isConnected, int errorCode) {
 
 		if (debug) logi("setNotification() :: isConnected = " + isConnected);
+        if (debug) logi("setNotification() :: errorCode = " + errorCode);
 		NotificationManager notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		int notificationId = 1001;
+		String notificationString = null;
+        boolean onGoingNotification = false;
 
 		NameValuePair[] args = new NameValuePair[2];
 		args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
@@ -213,38 +215,42 @@ public class BLEService extends BLEBaseService {
 					bluetoothDevice = null;
 				}
 			}
-
-			NotificationCompat.Builder mBuilder =
-				new NotificationCompat.Builder(this)
-					.setSmallIcon(R.drawable.ble_connection_off)
-					.setContentTitle("Micro:bit companion")
-					.setOngoing(true)
-					.setContentText("micro:bit Disconnected");
-
-			Intent intent = new Intent(this, ConnectActivity.class);
-			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-			mBuilder.setContentIntent(resultPendingIntent);
-			notifyMgr.notify(notificationId, mBuilder.build());
+            notificationString = getString(R.string.tray_notification_failure) ;
+            onGoingNotification = false;
 
 			sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED, null, args);
 			sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED, null, args);
 		} else {
-			NotificationCompat.Builder mBuilder =
-				new NotificationCompat.Builder(this)
-					.setSmallIcon(R.drawable.ble_connection_on)
-					.setContentTitle("Micro:bit companion")
-					.setOngoing(true)
-					.setContentText("micro:bit Connected");
-
-			Intent intent = new Intent(this, ConnectActivity.class);
-			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-			mBuilder.setContentIntent(resultPendingIntent);
-			notifyMgr.notify(notificationId, mBuilder.build());
+            notificationString = getString(R.string.tray_notification_sucsess);
+            onGoingNotification = true;
 
 			sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null, args);
 			sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null, args);
 		}
-	}
+
+        if (!isConnected && 99 == errorCode){
+            //Diconnected for flashing. Remove the icon
+            if (notifyMgr!= null) {
+                if (debug) logi("Removing Notifcation as we are now flashing the device ");
+                notifyMgr.cancel(Constants.NOTIFICATION_ID);
+            }
+        }
+        else {
+            //Update the tray message
+            NotificationCompat.Builder mBuilder =
+                    new NotificationCompat.Builder(this)
+                            .setSmallIcon(isConnected ? R.drawable.ble_connection_on : R.drawable.ble_connection_off)
+                            .setContentTitle("micro:bit companion")
+                            .setOngoing(onGoingNotification)
+                            .setContentText(notificationString);
+
+            Intent intent = new Intent(this, ConnectActivity.class);
+            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            mBuilder.setContentIntent(resultPendingIntent);
+            notifyMgr.notify(Constants.NOTIFICATION_ID, mBuilder.build());
+        }
+
+    }
 
 	// ######################################################################
 
@@ -396,6 +402,12 @@ public class BLEService extends BLEBaseService {
 					}
 
 					break;
+                case IPCMessageManager.IPC_FUNCTION_DISCONNECT_FOR_FLASH:
+                    if (debug) logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_DISCONNECT_FOR_FLASH = " + bleManager);
+                    if (reset()) {
+                        setNotification(false, 99);
+                    }
+                    break;
 
 				default:
 			}

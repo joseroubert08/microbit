@@ -3221,6 +3221,8 @@ public abstract class DfuBaseService extends IntentService {
         final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		// Add Abort action to the notification
+        //Rohit - Disabled Cancel for now
+        /*
 		if (progress != PROGRESS_ABORTED && progress != PROGRESS_COMPLETED && progress <  0) { //ERROR_MASK) {
 			final Intent abortIntent = new Intent(BROADCAST_ACTION);
 			abortIntent.putExtra(EXTRA_ACTION, ACTION_ABORT);
@@ -3228,6 +3230,7 @@ public abstract class DfuBaseService extends IntentService {
             manager.cancel(NOTIFICATION_ID);
             builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
 		}
+		*/
         if(progress>0)
             builder.addAction(0,null,null);
 

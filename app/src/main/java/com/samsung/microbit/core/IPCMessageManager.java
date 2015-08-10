@@ -38,6 +38,7 @@ public final class IPCMessageManager {
 	public static final int IPC_FUNCTION_CONNECT = 2;
 	public static final int IPC_FUNCTION_RECONNECT = 3;
 	public static final int IPC_FUNCTION_WRITE_CHARACTERISTIC = 4;
+	public static final int IPC_FUNCTION_DISCONNECT_FOR_FLASH = 5;
 
 	public static final int IPC_NOTIFICATION_GATT_CONNECTED = 4000;
 	public static final int IPC_NOTIFICATION_GATT_DISCONNECTED = 4001;
