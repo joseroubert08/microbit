@@ -60,7 +60,7 @@ public class AudioRecorderActivity extends Activity {
     private static boolean mIsRecording = false;
     private static boolean mLaunchActivity = false;
 
-    private void create()
+    private void create(String action)
     {
         setContentView(R.layout.activity_audio_recorder);
         layout = (LinearLayout)findViewById(R.id.layout);
@@ -85,19 +85,14 @@ public class AudioRecorderActivity extends Activity {
 
         Drawable d = getResources().getDrawable(R.drawable.bg);
         d.mutate();//prevent affecting all instances of that drawable with color filter
-        d.setColorFilter(Color.argb(187,0,0,0), PorterDuff.Mode.SRC_OVER);
+        d.setColorFilter(Color.argb(187, 0, 0, 0), PorterDuff.Mode.SRC_OVER);
         layout.setBackground(d);
 
-        processIntent(getIntent());
+        processIntent(action);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mLaunchActivity = false;
-
-        if (!PopUp.show(this,
+    private boolean showPopup(final String action){
+        return PopUp.show(this,
                 "",
                 getString(R.string.record_audio),
                 R.drawable.record_icon, //image icon res id (pass 0 to use default icon)
@@ -106,7 +101,7 @@ public class AudioRecorderActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        AudioRecorderActivity.this.create();
+                        AudioRecorderActivity.this.create(action);
                         mLaunchActivity = true;
                     }
                 },//override click listener for ok button
@@ -115,7 +110,16 @@ public class AudioRecorderActivity extends Activity {
                     public void onClick(View v) {
                         AudioRecorderActivity.this.finish();
                     }
-                })) {//pass null to use default listener
+                });
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mLaunchActivity = false;
+
+        if (!showPopup(getIntent().getAction())) {//pass null to use default listener
             finish();
         }
     }
@@ -164,21 +168,25 @@ public class AudioRecorderActivity extends Activity {
 
         //process intent only if activity is launched after popup confirmation
         if (mLaunchActivity)
-            processIntent(intent);
+            processIntent(intent.getAction());
+        else {
+            PopUp.hide();//Needed to fix case when activity is brought to foreground but no showing popup activity anymore
+                        //this will reset the flag PopUp.current_type so another PopUp can be shown
+            showPopup(intent.getAction());
+        }
     }
 
-    private void processIntent(Intent intent)
+    private void processIntent(String action)
     {
-        if (intent.getAction() == null)
+        if (action == null)
             return;
 
-        if (intent.getAction().toString().equals(AudioPlugin.INTENT_ACTION_START_RECORD)) {
+        if (action.equals(AudioPlugin.INTENT_ACTION_START_RECORD)) {
             startRecording();
         }
-        else if (intent.getAction().toString().equals(AudioPlugin.INTENT_ACTION_STOP_RECORD)) {
+        else if (action.equals(AudioPlugin.INTENT_ACTION_STOP_RECORD)) {
             stopRecording();
-        }
-        else if (intent.getAction().toString().equals(AudioPlugin.INTENT_ACTION_STOP)) {
+        } else if (action.equals(AudioPlugin.INTENT_ACTION_STOP)) {
             if (mIsRecording)
                 stopRecording();
             finish();
