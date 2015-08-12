@@ -72,7 +72,7 @@
 	<string name="flashing_success_message">You have successfully downloaded program to BBC micro:bit</string>
 	<string name="flashing_success_title">Flashing successful</string>
 	<string name="flashing_error">Error</string>
-	<string name="flashing_failed_no_microbit">Please connect to a micro:bit before flashing </string>
+	<string name="flashing_failed_no_microbit">Atleast one micro:bit must be connected before flashing </string>
 	<string name="flashing_tip_title">Put the micro:bit in Flashing mode</string>
 	<string name="flashing_tip">Hold buttons A and B down and then press RESET.\n Wait for "BLUEZONE" to appear on micro:bit before releasing buttons </string>
 

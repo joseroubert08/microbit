@@ -245,5 +245,10 @@ public class Constants {
     public static String ZIP_INTERNAL_NAME = "raw/samples";
 
 	public static int NOTIFICATION_ID = 1001 ;
+    public static int BLE_DISCONNECTED_FOR_FLASH = 99 ;
+    public static int FLASHING_PHASE_1_COMPLETE = 0x01 ;
+    public static int FLASHING_PHASE_2_COMPLETE = 0x02 ;
+    public static int FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED = 0X33 ;
+
 
 }

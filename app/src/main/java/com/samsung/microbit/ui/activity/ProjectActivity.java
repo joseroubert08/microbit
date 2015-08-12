@@ -1,6 +1,5 @@
 package com.samsung.microbit.ui.activity;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -8,36 +7,26 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.v4.content.LocalBroadcastManager;
-import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
-import android.view.Display;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
@@ -66,9 +55,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 	Project programToSend;
 	public int state;
+
 	int STATE_START_NOFLASH = 0;
-	int STATE_START_FLASH = 1;
-	int STATE_PHASE1_COMPLETE = 2;
+	int STATE_PHASE1_FLASH = 1;
+    int STATE_PHASE2_FLASH = 2;
+
 
     boolean  isDisconnectedForFlash=false;
 	Handler mHandler;
@@ -96,8 +87,14 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			handleBLENotification(context, intent);
-			int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-			if (v != 0) {
+            int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+
+            logi(" broadcastReceiver ---- v= " + v);
+            if (Constants.BLE_DISCONNECTED_FOR_FLASH == v){
+                logi("Bluetooth disconnected for flashing. No need to display pop-up");
+                return;
+            }
+			if (v != 0 ) {
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
@@ -117,18 +114,17 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		logi("handleBLENotification()");
 
 		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				setConnectedDeviceText();
-				PopUp.hide();
-			}
-		});
+            @Override
+            public void run() {
+                setConnectedDeviceText();
+                PopUp.hide();
+            }
+        });
 
 		int cause = intent.getIntExtra(IPCService.NOTIFICATION_CAUSE, 0);
 		if (cause == IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED) {
-			if (state == STATE_START_FLASH) {
+			if (isDisconnectedForFlash) {
 				startFlashingPhase1();
-				state = STATE_START_NOFLASH;
 			}
 		}
 	}
@@ -402,23 +398,23 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                     null);//pass null to use default listeneronClick
         } else {
 		PopUp.show(MBApp.getContext(),
-			getString(R.string.flashing_tip), //message
-			getString(R.string.flashing_tip_title), //title
-			R.drawable.flash_face, R.drawable.blue_btn, //image icon res id
-			PopUp.TYPE_CHOICE, //type of popup.
-			new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					PopUp.hide();
-					initiateFlashing(toSend);
-				}
-			},//override click listener for ok button
-			new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					PopUp.hide();
-				}
-			});//pass null to use default listeneronClick
+                getString(R.string.flashing_tip), //message
+                getString(R.string.flashing_tip_title), //title
+                R.drawable.flash_face, R.drawable.blue_btn, //image icon res id
+                PopUp.TYPE_CHOICE, //type of popup.
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PopUp.hide();
+                        initiateFlashing(toSend);
+                    }
+                },//override click listener for ok button
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PopUp.hide();
+                    }
+                });//pass null to use default listeneronClick
 	}
 	}
 
@@ -431,10 +427,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		}
 
 		programToSend = toSend;
+
 		if (currentMicrobit.mStatus) {
 			// Disconnect Existing Gatt
 			IPCService.getInstance().bleDisconnectForFlash();
-			state = STATE_START_FLASH;
             isDisconnectedForFlash = true;
 		} else {
 			startFlashingPhase1();
@@ -443,6 +439,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 	protected void startFlashingPhase1() {
 
+        if (STATE_PHASE1_FLASH == state){
+            logi(">>>>>>>>>>>>>>>>>>> startFlashingPhase1 called again >>>>>>>>>>>>>>>>>>>  ");
+            return; //Do nothing
+        }
+
+        logi(">>>>>>>>>>>>>>>>>>> startFlashingPhase1 called  >>>>>>>>>>>>>>>>>>>  ");
+        state = STATE_PHASE1_FLASH;
 		ConnectedDevice currentMicrobit = Utils.getPairedMicrobit(this);
 
 		final Intent service = new Intent(this, DfuService.class);
@@ -473,6 +476,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 	protected void startFlashingPhase2() {
 
+        if (STATE_PHASE2_FLASH == state){
+            logi(">>>>>>>>>>>>>>>>>>> startFlashingPhase2 called again >>>>>>>>>>>>>>>>>>>  ");
+            return; //Do nothing
+        }
+        logi(">>>>>>>>>>>>>>>>>>> startFlashingPhase2 called  >>>>>>>>>>>>>>>>>>>  ");
+        state = STATE_PHASE2_FLASH;
 		ConnectedDevice currentMicrobit = Utils.getPairedMicrobit(this);
 		final Intent service = new Intent(ProjectActivity.this, DfuService.class);
 		service.putExtra(DfuService.EXTRA_DEVICE_ADDRESS, currentMicrobit.mAddress);
@@ -487,7 +496,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 	private void handle_phase1_complete() {
 		//TODO:
-		//	pairingStatus.setText("micro:bit found");
+		//	pairingStatus.setText("micro:bit found");Phase 2 complete recieved
 		//	pairingMessage.setText("Press button on micro:bit and then select OK");
 		//state = STATE_PHASE1_COMPLETE;
 
@@ -518,6 +527,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 
 	void handle_reset_microbit() {
+		logi("handle_reset_microbit");
 		PopUp.show(MBApp.getContext(),
 			getString(R.string.flashing_error_msg), //message
 			getString(R.string.flashing_failed_title), //title
@@ -539,25 +549,20 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 			int phase = resultCode & 0x0ffff;
 
-			if (phase == 0x33) { // New code on characteristic changed
-				logi("resultReceiver.onReceiveResult() :: Phase 2 complete recieved ");
+			if (phase == Constants.FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED) {
+				logi("resultReceiver.onReceiveResult() :: Phase 2 start recieved ");
 				PopUp.hide();
 				mHandler.removeCallbacks(handleResetMicrobit);
 				handleResetMicrobit = null;
 				startFlashingPhase2();
 
-			} else if ((phase & 0x01) != 0) {
+			} else if ((phase & Constants.FLASHING_PHASE_1_COMPLETE) != 0) {
 				if ((phase & 0x0ff00) == 0) {
 					logi("resultReceiver.onReceiveResult() :: Phase 1 complete recieved ");
 					handle_phase1_complete();
 
 				} else {
 					logi("resultReceiver.onReceiveResult() :: Phase 1 not complete recieved ");
-					//Todo popup
-					//Toast.makeText(MBApp.getContext(), "resultReceiver.onReceiveResult() :: Phase 1 not complete recieved", Toast.LENGTH_SHORT).show();
-					//alertView("micro:bit not in correct state", R.string.flashing_failed_title);
-
-
 					PopUp.show(MBApp.getContext(),
 						getString(R.string.flashing_error_msg), //message
 						getString(R.string.flashing_failed_title), //title
@@ -569,7 +574,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				}
 			}
 
-			if ((phase & 0x02) != 0) {
+			if ((phase & Constants.FLASHING_PHASE_2_COMPLETE) != 0) {
 				logi("resultReceiver.onReceiveResult() :: Phase 2 complete recieved ");
 			}
 
@@ -581,6 +586,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
     View.OnClickListener popupOkHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            logi("popupOkHandler");
+            state = STATE_START_NOFLASH;
             if(isDisconnectedForFlash) {
                 IPCService.getInstance().bleConnect();
                 isDisconnectedForFlash = false;

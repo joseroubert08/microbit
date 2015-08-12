@@ -38,6 +38,7 @@ import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.PreviousDeviceList;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.ConnectedDevice;
+import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.ui.BluetoothSwitch;
 import com.samsung.microbit.ui.PopUp;
@@ -132,6 +133,10 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		public void onReceive(Context context, Intent intent) {
 			handleBLENotification(context, intent);
 			int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+			if (Constants.BLE_DISCONNECTED_FOR_FLASH == v){
+				logi("Bluetooth disconnected for flashing. No need to display pop-up");
+				return;
+			}
 			if (v != 0) {
 				runOnUiThread(new Runnable() {
 					@Override

@@ -228,7 +228,7 @@ public class BLEService extends BLEBaseService {
 			sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null, args);
 		}
 
-        if (!isConnected && 99 == errorCode){
+        if (!isConnected && Constants.BLE_DISCONNECTED_FOR_FLASH == errorCode){
             //Diconnected for flashing. Remove the icon
             if (notifyMgr!= null) {
                 if (debug) logi("Removing Notifcation as we are now flashing the device ");
@@ -405,7 +405,7 @@ public class BLEService extends BLEBaseService {
                 case IPCMessageManager.IPC_FUNCTION_DISCONNECT_FOR_FLASH:
                     if (debug) logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_DISCONNECT_FOR_FLASH = " + bleManager);
                     if (reset()) {
-                        setNotification(false, 99);
+                        setNotification(false, Constants.BLE_DISCONNECTED_FOR_FLASH);
                     }
                     break;
 
