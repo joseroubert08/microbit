@@ -103,6 +103,7 @@ public class Constants {
 	public static final int SAMSUNG_DEVICE_GESTURE_DEVICE_SHAKEN = 3;
 	public static final int SAMSUNG_DEVICE_DISPLAY_OFF = 4;
 	public static final int SAMSUNG_DEVICE_DISPLAY_ON = 5;
+	public static final int SAMSUNG_DEVICE_BATTERY_STRENGTH = 6;
 
 
 	public static final int SAMSUNG_TELEPHONY_ID = 1104;
