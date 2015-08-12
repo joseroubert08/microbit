@@ -207,6 +207,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	private void setConnectedDeviceText() {
 
 		TextView connectedIndicatorText = (TextView) findViewById(R.id.connectedIndicatorText);
+        TextView deviceName1 = (TextView) findViewById(R.id.deviceName);
+        TextView deviceName2 = (TextView) findViewById(R.id.deviceName2);
 		ImageButton connectedIndicatorIcon = (ImageButton) findViewById(R.id.connectedIndicatorIcon);
 
 		if (connectedIndicatorIcon == null || connectedIndicatorText == null)
@@ -219,20 +221,29 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			connectedIndicatorIcon.setImageResource(R.drawable.disconnect_device);
 			connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_disconnect_btn));
 			connectedIndicatorText.setText(getString(R.string.not_connected));
-			startIndex = getString(R.string.not_connected).length();
-
-			//TODO Add a formatted string in string resource KK
-			span = new SpannableString(getString(R.string.not_connected) + "\n" + device.mName + "\n(" + device.mPattern + ")");
+			if (deviceName1 != null && deviceName2!=null){
+                //Mobile Device.. 2 lines of display
+                deviceName1.setText(device.mName);
+                deviceName2.setText("(" + device.mPattern + ")");
+            }
+            else if (deviceName1 != null){
+                deviceName1.setText(device.mName + " (" + device.mPattern + ")");
+            }
 		} else {
-			startIndex = getString(R.string.connected_to).length();
 			connectedIndicatorIcon.setImageResource(R.drawable.device_connected);
 			connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_connect_btn));
-
-			//TODO Add a formatted string in string resource KK
-			span = new SpannableString(getString(R.string.connected_to) + "\n" + device.mName + "\n(" + device.mPattern + ")");
+            connectedIndicatorText.setText(getString(R.string.connected_to));
+            if (deviceName1 != null && deviceName2!=null){
+                //Mobile Device.. 2 lines of display
+                deviceName1.setText(device.mName);
+                deviceName2.setText("(" + device.mPattern + ")");
+            }
+            else if (deviceName1 != null){
+                deviceName1.setText(device.mName + " (" + device.mPattern + ")");
+            }
 		}
 
-		if (device.mPattern != null) {
+/*		if (device.mPattern != null) {
 			int endIndex = startIndex + 4;
 			if (device.mName != null)
 				endIndex += device.mName.length();
@@ -244,7 +255,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			span.setSpan(new ForegroundColorSpan(Color.BLACK), 0, startIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			span.setSpan(new ForegroundColorSpan(Color.BLUE), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			connectedIndicatorText.setText(span);
-		}
+		}*/
 	}
 
 	public void renameFile(String filePath, String newName) {
