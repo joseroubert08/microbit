@@ -51,6 +51,7 @@ import android.os.ResultReceiver;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.provider.SyncStateContract;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -600,6 +601,12 @@ public abstract class DfuBaseService extends IntentService {
 	private static final UUID FLASH_PAIRING_CODE_CHARACTERISTIC_UUID = UUID.fromString("947b6934-64d1-4fad-9bd0-cc9d6e9f3ea3");
 	private static final UUID CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
+
+	public static final  int FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED = 0x33;
+    public static final int FLASHING_PHASE_1 = 0x01;
+    public static final int FLASHING_PHASE_2 = 0x02;
+
+
 	//
 	public static final int NOTIFICATION_ID = 283; // a random number
 	private static final int NOTIFICATIONS = 1;
@@ -1047,14 +1054,8 @@ public abstract class DfuBaseService extends IntentService {
 
 			if (FLASH_PAIRING_CODE_CHARACTERISTIC_UUID.equals(characteristic.getUuid())) {
 				// Possible press of button A after a 2 has been written to FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID
-				// SEND status mythri
-
-				//	sendMessage(eventSrc, event);
 				logi("FLashing code written notification");
-				//mBytesConfirmed = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 1);
-				//if(mBytesConfirmed != 0)
-				resultReceiver.send(0x33, null);
-
+				resultReceiver.send(FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED, null);
 			}
 
 
@@ -1186,15 +1187,20 @@ public abstract class DfuBaseService extends IntentService {
 	@Override
 	protected void onHandleIntent(final Intent intent) {
 
+
 		int phase = intent.getIntExtra(INTENT_REQUESTED_PHASE, 0) & 0x03;
 		resultReceiver = (ResultReceiver) intent.getParcelableExtra(INTENT_RESULT_RECEIVER);
 
 		int rc = 0;
-		if ((phase & 0x01) != 0) {
+
+        logi("DFUBaseService onHandleIntent phase = " + phase);
+
+
+		if ((phase & FLASHING_PHASE_1) != 0) {
 			rc = phase1(intent);
 		}
 
-		if ((phase & 0x02) != 0) {
+		if ((phase & FLASHING_PHASE_2) != 0) {
 			rc = phase2(intent);
 		}
 
@@ -1344,7 +1350,7 @@ public abstract class DfuBaseService extends IntentService {
 		 * Now let's connect to the device.
 		 * All the methods below are synchronous. The mLock object is used to wait for asynchronous calls.
 		 */
-		sendLogBroadcast(LOG_LEVEL_VERBOSE, "Connecting to DFU target...");
+		sendLogBroadcast(LOG_LEVEL_VERBOSE, "Connecting to DFU target 1...");
 		updateProgressNotification(PROGRESS_CONNECTING);
 		makeGattConnection(deviceAddress);
 
@@ -1422,6 +1428,7 @@ public abstract class DfuBaseService extends IntentService {
         mDeviceAddress = deviceAddress;
         mDeviceName = intent.getStringExtra(EXTRA_DEVICE_NAME);
 
+        sendLogBroadcast(LOG_LEVEL_VERBOSE, "Connecting to DFU target 2...");
 		makeGattConnection(deviceAddress);
 
 		logi("Phase2 s");
@@ -1473,8 +1480,6 @@ public abstract class DfuBaseService extends IntentService {
 				resultReceiver = null;
 				gatt.disconnect();
 				waitUntilDisconnected();
-				//waitUntilConnected(10000);
-				//gatt.disconnect();
 				close(gatt);
 				gatt = null;
 				logi("End phase 3");
@@ -1619,6 +1624,7 @@ public abstract class DfuBaseService extends IntentService {
 
 
 			if (gatt == null) {
+                sendLogBroadcast(LOG_LEVEL_VERBOSE, "Connecting to DFU target 3...");
 				makeGattConnection(deviceAddress);
 				if (gatt == null) {
 
@@ -2399,9 +2405,9 @@ public abstract class DfuBaseService extends IntentService {
 	 */
 	private void disconnect(final BluetoothGatt gatt) {
 		if (mConnectionState == STATE_DISCONNECTED)
-			return;
+            return;
 
-		mConnectionState = STATE_DISCONNECTING;
+        mConnectionState = STATE_DISCONNECTING;
 		logi("Disconnecting from the device...");
 		gatt.disconnect();
 
@@ -2411,8 +2417,8 @@ public abstract class DfuBaseService extends IntentService {
 
 	/**
 	 * Wait until the connection state will change to {@link #STATE_DISCONNECTED} or until an error occurs.
-	 */
-	private void waitUntilDisconnected() {
+     */
+    private void waitUntilDisconnected() {
 		logi("waitUntilDisconnected");
 		try {
 			synchronized (mLock) {
@@ -2606,7 +2612,7 @@ public abstract class DfuBaseService extends IntentService {
 
 		// enable notifications on the device
 		final BluetoothGattDescriptor descriptor = characteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG);
-		descriptor.setValue(type == NOTIFICATIONS ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+        descriptor.setValue(type == NOTIFICATIONS ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
 		sendLogBroadcast(LOG_LEVEL_DEBUG, "gatt.writeDescriptor(" + descriptor.getUuid() + (type == NOTIFICATIONS ? ", value=0x01-00)" : ", value=0x02-00)"));
 		gatt.writeDescriptor(descriptor);
 
@@ -2650,9 +2656,9 @@ public abstract class DfuBaseService extends IntentService {
 
 		final BluetoothGattDescriptor descriptor = characteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG);
 		if (descriptor == null)
-			return false;
+            return false;
 
-		mRequestCompleted = false;
+        mRequestCompleted = false;
 		mError = 0;
 
 		logi("Reading Service Changed CCCD value...");
@@ -2840,10 +2846,10 @@ public abstract class DfuBaseService extends IntentService {
 		mImageSizeSent = false;
 
 		characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
-		characteristic.setValue(new byte[12]);
-		characteristic.setValue(softDeviceImageSize, BluetoothGattCharacteristic.FORMAT_UINT32, 0);
+        characteristic.setValue(new byte[12]);
+        characteristic.setValue(softDeviceImageSize, BluetoothGattCharacteristic.FORMAT_UINT32, 0);
 		characteristic.setValue(bootloaderImageSize, BluetoothGattCharacteristic.FORMAT_UINT32, 4);
-		characteristic.setValue(appImageSize, BluetoothGattCharacteristic.FORMAT_UINT32, 8);
+        characteristic.setValue(appImageSize, BluetoothGattCharacteristic.FORMAT_UINT32, 8);
 		sendLogBroadcast(LOG_LEVEL_VERBOSE, "Writing to characteristic " + characteristic.getUuid());
 		sendLogBroadcast(LOG_LEVEL_DEBUG, "gatt.writeCharacteristic(" + characteristic.getUuid() + ")");
 		gatt.writeCharacteristic(characteristic);
@@ -2889,11 +2895,11 @@ public abstract class DfuBaseService extends IntentService {
 		}
 
 		mReceivedData = null;
-		mError = 0;
-		mInitPacketSent = false;
+        mError = 0;
+        mInitPacketSent = false;
 
-		characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
-		characteristic.setValue(locBuffer);
+        characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
+        characteristic.setValue(locBuffer);
 		logi("Sending init packet (Value = " + parse(locBuffer) + ")");
 		sendLogBroadcast(LOG_LEVEL_VERBOSE, "Writing to characteristic " + characteristic.getUuid());
 		sendLogBroadcast(LOG_LEVEL_DEBUG, "gatt.writeCharacteristic(" + characteristic.getUuid() + ")");
@@ -3042,8 +3048,8 @@ public abstract class DfuBaseService extends IntentService {
 			if (createBond != null) {
 				sendLogBroadcast(LOG_LEVEL_DEBUG, "gatt.getDevice().createBond() (hidden)");
 				return (Boolean) createBond.invoke(device);
-			}
-		} catch (final Exception e) {
+            }
+        } catch (final Exception e) {
 			Log.w(TAG, "An exception occurred while creating bond", e);
 		}
 
@@ -3222,7 +3228,7 @@ public abstract class DfuBaseService extends IntentService {
 
 		// Add Abort action to the notification
         //Rohit - Disabled Cancel for now
-        /*
+		/*
 		if (progress != PROGRESS_ABORTED && progress != PROGRESS_COMPLETED && progress <  0) { //ERROR_MASK) {
 			final Intent abortIntent = new Intent(BROADCAST_ACTION);
 			abortIntent.putExtra(EXTRA_ACTION, ACTION_ABORT);
@@ -3230,9 +3236,10 @@ public abstract class DfuBaseService extends IntentService {
             manager.cancel(NOTIFICATION_ID);
             builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
 		}
-		*/
+
         if(progress>0)
             builder.addAction(0,null,null);
+        */
 
         manager.notify(NOTIFICATION_ID, builder.build());
 	}

@@ -67,6 +67,10 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		public void onReceive(Context context, Intent intent) {
 			handleBLENotification(context, intent);
 			int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+			if (Constants.BLE_DISCONNECTED_FOR_FLASH == v){
+				logi("Bluetooth disconnected for flashing. No need to display pop-up");
+				return;
+			}
 			if (v != 0) {
 				runOnUiThread(new Runnable() {
 					@Override
