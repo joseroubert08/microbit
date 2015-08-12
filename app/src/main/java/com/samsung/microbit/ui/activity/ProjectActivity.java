@@ -223,11 +223,14 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			connectedIndicatorText.setText(getString(R.string.not_connected));
 			if (deviceName1 != null && deviceName2!=null){
                 //Mobile Device.. 2 lines of display
-                deviceName1.setText(device.mName);
-                deviceName2.setText("(" + device.mPattern + ")");
+                if (device.mName!= null)
+                    deviceName1.setText(device.mName);
+                if (device.mPattern != null)
+                    deviceName2.setText("(" + device.mPattern + ")");
             }
             else if (deviceName1 != null){
-                deviceName1.setText(device.mName + " (" + device.mPattern + ")");
+                if (device.mName!= null)
+                    deviceName1.setText(device.mName + " (" + device.mPattern + ")");
             }
 		} else {
 			connectedIndicatorIcon.setImageResource(R.drawable.device_connected);
@@ -235,11 +238,14 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             connectedIndicatorText.setText(getString(R.string.connected_to));
             if (deviceName1 != null && deviceName2!=null){
                 //Mobile Device.. 2 lines of display
-                deviceName1.setText(device.mName);
-                deviceName2.setText("(" + device.mPattern + ")");
+                if (device.mName!= null)
+                    deviceName1.setText(device.mName);
+                if (device.mPattern != null)
+                    deviceName2.setText("(" + device.mPattern + ")");
             }
             else if (deviceName1 != null){
-                deviceName1.setText(device.mName + " (" + device.mPattern + ")");
+                if (device.mName!= null)
+                    deviceName1.setText(device.mName + " (" + device.mPattern + ")");
             }
 		}
 
