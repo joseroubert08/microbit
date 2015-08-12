@@ -23,8 +23,8 @@
 			android:src="@drawable/back"/>
 
 		<TextView
-			style="@style/h2"
 			android:id="@+id/titleTxt"
+			style="@style/h1"
 			android:layout_width="wrap_content"
 			android:layout_height="@dimen/header_title_height"
 			android:layout_toRightOf="@id/backBtn"
@@ -41,7 +41,7 @@
 			android:layout_marginTop="0dp">
 
 			<TextView
-                style="@style/p2"
+                style="@style/p3"
 				android:id="@+id/connectedIndicatorText"
 				android:layout_width="@dimen/header_title_width"
                 android:layout_marginTop="@dimen/header_right_margin"
@@ -51,25 +51,14 @@
 				android:gravity="top"
 				android:maxWidth="@dimen/header_device_name_max"
 				android:minWidth="@dimen/header_device_name_min"/>
+
             <TextView
                 style="@style/p1"
                 android:id="@+id/deviceName"
                 android:layout_width="@dimen/header_title_width"
+                android:layout_marginLeft="@dimen/header_right_margin"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/connectedIndicatorText"
-                android:layout_marginLeft="@dimen/header_right_margin"
-                android:textColor="@color/blue_button_up"
-                android:editable="false"
-                android:gravity="top"
-                android:maxWidth="@dimen/header_device_name_max"
-                android:minWidth="@dimen/header_device_name_min"/>
-            <TextView
-                style="@style/p2"
-                android:id="@+id/deviceName2"
-                android:layout_width="@dimen/header_title_width"
-                android:layout_marginLeft="@dimen/header_right_margin"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/deviceName"
                 android:textColor="@color/blue_button_up"
                 android:editable="false"
                 android:gravity="top"
