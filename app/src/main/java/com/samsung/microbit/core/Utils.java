@@ -259,6 +259,7 @@ public class Utils {
 
 		Log.d("MicroBit", "ConnectedDevice - pairedDevice.mPattern - " + pairedDevice.mPattern);
 		Log.d("MicroBit", "ConnectedDevice - pairedDevice.mName - " + pairedDevice.mName);
+		Log.d("MicroBit", "ConnectedDevice - pairedDevice.mPairingCode - " + pairedDevice.mPairingCode);
 
 		return pairedDevice;
 	}
