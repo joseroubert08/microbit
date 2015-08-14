@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.ResultReceiver;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -39,6 +40,7 @@ import com.samsung.microbit.core.PreviousDeviceList;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
+import com.samsung.microbit.service.DfuService;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.ui.BluetoothSwitch;
 import com.samsung.microbit.ui.PopUp;
@@ -71,6 +73,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	private static String mNewDeviceName;
 	private static String mNewDeviceCode;
+    private static String mNewDeviceAddress;
 
 	// @formatter:off
     private static String deviceCodeArray[] = {
@@ -126,6 +129,48 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	 * TODO setup to Handle BLE Notiifications
 	 */
 	static IntentFilter broadcastIntentFilter;
+
+    ResultReceiver resultReceiver = new ResultReceiver(new Handler()) {
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+            int phase = resultCode & 0x0ffff;
+
+            if (phase == Constants.FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED) {
+                logi("resultReceiver.onReceiveResult() :: FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED ");
+                int pairing_code = resultData.getInt("pairing_code");
+                logi("-----------> Pairing Code is " + pairing_code);
+                PopUp.hide();
+                ConnectedDevice newDev = new ConnectedDevice(mNewDeviceCode.toUpperCase(), mNewDeviceCode.toUpperCase(), false, mNewDeviceAddress,pairing_code);
+                handle_pairing_successful(newDev);
+
+            } else if ((phase & Constants.PAIRING_CONTROL_CODE_REQUESTED) != 0) {
+                if ((phase & 0x0ff00) == 0) {
+                    logi("resultReceiver.onReceiveResult() :: PAIRING_CONTROL_CODE_REQUESTED ");
+                    PopUp.show(MBApp.getContext(),
+                            getString(R.string.pairing_phase2_msg), //message
+                            getString(R.string.pairing_title), //title
+                            R.drawable.flash_face, //image icon res id
+                            R.drawable.blue_btn,
+                            PopUp.TYPE_NOBUTTON, //type of popup.
+                            null,//override click listener for ok button
+                            null);//pass null to use default listener
+                } else {
+                    logi("resultReceiver.onReceiveResult() :: Phase 1 not complete recieved ");
+                    PopUp.show(MBApp.getContext(),
+                            getString(R.string.pairing_failed_message), //message
+                            getString(R.string.pairing_failed_title), //title
+                            R.drawable.error_face, //image icon res id
+                            R.drawable.red_btn,
+                            PopUp.TYPE_ALERT, //type of popup.
+                            null,//override click listener for ok button
+                            null);//pass null to use default listener
+                }
+            }
+            super.onReceiveResult(resultCode, resultData);
+        }
+    };
 
 	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
@@ -387,7 +432,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			connectedDeviceList.add(mPrevDeviceArray[i]);
 		}
 		for (int i = numOfPreviousItems; i < 1; i++) {
-			connectedDeviceList.add(new ConnectedDevice(null, null, false, null));
+			connectedDeviceList.add(new ConnectedDevice(null, null, false, null,0));
 		}
 
 
@@ -668,46 +713,27 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		if (debug) logi("handle_pairing_failed() :: Start");
 
-		// dummy code to test addition of MBits
-
-		/*if(debug) {
-			if (!mNewDeviceCode.equalsIgnoreCase("vuvuv")) {
-                ConnectedDevice newDev = new ConnectedDevice(null, mNewDeviceCode, false, "ab.cd.ef.gh.ij.56");
-                int oldId = mPrevDevList.checkDuplicateMicrobit(newDev);
-                mPrevDevList.addMicrobit(newDev,oldId);
-                populateConnectedDeviceList(true);
-                displayConnectScreen(PAIRING_STATE.PAIRING_STATE_NEW_NAME);
-                return;
-
-            }
-        }*/
-
-
 		displayConnectScreen(PAIRING_STATE.PAIRING_STATE_ERROR);
 
 		PopUp.show(this,
-			getString(R.string.pairingErrorMessage), //message
-			getString(R.string.pairingErrorTitle), //title
-			R.drawable.error_face, //image icon res id
-			R.drawable.red_btn,
-			PopUp.TYPE_ALERT, //type of popup.
-			null,//override click listener for ok button
-            new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    PopUp.hide();
-                    displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
-                }
-            });//pass null to use default listener
+                getString(R.string.pairingErrorMessage), //message
+                getString(R.string.pairingErrorTitle), //title
+                R.drawable.error_face, //image icon res id
+                R.drawable.red_btn,
+                PopUp.TYPE_ALERT, //type of popup.
+                null,//override click listener for ok button
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PopUp.hide();
+                        displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                    }
+                });//pass null to use default listener
 
 	}
 
-	private void handle_pairing_successful(final ConnectedDevice newDev) {
-
-		if (debug) logi("handle_pairing_successful() :: Start");
-
-
-		final Runnable task = new Runnable() {
+    private void handle_pairing_successful(final ConnectedDevice newDev) {
+           final Runnable task = new Runnable() {
 
 			@Override
 			public void run() {
@@ -718,18 +744,28 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
                 mPrevDevList.addMicrobit(newDev, oldId);
 				populateConnectedDeviceList(true);
 
-				if (debug) logi("mLeScanCallback.onLeScan() ::   Matching DEVICE FOUND, Pairing");
 				if (debug) logi("handle_pairing_successful() :: sending intent to BLEService.class");
 
 				displayConnectScreen(PAIRING_STATE.PAIRING_STATE_NEW_NAME);
 
-			}
-		};
+            }
+           };
 
-		new Handler(Looper.getMainLooper()).post(task);
-	}
+        new Handler(Looper.getMainLooper()).post(task);
+    }
 
-	private void scanningFailed() {
+    private void startPairing(String deviceAddress) {
+
+        logi(">>>>>>>>>>>>>>>>>>>>> startPairing");
+        final Intent service = new Intent(this, DfuService.class);
+        service.putExtra(DfuService.EXTRA_DEVICE_ADDRESS, deviceAddress);
+        service.putExtra(DfuService.EXTRA_KEEP_BOND, false);
+        service.putExtra(DfuService.INTENT_RESULT_RECEIVER, resultReceiver);
+        service.putExtra(DfuService.INTENT_REQUESTED_PHASE, 1);
+        startService(service);
+    }
+
+    private void scanningFailed() {
 
 		if (debug) logi("scanningFailed() :: scanning Failed to find a matching device");
 		if (deviceFound) {
@@ -817,15 +853,12 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			String s = device.getName().toLowerCase();
 			if (mNewDeviceName.toLowerCase().equals(s)) {
 
-				// if(debug) logi("mLeScanCallback.onLeScan() ::   deviceName == " + mNewDeviceName.toLowerCase());
 				if (debug) logi("mLeScanCallback.onLeScan() ::   device.getName() == " + device.getName().toLowerCase());
-
 				// Stop scanning as device is found.
 				deviceFound = true;
 				scanLeDevice(false);
-
-				ConnectedDevice newDev = new ConnectedDevice(mNewDeviceCode.toUpperCase(), mNewDeviceCode.toUpperCase(), false, device.getAddress());
-				handle_pairing_successful(newDev);
+                mNewDeviceAddress = device.getAddress();
+                startPairing(mNewDeviceAddress);
 			} else {
 				if (debug) logi("mLeScanCallback.onLeScan() ::   non-matching - deviceName == " + mNewDeviceName.toLowerCase());
 				if (debug)
@@ -869,5 +902,4 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_launcher, menu);
 		return true;
-	}
-}
+	}}

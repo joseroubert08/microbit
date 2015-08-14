@@ -46,6 +46,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -604,7 +605,7 @@ public abstract class DfuBaseService extends IntentService {
 
 
 	public static final  int FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED = 0x33;
-    public static final int FLASHING_PHASE_1 = 0x01;
+    public static final int PAIRING_REQUEST = 0x01;
     public static final int FLASHING_WITH_PAIR_CODE = 0x02;
 
 
@@ -1058,13 +1059,12 @@ public abstract class DfuBaseService extends IntentService {
 				// Possible press of button A after a 2 has been written to FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID
 				logi("FLashing code written notification");
                 int responseType = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-                int Value = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
+                int pairingCode = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
                 String valueString = parse(characteristic);
-                byte[] valueBytes = characteristic.getValue();
-                logi("-----------> Rohit - Response Type = " + responseType + " Value = " + Value) ;
-                logi("-----------> Rohit - Value String = " + valueString) ;
-                logi("-----------> Rohit - Value Bytes = " + valueBytes.toString()) ;
-				resultReceiver.send(FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED, null);
+                logi("-----------> Rohit - Value = " + pairingCode + " Value String = " + valueString) ;
+                Bundle b=new Bundle();
+                b.putInt("pairing_code", pairingCode);
+                resultReceiver.send(FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED, b);
 			}
 
 
@@ -1193,6 +1193,8 @@ public abstract class DfuBaseService extends IntentService {
 
 	ResultReceiver resultReceiver;
 
+    int mServicePhase = 0 ;
+
 	@Override
 	protected void onHandleIntent(final Intent intent) {
 
@@ -1205,11 +1207,13 @@ public abstract class DfuBaseService extends IntentService {
         logi("DFUBaseService onHandleIntent phase = " + phase);
 
 
-		if ((phase & FLASHING_PHASE_1) != 0) {
-			rc = phase1(intent);
+		if ((phase & PAIRING_REQUEST) != 0) {
+            mServicePhase = PAIRING_REQUEST ;
+			rc = pairing(intent);
 		}
 
 		if ((phase & FLASHING_WITH_PAIR_CODE) != 0) {
+            mServicePhase = FLASHING_WITH_PAIR_CODE ;
 			rc = flashingWithPairCode(intent);
 		}
 
@@ -1315,61 +1319,27 @@ public abstract class DfuBaseService extends IntentService {
 	/* TODO
 		Temporary code till we have callbacks for FLASH_PAIRING_CODE_CHARACTERISTIC_UUID
 	*/
-	int phase1(Intent intent) {
+	int pairing(Intent intent) {
 
 		final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
 		// Read input parameters
 		final String deviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
-		final String deviceName = intent.getStringExtra(EXTRA_DEVICE_NAME);
-		final String filePath = intent.getStringExtra(EXTRA_FILE_PATH);
-		final Uri fileUri = intent.getParcelableExtra(EXTRA_FILE_URI);
-		final String initFilePath = intent.getStringExtra(EXTRA_INIT_FILE_PATH);
-		final Uri initFileUri = intent.getParcelableExtra(EXTRA_INIT_FILE_URI);
-		int fileType = intent.getIntExtra(EXTRA_FILE_TYPE, TYPE_AUTO);
-		if (filePath != null && fileType == TYPE_AUTO) {
-			fileType = filePath.toLowerCase(Locale.US).endsWith("zip") ? TYPE_AUTO : TYPE_APPLICATION;
-		}
 		logi("Phase1 s");
 		String mimeType = intent.getStringExtra(EXTRA_FILE_MIME_TYPE);
-		mimeType = mimeType != null ? mimeType : (fileType == TYPE_AUTO ? MIME_TYPE_ZIP : MIME_TYPE_OCTET_STREAM);
-		mPartCurrent = intent.getIntExtra(EXTRA_PART_CURRENT, 1);
-		mPartsTotal = intent.getIntExtra(EXTRA_PARTS_TOTAL, 1);
-
 
         mDeviceAddress = deviceAddress;
-        mDeviceName = deviceName;
-
-		// Check file type and mime-type
-		if ((fileType & ~(TYPE_SOFT_DEVICE | TYPE_BOOTLOADER | TYPE_APPLICATION)) > 0 || !(MIME_TYPE_ZIP.equals(mimeType) || MIME_TYPE_OCTET_STREAM.equals(mimeType))) {
-			logw("File type or file mime-type not supported");
-			sendLogBroadcast(LOG_LEVEL_WARNING, "File type or file mime-type not supported");
-			sendErrorBroadcast(ERROR_FILE_TYPE_UNSUPPORTED);
-			return 1;
-		}
-
-		if (MIME_TYPE_OCTET_STREAM.equals(mimeType) && fileType != TYPE_SOFT_DEVICE && fileType != TYPE_BOOTLOADER && fileType != TYPE_APPLICATION) {
-			logw("Unable to determine file type");
-			sendLogBroadcast(LOG_LEVEL_WARNING, "Unable to determine file type");
-			sendErrorBroadcast(ERROR_FILE_TYPE_UNSUPPORTED);
-			return 2;
-		}
-
 		/*
-		 * Now let's connect to the device.
+		 * Lets connect to the device.
 		 * All the methods below are synchronous. The mLock object is used to wait for asynchronous calls.
 		 */
 		sendLogBroadcast(LOG_LEVEL_VERBOSE, "Connecting to DFU target 1...");
-		updateProgressNotification(PROGRESS_CONNECTING);
 		makeGattConnection(deviceAddress);
-
-		//final BluetoothGatt gatt = connect(deviceAddress);
 
 		// Are we connected?
 		if (gatt == null) {
 			loge("Bluetooth adapter disabled");
 			sendLogBroadcast(LOG_LEVEL_ERROR, "Bluetooth adapter disabled");
-			updateProgressNotification(ERROR_BLUETOOTH_DISABLED);
 			return 3;
 		}
 
@@ -1377,44 +1347,44 @@ public abstract class DfuBaseService extends IntentService {
 			final int error = mError & ~ERROR_CONNECTION_STATE_MASK;
 			loge("An error occurred while connecting to the device:" + error);
 			sendLogBroadcast(LOG_LEVEL_ERROR, String.format("Connection failed (0x%02X): %s", error, GattError.parseConnectionError(error)));
-			terminateConnection(gatt, mError);
+            cancelPairing(gatt);
 			return 4;
 		}
 
 		if (mAborted) {
-			logi("Upload aborted");
-			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
-			terminateConnection(gatt, PROGRESS_ABORTED);
+			logi("Pairing aborted");
+			sendLogBroadcast(LOG_LEVEL_WARNING, "Pairing aborted");
+            cancelPairing(gatt);
 			return 5;
 		}
 
 		final BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
 
 		if (fps == null) {
-			logi("Upload aborted");
-			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
-			terminateConnection(gatt, PROGRESS_ABORTED);
+			logi("Pairing aborted");
+			sendLogBroadcast(LOG_LEVEL_WARNING, "Pairing aborted");
+            cancelPairing(gatt);
 			return 6;
 		}
 
 
 		final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
 		if (sfpc == null) {
-			logi("Upload aborted");
-			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
-			terminateConnection(gatt, PROGRESS_ABORTED);
+			logi("Pairing aborted");
+			sendLogBroadcast(LOG_LEVEL_WARNING, "Pairing aborted");
+            cancelPairing(gatt);
 			return 6;
 		}
 
 		boolean ret = sfpc.setValue(2, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 		if (!ret)
-			logi("Error setting Flashing code");
+			logi("Error setting Pairing code");
 		else
-			logi("Flashing code set to 2");
+			logi("Pairing code set to 2");
 		try {
 			writeCharacteristic(gatt, sfpc);
 		} catch (Exception e) {
-			logi("Flashing code 2 write exception");
+			logi("Pairing code 2 write exception");
 			e.printStackTrace();
 		}
 
@@ -1422,8 +1392,8 @@ public abstract class DfuBaseService extends IntentService {
 
 		if (mConnectionState == STATE_DISCONNECTED) {
 			logi("Gatt disconnected");
-			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
-			terminateConnection(gatt, PROGRESS_ABORTED);
+			sendLogBroadcast(LOG_LEVEL_WARNING, "Pairing aborted");
+            cancelPairing(gatt);
 			return 6;
 		}
 
@@ -1435,7 +1405,7 @@ public abstract class DfuBaseService extends IntentService {
 
         mDeviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
         mDeviceName = intent.getStringExtra(EXTRA_DEVICE_NAME);
-        mDevicePairingCode = intent.getIntExtra(EXTRA_DEVICE_PAIR_CODE,-1960948209);
+        mDevicePairingCode = intent.getIntExtra(EXTRA_DEVICE_PAIR_CODE,0);
 
         sendLogBroadcast(LOG_LEVEL_VERBOSE, "Connecting to DFU target 2...");
 		makeGattConnection(mDeviceAddress);
@@ -2416,6 +2386,17 @@ public abstract class DfuBaseService extends IntentService {
 		return gatt;
 	}
 
+    private void cancelPairing(final BluetoothGatt gatt) {
+        if (mConnectionState != STATE_DISCONNECTED) {
+            // Disconnect from the device
+            disconnect(gatt);
+            sendLogBroadcast(LOG_LEVEL_INFO, "Disconnected");
+        }
+        // Close the device
+        refreshDeviceCache(gatt, false); // This should be set to true when DFU Version is 0.5 or lower
+        close(gatt);
+    }
+
 	/**
 	 * Disconnects from the device and cleans local variables in case of error. This method is SYNCHRONOUS and wait until the disconnecting process will be completed.
 	 *
@@ -3209,6 +3190,12 @@ public abstract class DfuBaseService extends IntentService {
 		final String deviceAddress = mDeviceAddress;
 		final String deviceName = mDeviceName != null ? mDeviceName : getString(R.string.dfu_unknown_name);
 
+
+        //Do not show notification try when Pairing
+        if (mServicePhase == PAIRING_REQUEST ){
+            logi("Not displaying the Progress tray icon as we are in Pairing mode");
+            return;
+        }
 		// final Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_stat_notify_dfu); <- this looks bad on Android 5
 		if(progress < 0) {
 			builder = new NotificationCompat.Builder(this).setSmallIcon(android.R.drawable.stat_sys_upload).
