@@ -1494,14 +1494,15 @@ public abstract class DfuBaseService extends IntentService {
 		}
 
         if (rc == 0) {
-
-			waitUntilDisconnectedTimed();
+	/*		waitUntilDisconnectedTimed();
             if (mConnectionState != STATE_DISCONNECTED){
                 logi("Upload aborted");
                 sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
                 terminateConnection(gatt, PROGRESS_VALIDATION_FAILED);
                 return 6;
-            }
+            }*/
+            waitUntilDisconnected();
+
 			waitUntilConnected();
 
 			disconnect(gatt);
