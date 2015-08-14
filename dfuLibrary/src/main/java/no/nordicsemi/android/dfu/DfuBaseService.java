@@ -45,13 +45,11 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
-import android.nfc.Tag;
 import android.os.Build;
 import android.os.ResultReceiver;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.provider.SyncStateContract;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -66,7 +64,6 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.UUID;
 
-import com.samsung.dfulibrary.BuildConfig;
 import com.samsung.dfulibrary.R;
 
 import no.nordicsemi.android.dfu.exception.DeviceDisconnectedException;
@@ -127,6 +124,7 @@ public abstract class DfuBaseService extends IntentService {
 	 */
 	public static final String EXTRA_DEVICE_NAME = "no.nordicsemi.android.dfu.extra.EXTRA_DEVICE_NAME";
 
+    public static final String EXTRA_DEVICE_PAIR_CODE = "no.nordicsemi.android.dfu.extra.EXTRA_DEVICE_PAIR_CODE";
 	/**
 	 * <p>
 	 * If the new firmware (application) does not share the bond information with the old one, the bond information is lost. Set this flag to <code>true</code>
@@ -385,6 +383,9 @@ public abstract class DfuBaseService extends IntentService {
 	 */
 	public static final int PROGRESS_ABORTED = -7;
 
+
+    public static final int PROGRESS_VALIDATION_FAILED = -8 ;
+
 	/**
 	 * The broadcast error message contains the following extras:
 	 * <ul>
@@ -604,7 +605,7 @@ public abstract class DfuBaseService extends IntentService {
 
 	public static final  int FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED = 0x33;
     public static final int FLASHING_PHASE_1 = 0x01;
-    public static final int FLASHING_PHASE_2 = 0x02;
+    public static final int FLASHING_WITH_PAIR_CODE = 0x02;
 
 
 	//
@@ -623,6 +624,7 @@ public abstract class DfuBaseService extends IntentService {
 	private InputStream mInputStream;
 	private String mDeviceAddress;
 	private String mDeviceName;
+    private int mDevicePairingCode;
 
 	/**
 	 * The current connection state. If its value is > 0 than an error has occurred. Error number is a negative value of mConnectionState
@@ -1055,6 +1057,13 @@ public abstract class DfuBaseService extends IntentService {
 			if (FLASH_PAIRING_CODE_CHARACTERISTIC_UUID.equals(characteristic.getUuid())) {
 				// Possible press of button A after a 2 has been written to FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID
 				logi("FLashing code written notification");
+                int responseType = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
+                int Value = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
+                String valueString = parse(characteristic);
+                byte[] valueBytes = characteristic.getValue();
+                logi("-----------> Rohit - Response Type = " + responseType + " Value = " + Value) ;
+                logi("-----------> Rohit - Value String = " + valueString) ;
+                logi("-----------> Rohit - Value Bytes = " + valueBytes.toString()) ;
 				resultReceiver.send(FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED, null);
 			}
 
@@ -1200,8 +1209,8 @@ public abstract class DfuBaseService extends IntentService {
 			rc = phase1(intent);
 		}
 
-		if ((phase & FLASHING_PHASE_2) != 0) {
-			rc = phase2(intent);
+		if ((phase & FLASHING_WITH_PAIR_CODE) != 0) {
+			rc = flashingWithPairCode(intent);
 		}
 
 		if (resultReceiver != null) {
@@ -1422,17 +1431,20 @@ public abstract class DfuBaseService extends IntentService {
 		return 0;
 	}
 
-	private int phase2(Intent intent) {
-		final String deviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
+	private int flashingWithPairCode(Intent intent) {
 
-        mDeviceAddress = deviceAddress;
+        mDeviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
         mDeviceName = intent.getStringExtra(EXTRA_DEVICE_NAME);
+        mDevicePairingCode = intent.getIntExtra(EXTRA_DEVICE_PAIR_CODE,-1960948209);
 
         sendLogBroadcast(LOG_LEVEL_VERBOSE, "Connecting to DFU target 2...");
-		makeGattConnection(deviceAddress);
+		makeGattConnection(mDeviceAddress);
 
 		logi("Phase2 s");
-		int rc = 1;
+
+        updateProgressNotification(PROGRESS_VALIDATING);
+
+        int rc = 1;
 		final BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
 		if (fps == null) {
 			logi("Upload aborted");
@@ -1441,7 +1453,30 @@ public abstract class DfuBaseService extends IntentService {
 			return 6;
 		}
 
-		final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
+        //Add Extra Step here.
+        //Write the flashing code if Known
+        logi("Finding FLASH_PAIRING_CODE_CHARACTERISTIC_UUID ....");
+        final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CODE_CHARACTERISTIC_UUID);
+        if (sfpc == null) {
+            logi("Error Cannot find the PAIRING CODE CHARACTERISTIC");
+            sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
+            terminateConnection(gatt, PROGRESS_ABORTED);
+            return 6;
+        }
+
+        sfpc.setValue(mDevicePairingCode , BluetoothGattCharacteristic.FORMAT_UINT32, 0);
+
+        try {
+            logi("Writing FLASH_PAIRING_CODE_CHARACTERISTIC_UUID ....");
+            writeCharacteristic(gatt, sfpc);
+            rc = 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        //Add Complete
+		final BluetoothGattCharacteristic sfpc1 = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
         if (sfpc == null) {
             logi("Upload aborted");
             sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
@@ -1449,18 +1484,24 @@ public abstract class DfuBaseService extends IntentService {
             return 6;
         }
 
-		sfpc.setValue(1, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
+        sfpc1.setValue(1, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 		try {
-			writeCharacteristic(gatt, sfpc);
+            logi("Writing FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID ....");
+			writeCharacteristic(gatt, sfpc1);
 			rc = 0;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		registerNotifications(false); // TODO: Is this required?
 
-		if (rc == 0) {
+        if (rc == 0) {
 
-			waitUntilDisconnected();
+			waitUntilDisconnectedTimed();
+            if (mConnectionState != STATE_DISCONNECTED){
+                logi("Upload aborted");
+                sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
+                terminateConnection(gatt, PROGRESS_VALIDATION_FAILED);
+                return 6;
+            }
 			waitUntilConnected();
 
 			disconnect(gatt);
@@ -2415,6 +2456,21 @@ public abstract class DfuBaseService extends IntentService {
 		waitUntilDisconnected();
 	}
 
+    private void waitUntilDisconnectedTimed() {
+        logi("waitUntilDisconnectedTimed");
+        try {
+            synchronized (mLock) {
+                if (mConnectionState != STATE_DISCONNECTED && mError == 0) {
+                    logi("waitUntilDisconnectedTimed : waiting");
+                    mLock.wait(DfuSettingsConstants.TIME_TO_WAIT_IN_MILLISECONDS);
+                    logi("waitUntilDisconnectedTimed : wait done");
+                }
+            }
+        } catch (final InterruptedException e) {
+            loge("Sleeping interrupted", e);
+        }
+    }
+
 	/**
 	 * Wait until the connection state will change to {@link #STATE_DISCONNECTED} or until an error occurs.
      */
@@ -3196,6 +3252,11 @@ public abstract class DfuBaseService extends IntentService {
 					.setContentText(getString(R.string.dfu_status_aborted_msg)).setAutoCancel(true);
 
 				break;
+
+            case PROGRESS_VALIDATION_FAILED:
+                builder.setOngoing(false).setContentTitle(getString(R.string.dfu_status_error)).setSmallIcon(android.R.drawable.stat_sys_upload_done)
+                        .setContentText(getString(R.string.dfu_validation_failed)).setAutoCancel(true).setColor(Color.RED);
+                break;
 
 			default:
 				if (progress >= ERROR_MASK) {

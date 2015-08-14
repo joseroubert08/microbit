@@ -25,8 +25,9 @@
     <string name="dfu_status_uploading_msg">Flashing application to %s&#8230;</string>
     <string name="dfu_status_validating_msg">Validating&#8230;</string>
     <string name="dfu_status_completed_msg">Application has been send successfully.</string>
-    <string name="dfu_status_aborted_msg">Application upload has been canceled.</string>
+    <string name="dfu_status_aborted_msg">Application flashing has been canceled.</string>
     <string name="dfu_status_disconnecting_msg">Disconnecting from %s&#8230;</string>
     <string name="dfu_status_error_msg">Flashing unsuccessful</string>
+    <string name="dfu_validation_failed">Validation failed or Timeout</string>
 
 </resources>
