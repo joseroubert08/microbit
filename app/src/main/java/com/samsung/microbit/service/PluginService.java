@@ -33,7 +33,7 @@ public class PluginService extends Service {
 	}
 
 	public static Messenger mClientMessenger = null;
-	public static PluginService instance;
+	public static PluginService instance = null;
 
 	public PluginService() {
 		instance = this;
@@ -54,8 +54,7 @@ public class PluginService extends Service {
 	 * Handler of incoming messages from BLEListener.
 	 */
 	public void handleMessage(Message msg) {
-
-		if (debug) logi("handleMessage()");
+		if (debug) logi("handleMessage() ");
 		Bundle data = msg.getData();
 		mClientMessenger = msg.replyTo;
 		CmdArg cmd = new CmdArg(data.getInt(IPCMessageManager.BUNDLE_DATA), data.getString(IPCMessageManager.BUNDLE_VALUE));
@@ -176,6 +175,18 @@ public class PluginService extends Service {
 			}).start();
 
 		}
+	}
+
+	public static void sendMessageToBle(int value)
+	{
+		//TODO: instance is null because anysystem broadcast receiver run inside different process than the process who built the PluginService instance.
+		NameValuePair[] args = new NameValuePair[4];
+		args[0] = new NameValuePair(IPCMessageManager.BUNDLE_SERVICE_GUID, Constants.EVENT_SERVICE.toString());
+		args[1] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_GUID, Constants.ES_MICROBIT_EVENT.toString());
+		args[2] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_VALUE, value);
+		args[3] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE, Constants.FORMAT_UINT32);
+		PluginService.instance.sendtoBLEService(IPCMessageManager.MICROBIT_MESSAGE,
+				IPCMessageManager.IPC_FUNCTION_WRITE_CHARACTERISTIC, null, args);
 	}
 
 	public void sendtoBLEService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
