@@ -210,10 +210,9 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
         }
 
         String userAgent = touchDevelopView.getSettings().getUserAgentString();
-        userAgent += " " + R.string.user_agent;
+        userAgent += " " + getString(R.string.user_agent);
         touchDevelopView.getSettings().setUserAgentString(userAgent);
-        LOG.d(TAG, userAgent);
-
+        LOG.d(TAG, "onCreate useragent = " +  userAgent);
         Config.init(this);
 
         loadingTxt = (TextView) findViewById(R.id.loadingTxt);
