@@ -1405,20 +1405,28 @@ public abstract class DfuBaseService extends IntentService {
 
         mDeviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
         mDeviceName = intent.getStringExtra(EXTRA_DEVICE_NAME);
-        mDevicePairingCode = intent.getIntExtra(EXTRA_DEVICE_PAIR_CODE,0);
+        mDevicePairingCode = intent.getIntExtra(EXTRA_DEVICE_PAIR_CODE, 0);
+
+        if (mDevicePairingCode == 0) {
+            logi("Upload aborted");
+            sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
+            terminateConnection(gatt, PROGRESS_VALIDATION_FAILED);
+            return 6;
+        }
 
         sendLogBroadcast(LOG_LEVEL_VERBOSE, "Connecting to DFU target 2...");
-		makeGattConnection(mDeviceAddress);
+        makeGattConnection(mDeviceAddress);
 
 		logi("Phase2 s");
 
         updateProgressNotification(PROGRESS_VALIDATING);
+        sendProgressBroadcast(PROGRESS_VALIDATING);
 
         int rc = 1;
 		final BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
 		if (fps == null) {
-			logi("Upload aborted");
-			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
+            logi("Upload aborted");
+            sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
 			terminateConnection(gatt, PROGRESS_ABORTED);
 			return 6;
 		}
@@ -1464,13 +1472,6 @@ public abstract class DfuBaseService extends IntentService {
 		}
 
         if (rc == 0) {
-	/*		waitUntilDisconnectedTimed();
-            if (mConnectionState != STATE_DISCONNECTED){
-                logi("Upload aborted");
-                sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
-                terminateConnection(gatt, PROGRESS_VALIDATION_FAILED);
-                return 6;
-            }*/
             waitUntilDisconnected();
 
 			waitUntilConnected();
@@ -2416,7 +2417,7 @@ public abstract class DfuBaseService extends IntentService {
 
 		// Close the device
 		refreshDeviceCache(gatt, false); // This should be set to true when DFU Version is 0.5 or lower
-		close(gatt);
+        close(gatt);
 		updateProgressNotification(error);
 	}
 
@@ -2697,9 +2698,9 @@ public abstract class DfuBaseService extends IntentService {
             return false;
 
         mRequestCompleted = false;
-		mError = 0;
+        mError = 0;
 
-		logi("Reading Service Changed CCCD value...");
+        logi("Reading Service Changed CCCD value...");
 		sendLogBroadcast(LOG_LEVEL_VERBOSE, "Reading Service Changed CCCD value...");
 
 		gatt.readDescriptor(descriptor);
@@ -2938,7 +2939,7 @@ public abstract class DfuBaseService extends IntentService {
 
         characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
         characteristic.setValue(locBuffer);
-		logi("Sending init packet (Value = " + parse(locBuffer) + ")");
+        logi("Sending init packet (Value = " + parse(locBuffer) + ")");
 		sendLogBroadcast(LOG_LEVEL_VERBOSE, "Writing to characteristic " + characteristic.getUuid());
 		sendLogBroadcast(LOG_LEVEL_DEBUG, "gatt.writeCharacteristic(" + characteristic.getUuid() + ")");
 		gatt.writeCharacteristic(characteristic);
@@ -3088,7 +3089,7 @@ public abstract class DfuBaseService extends IntentService {
 				return (Boolean) createBond.invoke(device);
             }
         } catch (final Exception e) {
-			Log.w(TAG, "An exception occurred while creating bond", e);
+            Log.w(TAG, "An exception occurred while creating bond", e);
 		}
 
 		return false;
