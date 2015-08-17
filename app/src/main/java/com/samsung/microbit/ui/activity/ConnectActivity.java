@@ -153,7 +153,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
                             getString(R.string.pairing_title), //title
                             R.drawable.flash_face, //image icon res id
                             R.drawable.blue_btn,
-                            PopUp.TYPE_NOBUTTON, //type of popup.
+                            PopUp.TYPE_SPINNER_NOT_CANCELABLE, //type of popup.
                             null,//override click listener for ok button
                             null);//pass null to use default listener
                 } else {
@@ -223,7 +223,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	protected String TAG = "ConnectActivity";
 
 	protected void logi(String message) {
-		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+        Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 	}
 
 	@Override
@@ -312,11 +312,11 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-		Log.d("Microbit", "onActivityResult");
+        Log.d("Microbit", "onActivityResult");
 
 		// User chose not to enable Bluetooth.
 		if (requestCode == REQUEST_BT_ENABLE && resultCode == Activity.RESULT_CANCELED) {
-			Toast.makeText(this, "You must enable Bluetooth to continue", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "You must enable Bluetooth to continue", Toast.LENGTH_LONG).show();
 		} else {
 			isBLuetoothEnabled = true;
 		}
@@ -715,7 +715,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		displayConnectScreen(PAIRING_STATE.PAIRING_STATE_ERROR);
 
-		PopUp.show(this,
+        PopUp.show(this,
                 getString(R.string.pairingErrorMessage), //message
                 getString(R.string.pairingErrorTitle), //title
                 R.drawable.error_face, //image icon res id
