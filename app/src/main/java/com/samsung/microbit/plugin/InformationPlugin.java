@@ -112,16 +112,7 @@ public class InformationPlugin {
 	}
 
 
-	public static void sendToBle(int value) {
 
-		NameValuePair[] args = new NameValuePair[4];
-		args[0] = new NameValuePair(IPCMessageManager.BUNDLE_SERVICE_GUID, Constants.EVENT_SERVICE.toString());
-		args[1] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_GUID, Constants.ES_MICROBIT_EVENT.toString());
-		args[2] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_VALUE, value);
-		args[3] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE, Constants.FORMAT_UINT32);
-		PluginService.instance.sendtoBLEService(IPCMessageManager.MICROBIT_MESSAGE,
-			IPCMessageManager.IPC_FUNCTION_WRITE_CHARACTERISTIC, null, args);
-	}
 
 	static SensorManager mSensorManager;
 	static OrientationEventListener mOrientationListener;
@@ -155,7 +146,7 @@ public class InformationPlugin {
 			level = getCdmaLevel();
 		}
 
-		sendToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_SIGNAL_STRENGTH_ID, level));
+		PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_SIGNAL_STRENGTH_ID, level));
 
 		//CmdArg cmd = new CmdArg(InformationPlugin.SIGNAL, "SignalStrength " + level);
 		//InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
@@ -314,7 +305,7 @@ public class InformationPlugin {
 						//CmdArg cmd = new CmdArg(InformationPlugin.ORIENTATION, "Device orientation " + orientation);
 						//InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
 
-						sendToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID, (orientation & 0x01)));
+						PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID, (orientation & 0x01)));
 
 						mPreviousOrientation = orientation;
 					}
