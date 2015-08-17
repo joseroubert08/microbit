@@ -75,7 +75,7 @@
 	<string name="flashing_failed_no_microbit">Atleast one micro:bit must be connected before flashing </string>
 	<string name="flashing_tip_title">Put the micro:bit in Flashing mode</string>
 	<string name="pairing_tip">Hold buttons A and B down and then press RESET.\n Wait for "BLUEZONE" to appear on micro:bit before releasing buttons </string>
-	<string name="flash_start_message">Do you want to send the program to %s ?</string>
+	<string name="flash_start_message">Do you want to flash the program to %s ?</string>
 
 	<!-- Menu items -->
 	<string name="menu_connect">Connect</string>
@@ -167,9 +167,11 @@
 
 	<string name="web_view_demo">Web View Demo</string>
 	<string name="flashing_project">Flashing \'%s\'</string>
-	<string name="sending_project">Sending project</string>
-	<string name="send_project">Send Project</string>
-	<string name="init_connection">Initialising Connection..</string>
+	<string name="sending_project">Flashing project</string>
+	<string name="send_project">Flash Project</string>
+    <string name="validating_microbit">Verifying the pairing code</string>
+	<string name="init_connection">Finding micro:bit..</string>
+    <string name="dfu_status_starting_msg">Initializing flashing process&#8230;</string>
 
 	<string name="no_device_paired">Cannot connect.  No micro:bit paired</string>
 

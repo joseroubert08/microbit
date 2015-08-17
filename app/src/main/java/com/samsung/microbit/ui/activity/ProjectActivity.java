@@ -445,6 +445,21 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				if (state < 0) {
 					logi("DFUResultReceiver.onReceive :: state -- " + state);
 					switch (state) {
+                        case DfuService.PROGRESS_STARTING:
+                            PopUp.show(MBApp.getContext(),
+                                    getString(R.string.dfu_status_starting_msg), //message
+                                    getString(R.string.send_project), //title
+                                    R.drawable.flash_face, R.drawable.blue_btn,
+                                    PopUp.TYPE_SPINNER, //type of popup.
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            //Do nothing. As this is non-cancellable pop-up
+
+                                        }
+                                    },//override click listener for ok button
+                                    null);//pass null to use default listener
+                            break;
 						case DfuService.PROGRESS_COMPLETED:
 							if (!isCompleted) {
 								// todo progress bar dismiss
@@ -497,8 +512,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 									new View.OnClickListener() {
 										@Override
 										public void onClick(View v) {
-											PopUp.hide();
-
+                                            //Do nothing. As this is non-cancellable pop-up
 										}
 									},//override click listener for ok button
 									null);//pass null to use default listener
@@ -507,6 +521,24 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 							inInit = true;
 							isCompleted = false;
 							break;
+                        case DfuService.PROGRESS_VALIDATING:
+                            PopUp.show(MBApp.getContext(),
+                                    getString(R.string.validating_microbit), //message
+                                    getString(R.string.send_project), //title
+                                    R.drawable.flash_face, R.drawable.blue_btn,
+                                    PopUp.TYPE_SPINNER, //type of popup.
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            //Do nothing. As this is non-cancellable pop-up
+
+                                        }
+                                    },//override click listener for ok button
+                                    null);//pass null to use default listener
+                            break;
+                        case DfuService.PROGRESS_VALIDATION_FAILED:
+
+                            break;
 					}
 				} else if ((state > 0) && (state < 100)) {
 					if (!inProgress) {
