@@ -96,12 +96,6 @@
             android:label="Camera Microbit"
             android:launchMode="singleTask"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
-            <intent-filter>
-                <action android:name="com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_PIC" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_VIDEO" />
-            </intent-filter>
         </activity>
 
         <activity
