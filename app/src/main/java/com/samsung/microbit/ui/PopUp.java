@@ -40,11 +40,13 @@ public class PopUp {
 
     static public final int TYPE_CHOICE = 0;//2 buttons type
     static public final int TYPE_ALERT = 1;//1 button type
-    static public final int TYPE_PROGRESS = 2;//1 button progress bar type
+    static public final int TYPE_PROGRESS = 2;//0 button progress bar type
 	static public final int TYPE_NOBUTTON = 3;//No button type
-    static public final int TYPE_SPINNER = 4;//button type spinner
+    static public final int TYPE_SPINNER = 4;//0 button type spinner
     static public final int TYPE_INPUTTEXT = 5;//2 buttons type + edittext
-    static public final int TYPE_MAX = 6;
+    static public final int TYPE_PROGRESS_NOT_CANCELABLE = 6;//0 button progress bar type not cancelable (backpress disabled)
+    static public final int TYPE_SPINNER_NOT_CANCELABLE = 7;//0 button type spinner not cancelable (backpress disabled)
+    static public final int TYPE_MAX = 8;
 
     static private int current_type = TYPE_MAX;
 
@@ -153,6 +155,16 @@ public class PopUp {
         intent.putExtra(PopUpActivity.INTENT_EXTRA_INPUTTEXT, inputText);
         intent.putExtra(PopUpActivity.INTENT_EXTRA_ICON, imageResId);
         intent.putExtra(PopUpActivity.INTENT_EXTRA_ICONBG, imageBackgroundResId);
+        switch (type)
+        {
+            case TYPE_PROGRESS_NOT_CANCELABLE:
+            case TYPE_SPINNER_NOT_CANCELABLE:
+                intent.putExtra(PopUpActivity.INTENT_EXTRA_CANCELABLE, false);
+                break;
+            default:
+                intent.putExtra(PopUpActivity.INTENT_EXTRA_CANCELABLE, true);
+        }
+
         // keep same instance of activity
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);

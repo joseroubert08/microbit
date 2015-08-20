@@ -54,11 +54,6 @@ public class AlertPlugin {
 				break;
 
 			case Constants.SAMSUNG_ALERT_EVT_FIND_MY_PHONE:
-				PopUp.showFromService(context,
-						context.getString(R.string.findphone_via_microbit),
-						"Message from Micro:Bit",
-						R.drawable.message_face, R.drawable.blue_btn,
-						PopUp.TYPE_ALERT);
 				findPhone();
 				break;
 
@@ -67,12 +62,7 @@ public class AlertPlugin {
 		}
 	}
 
-	private static void showToast(final String msg) {
-		Toast toast = Toast.makeText(context, msg, Toast.LENGTH_SHORT);
-		toast.setGravity(Gravity.CENTER, 0, 0);
-		toast.show();
-	}
-
+	//TODO: needed?
 	private static void playAlarm() {
 		showDialog(context.getString(R.string.sound_via_microbit));
 		Uri alarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
@@ -111,6 +101,7 @@ public class AlertPlugin {
 	}
 
 	private static void findPhone() {
+		showDialog(context.getString(R.string.findphone_via_microbit));
 		Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 		Ringtone r = RingtoneManager.getRingtone(context, ringtone);
 		int duration = getDuration(ringtone);
@@ -146,27 +137,10 @@ public class AlertPlugin {
 
 
 	private static void showDialog(String textMsg){
-
-		if(customDialog != null) {
-			customDialog.dismiss();
-		}
-
-		customDialog = new AlertDialog.Builder(context).create();
-		customDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-		customDialog.setCanceledOnTouchOutside(true);
-		customDialog.setTitle(context.getString(R.string.alert));
-		customDialog.setMessage(textMsg);
-		customDialog.setIcon(R.drawable.ic_launcher);
-		customDialog.show();
-	}
-
-	private static void dismissDialog(){
-		if(customDialog != null) {
-			customDialog.dismiss();
-		}
-
-		resetMediaPlayer();
-		customDialog = null;
+		PopUp.showFromService(context,"",
+				textMsg,
+				R.drawable.message_face, R.drawable.blue_btn,
+				PopUp.TYPE_ALERT);
 	}
 
 	private static void dialogTimer(int duration) {
@@ -175,7 +149,7 @@ public class AlertPlugin {
 		TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
-				dismissDialog();
+				resetMediaPlayer();
 			}
 		};
 

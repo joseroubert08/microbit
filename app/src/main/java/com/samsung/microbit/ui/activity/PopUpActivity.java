@@ -38,6 +38,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener{
     static public final String INTENT_EXTRA_ICON = "imageIcon";
     static public final String INTENT_EXTRA_ICONBG = "imageIconBg";
     static public final String INTENT_EXTRA_PROGRESS = "progress";
+    static public final String INTENT_EXTRA_CANCELABLE = "cancelable";
 
     private ImageView imageIcon = null;
     private TextView titleTxt = null;
@@ -128,11 +129,13 @@ public class PopUpActivity extends Activity implements View.OnClickListener{
                 button.setVisibility(View.VISIBLE);
                 break;
             case PopUp.TYPE_PROGRESS:
+            case PopUp.TYPE_PROGRESS_NOT_CANCELABLE:
                 progressBar.setVisibility(View.VISIBLE);
                 break;
             case PopUp.TYPE_NOBUTTON:
                 break;
             case PopUp.TYPE_SPINNER:
+            case PopUp.TYPE_SPINNER_NOT_CANCELABLE:
                 spinnerBar.setVisibility(View.VISIBLE);
                 break;
             case PopUp.TYPE_INPUTTEXT:
@@ -155,6 +158,10 @@ public class PopUpActivity extends Activity implements View.OnClickListener{
 
     @Override
     public void onBackPressed() {
+        boolean IsCancelable = getIntent().getBooleanExtra(INTENT_EXTRA_CANCELABLE, true);
+        if (!IsCancelable)
+            return;
+
         super.onBackPressed();
 
         LocalBroadcastManager.getInstance(this).sendBroadcastSync(new Intent(INTENT_ACTION_CANCEL_PRESSED));

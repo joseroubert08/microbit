@@ -450,7 +450,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                     getString(R.string.dfu_status_starting_msg), //message
                                     getString(R.string.send_project), //title
                                     R.drawable.flash_face, R.drawable.blue_btn,
-                                    PopUp.TYPE_SPINNER, //type of popup.
+                                    PopUp.TYPE_SPINNER_NOT_CANCELABLE, //type of popup.
                                     new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
@@ -508,7 +508,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 									getString(R.string.init_connection), //message
 									getString(R.string.send_project), //title
 									R.drawable.flash_face, R.drawable.blue_btn,
-									PopUp.TYPE_SPINNER, //type of popup.
+									PopUp.TYPE_SPINNER_NOT_CANCELABLE, //type of popup.
 									new View.OnClickListener() {
 										@Override
 										public void onClick(View v) {
@@ -526,7 +526,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                     getString(R.string.validating_microbit), //message
                                     getString(R.string.send_project), //title
                                     R.drawable.flash_face, R.drawable.blue_btn,
-                                    PopUp.TYPE_SPINNER, //type of popup.
+                                    PopUp.TYPE_SPINNER_NOT_CANCELABLE, //type of popup.
                                     new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
@@ -547,7 +547,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 							MBApp.getContext().getString(R.string.flashing_progress_message),
 							String.format(MBApp.getContext().getString(R.string.flashing_project), programToSend.name),
 							R.drawable.flash_face, R.drawable.blue_btn,
-							PopUp.TYPE_PROGRESS, null, null);
+							PopUp.TYPE_PROGRESS_NOT_CANCELABLE, null, null);
 
 						inProgress = true;
 					}
