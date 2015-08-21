@@ -204,6 +204,8 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
         touchDevelopView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         touchDevelopView.getSettings().setJavaScriptEnabled(true);
         touchDevelopView.setBackgroundColor(Color.argb(1, 0, 0, 0));
+        touchDevelopView.getSettings().setBuiltInZoomControls(true);
+        touchDevelopView.getSettings().setSupportZoom(true);
 
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ){
             touchDevelopView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
@@ -278,6 +280,7 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
     public void setValue(int progress) {
         if(progress == 100) {
             loadingTxt.setVisibility(View.GONE);
+            touchDevelopProgress.setVisibility(View.GONE);
             touchDevelopView.setVisibility(View.VISIBLE);
         }
         this.touchDevelopProgress.setProgress(progress);
@@ -305,8 +308,8 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
         switch(id){
             case "spinner":
                 if (touchDevelopProgress != null ){
-                    touchDevelopProgress.setVisibility(View.INVISIBLE);
-                    loadingTxt.setVisibility(View.INVISIBLE);
+                    touchDevelopProgress.setVisibility(View.GONE);
+                    loadingTxt.setVisibility(View.GONE);
                 }
                 break;
         }
