@@ -298,6 +298,9 @@ public class CameraActivity_OldAPI extends Activity {
 		logi("onCreate() :: onResume");
 
 		super.onResume();
+        //This intent filter has to be set even if no camera is found otherwise the unregisterReceiver()
+        //fails during the onPause()
+		this.registerReceiver(mMessageReceiver, new IntentFilter("CLOSE"));
 		mCameraIdx = getFrontFacingCamera();
 		try {
 			mCamera = Camera.open(mCameraIdx);
@@ -310,8 +313,6 @@ public class CameraActivity_OldAPI extends Activity {
 			else {
 				this.registerReceiver(mMessageReceiver, new IntentFilter("TAKE_PIC"));
 			}
-
-			this.registerReceiver(mMessageReceiver, new IntentFilter("CLOSE"));
 
 			logi("onCreate() :: onResume # ");
 		} catch (RuntimeException ex) {
