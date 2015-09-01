@@ -537,7 +537,17 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                     null);//pass null to use default listener
                             break;
                         case DfuService.PROGRESS_VALIDATION_FAILED:
+                        case DfuService.PROGRESS_ABORTED:
+                            PopUp.show(MBApp.getContext(),
+                                    getString(R.string.flashing_failed_message), //message
+                                    "Operation Aborted", //title
+                                    R.drawable.error_face, R.drawable.red_btn,
+                                    PopUp.TYPE_ALERT, //type of popup.
+                                    popupOkHandler,//override click listener for ok button
+                                    popupOkHandler);//pass null to use default listener
 
+                            LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
+                            dfuResultReceiver = null;
                             break;
 					}
 				} else if ((state > 0) && (state < 100)) {

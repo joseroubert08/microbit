@@ -70,7 +70,6 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	};
 
 	private static PAIRING_STATE mState = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
-
 	private static String mNewDeviceName;
 	private static String mNewDeviceCode;
     private static String mNewDeviceAddress;
@@ -140,7 +139,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
             if (phase == Constants.FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED) {
                 logi("resultReceiver.onReceiveResult() :: FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED ");
                 int pairing_code = resultData.getInt("pairing_code");
-                logi("-----------> Pairing Code is " + pairing_code);
+                logi("-----------> Pairing Code is " + pairing_code + " for device "+ mNewDeviceCode.toUpperCase());
                 PopUp.hide();
                 ConnectedDevice newDev = new ConnectedDevice(mNewDeviceCode.toUpperCase(), mNewDeviceCode.toUpperCase(), false, mNewDeviceAddress,pairing_code);
                 handle_pairing_successful(newDev);
@@ -165,7 +164,13 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
                             R.drawable.red_btn,
                             PopUp.TYPE_ALERT, //type of popup.
                             null,//override click listener for ok button
-                            null);//pass null to use default listener
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    PopUp.hide();
+                                    displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                                }
+                            });//pass null to use default listener
                 }
             }
             super.onReceiveResult(resultCode, resultData);
@@ -626,7 +631,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				break;
 
 			case R.id.cancel_search_button:
-				scanLeDevice(false);
+                scanLeDevice(false);
 				displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
 				break;
 
@@ -756,13 +761,24 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
     private void startPairing(String deviceAddress) {
 
-        logi(">>>>>>>>>>>>>>>>>>>>> startPairing");
+        logi("###>>>>>>>>>>>>>>>>>>>>> startPairing");
         final Intent service = new Intent(this, DfuService.class);
         service.putExtra(DfuService.EXTRA_DEVICE_ADDRESS, deviceAddress);
         service.putExtra(DfuService.EXTRA_KEEP_BOND, false);
         service.putExtra(DfuService.INTENT_RESULT_RECEIVER, resultReceiver);
         service.putExtra(DfuService.INTENT_REQUESTED_PHASE, 1);
         startService(service);
+    }
+
+    private void cancelPairing() {
+        logi("###>>>>>>>>>>>>>>>>>>>>> cancelPairing");
+        if(mScanning)
+            scanLeDevice(false);
+        else {
+            final Intent abortIntent = new Intent(this, DfuService.class);
+            abortIntent.putExtra(DfuService.EXTRA_ACTION, DfuService.ACTION_ABORT);
+            startService(abortIntent);
+        }
     }
 
     private void scanningFailed() {
@@ -848,12 +864,12 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		}
 
 		if ((mNewDeviceName.isEmpty()) || (device.getName() == null)) {
-			if (debug) logi("mLeScanCallback.onLeScan() ::   Cannot Compare");
+			if (debug) logi("mLeScanCallback.onLeScan() ::   Cannot Compare "+device.getAddress() +" " + rssi + " "+scanRecord.toString());
 		} else {
 			String s = device.getName().toLowerCase();
 			if (mNewDeviceName.toLowerCase().equals(s)) {
 
-				if (debug) logi("mLeScanCallback.onLeScan() ::   device.getName() == " + device.getName().toLowerCase());
+				if (debug) logi("mLeScanCallback.onLeScan() ::   device.getName() == " + device.getName().toLowerCase() + " " + device.getAddress());
 				// Stop scanning as device is found.
 				deviceFound = true;
 				scanLeDevice(false);
