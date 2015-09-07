@@ -2370,7 +2370,7 @@ public abstract class DfuBaseService extends IntentService {
 			device = mBluetoothAdapter.getRemoteDevice(address);
 		}
 
-        gatt = device.connectGatt(this, false, mGattCallback);
+        gatt = device.connectGatt(this, true, mGattCallback);
 
 		// We have to wait until the device is connected and services are discovered
 		// Connection error may occur as well.
