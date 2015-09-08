@@ -71,14 +71,17 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			handleBLENotification(context, intent);
+
             int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
 
             logi(" broadcastReceiver ---- v= " + v);
             if (Constants.BLE_DISCONNECTED_FOR_FLASH == v){
                 logi("Bluetooth disconnected for flashing. No need to display pop-up");
+                handleBLENotification(context, intent, false);
+                initiateFlashing(programToSend);
                 return;
             }
+            handleBLENotification(context, intent, true);
 			if (v != 0 ) {
 				runOnUiThread(new Runnable() {
 					@Override
@@ -94,14 +97,15 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		}
 	};
 
-	private void handleBLENotification(Context context, Intent intent) {
+	private void handleBLENotification(Context context, Intent intent, boolean hide) {
 
 		logi("handleBLENotification()");
-
+        final boolean popupHide = hide;
 		runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 setConnectedDeviceText();
+                if(popupHide)
                 PopUp.hide();
             }
         });
@@ -113,6 +117,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 //			}
 		}
 	}
+
 
 	@Override
 	public void onResume() {
@@ -350,7 +355,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         }
                     },//override click listener for ok button
                     null);//pass null to use default listeneronClick
-        } else {
+        }
+        else {
             PopUp.show(MBApp.getContext(),
                     getString(R.string.flash_start_message, currentMicrobit.mName) , //message
                     getString(R.string.flashing_title), //title
@@ -359,7 +365,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            ConnectedDevice currentMicrobit = Utils.getPairedMicrobit(MBApp.getContext());
                             PopUp.hide();
+                            if (currentMicrobit.mStatus == true)
+                            {
+                                programToSend = toSend;
+                                IPCService.getInstance().bleDisconnectForFlash();
+                            } else
                             initiateFlashing(toSend);
                         }
                     },//override click listener for ok button
