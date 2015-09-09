@@ -22,7 +22,7 @@ public class PreviousDeviceList{
 
     private final String PREFERENCES_PREVDEV_PREFNAME = "PreviousDevices";
     private final String PREFERENCES_PREVDEV_KEY = "PreviousDevicesKey";
-    public final int PREVIOUS_DEVICES_MAX = 99999;
+    public final int PREVIOUS_DEVICES_MAX = 30;
 
     private static Context context;
     private static PreviousDeviceList instance;

@@ -172,7 +172,7 @@
     <string name="validating_microbit">Verifying the pairing code</string>
 	<string name="init_connection">Finding micro:bit..</string>
     <string name="dfu_status_starting_msg">Initializing flashing process&#8230;</string>
-
+    <string name="multple_flashing_session_msg">A project is currently being flashed. Wait for it to complete!</string>
 	<string name="no_device_paired">Cannot connect.  No micro:bit paired</string>
 
 	<string name="send">Change ID To FLASH</string>
