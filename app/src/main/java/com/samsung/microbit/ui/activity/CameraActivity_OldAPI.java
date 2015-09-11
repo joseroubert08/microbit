@@ -5,8 +5,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
-import android.graphics.Rect;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import 	android.os.SystemClock;
 
 import android.app.Activity;
@@ -14,7 +19,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Configuration;
 import android.content.pm.ActivityInfo;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
@@ -22,6 +26,7 @@ import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
 import android.hardware.Camera.AutoFocusCallback;
+import android.hardware.SensorManager;
 
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -34,19 +39,13 @@ import android.view.View.OnLongClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.SurfaceView;
-import android.view.Surface;
-import android.graphics.Paint;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.widget.Button;
+import android.view.OrientationEventListener;
 import android.widget.ImageButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 
-import android.drm.DrmManagerClient.OnInfoListener;
-import android.media.MediaScannerConnection;
 
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
@@ -62,7 +61,7 @@ public class CameraActivity_OldAPI extends Activity {
 	private static boolean mInstanceActive = false;
 
 	private CameraPreview mPreview;
-	private ImageButton mButtonClick;
+	private ImageButton mButtonClick, mButtonBack_portrait, mButtonBack_landscape;
 	private Camera mCamera;
 	private int mCameraIdx;
 	private BroadcastReceiver mMessageReceiver;
@@ -70,6 +69,12 @@ public class CameraActivity_OldAPI extends Activity {
 	private boolean mIsRecording = false;
 	private MediaRecorder mMediaRecorder;
 	private File mVideoFile = null;
+    private OrientationEventListener myOrientationEventListener;
+    private int mCurrentRotation = -1;
+    private int mStoredRotation = -1;
+    private int mOrientationOffset = 0;
+    private int mCurrentIconIndex = 0;
+    private ArrayList<Drawable> mTakePhoto, mStartRecord, mStopRecord, mCurrentIconList;
 
 	private static final String TAG = "CameraActivity_OldAPI";
 	private boolean debug = false;
@@ -93,10 +98,121 @@ public class CameraActivity_OldAPI extends Activity {
 		return -1;
 	}
 
+    private Drawable rotateIcon(Drawable icon, int rotation) {
+        Bitmap existingBitmap = ((BitmapDrawable) icon).getBitmap();
+        Matrix matrix = new Matrix();
+        matrix.postRotate(rotation - mOrientationOffset);
+        Bitmap rotated = Bitmap.createBitmap(existingBitmap, 0, 0, existingBitmap.getWidth(), existingBitmap.getHeight(), matrix, true);
+        return new BitmapDrawable(rotated);
+    }
+
+    private void createRotatedIcons() {
+        Drawable icon = getResources().getDrawable(R.drawable.take_photo);
+        mTakePhoto = new ArrayList<Drawable>();
+        mStartRecord = new ArrayList<Drawable>();
+        mStopRecord = new ArrayList<Drawable>();
+        mTakePhoto.add(rotateIcon(icon,0));
+        mTakePhoto.add(rotateIcon(icon,-90));
+        mTakePhoto.add(rotateIcon(icon,180));
+        mTakePhoto.add(rotateIcon(icon,-270));
+        icon = getResources().getDrawable(R.drawable.start_record_icon);
+        mStartRecord.add(rotateIcon(icon,0));
+        mStartRecord.add(rotateIcon(icon,-90));
+        mStartRecord.add(rotateIcon(icon,180));
+        mStartRecord.add(rotateIcon(icon,-270));
+        icon = getResources().getDrawable(R.drawable.stop_record_icon);
+        mStopRecord.add(rotateIcon(icon,0));
+        mStopRecord.add(rotateIcon(icon,-90));
+        mStopRecord.add(rotateIcon(icon, 180));
+        mStopRecord.add(rotateIcon(icon,-270));
+    }
+
+	private void setButtonForBackAction() {
+		mButtonBack_portrait.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                goBackAction();
+            }
+        });
+
+		mButtonBack_landscape.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                goBackAction();
+            }
+        });
+	}
+
+    private void goBackAction() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private void updateButtonClickIcon() {
+        mButtonClick.setBackground(mCurrentIconList.get(mCurrentIconIndex));
+        mButtonClick.invalidate();
+    }
+
+    private void updateCameraRotation() {
+        if(mCamera!=null) {
+            Camera.Parameters parameters = mCamera.getParameters();
+            parameters.setRotation(getRotationCameraCorrection(mCurrentRotation)); //set rotation to save the picture
+            mCamera.setParameters(parameters);
+        }
+    }
+
+    private void updateButtonOrientation(int rotation) {
+        rotation = (rotation + mOrientationOffset)%360;
+        int quant_rotation = 0;
+        boolean buttonPortraitVisible = true;
+        if(rotation == OrientationEventListener.ORIENTATION_UNKNOWN)
+            return;
+        if(rotation < 45 || rotation >= 315) {
+            buttonPortraitVisible = true;
+            quant_rotation = 0;
+            mCurrentIconIndex = 0;
+        }else if((rotation >= 135 && rotation < 225)) {
+            buttonPortraitVisible = true;
+            quant_rotation = 180;
+            //mCurrentIconIndex = 2;
+            mCurrentIconIndex = 0; //This way only 2 configurations are allowed
+        }else if((rotation >= 45 && rotation < 135)) {
+            buttonPortraitVisible = false;
+            quant_rotation = 270;
+            //mCurrentIconIndex = 1;
+            mCurrentIconIndex = 3; //This way only 2 configurations are allowed
+        }else if((rotation >= 225 && rotation < 315)) {
+            buttonPortraitVisible = false;
+            quant_rotation = 90;
+            mCurrentIconIndex = 3;
+        }
+        if(quant_rotation!=mCurrentRotation)
+        {
+            int currentOrientation = getResources().getConfiguration().orientation;
+            mCurrentRotation = quant_rotation;
+
+            if(buttonPortraitVisible) {
+                mButtonBack_landscape.setVisibility(View.INVISIBLE);
+                mButtonBack_portrait.setVisibility(View.VISIBLE);
+                mButtonBack_portrait.bringToFront();
+            }
+            else {
+                mButtonBack_landscape.setVisibility(View.VISIBLE);
+                mButtonBack_landscape.bringToFront();
+                mButtonBack_portrait.setVisibility(View.INVISIBLE);
+            }
+            mButtonBack_portrait.invalidate();
+            mButtonBack_landscape.invalidate();
+
+            updateButtonClickIcon();
+            updateCameraRotation();
+        }
+    }
+
 	private void setButtonForPicture() {
 
-		mButtonClick.setBackgroundResource(R.drawable.camera);
-		mButtonClick.invalidate();
+        mCurrentIconList = mTakePhoto;
+        updateButtonClickIcon();
 		mButtonClick.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
@@ -122,34 +238,38 @@ public class CameraActivity_OldAPI extends Activity {
 		mPreview.setSoundEffectsEnabled(false);
 		mPreview.setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				mCamera.autoFocus(new AutoFocusCallback() {
-					@Override
-					public void onAutoFocus(boolean arg0, Camera arg1) {
-						//TODO Is there anything we have to do after autofocus?
-					}
-				});
-			}
-		});
+            @Override
+            public void onClick(View v) {
+                mCamera.autoFocus(new AutoFocusCallback() {
+                    @Override
+                    public void onAutoFocus(boolean arg0, Camera arg1) {
+                        //TODO Is there anything we have to do after autofocus?
+                    }
+                });
+            }
+        });
 	}
+
+    private void stopRecording() {
+        mMediaRecorder.stop(); // stop the recording
+        refreshGallery(mVideoFile);
+        releaseMediaRecorder(); // release the MediaRecorder object
+        mIsRecording = false;
+        mCurrentIconList = mStartRecord;
+        updateButtonClickIcon();
+        releaseMediaRecorder();
+        resetCam();
+    }
 
 	private void setButtonForVideo() {
 
-		mButtonClick.setBackgroundResource(R.drawable.start_record_icon);
-		mButtonClick.invalidate();
+        mCurrentIconList = mStartRecord;
+        updateButtonClickIcon();
 		mButtonClick.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				if (mIsRecording) {
 					// stop recording and release mCamera
-					mMediaRecorder.stop(); // stop the recording
-					refreshGallery(mVideoFile);
-					releaseMediaRecorder(); // release the MediaRecorder object
-					mIsRecording = false;
-					mButtonClick.setBackgroundResource(R.drawable.start_record_icon);
-					releaseMediaRecorder();
-//					finish();
-					resetCam();
+                    stopRecording();
 				} else {
 					if (!prepareMediaRecorder()) {
 						sendCameraError();
@@ -157,8 +277,8 @@ public class CameraActivity_OldAPI extends Activity {
 						finish();
 					}
 
-					mButtonClick.setBackgroundResource(R.drawable.stop_record_icon);
-					mButtonClick.invalidate();
+                    mCurrentIconList = mStopRecord;
+                    updateButtonClickIcon();
 
 					//TODO Check that is true
 					// work on UiThread for better performance
@@ -185,21 +305,72 @@ public class CameraActivity_OldAPI extends Activity {
 
 	}
 
+    private int getRotationCameraCorrection(int current_rotation) {
+        return (current_rotation + 270)%360;
+    }
+
 	private void sendCameraError() {
 		CmdArg cmd = new CmdArg(0,"Camera Error");
 		CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);
 	}
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
+    private void setOrientationOffset() {
+        int rotation = getWindowManager().getDefaultDisplay().getRotation();
+
+        Point screenSize = new Point(0,0);
+        getWindowManager().getDefaultDisplay().getSize(screenSize);
+
+        logi("Display size " + screenSize.x + "x" + screenSize.y);
+
+        //Checking if it's a tablet
+        if(rotation == 0 || rotation == 2){
+            if(screenSize.x > screenSize.y){
+                //Tablet
+                mOrientationOffset = 270;
+                logi("Tablet");
+            }else{
+                //Phone
+                mOrientationOffset = 0;
+                logi("Phone");
+            }
+        }else{
+            if(screenSize.x > screenSize.y){
+                //Phone
+                mOrientationOffset = 0;
+                logi("Phone");
+            }else{
+                //Tablet
+                mOrientationOffset = 270;
+                logi("Tablet");
+            }
+        }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
 
 		logi("onCreate() :: Start");
 		super.onCreate(savedInstanceState);
 
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        createRotatedIcons();
+
+        setOrientationOffset();
+
+        myOrientationEventListener
+                = new OrientationEventListener(this, SensorManager.SENSOR_DELAY_NORMAL){
+
+            @Override
+            public void onOrientationChanged(int arg0) {
+                updateButtonOrientation(arg0);
+            }};
+
 		mCamera = null;
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		setContentView(R.layout.camera_old_api);
+
+		setContentView(R.layout.activity_camera_old_api);
 		Intent intent = getIntent();
 		if(intent.getAction().contains("OPEN_FOR_PIC")) {
 			mVideo = false;
@@ -215,8 +386,10 @@ public class CameraActivity_OldAPI extends Activity {
 		mPreview.setParentActivity(this);
 
 		mButtonClick = (ImageButton) findViewById(R.id.picture);
-//		mButtonClick.bringToFront();
-//		((ImageView)findViewById(R.id.bbcLogo)).bringToFront();
+        mButtonBack_portrait = (ImageButton) findViewById(R.id.back_portrait);
+        mButtonBack_landscape = (ImageButton) findViewById(R.id.back_landscape);
+
+        setButtonForBackAction();
 
 		if(mVideo) {
 			//Setup specific to OPEN_FOR_VIDEO
@@ -228,6 +401,8 @@ public class CameraActivity_OldAPI extends Activity {
 			setButtonForPicture();
 			setPreviewForPicture();
 		}
+
+        updateButtonOrientation(0);
 
 		mMessageReceiver = new BroadcastReceiver() {
 
@@ -257,42 +432,6 @@ public class CameraActivity_OldAPI extends Activity {
 		logi("onCreate() :: Done");
 	}
 
-
-    public int getCameraDisplayOrientation(int cameraId, android.hardware.Camera mCamera)
-    {
-        android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
-        android.hardware.Camera.getCameraInfo(cameraId, info);
-        int rotation = getWindowManager().getDefaultDisplay().getRotation();
-        int degrees = 0;
-        switch (rotation)
-        {
-            case Surface.ROTATION_0:
-                degrees = 0;
-                break;
-            case Surface.ROTATION_90:
-                degrees = 90;
-                break;
-            case Surface.ROTATION_180:
-                degrees = 180;
-                break;
-            case Surface.ROTATION_270:
-                degrees = 270;
-                break;
-        }
-
-        int result;
-        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT)
-        {
-            result = (info.orientation + degrees) % 360;
-            result = (360 - result) % 360; // compensate the mirror
-        } else
-        { // back-facing
-            result = (info.orientation - degrees + 360) % 360;
-        }
-
-        return result;
-    }
-
 	@Override
 	protected void onResume() {
 		logi("onCreate() :: onResume");
@@ -300,6 +439,13 @@ public class CameraActivity_OldAPI extends Activity {
 		super.onResume();
         //This intent filter has to be set even if no camera is found otherwise the unregisterReceiver()
         //fails during the onPause()
+        if (myOrientationEventListener.canDetectOrientation()){
+            logi("DetectOrientation Enabled");
+            myOrientationEventListener.enable();
+        }
+        else{
+            logi("DetectOrientation Disabled");
+        }
 		this.registerReceiver(mMessageReceiver, new IntentFilter("CLOSE"));
 		mCameraIdx = getFrontFacingCamera();
 		try {
@@ -315,6 +461,7 @@ public class CameraActivity_OldAPI extends Activity {
 			}
 
 			logi("onCreate() :: onResume # ");
+
 		} catch (RuntimeException ex) {
 			Toast.makeText(this, getString(R.string.camera_not_found), Toast.LENGTH_LONG).show();
 			sendCameraError();
@@ -326,6 +473,15 @@ public class CameraActivity_OldAPI extends Activity {
 	protected void onPause() {
 
 		logi("onCreate() :: onPause");
+
+        if(mIsRecording) {
+            stopRecording();
+        }
+
+        if (myOrientationEventListener.canDetectOrientation()){
+            logi("DetectOrientation Disabled");
+            myOrientationEventListener.disable();
+        }
 		this.unregisterReceiver(
 				mMessageReceiver);
 		if (mCamera != null) {
@@ -352,8 +508,10 @@ public class CameraActivity_OldAPI extends Activity {
 	//Currently if the device is on silent mode no sound is going to be heard
 	ShutterCallback shutterCallback = new ShutterCallback() {
 		public void onShutter() {
-			//			 Log.d(TAG, "onShutter'd");
-			((ImageView) findViewById(R.id.blink_rectangle)).setVisibility(View.VISIBLE);
+            ImageView blinkRect = (ImageView) findViewById(R.id.blink_rectangle);
+            blinkRect.setVisibility(View.VISIBLE);
+            blinkRect.bringToFront();
+            blinkRect.invalidate();
 		}
 	};
 
@@ -368,13 +526,14 @@ public class CameraActivity_OldAPI extends Activity {
 			new SaveImageTask().execute(data);
 			DrawBlink();
 			resetCam();
-//			finish();
 		}
 	};
 
 	void DrawBlink(){
 		SystemClock.sleep(500);
-		((ImageView) findViewById(R.id.blink_rectangle)).setVisibility(View.GONE);
+        ImageView blinkRect = (ImageView) findViewById(R.id.blink_rectangle);
+		blinkRect.setVisibility(View.INVISIBLE);
+        blinkRect.invalidate();
 	}
 
 	@Override
@@ -390,6 +549,7 @@ public class CameraActivity_OldAPI extends Activity {
 		//Informing microbit that the mCamera is active now
 		CmdArg cmd = new CmdArg(0, "Camera off");
 		CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);
+
 		super.onDestroy();
 	}
 
@@ -410,12 +570,13 @@ public class CameraActivity_OldAPI extends Activity {
 				String fileName = String.format("%d.jpg", System.currentTimeMillis());
 				File outFile = new File(dir, fileName);
 
-				outStream = new FileOutputStream(outFile);
-				outStream.write(data[0]);
-				outStream.flush();
+                outStream = new FileOutputStream(outFile);
+                outStream.write(data[0]);
+
+                outStream.flush();
 				outStream.close();
 
-				refreshGallery(outFile);
+                refreshGallery(outFile);
 
 				CmdArg cmd = new CmdArg(0, "Camera picture saved");
 				CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);
@@ -431,7 +592,6 @@ public class CameraActivity_OldAPI extends Activity {
 	}
 
 	private void releaseMediaRecorder() {
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
 		if (mMediaRecorder != null) {
 			mMediaRecorder.reset(); // clear recorder configuration
 			mMediaRecorder.release(); // release the recorder object
@@ -446,14 +606,6 @@ public class CameraActivity_OldAPI extends Activity {
 
 		if(mCameraIdx<0 || mCamera==null)
 			return false;
-
-		int currentOrientation = getResources().getConfiguration().orientation;
-		if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE);
-		}
-		else {
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT);
-		}
 
 		mMediaRecorder = new MediaRecorder();
 
@@ -488,7 +640,7 @@ public class CameraActivity_OldAPI extends Activity {
 		mMediaRecorder.setMaxDuration(600000); // Set max duration 60 sec.
 		mMediaRecorder.setMaxFileSize(50000000); // Set max file size 50M
 
-		int rotation = (360-getCameraDisplayOrientation(mCameraIdx,mCamera))%360;
+        int rotation = getRotationCameraCorrection(mCurrentRotation);
 		mMediaRecorder.setOrientationHint(rotation);
 
 		try {

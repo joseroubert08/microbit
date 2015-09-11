@@ -1,28 +1,23 @@
 package com.samsung.microbit.ui.view;
 
-import java.io.IOException;
 import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.Size;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.util.AttributeSet;
 
 /**
  * Created by t.maestri on 09/06/2015.
  */
 public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 
-    private static final String TAG = "CameraActivity_OldAPI";
+    private static final String TAG = "CameraPreview";
     private boolean debug = false;
 
     void logi(String message) {
@@ -65,6 +60,8 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
                 break;
         }
 
+        logi("info.orientation " + info.orientation + " degrees " + degrees);
+
         int result;
         if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT)
         {
@@ -92,24 +89,17 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
 
-    public Rect GetSurfaceRect(){
-        int[] location = new int[2];
-        mSurfaceView.getLocationOnScreen(location);
-        int w = mSurfaceView.getWidth();
-        int h = mSurfaceView.getHeight();
-        Rect rect = new Rect(location[0],location[1],location[0]+w,location[1]+h);
-        return rect;
-    }
-
     public void setCamera(Camera camera, int idx) {
         mCamera = camera;
         mCameraIdx = idx;
         if (mCamera != null) {
             mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
-            //requestLayout();
 
             // get Camera parameters
             Camera.Parameters params = mCamera.getParameters();
+            int mRotation = getCameraDisplayOrientation(mCameraIdx, mCamera);
+            mCamera.setDisplayOrientation(mRotation);
+            logi("Camera rotation " + mRotation);
 
             List<String> focusModes = params.getSupportedFocusModes();
             if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
@@ -161,14 +151,26 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
             }
 
             // Center the child SurfaceView within the parent.
+            //Code to have a smaller image if the camera preview ratio doesn't match the screen
+//            if (width * previewHeight > height * previewWidth) {
+//                final int scaledChildWidth = previewWidth * height / previewHeight;
+//                mSurfaceView.layout((width - scaledChildWidth) / 2, 0,
+//                        (width + scaledChildWidth) / 2, height);
+//            } else {
+//                final int scaledChildHeight = previewHeight * width / previewWidth;
+//                mSurfaceView.layout(0, (height - scaledChildHeight) / 2,
+//                        width, (height + scaledChildHeight) / 2);
+//            }
+            //Code to have a preview that cover all the screen. If the camera preview ratio doesn't
+            //match the screen size the image is cropped
             if (width * previewHeight > height * previewWidth) {
-                final int scaledChildWidth = previewWidth * height / previewHeight;
-                mSurfaceView.layout((width - scaledChildWidth) / 2, 0,
-                        (width + scaledChildWidth) / 2, height);
-            } else {
                 final int scaledChildHeight = previewHeight * width / previewWidth;
                 mSurfaceView.layout(0, (height - scaledChildHeight) / 2,
                         width, (height + scaledChildHeight) / 2);
+            } else {
+                final int scaledChildWidth = previewWidth * height / previewHeight;
+                mSurfaceView.layout((width - scaledChildWidth) / 2, 0,
+                        (width + scaledChildWidth) / 2, height);
             }
         }
     }
@@ -192,13 +194,9 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 
         if(mCamera != null) {
             mCamera.stopPreview();
-            int mRotation = getCameraDisplayOrientation(mCameraIdx, mCamera);
-            logi("Camera rotation " + mRotation);
             Camera.Parameters parameters = mCamera.getParameters();
-            parameters.setRotation((360-mRotation)%360); //set rotation to save the picture
             parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
             mCamera.setParameters(parameters);
-            mCamera.setDisplayOrientation(mRotation);
             try {
                 mCamera.setPreviewDisplay(mHolder);
                 mCamera.startPreview();
