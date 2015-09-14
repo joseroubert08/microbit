@@ -77,7 +77,7 @@ public class CameraActivity_OldAPI extends Activity {
     private ArrayList<Drawable> mTakePhoto, mStartRecord, mStopRecord, mCurrentIconList;
 
 	private static final String TAG = "CameraActivity_OldAPI";
-	private boolean debug = false;
+	private boolean debug = true;
 
 	void logi(String message) {
 		if (debug) {
@@ -188,7 +188,6 @@ public class CameraActivity_OldAPI extends Activity {
         }
         if(quant_rotation!=mCurrentRotation)
         {
-            int currentOrientation = getResources().getConfiguration().orientation;
             mCurrentRotation = quant_rotation;
 
             if(buttonPortraitVisible) {
@@ -215,7 +214,12 @@ public class CameraActivity_OldAPI extends Activity {
         updateButtonClickIcon();
 		mButtonClick.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
+                try {
+                    mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
+                } catch (final Exception ex) {
+                    sendCameraError();
+                    Log.e(TAG, "Error during take picture",ex);
+                }
 			}
 		});
 
@@ -251,6 +255,7 @@ public class CameraActivity_OldAPI extends Activity {
 	}
 
     private void stopRecording() {
+        logi("Stop recording");
         mMediaRecorder.stop(); // stop the recording
         refreshGallery(mVideoFile);
         releaseMediaRecorder(); // release the MediaRecorder object
@@ -450,6 +455,8 @@ public class CameraActivity_OldAPI extends Activity {
 		mCameraIdx = getFrontFacingCamera();
 		try {
 			mCamera = Camera.open(mCameraIdx);
+            if(mCamera==null)
+                logi("Couldn't open the camera");
 			mPreview.setCamera(mCamera, mCameraIdx);
 
 			if(mVideo){
@@ -459,6 +466,9 @@ public class CameraActivity_OldAPI extends Activity {
 			else {
 				this.registerReceiver(mMessageReceiver, new IntentFilter("TAKE_PIC"));
 			}
+
+            mPreview.restartCameraPreview();
+            updateCameraRotation();
 
 			logi("onCreate() :: onResume # ");
 
@@ -538,6 +548,7 @@ public class CameraActivity_OldAPI extends Activity {
 
 	@Override
 	protected void onStart() {
+        logi("onCreate() :: onStart");
 		//Informing microbit that the mCamera is active now
 		CmdArg cmd = new CmdArg(0, "Camera on");
 		CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);
@@ -546,6 +557,7 @@ public class CameraActivity_OldAPI extends Activity {
 
 	@Override
 	protected void onDestroy() {
+        logi("onCreate() :: onDestroy");
 		//Informing microbit that the mCamera is active now
 		CmdArg cmd = new CmdArg(0, "Camera off");
 		CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);

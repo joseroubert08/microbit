@@ -30,24 +30,24 @@ public class CameraPlugin {
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE:
-				launchCameraForVideo();
+                launchCameraForVideo();
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO:
-				takePic();
+                takePic();
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE:
-				recVideoStart();
+                recVideoStart();
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_STOP_VIDEO_CAPTURE:
-				recVideoStop();
+                recVideoStop();
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_STOP_PHOTO_MODE:
 			case Constants.SAMSUNG_CAMERA_EVT_STOP_VIDEO_MODE:
-				closeCamera();
+                closeCamera();
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_TOGGLE_FRONT_REAR:
@@ -77,7 +77,7 @@ public class CameraPlugin {
 	private static void launchCameraForPic() {
 		Intent mIntent = new Intent(context, CameraActivity_OldAPI.class);
 		mIntent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_PIC");
-		mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		context.startActivity(mIntent);
 	}
 
@@ -89,7 +89,7 @@ public class CameraPlugin {
 	private static void launchCameraForVideo() {
 		Intent mIntent = new Intent(context, CameraActivity_OldAPI.class);
 		mIntent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_VIDEO");
-		mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		context.startActivity(mIntent);
 	}
 

@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 
     private static final String TAG = "CameraPreview";
-    private boolean debug = false;
+    private boolean debug = true;
 
     void logi(String message) {
         if (debug) {
@@ -37,6 +37,21 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 
     public void setParentActivity(Activity parentActivity){mParentActivity = parentActivity;}
     public SurfaceHolder getHolder(){return mHolder;}
+
+    public void restartCameraPreview() {
+        if(mCamera != null && mPreviewSize!=null) {
+            try {
+                mCamera.stopPreview();
+                Camera.Parameters parameters = mCamera.getParameters();
+                parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
+                mCamera.setParameters(parameters);
+                mCamera.setPreviewDisplay(mHolder);
+                mCamera.startPreview();
+            }catch (Exception e){
+                Log.e(TAG, "IOException caused by setPreviewDisplay()", e);
+            }
+        }
+    }
 
     public int getCameraDisplayOrientation(int cameraId, android.hardware.Camera mCamera)
     {
@@ -192,18 +207,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
             return;
         }
 
-        if(mCamera != null) {
-            mCamera.stopPreview();
-            Camera.Parameters parameters = mCamera.getParameters();
-            parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
-            mCamera.setParameters(parameters);
-            try {
-                mCamera.setPreviewDisplay(mHolder);
-                mCamera.startPreview();
-            }catch (Exception e){
-                Log.e(TAG, "IOException caused by setPreviewDisplay()", e);
-            }
-        }
+        restartCameraPreview();
     }
 
     private Size getOptimalPreviewSize(List<Size> sizes, int w, int h) {
