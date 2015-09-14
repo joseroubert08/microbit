@@ -77,7 +77,7 @@ public class CameraActivity_OldAPI extends Activity {
     private ArrayList<Drawable> mTakePhoto, mStartRecord, mStopRecord, mCurrentIconList;
 
 	private static final String TAG = "CameraActivity_OldAPI";
-	private boolean debug = true;
+	private boolean debug = false;
 
 	void logi(String message) {
 		if (debug) {

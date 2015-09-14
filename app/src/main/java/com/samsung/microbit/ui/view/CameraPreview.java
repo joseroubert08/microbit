@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 
     private static final String TAG = "CameraPreview";
-    private boolean debug = true;
+    private boolean debug = false;
 
     void logi(String message) {
         if (debug) {
