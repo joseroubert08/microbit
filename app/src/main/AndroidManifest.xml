@@ -50,7 +50,7 @@
         <activity
             android:name=".ui.activity.HomeActivity"
             android:configChanges="orientation"
-            android:launchMode="singleTask" >
+            android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -122,7 +122,7 @@
         </service>
         <service
             android:name=".service.BLEService"
-            android:process=":BLEService" >
+            android:process=":BLEService">
             <intent-filter>
                 <action android:name="com.samsung.microbit.service.BLEService" />
             </intent-filter>

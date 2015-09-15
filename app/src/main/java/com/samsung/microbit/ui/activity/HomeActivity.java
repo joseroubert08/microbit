@@ -65,12 +65,14 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			handleBLENotification(context, intent);
+
 			int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
 			if (Constants.BLE_DISCONNECTED_FOR_FLASH == v){
 				logi("Bluetooth disconnected for flashing. No need to display pop-up");
+                handleBLENotification(context, intent, false);
 				return;
 			}
+            handleBLENotification(context, intent, true);
 			if (v != 0) {
 				runOnUiThread(new Runnable() {
 					@Override
@@ -95,16 +97,15 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		}
 	}
 
-	ImageButton connectBtn;
-
-	private void handleBLENotification(Context context, Intent intent) {
-
+	private void handleBLENotification(Context context, Intent intent, boolean hide) {
+        final boolean popupHide = hide;
 		logi("handleBLENotification()");
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				updateConnectBarView();
-				PopUp.hide();
+                if(popupHide)
+                    PopUp.hide();
 			}
 		});
 	}

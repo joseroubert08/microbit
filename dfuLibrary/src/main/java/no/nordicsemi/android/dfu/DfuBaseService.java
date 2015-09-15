@@ -1182,7 +1182,7 @@ public abstract class DfuBaseService extends IntentService {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-
+        logi("DfuService onDestroy");
 		final LocalBroadcastManager manager = LocalBroadcastManager.getInstance(this);
 		manager.unregisterReceiver(mDfuActionReceiver);
 
@@ -2370,7 +2370,7 @@ public abstract class DfuBaseService extends IntentService {
 			device = mBluetoothAdapter.getRemoteDevice(address);
 		}
 
-		gatt = device.connectGatt(this, true, mGattCallback);
+        gatt = device.connectGatt(this, true, mGattCallback);
 
 		// We have to wait until the device is connected and services are discovered
 		// Connection error may occur as well.
@@ -2388,9 +2388,12 @@ public abstract class DfuBaseService extends IntentService {
 	}
 
     private void cancelPairing(final BluetoothGatt gatt) {
+        logi("----> cancelPairing");
         if (mConnectionState != STATE_DISCONNECTED) {
             // Disconnect from the device
-            disconnect(gatt);
+            mConnectionState = STATE_DISCONNECTED;
+            logi("Disconnecting from the device...");
+            gatt.disconnect();
             sendLogBroadcast(LOG_LEVEL_INFO, "Disconnected");
         }
         // Close the device

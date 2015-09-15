@@ -57,6 +57,18 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	protected boolean debug = true;
 	protected String TAG = "ProjectActivity";
 
+    private static FLASHING_STATE mFlashState = FLASHING_STATE.FLASH_STATE_NONE;
+
+    private enum FLASHING_STATE {
+        FLASH_STATE_NONE,
+        FLASH_STATE_FIND_DEVICE,
+        FLASH_STATE_VERIFY_DEVICE,
+        FLASH_STATE_INIT_DEVICE,
+        FLASH_STATE_PROGRESS
+    };
+
+
+
 	protected void logi(String message) {
 		if (debug) {
 			Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
@@ -71,14 +83,17 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			handleBLENotification(context, intent);
+
             int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
 
             logi(" broadcastReceiver ---- v= " + v);
             if (Constants.BLE_DISCONNECTED_FOR_FLASH == v){
                 logi("Bluetooth disconnected for flashing. No need to display pop-up");
+                handleBLENotification(context, intent, false);
+                initiateFlashing(programToSend);
                 return;
             }
+            handleBLENotification(context, intent, true);
 			if (v != 0 ) {
 				runOnUiThread(new Runnable() {
 					@Override
@@ -94,14 +109,15 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		}
 	};
 
-	private void handleBLENotification(Context context, Intent intent) {
+	private void handleBLENotification(Context context, Intent intent, boolean hide) {
 
 		logi("handleBLENotification()");
-
+        final boolean popupHide = hide;
 		runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 setConnectedDeviceText();
+                if(popupHide)
                 PopUp.hide();
             }
         });
@@ -113,6 +129,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 //			}
 		}
 	}
+
+    private void setFlashState(FLASHING_STATE newState)
+    {
+        logi("Flash state old - " + mFlashState + " new - " + newState);
+        mFlashState=newState;
+    }
 
 	@Override
 	public void onResume() {
@@ -303,9 +325,20 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
 					return;
 				}
-				pos = (Integer) v.getTag();
-				Project toSend = (Project) projectAdapter.getItem(pos);
-				adviceOnMicrobitState(toSend);
+                if(mFlashState != FLASHING_STATE.FLASH_STATE_NONE)
+                {
+                     // Another download session is in progress
+                    PopUp.show(MBApp.getContext(),
+                            getString(R.string.multple_flashing_session_msg),
+                            "",
+                            R.drawable.flash_face, R.drawable.blue_btn,
+                            PopUp.TYPE_ALERT,
+                            null, null);
+                }  else {
+                    pos = (Integer) v.getTag();
+                    Project toSend = (Project) projectAdapter.getItem(pos);
+                    adviceOnMicrobitState(toSend);
+                }
 				break;
 
 			case R.id.connectedIndicatorIcon:
@@ -350,7 +383,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         }
                     },//override click listener for ok button
                     null);//pass null to use default listeneronClick
-        } else {
+        }
+        else {
             PopUp.show(MBApp.getContext(),
                     getString(R.string.flash_start_message, currentMicrobit.mName) , //message
                     getString(R.string.flashing_title), //title
@@ -359,7 +393,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            ConnectedDevice currentMicrobit = Utils.getPairedMicrobit(MBApp.getContext());
                             PopUp.hide();
+                            if (currentMicrobit.mStatus == true)
+                            {
+                                programToSend = toSend;
+                                IPCService.getInstance().bleDisconnectForFlash();
+                            } else
                             initiateFlashing(toSend);
                         }
                     },//override click listener for ok button
@@ -379,6 +419,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 			dfuResultReceiver = null;
 		}
 		programToSend = toSend;
+        setFlashState(FLASHING_STATE.FLASH_STATE_FIND_DEVICE);
         registerCallbacksForFlashing();
         startFlashing();
 	}
@@ -446,6 +487,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 					logi("DFUResultReceiver.onReceive :: state -- " + state);
 					switch (state) {
                         case DfuService.PROGRESS_STARTING:
+                            setFlashState( FLASHING_STATE.FLASH_STATE_INIT_DEVICE);
                             PopUp.show(MBApp.getContext(),
                                     getString(R.string.dfu_status_starting_msg), //message
                                     getString(R.string.send_project), //title
@@ -464,6 +506,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 							if (!isCompleted) {
 								// todo progress bar dismiss
 								PopUp.hide();
+                                setFlashState( FLASHING_STATE.FLASH_STATE_NONE);
 								LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
 								dfuResultReceiver = null;
 								PopUp.show(MBApp.getContext(),
@@ -488,6 +531,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 									+ "] \n Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]";
 
 								logi(error_message);
+                                setFlashState( FLASHING_STATE.FLASH_STATE_NONE);
 								//PopUp.hide();
 								PopUp.show(MBApp.getContext(),
 									error_message, //message
@@ -504,6 +548,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 						case DfuService.PROGRESS_CONNECTING:
 							if ((!inInit) && (!isCompleted)) {
+                                setFlashState(FLASHING_STATE.FLASH_STATE_INIT_DEVICE);
 								PopUp.show(MBApp.getContext(),
 									getString(R.string.init_connection), //message
 									getString(R.string.send_project), //title
@@ -522,6 +567,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 							isCompleted = false;
 							break;
                         case DfuService.PROGRESS_VALIDATING:
+                            setFlashState(FLASHING_STATE.FLASH_STATE_VERIFY_DEVICE);
                             PopUp.show(MBApp.getContext(),
                                     getString(R.string.validating_microbit), //message
                                     getString(R.string.send_project), //title
@@ -537,12 +583,24 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                     null);//pass null to use default listener
                             break;
                         case DfuService.PROGRESS_VALIDATION_FAILED:
+                        case DfuService.PROGRESS_ABORTED:
+                            setFlashState( FLASHING_STATE.FLASH_STATE_NONE);
+                            PopUp.show(MBApp.getContext(),
+                                    getString(R.string.flashing_failed_message), //message
+                                    "Operation Aborted", //title
+                                    R.drawable.error_face, R.drawable.red_btn,
+                                    PopUp.TYPE_ALERT, //type of popup.
+                                    popupOkHandler,//override click listener for ok button
+                                    popupOkHandler);//pass null to use default listener
 
+                            LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
+                            dfuResultReceiver = null;
                             break;
 					}
 				} else if ((state > 0) && (state < 100)) {
 					if (!inProgress) {
-						// TODO Update progress bar check if correct.(my3)
+                        setFlashState(FLASHING_STATE.FLASH_STATE_PROGRESS);
+						// TODO Update progress bar check if correct.
 						PopUp.show(MBApp.getContext(),
 							MBApp.getContext().getString(R.string.flashing_progress_message),
 							String.format(MBApp.getContext().getString(R.string.flashing_project), programToSend.name),
@@ -557,7 +615,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				}
 			} else if (intent.getAction() == DfuService.BROADCAST_ERROR) {
 				String error_message = broadcastGetErrorMessage(intent.getIntExtra(DfuService.EXTRA_DATA, 0));
-
+                setFlashState( FLASHING_STATE.FLASH_STATE_NONE);
 				logi("DFUResultReceiver.onReceive() :: Flashing ERROR!!  Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
 					+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
 

@@ -159,7 +159,11 @@ public class BLEManager {
 					inBleOp = OP_CONNECT;
 					try {
 						if (debug) logi("connect() :: bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback)");
-						gatt = bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback);
+						gatt = bluetoothDevice.connectGatt(context, false, bluetoothGattCallback);
+
+						if(gatt == null)
+							bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback);
+
 						if (gatt != null) {
 							error = 0;
 							locker.wait(BLE_WAIT_TIMEOUT);
