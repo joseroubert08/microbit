@@ -8,9 +8,6 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Vibrator;
-import android.view.Gravity;
-import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
@@ -23,13 +20,68 @@ import java.util.TimerTask;
 
 /**
  * Created by kkulendiran on 10/05/2015.
+ * Updated by t.maestri on 15/09/2015
  */
 public class AlertPlugin {
 
 	private static Context context = null;
 
 	private static AlertDialog customDialog = null;
-	private static MediaPlayer mediaPlayer = null;
+    private static Ringtone mRingtone = null;
+    private static Vibrator mVibrator = null;
+    private static Timer mTimer = null;
+    private static TimerTask mStopTask = new TimerTask() {
+        @Override
+        public void run() {
+
+        }
+    };
+
+    private static void stopPlaying() {
+        if(mRingtone!=null && mRingtone.isPlaying()){
+            mRingtone.stop();}
+    }
+
+    private static void playSound(Uri alarm, int maxDuration, boolean vibrate, boolean isAlarm) {
+        int duration = getDuration(alarm);
+        if(maxDuration>0 && duration>maxDuration)
+            duration = maxDuration;
+
+        if(mRingtone!=null && mRingtone.isPlaying()){
+            mRingtone.stop();
+        }
+
+        if(mTimer!=null)
+            //After this operation the timer cannot be used anymore
+            mTimer.cancel();
+
+        mTimer = new Timer();
+
+        mRingtone = RingtoneManager.getRingtone(context, alarm);
+        if(isAlarm)
+            mRingtone.setStreamType(AudioManager.STREAM_ALARM);
+        mRingtone.play();
+
+        TimerTask stopTask = new TimerTask() {
+            @Override
+            public void run() {
+                stopPlaying();
+            }
+        };
+
+        mTimer.schedule(stopTask, duration);
+
+        if(vibrate)
+        {
+            if(mVibrator==null)
+                mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+
+            if(mVibrator!=null && mVibrator.hasVibrator()) {
+                mVibrator.cancel();
+                mVibrator.vibrate(duration);
+            }
+        }
+    }
 
 	public static void pluginEntry(Context ctx, CmdArg cmd) {
 		context = ctx;
@@ -66,56 +118,31 @@ public class AlertPlugin {
 	private static void playAlarm() {
 		showDialog(context.getString(R.string.sound_via_microbit));
 		Uri alarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-		int duration = getDuration(alarm);
-
-		final Ringtone r = RingtoneManager.getRingtone(context, alarm);
-		r.play();
-
-		TimerTask task = new TimerTask() {
-			@Override
-			public void run() {
-				r.stop();
-			}
-		};
-		Timer timer = new Timer();
-		timer.schedule(task, duration);
-		dialogTimer(duration);
+		playSound(alarm, 10000, false, false);
 	}
 
 	private static void playRingTone() {
 		showDialog(context.getString(R.string.ringtone_via_microbit));
 		Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-		int duration = getDuration(ringtone);
-		Ringtone r = RingtoneManager.getRingtone(context, ringtone);
-		r.play();
-		dialogTimer(duration);
+        playSound(ringtone, 10000, false, false);
 	}
 
 	private static void playNotification() {
 		showDialog(context.getString(R.string.sound_via_microbit));
 		Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-		int duration = getDuration(ringtone);
-		Ringtone r = RingtoneManager.getRingtone(context, ringtone);
-		r.play();
-		dialogTimer(duration);
+        playSound(ringtone, 10000, false, false);
 	}
 
 	private static void findPhone() {
-		showDialog(context.getString(R.string.findphone_via_microbit));
+        showDialog(context.getString(R.string.findphone_via_microbit));
 		Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-		Ringtone r = RingtoneManager.getRingtone(context, ringtone);
-		int duration = getDuration(ringtone);
-		r.setStreamType(AudioManager.STREAM_ALARM);
-		r.play();
-		Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-		v.vibrate(duration);
+		playSound(ringtone, 0, true, true);
 	}
 
 	private static void vibrate(int duration) {
-		showDialog(context.getString(R.string.vibrating_via_microbit));
+        showDialog(context.getString(R.string.vibrating_via_microbit));
 		Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-		v.vibrate(duration);
-		dialogTimer(duration);
+        v.vibrate(duration);
 	}
 
 	private static int getDuration(Uri file) {
@@ -143,25 +170,4 @@ public class AlertPlugin {
 				PopUp.TYPE_ALERT);
 	}
 
-	private static void dialogTimer(int duration) {
-		//Keep dialog for longer
-		duration = duration * 3;
-		TimerTask task = new TimerTask() {
-			@Override
-			public void run() {
-				resetMediaPlayer();
-			}
-		};
-
-		Timer timer = new Timer();
-		timer.schedule(task, duration);
-	}
-
-	private static void resetMediaPlayer() {
-		if(mediaPlayer != null) {
-			mediaPlayer.stop();
-			mediaPlayer.reset();
-			mediaPlayer = null;
-		}
-	}
 }
