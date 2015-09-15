@@ -122,7 +122,7 @@
         </service>
         <service
             android:name=".service.BLEService"
-            android:process=":BLEService" >
+            android:process=":BLEService">
             <intent-filter>
                 <action android:name="com.samsung.microbit.service.BLEService" />
             </intent-filter>

@@ -31,6 +31,7 @@ public class BLEService extends BLEBaseService {
 
 	protected String TAG = "BLEService";
 	protected boolean debug = true;
+	protected boolean firstRun = true;
 
 	protected void logi(String message) {
 		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
@@ -56,14 +57,23 @@ public class BLEService extends BLEBaseService {
 			@Override
 			public void run() {
 
-				try {
-					Thread.sleep(IPCMessageManager.STARTUP_DELAY + 500L);
-					sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
-					sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
-					setNotification(false, 0);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+                //This code is necessary to prevent disconnection when there is an orientation change
+				if(firstRun) {
+                    firstRun = false;
+					logi("First run!");
+					try {
+						Thread.sleep(IPCMessageManager.STARTUP_DELAY + 500L);
+						sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+						sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+						setNotification(false, 0);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
+				else {
+					logi("Not first run!");
+				}
+
 			}
 		}).start();
 
