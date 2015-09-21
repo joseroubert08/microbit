@@ -753,18 +753,18 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		displayConnectScreen(PAIRING_STATE.PAIRING_STATE_ERROR);
 
         PopUp.show(this,
-                getString(R.string.pairingErrorMessage), //message
-                getString(R.string.pairingErrorTitle), //title
-                R.drawable.error_face, //image icon res id
-                R.drawable.red_btn,
-                PopUp.TYPE_ALERT, //type of popup.
-                null,//override click listener for ok button
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        PopUp.hide();
-                        displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
-                    }
+				getString(R.string.pairingErrorMessage), //message
+				getString(R.string.pairingErrorTitle), //title
+				R.drawable.error_face, //image icon res id
+				R.drawable.red_btn,
+				PopUp.TYPE_ALERT, //type of popup.
+				null,//override click listener for ok button
+				new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						PopUp.hide();
+						displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+					}
 				});//pass null to use default listener
 
 	}
@@ -852,7 +852,12 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			return;
 		}
 
+		boolean scanning = mScanning;
 		scanLeDevice(false);
+
+		if (scanning) { // was scanning
+			handlePairingFailed();
+		}
 	}
 
 	// Device scan callback.
