@@ -23,7 +23,7 @@
     <string name="dfu_status_switching_to_dfu_msg">Waiting for flash mode&#8230;</string>
     <string name="dfu_status_uploading_components_msg">Transmitting components to %s&#8230;</string>
     <string name="dfu_status_uploading_msg">Flashing application to %s&#8230;</string>
-    <string name="dfu_status_validating_msg">Checking the flashing code&#8230;</string>
+    <string name="dfu_status_validating_msg">Checking the pairing code&#8230;</string>
     <string name="dfu_status_completed_msg">Application has been send successfully.</string>
     <string name="dfu_status_aborted_msg">Application flashing has been canceled.</string>
     <string name="dfu_status_disconnecting_msg">Disconnecting from %s&#8230;</string>

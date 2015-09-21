@@ -122,6 +122,7 @@
 	<string name="connectTipText">To know the pattern of your micro:bit :- \nPlease hold A and B buttons down and then press RESET on your micro:bit</string>
 	<string name="connectSearchingTitle">Connecting...</string>
 	<string name="searchingTitle">Searching for micro:bit...</string>
+	<string name="pairing_msg_1">Found micro:bit. \nInitiating pairing...</string>
 
 	<!--Connect Popup messages -->
 	<string name="pairingErrorTitle">Error</string>
@@ -170,7 +171,8 @@
 	<string name="sending_project">Flashing project</string>
 	<string name="send_project">Flash Project</string>
     <string name="validating_microbit">Verifying the pairing code</string>
-	<string name="init_connection">Finding micro:bit..</string>
+    <string name="waiting_reboot">Waiting for micro:bit to reboot</string>
+	<string name="init_connection">Connecting to micro:bit..</string>
     <string name="dfu_status_starting_msg">Initializing flashing process&#8230;</string>
     <string name="multple_flashing_session_msg">A project is currently being flashed. Wait for it to complete!</string>
 	<string name="no_device_paired">Cannot connect.  No micro:bit paired</string>

@@ -63,6 +63,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         FLASH_STATE_NONE,
         FLASH_STATE_FIND_DEVICE,
         FLASH_STATE_VERIFY_DEVICE,
+        FLASH_STATE_WAIT_DEVICE_REBOOT,
         FLASH_STATE_INIT_DEVICE,
         FLASH_STATE_PROGRESS
     };
@@ -582,6 +583,22 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                     },//override click listener for ok button
                                     null);//pass null to use default listener
                             break;
+						case DfuService.PROGRESS_WAITING_REBOOT:
+                            setFlashState(FLASHING_STATE.FLASH_STATE_WAIT_DEVICE_REBOOT);
+                            PopUp.show(MBApp.getContext(),
+                                    getString(R.string.waiting_reboot), //message
+                                    getString(R.string.send_project), //title
+                                    R.drawable.flash_face, R.drawable.blue_btn,
+                                    PopUp.TYPE_SPINNER_NOT_CANCELABLE, //type of popup.
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            //Do nothing. As this is non-cancellable pop-up
+
+                                        }
+                                    },//override click listener for ok button
+                                    null);//pass null to use default listener
+							break;
                         case DfuService.PROGRESS_VALIDATION_FAILED:
                         case DfuService.PROGRESS_ABORTED:
                             setFlashState( FLASHING_STATE.FLASH_STATE_NONE);
@@ -596,6 +613,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
                             dfuResultReceiver = null;
                             break;
+
 					}
 				} else if ((state > 0) && (state < 100)) {
 					if (!inProgress) {

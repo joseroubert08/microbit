@@ -1,14 +1,21 @@
 package com.samsung.microbit.ui.activity;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -52,6 +59,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	private static boolean DISABLE_DEVICE_LIST = false;
@@ -120,6 +128,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	private static volatile boolean mScanning = false;
 	private static volatile boolean mPairing = false;
 	//private Runnable scanFailedCallback;
+    private static BluetoothLeScanner mLEScanner = null;
 
 	/*
 	 * =================================================================
@@ -250,6 +259,13 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
         populateConnectedDeviceList(false);
 	}
 
+    @Override
+    public void onPause() {
+        logi("onPause() ::");
+        super.onPause();
+
+    }
+
 	public ConnectActivity() {
 		logi("ConnectActivity() ::");
 		instance = this;
@@ -292,6 +308,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			}
 		}
 
+        if (Build.VERSION.SDK_INT >= 21 && mLEScanner ==null ){
+            mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
+        }
 		/*
 		 * =================================================================
 		 */
@@ -714,19 +733,19 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	private void handleDeleteMicrobit(final int pos) {
 		PopUp.show(this,
-				getString(R.string.deleteMicrobitMessage), //message
-				getString(R.string.deleteMicrobitTitle), //title
-				R.drawable.delete_project, R.drawable.red_btn,
-				PopUp.TYPE_CHOICE, //type of popup.
-				new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						PopUp.hide();
-						mPrevDevList.removeMicrobit(pos);
-						populateConnectedDeviceList(true);
-					}
-				},//override click listener for ok button
-				null);//pass null to use default listener
+                getString(R.string.deleteMicrobitMessage), //message
+                getString(R.string.deleteMicrobitTitle), //title
+                R.drawable.delete_project, R.drawable.red_btn,
+                PopUp.TYPE_CHOICE, //type of popup.
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PopUp.hide();
+                        mPrevDevList.removeMicrobit(pos);
+                        populateConnectedDeviceList(true);
+                    }
+                },//override click listener for ok button
+                null);//pass null to use default listener
 
 	}
 
@@ -753,19 +772,19 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		displayConnectScreen(PAIRING_STATE.PAIRING_STATE_ERROR);
 
         PopUp.show(this,
-				getString(R.string.pairingErrorMessage), //message
-				getString(R.string.pairingErrorTitle), //title
-				R.drawable.error_face, //image icon res id
-				R.drawable.red_btn,
-				PopUp.TYPE_ALERT, //type of popup.
-				null,//override click listener for ok button
-				new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						PopUp.hide();
-						displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
-					}
-				});//pass null to use default listener
+                getString(R.string.pairingErrorMessage), //message
+                getString(R.string.pairingErrorTitle), //title
+                R.drawable.error_face, //image icon res id
+                R.drawable.red_btn,
+                PopUp.TYPE_ALERT, //type of popup.
+                null,//override click listener for ok button
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PopUp.hide();
+                        displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                    }
+                });//pass null to use default listener
 
 	}
 
@@ -828,14 +847,29 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			if (!mScanning && !mPairing) {
 				// Stops scanning after a pre-defined scan period.
 				mScanning = true;
-				mHandler.postDelayed(scanFailedCallback, SCAN_PERIOD);
-				mBluetoothAdapter.startLeScan(mLeScanCallback);
+                TextView textView = (TextView) findViewById(R.id.connectSearchTitle);
+                if (textView != null )
+                    textView.setText(getString(R.string.searchingTitle));
+
+                mHandler.postDelayed(scanFailedCallback, SCAN_PERIOD);
+				if (Build.VERSION.SDK_INT < 21){
+                    mBluetoothAdapter.startLeScan(mLeScanCallback);
+                }
+                else {
+                    List<ScanFilter> filters = new ArrayList<ScanFilter>();
+                    ScanSettings settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
+                    mLEScanner.startScan(filters, settings ,mScanCallBack );
+                }
 			}
 		} else {
 			if (mScanning) {
 				mScanning = false;
-				mHandler.removeCallbacks(scanFailedCallback);
-				mBluetoothAdapter.stopLeScan(mLeScanCallback);
+                if (Build.VERSION.SDK_INT < 21) {
+                    mHandler.removeCallbacks(scanFailedCallback);
+                    mBluetoothAdapter.stopLeScan(mLeScanCallback);
+                } else {
+                    mLEScanner.stopScan(mScanCallBack);
+                }
 			}
 		}
 	}
@@ -867,6 +901,31 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			ConnectActivity.instance.onLeScan(device, rssi, scanRecord);
 		}
 	};
+
+    private static ScanCallback mScanCallBack = new ScanCallback() {
+        @Override
+        public void onScanResult(int callbackType, ScanResult result) {
+            super.onScanResult(callbackType, result);
+            Log.i("callbackType = ", String.valueOf(callbackType));
+            Log.i("result = ", result.toString());
+            BluetoothDevice btDevice = result.getDevice();
+            ConnectActivity.instance.onLeScan(result.getDevice(), result.getRssi(), result.getScanRecord().getBytes());
+        }
+
+        @Override
+        public void onBatchScanResults(List<ScanResult> results) {
+            super.onBatchScanResults(results);
+            for (ScanResult sr : results){
+                Log.i("Scan result - Results ", sr.toString());
+            }
+        }
+
+        @Override
+        public void onScanFailed(int errorCode) {
+            super.onScanFailed(errorCode);
+            Log.i("Scan failed", "Error Code : " + errorCode);
+        }
+    };
 
 	/*
 	 * =================================================================
@@ -901,6 +960,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				// Stop scanning as device is found.
 				scanLeDevice(false);
                 mNewDeviceAddress = device.getAddress();
+                TextView textView = (TextView) findViewById(R.id.connectSearchTitle);
+                if (textView != null )
+                    textView.setText(getString(R.string.pairing_msg_1));
                 startPairing(mNewDeviceAddress);
 			} else {
 				if (debug) logi("mLeScanCallback.onLeScan() ::   non-matching - deviceName == " + mNewDeviceName.toLowerCase());
