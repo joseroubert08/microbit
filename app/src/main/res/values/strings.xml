@@ -16,10 +16,10 @@
 
 <resources>
 
-	<string name="app_name">Companion</string>
+	<string name="app_name">micro:bit</string>
 	<string name="poweredBy">Powered by\r\n SAMSUNG</string>
 
-	<string name="touchDevURLNew">https://live.microbit.co.uk/</string>
+	<string name="touchDevURLNew">https://www.microbit.co.uk/</string>
     <string name="user_agent">SamsungBrowser/microbit Profile/OTA-DFU1.0</string>
 
 	<string name="search_BLE_activity">Search micro:bit</string>
