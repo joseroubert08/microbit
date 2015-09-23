@@ -121,6 +121,18 @@ public class ProjectAdapter extends BaseAdapter {
 		}
 	};
 
+    private void HideEditTextView( View v) {
+        Button bt = (Button) v.getTag(R.id.editbutton);
+        bt.setVisibility(View.VISIBLE);
+        v.setVisibility(View.INVISIBLE);
+    }
+
+    private void ShowEditTextView( View v) {
+        Button bt = (Button) v.getTag(R.id.editbutton);
+        bt.setVisibility(View.INVISIBLE);
+        v.setVisibility(View.VISIBLE);
+    }
+
 	private void dismissKeyBoard(View v, boolean hide,boolean done) {
 
 		logi("dismissKeyBoard() :: ");
@@ -132,7 +144,8 @@ public class ProjectAdapter extends BaseAdapter {
 		imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
 
 		if(hide) {
-			v.setVisibility(View.INVISIBLE);
+            HideEditTextView(v);
+			//v.setVisibility(View.INVISIBLE);
 		}
 
 		if (done) {
@@ -150,11 +163,13 @@ public class ProjectAdapter extends BaseAdapter {
 
 	private void showKeyBoard(final View v) {
 
-		logi("showKeyBoard() :: " + v.getClass().getName());
+        logi("showKeyBoard() :: " + v.getClass().getName());
 		int pos = (Integer) v.getTag(R.id.positionId);
-		logi("showKeyBoard() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
+        logi("showKeyBoard() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
 
-		v.setVisibility(View.VISIBLE);
+        //v.setVisibility(View.VISIBLE);
+        ShowEditTextView(v);
+
 		final InputMethodManager imm = (InputMethodManager) projectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
 		v.postDelayed(new Runnable() {
 			@Override
@@ -301,9 +316,11 @@ public class ProjectAdapter extends BaseAdapter {
 			appNameEdit.setText(project.name);
 			appNameEdit.setSelection(project.name.length());
 			appNameEdit.requestFocus();
+            appNameButton.setVisibility(View.INVISIBLE);
 
 		} else {
 			appNameEdit.setVisibility(View.INVISIBLE);
+            appNameButton.setVisibility(View.VISIBLE);
 			//dismissKeyBoard(appNameEdit, false);
 		}
 
