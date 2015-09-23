@@ -46,6 +46,8 @@ import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.BluetoothSwitch;
 import com.samsung.microbit.ui.PopUp;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Handler;
 
@@ -56,7 +58,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 
     SharedPreferences prefs = null;
     ListView helpList = null ;
-    ArrayAdapter adapter = null ;
+    StableArrayAdapter adapter = null ;
 	/* *************************************************
 	 * TODO setup to Handle BLE Notiifications
 	 */
@@ -123,11 +125,8 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (debug) logi("onCreate() :: ");
+		logi("onCreate() :: ");
 		MBApp.setContext(this);
-		/* *************************************************
-		 * TODO setup to Handle BLE Notiification
-		 */
 		if (broadcastIntentFilter == null) {
 			broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
 			LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(broadcastReceiver, broadcastIntentFilter);
@@ -160,16 +159,33 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         helpList = (ListView) findViewById(R.id.moreItems);
         if (helpList != null){
             String [] items= getResources().getStringArray(R.array.moreListItems);
-            adapter = new ArrayAdapter<String>(this, R.layout.aligned_right, items) ;
+
+            final ArrayList<String> list = new ArrayList<String>();
+            for (int i = 0; i < items.length; ++i) {
+                list.add(items[i]);
+            }
+
+            adapter = new StableArrayAdapter(this, android.R.layout.simple_list_item_1, list) ;
             helpList.setAdapter(adapter);
 
             helpList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
+                    final String title = (String) parent.getItemAtPosition(position);
+
+/*                    view.animate().setDuration(2000).alpha(0)
+                            .withEndAction(new Runnable() {
+                                @Override
+                                public void run() {
+                                    view.setAlpha(1);
+                                }
+                            });*/
                     switch (position) {
                         case 0:
                         case 1:
-                            startGeneralView(position);
+                        case 2:
+                        case 3:
+                            startGeneralView(title, position);
                             helpList.setVisibility(View.INVISIBLE);
                             break;
                     }
@@ -178,7 +194,31 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         }
 	}
 
-    private void startGeneralView(int position) {
+    private class StableArrayAdapter extends ArrayAdapter<String> {
+
+        HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
+
+        public StableArrayAdapter(Context context, int textViewResourceId,
+                                  List<String> objects) {
+            super(context, textViewResourceId, objects);
+            for (int i = 0; i < objects.size(); ++i) {
+                mIdMap.put(objects.get(i), i);
+            }
+        }
+
+        @Override
+        public long getItemId(int position) {
+            String item = getItem(position);
+            return mIdMap.get(item);
+        }
+
+        @Override
+        public boolean hasStableIds() {
+            return true;
+        }
+
+    }
+    private void startGeneralView(String title, int position) {
         Intent i = new Intent(this, GeneralWebView.class);
         switch (position){
             case 0:
@@ -187,8 +227,14 @@ public class HomeActivity extends Activity implements View.OnClickListener {
             case 1:
                 i.putExtra("url", "file:///android_asset/www/about.html");
                 break;
+			case 2:
+				i.putExtra("url", getString(R.string.privacy_policy_url));
+				break;
+			case 3:
+                i.putExtra("url", getString(R.string.terms_of_use_url));
+				break;
         }
-        i.putExtra("title", adapter.getItem(position).toString());
+        i.putExtra("title", title);
         startActivity(i);
     }
 
