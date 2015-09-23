@@ -20,6 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:clickable="true"
+        android:background="@color/white_color"
         android:layout_below="@id/moreButton"
         android:visibility="invisible"
         android:fastScrollEnabled="false"

@@ -19,6 +19,7 @@
         android:layout_width="@dimen/home_no_project_btn_width"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
+        android:background="@color/white_color"
         android:clickable="true"
         android:layout_below="@id/moreButton"
         android:visibility="invisible"
