@@ -313,7 +313,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		switch (v.getId()) {
 			case R.id.createProject:
 				intent = new Intent(this, TouchDevActivity.class);
-				intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
+				intent.putExtra(Constants.URL, getString(R.string.touchDevURLMyScripts));
 				startActivity(intent);
 				finish();
 				break;

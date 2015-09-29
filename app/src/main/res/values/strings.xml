@@ -20,6 +20,7 @@
 	<string name="poweredBy">Powered by\r\n SAMSUNG</string>
 
 	<string name="touchDevURLNew">https://www.microbit.co.uk/</string>
+    <string name="touchDevURLMyScripts">https://www.microbit.co.uk/</string>
     <string name="privacy_policy_url">https://www.microbit.co.uk/privacy</string>
     <string name="terms_of_use_url">https://www.microbit.co.uk/terms-of-use</string>
     <string name="user_agent">SamsungBrowser/microbit Profile/OTA-DFU1.0</string>
@@ -119,7 +120,7 @@
 	<string name="name_empty_error">Please enter device name.</string>
 	<string name="connect">Connect</string>
 	<string name="gamepad">Gamepad</string>
-	<string name="connectNew">Connect a new micro:bit</string>
+	<string name="connectNew">Pair a new micro:bit</string>
 	<string name="connectTipTitle">How to pair your micro:bit</string>
 	<string name="connectTipText">To know the pattern of your micro:bit :- \nPlease hold A and B buttons down and then press RESET on your micro:bit</string>
 	<string name="connectSearchingTitle">Connecting...</string>
@@ -128,6 +129,7 @@
 
 	<!--Connect Popup messages -->
 	<string name="pairingErrorTitle">Error</string>
+    <string name="timeOut">Timeout</string>
 	<string name="pairingErrorMessage">We cannot find that micro:bit\nPlease try again</string>
 	<string name="deleteMicrobitTitle">Delete micro:bit?</string>
 	<string name="deleteMicrobitMessage">Are you sure you want to remove this device?</string>
@@ -145,7 +147,7 @@
 	<string name="audio_recorder_notification">micro:bit Audio Recorder</string>
 
 	<string name="create_new_project">Create\na new project</string>
-    <string name="create_new_project_project">Create a new project</string>
+    <string name="my_scripts">My Scripts</string>
 
 	<string name="download_existing">Download Existing</string>
 	<string name="downloading">Downloading...</string>
@@ -189,5 +191,11 @@
 	<string name="bluetooth_turn_on_guide">Please click the green tick to turn on your Bluetooth</string>
 	<string name="tray_notification_failure">micro:bit Disconnected. Click to connect</string>
     <string name="tray_notification_sucsess">micro:bit Connected. Click to disconnect</string>
+
+    <string name="title_activity_splash_screen">SplashScreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="hello_world">Hello world!</string>
 
 </resources>

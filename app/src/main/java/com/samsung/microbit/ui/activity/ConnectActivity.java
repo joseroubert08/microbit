@@ -458,6 +458,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		if (mPrevDevList != null)
 			numOfPreviousItems = mPrevDevList.size();
 
+		if (numOfPreviousItems == 0){
+			return;
+		}
         if((numOfPreviousItems > 0) && (mCurrentDevice!=null) &&
                 (mPrevDeviceArray[0].mPattern.equals(mCurrentDevice.mPattern)))
         {
@@ -769,11 +772,11 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		if (debug) logi("handlePairingFailed() :: Start");
 		mPairing = false;
 
-		displayConnectScreen(PAIRING_STATE.PAIRING_STATE_ERROR);
+		//displayConnectScreen(PAIRING_STATE.PAIRING_STATE_ERROR);
 
         PopUp.show(this,
                 getString(R.string.pairingErrorMessage), //message
-                getString(R.string.pairingErrorTitle), //title
+                getString(R.string.timeOut), //title
                 R.drawable.error_face, //image icon res id
                 R.drawable.red_btn,
                 PopUp.TYPE_ALERT, //type of popup.
@@ -782,7 +785,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
                     @Override
                     public void onClick(View v) {
                         PopUp.hide();
-                        displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                        displayConnectScreen(PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY);
                     }
                 });//pass null to use default listener
 
@@ -851,7 +854,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
                 if (textView != null )
                     textView.setText(getString(R.string.searchingTitle));
 
-                mHandler.postDelayed(scanFailedCallback, SCAN_PERIOD);
+                mHandler.postDelayed(scanTimedOut, SCAN_PERIOD);
 				if (Build.VERSION.SDK_INT < 21){
                     mBluetoothAdapter.startLeScan(mLeScanCallback);
                 }
@@ -864,8 +867,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		} else {
 			if (mScanning) {
 				mScanning = false;
+                mHandler.removeCallbacks(scanTimedOut);
                 if (Build.VERSION.SDK_INT < 21) {
-                    mHandler.removeCallbacks(scanFailedCallback);
                     mBluetoothAdapter.stopLeScan(mLeScanCallback);
                 } else {
                     mLEScanner.stopScan(mScanCallBack);
@@ -874,7 +877,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		}
 	}
 
-	private static Runnable scanFailedCallback = new Runnable() {
+	private static Runnable scanTimedOut = new Runnable() {
 		@Override
 		public void run() {
 			ConnectActivity.instance.scanFailedCallbackImpl();
