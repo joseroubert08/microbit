@@ -11,7 +11,7 @@
 		android:id="@+id/appNameButton"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
-		android:drawableRight="@drawable/rename"
+		android:drawableRight="@drawable/down_arrow"
 		android:background="@drawable/white_bg"
 		android:gravity="left|center_vertical"
 		android:longClickable="true"

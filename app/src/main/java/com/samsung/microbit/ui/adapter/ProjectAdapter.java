@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -294,10 +295,14 @@ public class ProjectAdapter extends BaseAdapter {
 
 		LinearLayout actionBarLayout = (LinearLayout) convertView.findViewById(R.id.actionBarForProgram);
 		if (actionBarLayout != null) {
-			if (project.actionBarExpanded)
+			if (project.actionBarExpanded) {
 				actionBarLayout.setVisibility(View.VISIBLE);
-			else
+				appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getContext(),R.drawable.up_arrow), null);
+			}
+			else {
 				actionBarLayout.setVisibility(View.GONE);
+				appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getContext(),R.drawable.down_arrow), null);
+			}
 		}
 
 		appNameButton.setText(project.name);
