@@ -18,6 +18,7 @@
 
 	<string name="app_name">micro:bit</string>
 	<string name="poweredBy">Powered by\r\n SAMSUNG</string>
+    <string name="copyright">Copyright © 1995-2015 SAMSUNG</string>
 
 	<string name="touchDevURLNew">https://www.microbit.co.uk/</string>
     <string name="touchDevURLMyScripts">https://www.microbit.co.uk/</string>

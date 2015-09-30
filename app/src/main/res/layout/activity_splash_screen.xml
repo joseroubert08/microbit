@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg" >
+    android:background="@drawable/bg"
+    android:layout_centerHorizontal="true">
 
     <ImageView
         android:id="@+id/imgLogo"
@@ -12,13 +13,12 @@
         android:src="@drawable/samsung" />
 
     <TextView
+        style="@style/p2"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:textSize="12dp"
-        android:textColor="#454545"
         android:gravity="center_horizontal"
         android:layout_alignParentBottom="true"
-        android:text="BBC micro:bit" />
+        android:text="@string/copyright" />
 
 </RelativeLayout>

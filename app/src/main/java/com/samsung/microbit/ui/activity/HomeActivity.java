@@ -18,6 +18,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
+import android.text.Spannable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -121,6 +122,49 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         //setBackground();
     }
 
+	private void setConnectedDeviceText() {
+
+		TextView connectedIndicatorText = (TextView) findViewById(R.id.connectedIndicatorText);
+		TextView deviceName1 = (TextView) findViewById(R.id.deviceName);
+		TextView deviceName2 = (TextView) findViewById(R.id.deviceName2);
+		ImageButton connectedIndicatorIcon = (ImageButton) findViewById(R.id.connectedIndicatorIcon);
+
+		if (connectedIndicatorIcon == null || connectedIndicatorText == null)
+			return;
+
+		int startIndex = 0;
+		Spannable span = null;
+		ConnectedDevice device = Utils.getPairedMicrobit(this);
+		if (!device.mStatus) {
+			connectedIndicatorIcon.setImageResource(R.drawable.disconnect_device);
+			connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_disconnect_btn));
+			connectedIndicatorText.setText(getString(R.string.not_connected));
+			if (deviceName1 != null && deviceName2 != null) {
+				//Mobile Device.. 2 lines of display
+				if (device.mName != null)
+					deviceName1.setText(device.mName);
+				if (device.mPattern != null)
+					deviceName2.setText("(" + device.mPattern + ")");
+			} else if (deviceName1 != null) {
+				if (device.mName != null)
+					deviceName1.setText(device.mName + " (" + device.mPattern + ")");
+			}
+		} else {
+			connectedIndicatorIcon.setImageResource(R.drawable.device_connected);
+			connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_connect_btn));
+			connectedIndicatorText.setText(getString(R.string.connected_to));
+			if (deviceName1 != null && deviceName2 != null) {
+				//Mobile Device.. 2 lines of display
+				if (device.mName != null)
+					deviceName1.setText(device.mName);
+				if (device.mPattern != null)
+					deviceName2.setText("(" + device.mPattern + ")");
+			} else if (deviceName1 != null) {
+				if (device.mName != null)
+					deviceName1.setText(device.mName + " (" + device.mPattern + ")");
+			}
+		}
+	}
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -192,6 +236,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
                 }
             });
         }
+        setConnectedDeviceText();
 	}
 
     private class StableArrayAdapter extends ArrayAdapter<String> {
