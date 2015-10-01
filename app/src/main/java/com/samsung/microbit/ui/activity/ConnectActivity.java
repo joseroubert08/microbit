@@ -208,6 +208,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			}
             handleBLENotification(context, intent, true);
 			if (v != 0) {
+                logi("broadcastReceiver Error code =" + v);
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
@@ -458,9 +459,6 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		if (mPrevDevList != null)
 			numOfPreviousItems = mPrevDevList.size();
 
-		if (numOfPreviousItems == 0){
-			return;
-		}
         if((numOfPreviousItems > 0) && (mCurrentDevice!=null) &&
                 (mPrevDeviceArray[0].mPattern.equals(mCurrentDevice.mPattern)))
         {

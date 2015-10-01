@@ -6,9 +6,18 @@
     android:layout_centerHorizontal="true">
 
     <ImageView
+        android:id="@+id/imgGreeting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@drawable/greetings_emojio" />
+
+    <ImageView
         android:id="@+id/imgLogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/content_margin"
+        android:layout_below="@id/imgGreeting"
         android:layout_centerInParent="true"
         android:src="@drawable/samsung" />
 

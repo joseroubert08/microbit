@@ -111,7 +111,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	};
 
 	private void handleBLENotification(Context context, Intent intent, boolean hide) {
-
+		int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+        logi("broadcastReceiver Error code =" + v);
 		logi("handleBLENotification()");
         final boolean popupHide = hide;
 		runOnUiThread(new Runnable() {

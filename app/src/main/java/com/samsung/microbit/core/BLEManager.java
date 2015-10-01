@@ -149,7 +149,7 @@ public class BLEManager {
 
 	public int connect(boolean autoReconnect) {
 
-		if (debug) logi("connect() :: autoReconnect=" + autoReconnect);
+
 		int rc = BLE_ERROR_NOOP;
 
 		if (gatt == null) {
@@ -161,8 +161,10 @@ public class BLEManager {
 						if (debug) logi("connect() :: bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback)");
 						gatt = bluetoothDevice.connectGatt(context, false, bluetoothGattCallback);
 
-						if(gatt == null)
+						if(gatt == null) {
+							if (debug) logi("connectGatt failed with AutoReconnect = false. Trying again.. autoReconnect=" + autoReconnect);
 							bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback);
+						}
 
 						if (gatt != null) {
 							error = 0;

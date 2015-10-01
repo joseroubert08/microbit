@@ -118,9 +118,10 @@ public class BLEService extends BLEBaseService {
 		}
 
 		if (!success) {
+			if (debug) logi("startupConnection() :: Failed ErrorCode = " + rc);
 			if (bleManager != null) {
 				reset();
-				setNotification(false, 1);
+				setNotification(false, rc);
 			}
 		}
 

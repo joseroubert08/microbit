@@ -64,10 +64,6 @@ public abstract class BLEBaseService extends Service {
 	protected void setupBLE() {
 
 		if (debug) logi("setupBLE()");
-		//if (bleManager != null) {
-		//	return;
-		//}
-
 		this.deviceAddress = getDeviceAddress();
 		if (debug) logi("setupBLE() :: deviceAddress = " + deviceAddress);
 		if (this.deviceAddress != null) {
