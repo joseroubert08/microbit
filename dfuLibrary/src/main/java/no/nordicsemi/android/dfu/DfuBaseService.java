@@ -1405,7 +1405,9 @@ public abstract class DfuBaseService extends IntentService {
         }
 
         sendLogBroadcast(LOG_LEVEL_VERBOSE, "Connecting to DFU target 2...");
-        makeGattConnection(mDeviceAddress);
+        if (!makeGattConnection(mDeviceAddress))
+            return 5;
+
 
 		logi("Phase2 s");
 
@@ -1621,6 +1623,7 @@ public abstract class DfuBaseService extends IntentService {
 
 			// Are we connected?
 			if (gatt != null) {
+                gatt.disconnect();
 				gatt.close();
 				gatt = null;
 			}
@@ -2518,7 +2521,8 @@ public abstract class DfuBaseService extends IntentService {
 	private void close(final BluetoothGatt gatt) {
 		logi("Cleaning up...");
 		sendLogBroadcast(LOG_LEVEL_DEBUG, "gatt.close()");
-		gatt.close();
+        gatt.disconnect();
+        gatt.close();
 		mConnectionState = STATE_CLOSED;
 	}
 

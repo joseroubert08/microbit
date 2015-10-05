@@ -247,20 +247,12 @@ public class Utils {
 
 		if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
 			String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
-			Log.d("MicroBit", "ConnectedDevice - pairedDeviceString - " + pairedDeviceString);
-
 			Gson gson = new Gson();
 			pairedDevice = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
 		} else {
 			pairedDevice.mPattern = null;
 			pairedDevice.mName = null;
 		}
-
-
-		Log.d("MicroBit", "ConnectedDevice - pairedDevice.mPattern - " + pairedDevice.mPattern);
-		Log.d("MicroBit", "ConnectedDevice - pairedDevice.mName - " + pairedDevice.mName);
-		Log.d("MicroBit", "ConnectedDevice - pairedDevice.mPairingCode - " + pairedDevice.mPairingCode);
-
 		return pairedDevice;
 	}
 

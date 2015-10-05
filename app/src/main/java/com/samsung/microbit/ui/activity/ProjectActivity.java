@@ -91,7 +91,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             if (Constants.BLE_DISCONNECTED_FOR_FLASH == v){
                 logi("Bluetooth disconnected for flashing. No need to display pop-up");
                 handleBLENotification(context, intent, false);
-                initiateFlashing(programToSend);
+                if (programToSend.filePath != null)
+                    initiateFlashing(programToSend);
                 return;
             }
             handleBLENotification(context, intent, true);
@@ -198,7 +199,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 		if (fileToDownload != null) {
 			programToSend = new Project(fileToDownload, Constants.HEX_FILE_DIR + "/" + fileToDownload, 0, null, false);
-			adviceOnMicrobitState(programToSend);
+            initiateFlashing(programToSend);
         }
 	}
 

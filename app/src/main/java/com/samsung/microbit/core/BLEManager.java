@@ -139,6 +139,7 @@ public class BLEManager {
 			callbackCompleted = false;
 			if (gatt != null) {
 				if (debug) logi("reset() :: gatt != null : closing gatt");
+                gatt.disconnect();
 				gatt.close();
 			}
 
@@ -205,13 +206,14 @@ public class BLEManager {
 					if (bleState == 0) {
 						callbackCompleted = false;
 						if (debug) logi("gattConnect() :: gatt.connect()");
-						gatt.connect();
+						boolean result = gatt.connect();
+                        logi("gatt.connect() returns = " + result);
 						locker.wait(BLE_WAIT_TIMEOUT);
 						if (debug) logi("gattConnect() :: remote device = " + gatt.getDevice().getAddress());
 						if (!callbackCompleted) {
+                            logi("BLE_ERROR_FAIL | BLE_ERROR_TIMEOUT");
 							error = (BLE_ERROR_FAIL | BLE_ERROR_TIMEOUT);
 						}
-
 						rc = error | bleState;
 					}
 				} catch (Exception e) {
@@ -238,7 +240,8 @@ public class BLEManager {
 					error = 0;
 					if (bleState != 0) {
 						callbackCompleted = false;
-						gatt.disconnect();
+                        gatt.disconnect();
+                        gatt.close();
 						locker.wait(BLE_WAIT_TIMEOUT);
 						if (!callbackCompleted) {
 							error = (BLE_ERROR_FAIL | BLE_ERROR_TIMEOUT);
@@ -486,22 +489,64 @@ public class BLEManager {
 
 			super.onConnectionStateChange(gatt, status, newState);
 
-			int state;
+            if (debug)
+                logi("BluetoothGattCallback.onConnectionStateChange() :: start : status = " + status + " newState = " + newState);
+
+            int state = BLE_DISCONNECTED;
 			int error = 0;
-			if (status == BluetoothGatt.GATT_SUCCESS) {
-				if (newState == BluetoothProfile.STATE_CONNECTED) {
-					state = BLE_CONNECTED;
-				} else {
-					state = BLE_DISCONNECTED;
-				}
-			} else {
+            switch (status){
+                case BluetoothGatt.GATT_SUCCESS:
+                    {
+                        if (newState == BluetoothProfile.STATE_CONNECTED) {
+                            state = BLE_CONNECTED;
+                        } else  if (newState == BluetoothProfile.STATE_DISCONNECTED){
+                            state = BLE_DISCONNECTED;
+                            if (gatt != null) {
+                                if (debug) logi("onConnectionStateChange() :: gatt != null : closing gatt");
+                                gatt.disconnect();
+                                gatt.close();
+                            }
+                        }
+                    }
+                    break;
+
+                case BluetoothGatt.GATT_CONNECTION_CONGESTED:
+                    logi("onConnectionStateChange() :: GATT_CONNECTION_CONGESTED");
+                    break;
+                case BluetoothGatt.GATT_FAILURE:
+                    logi("onConnectionStateChange() :: GATT_FAILURE");
+                    break;
+                case BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION:
+                    logi("onConnectionStateChange() :: GATT_INSUFFICIENT_AUTHENTICATION");
+                    break;
+                case  BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION:
+                    logi("onConnectionStateChange() :: GATT_INSUFFICIENT_ENCRYPTION");
+                    break;
+                case BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH:
+                    logi("onConnectionStateChange() :: GATT_INVALID_ATTRIBUTE_LENGTH");
+                    break;
+                case BluetoothGatt.GATT_WRITE_NOT_PERMITTED:
+                    logi("onConnectionStateChange() :: GATT_WRITE_NOT_PERMITTED");
+                    break;
+                case 0x85:
+                    logi("onConnectionStateChange() :: GATT_ERROR ");
+                    break;
+                case 0x87:
+                    logi("onConnectionStateChange() :: GATT_ILLEGAL_PARAMETER ");
+                    break;
+                case 0x82:
+                    logi("onConnectionStateChange() :: GATT_WRONG_STATE ");
+                    break;
+                case 0x81:
+                    logi("onConnectionStateChange() :: GATT_INTERNAL_ERROR ");
+                    break;
+            }
+
+			if (status != BluetoothGatt.GATT_SUCCESS)  {
 				state = BLE_DISCONNECTED;
 				error = BLE_ERROR_FAIL;
 			}
-
 			synchronized (locker) {
-				if (debug)
-					logi("BluetoothGattCallback.onConnectionStateChange() :: start : status = " + status + " newState = " + newState);
 
 				if (inBleOp == OP_CONNECT) {
 
