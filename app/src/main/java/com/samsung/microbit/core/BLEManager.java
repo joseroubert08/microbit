@@ -139,7 +139,6 @@ public class BLEManager {
 			callbackCompleted = false;
 			if (gatt != null) {
 				if (debug) logi("reset() :: gatt != null : closing gatt");
-                gatt.disconnect();
 				gatt.close();
 			}
 
@@ -241,7 +240,6 @@ public class BLEManager {
 					if (bleState != 0) {
 						callbackCompleted = false;
                         gatt.disconnect();
-                        gatt.close();
 						locker.wait(BLE_WAIT_TIMEOUT);
 						if (!callbackCompleted) {
 							error = (BLE_ERROR_FAIL | BLE_ERROR_TIMEOUT);

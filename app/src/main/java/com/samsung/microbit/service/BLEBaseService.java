@@ -69,30 +69,28 @@ public abstract class BLEBaseService extends Service {
 		if (this.deviceAddress != null) {
 			bluetoothDevice = null;
 			if (initialize()) {
-                if (bleManager == null ) {
-                    bleManager = new BLEManager(getApplicationContext(), bluetoothDevice,
-                            new CharacteristicChangeListener() {
-                                @Override
-                                public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+				bleManager = new BLEManager(getApplicationContext(), bluetoothDevice,
+						new CharacteristicChangeListener() {
+							@Override
+							public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 
-                                    if (debug)
-                                        logi("setupBLE().CharacteristicChangeListener.onCharacteristicChanged()");
-                                    if (bleManager != null) {
-                                        handleCharacteristicChanged(gatt, characteristic);
-                                    }
-                                }
-                            },
-                            new UnexpectedConnectionEventListener() {
-                                @Override
-                                public void handleConnectionEvent(int event) {
-                                    if (debug)
-                                        logi("setupBLE().CharacteristicChangeListener.handleUnexpectedConnectionEvent()");
-                                    if (bleManager != null) {
-                                        handleUnexpectedConnectionEvent(event);
-                                    }
-                                }
-                            });
-                }
+								if (debug)
+									logi("setupBLE().CharacteristicChangeListener.onCharacteristicChanged()");
+								if (bleManager != null) {
+									handleCharacteristicChanged(gatt, characteristic);
+								}
+							}
+						},
+						new UnexpectedConnectionEventListener() {
+							@Override
+							public void handleConnectionEvent(int event) {
+								if (debug)
+									logi("setupBLE().CharacteristicChangeListener.handleUnexpectedConnectionEvent()");
+								if (bleManager != null) {
+									handleUnexpectedConnectionEvent(event);
+								}
+							}
+						});
 				startupConnection();
 				return;
 			}
