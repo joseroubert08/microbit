@@ -109,7 +109,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 			@Override
 			public void run() {
 				updateConnectBarView();
-                setConnectedDeviceText();
+                //setConnectedDeviceText();
                 if(popupHide)
                     PopUp.hide();
 			}
@@ -125,7 +125,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         //setBackground();
     }
 
-	private void setConnectedDeviceText() {
+/*	private void setConnectedDeviceText() {
 
 		TextView connectedIndicatorText = (TextView) findViewById(R.id.connectedIndicatorText);
 		TextView deviceName1 = (TextView) findViewById(R.id.deviceName);
@@ -167,7 +167,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 					deviceName1.setText(device.mName + " (" + device.mPattern + ")");
 			}
 		}
-	}
+	}*/
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -239,7 +239,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
                 }
             });
         }
-        setConnectedDeviceText();
+        //setConnectedDeviceText();
 	}
 
     private class StableArrayAdapter extends ArrayAdapter<String> {
@@ -448,6 +448,6 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		MBApp.setContext(this);
 		updateConnectBarView();
         updateProjectBarView();
-        setConnectedDeviceText();
+        //setConnectedDeviceText();
 	}
 }
