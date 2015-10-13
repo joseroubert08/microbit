@@ -12,6 +12,7 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.model.Project;
+import com.samsung.microbit.service.DfuService;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -333,5 +334,84 @@ public class Utils {
 	public static int maskBits(int v, int[] x) {
 		v &= getBitMask(x);
 		return v;
+	}
+
+	public static String broadcastGetErrorMessage(int errorCode) {
+		String errorMessage;
+
+		switch (errorCode) {
+			case DfuService.ERROR_DEVICE_DISCONNECTED:
+				errorMessage = "micro:bit disconnected";
+				break;
+			case DfuService.ERROR_FILE_NOT_FOUND:
+				errorMessage = "File not found";
+				break;
+			/**
+			 * Thrown if service was unable to open the file ({@link java.io.IOException} has been thrown).
+			 */
+			case DfuService.ERROR_FILE_ERROR:
+				errorMessage = "Unable to open file";
+				break;
+			/**
+			 * Thrown then input file is not a valid HEX or ZIP file.
+			 */
+			case DfuService.ERROR_FILE_INVALID:
+				errorMessage = "File not a valid HEX";
+				break;
+			/**
+			 * Thrown when {@link java.io.IOException} occurred when reading from file.
+			 */
+			case DfuService.ERROR_FILE_IO_EXCEPTION:
+				errorMessage = "Unable to read file";
+				break;
+			/**
+			 * Error thrown then {@code gatt.discoverServices();} returns false.
+			 */
+			case DfuService.ERROR_SERVICE_DISCOVERY_NOT_STARTED:
+				errorMessage = "Bluetooth Discovery not started";
+				break;
+			/**
+			 * Thrown when the service discovery has finished but the DFU service has not been found. The device does not support DFU of is not in DFU mode.
+			 */
+			case DfuService.ERROR_SERVICE_NOT_FOUND:
+				errorMessage = "Dfu Service not found";
+				break;
+			/**
+			 * Thrown when the required DFU service has been found but at least one of the DFU characteristics is absent.
+			 */
+			case DfuService.ERROR_CHARACTERISTICS_NOT_FOUND:
+				errorMessage = "Dfu Characteristics not found";
+				break;
+			/**
+			 * Thrown when unknown response has been obtained from the target. The DFU target must follow specification.
+			 */
+			case DfuService.ERROR_INVALID_RESPONSE:
+				errorMessage = "Invalid response from micro:bit";
+				break;
+
+			/**
+			 * Thrown when the the service does not support given type or mime-type.
+			 */
+			case DfuService.ERROR_FILE_TYPE_UNSUPPORTED:
+				errorMessage = "Unsupported file type";
+				break;
+
+			/**
+			 * Thrown when the the Bluetooth adapter is disabled.
+			 */
+			case DfuService.ERROR_BLUETOOTH_DISABLED:
+				errorMessage = "Bluetooth Disabled";
+				break;
+
+			case DfuService.ERROR_FILE_SIZE_INVALID:
+				errorMessage = "Invalid filesize";
+				break;
+
+			default:
+				errorMessage = "Unknown Error";
+				break;
+		}
+
+		return errorMessage;
 	}
 }

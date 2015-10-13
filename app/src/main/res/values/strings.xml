@@ -126,7 +126,7 @@
 	<string name="connectTipText">To know the pattern of your micro:bit :- \nPlease hold A and B buttons down and then press RESET on your micro:bit</string>
 	<string name="connectSearchingTitle">Connecting...</string>
 	<string name="searchingTitle">Searching for micro:bit...</string>
-	<string name="pairing_msg_1">Found micro:bit. \nInitiating pairing...</string>
+	<string name="pairing_msg_1">Found micro:bit. \n \nInitiating pairing...</string>
 
 	<!--Connect Popup messages -->
 	<string name="pairingErrorTitle">Error</string>

@@ -615,6 +615,7 @@ public abstract class DfuBaseService extends IntentService {
 
 	public static final  int FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED = 0x33;
     public static final int PAIRING_REQUEST = 0x01;
+    public static final int PAIRING_FAILED = 0x55;
     public static final int FLASHING_WITH_PAIR_CODE = 0x02;
 
 
@@ -884,8 +885,13 @@ public abstract class DfuBaseService extends IntentService {
 				}
 			} else {
 				loge("Connection state change error: " + status + " newState: " + newState);
-				if (newState == BluetoothGatt.STATE_DISCONNECTED)
-					mConnectionState = STATE_DISCONNECTED;
+				if (newState == BluetoothGatt.STATE_DISCONNECTED) {
+                    mConnectionState = STATE_DISCONNECTED;
+                    if (mServicePhase == PAIRING_REQUEST ){
+                        mServicePhase = PAIRING_FAILED ;
+                        updateProgressNotification(ERROR_BLUETOOTH_DISABLED);
+                    }
+                }
 				mPaused = false;
 				mError = ERROR_CONNECTION_STATE_MASK | status;
 			}
@@ -1076,7 +1082,9 @@ public abstract class DfuBaseService extends IntentService {
                 logi("-----------> Rohit - Value = " + pairingCode + " Value String = " + valueString) ;
                 Bundle b=new Bundle();
                 b.putInt("pairing_code", pairingCode);
-                resultReceiver.send(FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED, b);
+				if (resultReceiver != null){
+					resultReceiver.send(FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED, b);
+				}
 			}
 
 
@@ -3188,20 +3196,25 @@ public abstract class DfuBaseService extends IntentService {
 		final String deviceAddress = mDeviceAddress;
 		final String deviceName = mDeviceName != null ? mDeviceName : getString(R.string.dfu_unknown_name);
 
-
         //Do not show notification try when Pairing
         if (mServicePhase == PAIRING_REQUEST ){
             logi("Not displaying the Progress tray icon as we are in Pairing mode");
+            return;
+        } else if (mServicePhase == PAIRING_FAILED)
+        {
+            logi("Pairing has failed");
+            mServicePhase = 0 ;
+            sendErrorBroadcast(progress);
             return;
         }
 		// final Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_stat_notify_dfu); <- this looks bad on Android 5
 		if(progress < 0) {
 			builder = new NotificationCompat.Builder(this).setSmallIcon(android.R.drawable.stat_sys_upload).
 					setOnlyAlertOnce(true);//.setLargeIcon(largeIcon);
+
 		}
 
-		// Android 5
-		builder.setColor(Color.GRAY);
+        builder.setColor(Color.GRAY);
 		switch (progress) {
 			case PROGRESS_CONNECTING:
 				builder.setOngoing(true).setContentTitle(getString(R.string.dfu_status_connecting)).setContentText(getString(R.string.dfu_status_connecting_msg, deviceName)).setProgress(100, 0, true);

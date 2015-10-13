@@ -59,6 +59,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
+
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class ConnectActivity extends Activity implements View.OnClickListener {
 
@@ -67,6 +68,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	ConnectedDevice[]  mPrevDeviceArray;
 	PreviousDeviceList mPrevDevList;
     ConnectedDevice    mCurrentDevice;
+
 
 	private enum PAIRING_STATE {
 		PAIRING_STATE_CONNECT_BUTTON,
@@ -118,6 +120,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	final private int REQUEST_BT_ENABLE = 1;
 
+    private DFUResultReceiver dfuResultReceiver;
 	/*
 	 * TODO : HACK 20150729
 	 * A bit of a hack to make sure the scan finishes properly.  Needs top be done properly
@@ -134,9 +137,42 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 	 * =================================================================
 	 */
 
-	/* *************************************************
-	 * TODO setup to Handle BLE Notiifications
-	 */
+    class DFUResultReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = "Broadcast intent detected " + intent.getAction();
+            logi("DFUResultReceiver.onReceive :: " + message);
+            if (intent.getAction() == DfuService.BROADCAST_ERROR) {
+                String error_message = Utils.broadcastGetErrorMessage(intent.getIntExtra(DfuService.EXTRA_DATA, 0));
+                logi("DFUResultReceiver.onReceive() :: Pairing ERROR!!  Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
+                        + "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
+
+                if (mPairing) {
+                    cancelPairing();
+                    //Get the error message
+                    PopUp.show(MBApp.getContext(),
+                            error_message, //message
+                            getString(R.string.pairing_failed_title), //title
+                            R.drawable.error_face, //image icon res id
+                            R.drawable.red_btn,
+                            PopUp.TYPE_ALERT, //type of popup.
+                            null,//override click listener for ok button
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    PopUp.hide();
+                                    displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                                }
+                            });//pass null to use default listener
+                }
+            } else if (intent.getAction() == DfuService.BROADCAST_LOG) {
+                String log_message = intent.getStringExtra(DfuService.EXTRA_LOG_MESSAGE);
+                logi("DFUResultReceiver.onReceive() :: BROADCAST_LOG  Message - [" + log_message
+                        + "] Log Level - [" + intent.getIntExtra(DfuService.EXTRA_LOG_LEVEL, 0) + "]");
+            }
+        }
+    }
+
 	static IntentFilter broadcastIntentFilter;
 
     ResultReceiver resultReceiver = new ResultReceiver(new Handler()) {
@@ -171,24 +207,24 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 					}
                 } else {
                     logi("resultReceiver.onReceiveResult() :: Phase 1 not complete recieved ");
-					if (mPairing) {
-						cancelPairing();
-
-						PopUp.show(MBApp.getContext(),
-								getString(R.string.pairing_failed_message), //message
-								getString(R.string.pairing_failed_title), //title
-								R.drawable.error_face, //image icon res id
-								R.drawable.red_btn,
-								PopUp.TYPE_ALERT, //type of popup.
-								null,//override click listener for ok button
-								new View.OnClickListener() {
-									@Override
-									public void onClick(View v) {
-										PopUp.hide();
-										displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
-									}
-								});//pass null to use default listener
-					}
+                    if (mPairing) {
+                        cancelPairing();
+                        //Get the error message
+                        PopUp.show(MBApp.getContext(),
+                                getString(R.string.pairing_failed_message), //message
+                                getString(R.string.pairing_failed_title), //title
+                                R.drawable.error_face, //image icon res id
+                                R.drawable.red_btn,
+                                PopUp.TYPE_ALERT, //type of popup.
+                                null,//override click listener for ok button
+                                new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        PopUp.hide();
+                                        displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                                    }
+                                });//pass null to use default listener
+                    }
 				}
             }
             super.onReceiveResult(resultCode, resultData);
@@ -292,30 +328,6 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 		setContentView(R.layout.activity_connect);
 
-		/*
-	 	* TODO : Part of HACK 20150729
-	 	* =================================================================
-	 	*/
-
-		if (mBluetoothAdapter == null) {
-			final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-			logi("onCreate() :: mBluetoothAdapter == null");
-			mBluetoothAdapter = bluetoothManager.getAdapter();
-			// Checks if Bluetooth is supported on the device.
-			if (mBluetoothAdapter == null) {
-				Toast.makeText(this.getApplicationContext(), R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
-				finish();
-				return;
-			}
-		}
-
-        if (Build.VERSION.SDK_INT >= 21 && mLEScanner ==null ){
-            mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
-        }
-		/*
-		 * =================================================================
-		 */
-
 		mHandler = new Handler(Looper.getMainLooper());
 		if (mPrevDevList == null) {
             mPrevDevList = PreviousDeviceList.getInstance(this);
@@ -346,6 +358,35 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		animation.loadUrl("file:///android_asset/htmls/animation.html");
 	}
 
+    boolean setupBleController()
+    {
+        boolean retvalue = true;
+        if (mBluetoothAdapter == null) {
+            final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+            mBluetoothAdapter = bluetoothManager.getAdapter();
+            if (mBluetoothAdapter == null) retvalue = false;
+        }
+
+        if (Build.VERSION.SDK_INT >= 21 && mLEScanner == null ){
+            mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
+            if (mLEScanner == null) retvalue = false;
+        }
+        if (!retvalue) {
+            PopUp.show(MBApp.getContext(),
+                    MBApp.getContext().getString(R.string.error_bluetooth_not_supported),
+                    MBApp.getContext().getString(R.string.turn_on_bluetooth),
+                    R.drawable.bluetooth, R.drawable.blue_btn,
+                    PopUp.TYPE_ALERT,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            PopUp.hide();
+                            finish();
+                        }
+                    }, null);
+        }
+        return retvalue;
+    }
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -812,8 +853,20 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
         new Handler(Looper.getMainLooper()).post(task);
     }
 
+    private void registerCallBacksForPairing() {
+        IntentFilter filter = new IntentFilter(DfuService.BROADCAST_LOG);
+        IntentFilter filter1 = new IntentFilter(DfuService.BROADCAST_ERROR);
+        dfuResultReceiver = new DFUResultReceiver();
+        LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter);
+        LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter1);
+    }
     private void startPairing(String deviceAddress) {
 
+        if (dfuResultReceiver != null) {
+            LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
+            dfuResultReceiver = null;
+        }
+        registerCallBacksForPairing();
         logi("###>>>>>>>>>>>>>>>>>>>>> startPairing");
 		mPairing = true;
 		final Intent service = new Intent(this, DfuService.class);
@@ -841,6 +894,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
  	* =================================================================
  	*/
 	private void scanLeDevice(final boolean enable) {
+
+        if (!setupBleController())
+            return;
 
 		if (debug) logi("scanLeDevice() :: enable = " + enable);
 

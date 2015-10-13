@@ -16,13 +16,11 @@ import java.util.concurrent.CountDownLatch;
 public class BluetoothSwitch {
 
     private static BluetoothSwitch instance = null;
-    private boolean bluetoothON = false;
 
-    private BluetoothAdapter mBluetoothAdapter = null;
+    private static BluetoothAdapter mBluetoothAdapter = null;
 
     static final String TAG = "BluetoothSwitch";
 
-    private CountDownLatch doneSignal = null ;
 
     private BluetoothSwitch() {
         if (mBluetoothAdapter == null) {
