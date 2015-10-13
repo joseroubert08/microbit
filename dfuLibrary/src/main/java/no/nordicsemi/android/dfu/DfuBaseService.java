@@ -125,7 +125,7 @@ public abstract class DfuBaseService extends IntentService {
 	 */
 	public static final String EXTRA_DEVICE_NAME = "no.nordicsemi.android.dfu.extra.EXTRA_DEVICE_NAME";
 
-    public static final String EXTRA_DEVICE_PAIR_CODE = "no.nordicsemi.android.dfu.extra.EXTRA_DEVICE_PAIR_CODE";
+	public static final String EXTRA_DEVICE_PAIR_CODE = "no.nordicsemi.android.dfu.extra.EXTRA_DEVICE_PAIR_CODE";
 	/**
 	 * <p>
 	 * If the new firmware (application) does not share the bond information with the old one, the bond information is lost. Set this flag to <code>true</code>
@@ -385,10 +385,10 @@ public abstract class DfuBaseService extends IntentService {
 	public static final int PROGRESS_ABORTED = -7;
 
 
-    public static final int PROGRESS_VALIDATION_FAILED = -8 ;
+	public static final int PROGRESS_VALIDATION_FAILED = -8 ;
 
 
-    public static final int PROGRESS_WAITING_REBOOT = -9;
+	public static final int PROGRESS_WAITING_REBOOT = -9;
 	/**
 	 * The broadcast error message contains the following extras:
 	 * <ul>
@@ -464,10 +464,10 @@ public abstract class DfuBaseService extends IntentService {
 	 * DFU Bootloader version 0.6+ requires sending the Init packet. If such bootloader version is detected, but the init packet has not been set this error is thrown.
 	 */
 	public static final int ERROR_INIT_PACKET_REQUIRED = ERROR_MASK | 0x0B;
-    /**
-     * Thrown when the firmware file is not word-aligned. The firmware size must be dividable by 4 bytes.
-     */
-    public static final int ERROR_FILE_SIZE_INVALID = ERROR_MASK | 0x0C;
+	/**
+	 * Thrown when the firmware file is not word-aligned. The firmware size must be dividable by 4 bytes.
+	 */
+	public static final int ERROR_FILE_SIZE_INVALID = ERROR_MASK | 0x0C;
 	/**
 	 * Flag set then the DFU target returned a DFU error. Look for DFU specification to get error codes.
 	 */
@@ -607,15 +607,15 @@ public abstract class DfuBaseService extends IntentService {
 	private static final UUID DFU_VERSION = new UUID(0x000015341212EFDEl, 0x1523785FEABCD123l);
 	private static final UUID CLIENT_CHARACTERISTIC_CONFIG = new UUID(0x0000290200001000l, 0x800000805f9b34fbl);
 
-	private static final UUID FLASH_PAIRING_SERVICE_UUID = UUID.fromString("d8af991c-7144-43d7-954b-99512f95f99c");
-	private static final UUID FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID = UUID.fromString("97109547-e63a-442a-bf89-9d730413dc2f");
-	private static final UUID FLASH_PAIRING_CODE_CHARACTERISTIC_UUID = UUID.fromString("947b6934-64d1-4fad-9bd0-cc9d6e9f3ea3");
+	private static final UUID FLASH_PAIRING_SERVICE_UUID = UUID.fromString("E95D93B0-251D-470A-A062-FA1922DFA9A8");
+	private static final UUID FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID = UUID.fromString("E95D93B1-251D-470A-A062-FA1922DFA9A8");
+	private static final UUID FLASH_PAIRING_CODE_CHARACTERISTIC_UUID = UUID.fromString("E95D93B2-251D-470A-A062-FA1922DFA9A8");
 	private static final UUID CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
 
 	public static final  int FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED = 0x33;
-    public static final int PAIRING_REQUEST = 0x01;
-    public static final int FLASHING_WITH_PAIR_CODE = 0x02;
+	public static final int PAIRING_REQUEST = 0x01;
+	public static final int FLASHING_WITH_PAIR_CODE = 0x02;
 
 
 	//
@@ -634,7 +634,7 @@ public abstract class DfuBaseService extends IntentService {
 	private InputStream mInputStream;
 	private String mDeviceAddress;
 	private String mDeviceName;
-    private int mDevicePairingCode;
+	private int mDevicePairingCode;
 
 	/**
 	 * The current connection state. If its value is > 0 than an error has occurred. Error number is a negative value of mConnectionState
@@ -840,15 +840,15 @@ public abstract class DfuBaseService extends IntentService {
 					mConnectionState = STATE_CONNECTED;
 
 					/*
-					 *  The onConnectionStateChange callback is called just after establishing connection and before sending Encryption Request BLE event in case of a paired device. 
-					 *  In that case and when the Service Changed CCCD is enabled we will get the indication after initializing the encryption, about 1600 milliseconds later. 
-					 *  If we discover services right after connecting, the onServicesDiscovered callback will be called immediately, before receiving the indication and the following 
+					 *  The onConnectionStateChange callback is called just after establishing connection and before sending Encryption Request BLE event in case of a paired device.
+					 *  In that case and when the Service Changed CCCD is enabled we will get the indication after initializing the encryption, about 1600 milliseconds later.
+					 *  If we discover services right after connecting, the onServicesDiscovered callback will be called immediately, before receiving the indication and the following
 					 *  service discovery and we may end up with old, application's services instead.
-					 *  
+					 *
 					 *  This is to support the buttonless switch from application to bootloader mode where the DFU bootloader notifies the master about service change.
-					 *  Tested on Nexus 4 (Android 4.4.4 and 5), Nexus 5 (Android 5), Samsung Note 2 (Android 4.4.2). The time after connection to end of service discovery is about 1.6s 
+					 *  Tested on Nexus 4 (Android 4.4.4 and 5), Nexus 5 (Android 5), Samsung Note 2 (Android 4.4.2). The time after connection to end of service discovery is about 1.6s
 					 *  on Samsung Note 2.
-					 *  
+					 *
 					 *  NOTE: We are doing this to avoid the hack with calling the hidden gatt.refresh() method, at least for bonded devices.
 					 */
 					if (gatt.getDevice().getBondState() == BluetoothDevice.BOND_BONDED) {
@@ -914,41 +914,41 @@ public abstract class DfuBaseService extends IntentService {
 
 		@Override
 		public void onDescriptorRead(final BluetoothGatt gatt, final BluetoothGattDescriptor descriptor, final int status) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                if (CLIENT_CHARACTERISTIC_CONFIG.equals(descriptor.getUuid())) {
-                    if (SERVICE_CHANGED_UUID.equals(descriptor.getCharacteristic().getUuid())) {
-                        // We have enabled indications for the Service Changed characteristic
-                        mServiceChangedIndicationsEnabled = descriptor.getValue()[0] == 2;
-                        mRequestCompleted = true;
-                    }
-                }
-            } else {
-                loge("Descriptor read error: " + status);
-                mError = ERROR_CONNECTION_MASK | status;
-            }
+			if (status == BluetoothGatt.GATT_SUCCESS) {
+				if (CLIENT_CHARACTERISTIC_CONFIG.equals(descriptor.getUuid())) {
+					if (SERVICE_CHANGED_UUID.equals(descriptor.getCharacteristic().getUuid())) {
+						// We have enabled indications for the Service Changed characteristic
+						mServiceChangedIndicationsEnabled = descriptor.getValue()[0] == 2;
+						mRequestCompleted = true;
+					}
+				}
+			} else {
+				loge("Descriptor read error: " + status);
+				mError = ERROR_CONNECTION_MASK | status;
+			}
 			// Notify waiting thread
 			synchronized (mLock) {
-            	mLock.notifyAll();
+				mLock.notifyAll();
 			}
 		}
 
 		@Override
 		public void onDescriptorWrite(final BluetoothGatt gatt, final BluetoothGattDescriptor descriptor, final int status) {
 
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                if (CLIENT_CHARACTERISTIC_CONFIG.equals(descriptor.getUuid())) {
-                    if (SERVICE_CHANGED_UUID.equals(descriptor.getCharacteristic().getUuid())) {
-                        // We have enabled indications for the Service Changed characteristic
-                        mServiceChangedIndicationsEnabled = descriptor.getValue()[0] == 2;
-                    } else {
-                        // We have enabled notifications for this characteristic
-                        mNotificationsEnabled = descriptor.getValue()[0] == 1;
-                    }
-                }
-            } else {
-                loge("Descriptor write error: " + status);
-                mError = ERROR_CONNECTION_MASK | status;
-            }
+			if (status == BluetoothGatt.GATT_SUCCESS) {
+				if (CLIENT_CHARACTERISTIC_CONFIG.equals(descriptor.getUuid())) {
+					if (SERVICE_CHANGED_UUID.equals(descriptor.getCharacteristic().getUuid())) {
+						// We have enabled indications for the Service Changed characteristic
+						mServiceChangedIndicationsEnabled = descriptor.getValue()[0] == 2;
+					} else {
+						// We have enabled notifications for this characteristic
+						mNotificationsEnabled = descriptor.getValue()[0] == 1;
+					}
+				}
+			} else {
+				loge("Descriptor write error: " + status);
+				mError = ERROR_CONNECTION_MASK | status;
+			}
 			// Notify waiting thread
 			synchronized (mLock) {
 				mLock.notifyAll();
@@ -1070,13 +1070,13 @@ public abstract class DfuBaseService extends IntentService {
 			if (FLASH_PAIRING_CODE_CHARACTERISTIC_UUID.equals(characteristic.getUuid())) {
 				// Possible press of button A after a 2 has been written to FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID
 				logi("FLashing code written notification");
-                int responseType = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-                int pairingCode = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
-                String valueString = parse(characteristic);
-                logi("-----------> Rohit - Value = " + pairingCode + " Value String = " + valueString) ;
-                Bundle b=new Bundle();
-                b.putInt("pairing_code", pairingCode);
-                resultReceiver.send(FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED, b);
+				int responseType = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
+				int pairingCode = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
+				String valueString = parse(characteristic);
+				logi("-----------> Rohit - Value = " + pairingCode + " Value String = " + valueString) ;
+				Bundle b=new Bundle();
+				b.putInt("pairing_code", pairingCode);
+				resultReceiver.send(FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED, b);
 			}
 
 
@@ -1194,7 +1194,7 @@ public abstract class DfuBaseService extends IntentService {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-        logi("DfuService onDestroy");
+		logi("DfuService onDestroy");
 		final LocalBroadcastManager manager = LocalBroadcastManager.getInstance(this);
 		manager.unregisterReceiver(mDfuActionReceiver);
 
@@ -1205,7 +1205,7 @@ public abstract class DfuBaseService extends IntentService {
 
 	ResultReceiver resultReceiver;
 
-    int mServicePhase = 0 ;
+	int mServicePhase = 0 ;
 
 	@Override
 	protected void onHandleIntent(final Intent intent) {
@@ -1216,16 +1216,16 @@ public abstract class DfuBaseService extends IntentService {
 
 		int rc = 0;
 
-        logi("DFUBaseService onHandleIntent phase = " + phase);
+		logi("DFUBaseService onHandleIntent phase = " + phase);
 
 
 		if ((phase & PAIRING_REQUEST) != 0) {
-            mServicePhase = PAIRING_REQUEST ;
+			mServicePhase = PAIRING_REQUEST ;
 			rc = pairing(intent);
 		}
 
 		if ((phase & FLASHING_WITH_PAIR_CODE) != 0) {
-            mServicePhase = FLASHING_WITH_PAIR_CODE ;
+			mServicePhase = FLASHING_WITH_PAIR_CODE ;
 			rc = flashingWithPairCode(intent);
 		}
 
@@ -1340,20 +1340,20 @@ public abstract class DfuBaseService extends IntentService {
 		logi("Start Pairing");
 		String mimeType = intent.getStringExtra(EXTRA_FILE_MIME_TYPE);
 
-        mDeviceAddress = deviceAddress;
+		mDeviceAddress = deviceAddress;
 		/*
 		 * Lets connect to the device.
 		 * All the methods below are synchronous. The mLock object is used to wait for asynchronous calls.
 		 */
 		if (!makeGattConnection(deviceAddress))
-            return 5;
+			return 5;
 
 		final BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
 
 		if (fps == null) {
 			logi("Pairing aborted");
 			sendLogBroadcast(LOG_LEVEL_WARNING, "Pairing aborted");
-            cancelPairing(gatt);
+			cancelPairing(gatt);
 			return 6;
 		}
 
@@ -1362,7 +1362,7 @@ public abstract class DfuBaseService extends IntentService {
 		if (sfpc == null) {
 			logi("Pairing aborted");
 			sendLogBroadcast(LOG_LEVEL_WARNING, "Pairing aborted");
-            cancelPairing(gatt);
+			cancelPairing(gatt);
 			return 6;
 		}
 
@@ -1383,7 +1383,7 @@ public abstract class DfuBaseService extends IntentService {
 		if (mConnectionState == STATE_DISCONNECTED) {
 			logi("Gatt disconnected");
 			sendLogBroadcast(LOG_LEVEL_WARNING, "Pairing aborted");
-            cancelPairing(gatt);
+			cancelPairing(gatt);
 			return 6;
 		}
 
@@ -1393,80 +1393,80 @@ public abstract class DfuBaseService extends IntentService {
 
 	private int flashingWithPairCode(Intent intent) {
 
-        mDeviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
-        mDeviceName = intent.getStringExtra(EXTRA_DEVICE_NAME);
-        mDevicePairingCode = intent.getIntExtra(EXTRA_DEVICE_PAIR_CODE, 0);
+		mDeviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
+		mDeviceName = intent.getStringExtra(EXTRA_DEVICE_NAME);
+		mDevicePairingCode = intent.getIntExtra(EXTRA_DEVICE_PAIR_CODE, 0);
 
-        if (mDevicePairingCode == 0) {
-            logi("Upload aborted");
-            sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
-            terminateConnection(gatt, PROGRESS_VALIDATION_FAILED);
-            return 6;
-        }
+		if (mDevicePairingCode == 0) {
+			logi("Upload aborted");
+			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
+			terminateConnection(gatt, PROGRESS_VALIDATION_FAILED);
+			return 6;
+		}
 
-        sendLogBroadcast(LOG_LEVEL_VERBOSE, "Connecting to DFU target 2...");
-        if (!makeGattConnection(mDeviceAddress))
-            return 5;
+		sendLogBroadcast(LOG_LEVEL_VERBOSE, "Connecting to DFU target 2...");
+		if (!makeGattConnection(mDeviceAddress))
+			return 5;
 
 
 		logi("Phase2 s");
 
-        updateProgressNotification(PROGRESS_VALIDATING);
-        sendProgressBroadcast(PROGRESS_VALIDATING);
+		updateProgressNotification(PROGRESS_VALIDATING);
+		sendProgressBroadcast(PROGRESS_VALIDATING);
 
-        int rc = 1;
+		int rc = 1;
 		final BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
 		if (fps == null) {
-            logi("Upload aborted");
-            sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
+			logi("Upload aborted");
+			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
 			terminateConnection(gatt, PROGRESS_ABORTED);
 			return 6;
 		}
-        //Write the flashing code if Known
-        logi("Finding FLASH_PAIRING_CODE_CHARACTERISTIC_UUID ....");
-        final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CODE_CHARACTERISTIC_UUID);
-        if (sfpc == null) {
-            logi("Error Cannot find the PAIRING CODE CHARACTERISTIC");
-            sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
-            terminateConnection(gatt, PROGRESS_ABORTED);
-            return 6;
-        }
+		//Write the flashing code if Known
+		logi("Finding FLASH_PAIRING_CODE_CHARACTERISTIC_UUID ....");
+		final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CODE_CHARACTERISTIC_UUID);
+		if (sfpc == null) {
+			logi("Error Cannot find the PAIRING CODE CHARACTERISTIC");
+			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
+			terminateConnection(gatt, PROGRESS_ABORTED);
+			return 6;
+		}
 
-        sfpc.setValue(mDevicePairingCode , BluetoothGattCharacteristic.FORMAT_UINT32, 0);
+		sfpc.setValue(mDevicePairingCode , BluetoothGattCharacteristic.FORMAT_UINT32, 0);
 
-        try {
-            logi("Writing FLASH_PAIRING_CODE_CHARACTERISTIC_UUID ....");
-            writeCharacteristic(gatt, sfpc);
-            rc = 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        //Add Complete
-		final BluetoothGattCharacteristic sfpc1 = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
-        if (sfpc == null) {
-            logi("Upload aborted");
-            sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
-            terminateConnection(gatt, PROGRESS_ABORTED);
-            return 6;
-        }
-
-        sfpc1.setValue(1, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 		try {
-            logi("Writing FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID ....");
+			logi("Writing FLASH_PAIRING_CODE_CHARACTERISTIC_UUID ....");
+			writeCharacteristic(gatt, sfpc);
+			rc = 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+		//Add Complete
+		final BluetoothGattCharacteristic sfpc1 = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
+		if (sfpc == null) {
+			logi("Upload aborted");
+			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
+			terminateConnection(gatt, PROGRESS_ABORTED);
+			return 6;
+		}
+
+		sfpc1.setValue(1, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
+		try {
+			logi("Writing FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID ....");
 			writeCharacteristic(gatt, sfpc1);
 			rc = 0;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-        if (rc == 0) {
-            sendProgressBroadcast(PROGRESS_WAITING_REBOOT);
-            waitUntilDisconnected();
+		if (rc == 0) {
+			sendProgressBroadcast(PROGRESS_WAITING_REBOOT);
+			waitUntilDisconnected();
 			waitUntilConnected();
 
-            ///TODO : Rohit - Check if this Gatt disconnect and connect is required
+			///TODO : Rohit - Check if this Gatt disconnect and connect is required
 /*			disconnect(gatt);
 			refreshDeviceCache(gatt, true);
 			mError = 0;
@@ -1477,7 +1477,7 @@ public abstract class DfuBaseService extends IntentService {
 				BluetoothGattService s = sItr.next();
 			}*/
 
-            // TODO : Ends here
+			// TODO : Ends here
 			do {
 				logi("Calling phase 3");
 				mError = 0;
@@ -1623,14 +1623,14 @@ public abstract class DfuBaseService extends IntentService {
 
 			// Are we connected?
 			if (gatt != null) {
-                gatt.disconnect();
+				gatt.disconnect();
 				gatt.close();
 				gatt = null;
 			}
 
 
 			if (gatt == null) {
-                sendLogBroadcast(LOG_LEVEL_VERBOSE, "Connecting to DFU target 3...");
+				sendLogBroadcast(LOG_LEVEL_VERBOSE, "Connecting to DFU target 3...");
 				makeGattConnection(deviceAddress);
 				if (gatt == null) {
 
@@ -2363,7 +2363,7 @@ public abstract class DfuBaseService extends IntentService {
 			device = mBluetoothAdapter.getRemoteDevice(address);
 		}
 
-        gatt = device.connectGatt(this, false, mGattCallback);
+		gatt = device.connectGatt(this, false, mGattCallback);
 
 		// We have to wait until the device is connected and services are discovered
 		// Connection error may occur as well.
@@ -2380,19 +2380,19 @@ public abstract class DfuBaseService extends IntentService {
 		return gatt;
 	}
 
-    private void cancelPairing(final BluetoothGatt gatt) {
-        logi("----> cancelPairing");
-        if (mConnectionState != STATE_DISCONNECTED) {
-            // Disconnect from the device
-            mConnectionState = STATE_DISCONNECTED;
-            logi("Disconnecting from the device...");
-            gatt.disconnect();
-            sendLogBroadcast(LOG_LEVEL_INFO, "Disconnected");
-        }
-        // Close the device
-        refreshDeviceCache(gatt, false); // This should be set to true when DFU Version is 0.5 or lower
-        close(gatt);
-    }
+	private void cancelPairing(final BluetoothGatt gatt) {
+		logi("----> cancelPairing");
+		if (mConnectionState != STATE_DISCONNECTED) {
+			// Disconnect from the device
+			mConnectionState = STATE_DISCONNECTED;
+			logi("Disconnecting from the device...");
+			gatt.disconnect();
+			sendLogBroadcast(LOG_LEVEL_INFO, "Disconnected");
+		}
+		// Close the device
+		refreshDeviceCache(gatt, false); // This should be set to true when DFU Version is 0.5 or lower
+		close(gatt);
+	}
 
 	/**
 	 * Disconnects from the device and cleans local variables in case of error. This method is SYNCHRONOUS and wait until the disconnecting process will be completed.
@@ -2413,7 +2413,7 @@ public abstract class DfuBaseService extends IntentService {
 
 		// Close the device
 		refreshDeviceCache(gatt, false); // This should be set to true when DFU Version is 0.5 or lower
-        close(gatt);
+		close(gatt);
 		updateProgressNotification(error);
 	}
 
@@ -2425,9 +2425,9 @@ public abstract class DfuBaseService extends IntentService {
 	 */
 	private void disconnect(final BluetoothGatt gatt) {
 		if (mConnectionState == STATE_DISCONNECTED)
-            return;
+			return;
 
-        mConnectionState = STATE_DISCONNECTING;
+		mConnectionState = STATE_DISCONNECTING;
 		logi("Disconnecting from the device...");
 		gatt.disconnect();
 
@@ -2435,25 +2435,25 @@ public abstract class DfuBaseService extends IntentService {
 		waitUntilDisconnected();
 	}
 
-    private void waitUntilDisconnectedTimed() {
-        logi("waitUntilDisconnectedTimed");
-        try {
-            synchronized (mLock) {
-                if (mConnectionState != STATE_DISCONNECTED && mError == 0) {
-                    logi("waitUntilDisconnectedTimed : waiting");
-                    mLock.wait(DfuSettingsConstants.TIME_TO_WAIT_IN_MILLISECONDS);
-                    logi("waitUntilDisconnectedTimed : wait done");
-                }
-            }
-        } catch (final InterruptedException e) {
-            loge("Sleeping interrupted", e);
-        }
-    }
+	private void waitUntilDisconnectedTimed() {
+		logi("waitUntilDisconnectedTimed");
+		try {
+			synchronized (mLock) {
+				if (mConnectionState != STATE_DISCONNECTED && mError == 0) {
+					logi("waitUntilDisconnectedTimed : waiting");
+					mLock.wait(DfuSettingsConstants.TIME_TO_WAIT_IN_MILLISECONDS);
+					logi("waitUntilDisconnectedTimed : wait done");
+				}
+			}
+		} catch (final InterruptedException e) {
+			loge("Sleeping interrupted", e);
+		}
+	}
 
 	/**
 	 * Wait until the connection state will change to {@link #STATE_DISCONNECTED} or until an error occurs.
-     */
-    private void waitUntilDisconnected() {
+	 */
+	private void waitUntilDisconnected() {
 		logi("waitUntilDisconnected");
 		try {
 			synchronized (mLock) {
@@ -2521,8 +2521,8 @@ public abstract class DfuBaseService extends IntentService {
 	private void close(final BluetoothGatt gatt) {
 		logi("Cleaning up...");
 		sendLogBroadcast(LOG_LEVEL_DEBUG, "gatt.close()");
-        gatt.disconnect();
-        gatt.close();
+		gatt.disconnect();
+		gatt.close();
 		mConnectionState = STATE_CLOSED;
 	}
 
@@ -2648,7 +2648,7 @@ public abstract class DfuBaseService extends IntentService {
 
 		// enable notifications on the device
 		final BluetoothGattDescriptor descriptor = characteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG);
-        descriptor.setValue(type == NOTIFICATIONS ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+		descriptor.setValue(type == NOTIFICATIONS ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
 		sendLogBroadcast(LOG_LEVEL_DEBUG, "gatt.writeDescriptor(" + descriptor.getUuid() + (type == NOTIFICATIONS ? ", value=0x01-00)" : ", value=0x02-00)"));
 		gatt.writeDescriptor(descriptor);
 
@@ -2656,7 +2656,7 @@ public abstract class DfuBaseService extends IntentService {
 		try {
 			synchronized (mLock) {
 				while ((((type == NOTIFICATIONS && !mNotificationsEnabled) || (type == INDICATIONS && !mServiceChangedIndicationsEnabled))
-					&& mConnectionState == STATE_CONNECTED_AND_READY && mError == 0 && !mAborted) || mPaused)
+						&& mConnectionState == STATE_CONNECTED_AND_READY && mError == 0 && !mAborted) || mPaused)
 					mLock.wait();
 			}
 		} catch (final InterruptedException e) {
@@ -2692,12 +2692,12 @@ public abstract class DfuBaseService extends IntentService {
 
 		final BluetoothGattDescriptor descriptor = characteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG);
 		if (descriptor == null)
-            return false;
+			return false;
 
-        mRequestCompleted = false;
-        mError = 0;
+		mRequestCompleted = false;
+		mError = 0;
 
-        logi("Reading Service Changed CCCD value...");
+		logi("Reading Service Changed CCCD value...");
 		sendLogBroadcast(LOG_LEVEL_VERBOSE, "Reading Service Changed CCCD value...");
 
 		gatt.readDescriptor(descriptor);
@@ -2755,7 +2755,7 @@ public abstract class DfuBaseService extends IntentService {
 	 * @throws UploadAbortedException
 	 */
 	private void writeOpCode(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final byte[] value, final boolean reset) throws DeviceDisconnectedException, DfuException,
-		UploadAbortedException {
+			UploadAbortedException {
 		mReceivedData = null;
 		mError = 0;
 		mRequestCompleted = false;
@@ -2791,7 +2791,7 @@ public abstract class DfuBaseService extends IntentService {
 	}
 
 	private void writeCharacteristic(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) throws DeviceDisconnectedException, DfuException,
-		UploadAbortedException {
+			UploadAbortedException {
 
 		gatt.writeCharacteristic(characteristic);
 
@@ -2823,7 +2823,7 @@ public abstract class DfuBaseService extends IntentService {
 	 * @throws UploadAbortedException
 	 */
 	private void writeImageSize(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final int imageSize) throws DeviceDisconnectedException, DfuException,
-		UploadAbortedException {
+			UploadAbortedException {
 		mReceivedData = null;
 		mError = 0;
 		mImageSizeSent = false;
@@ -2882,10 +2882,10 @@ public abstract class DfuBaseService extends IntentService {
 		mImageSizeSent = false;
 
 		characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
-        characteristic.setValue(new byte[12]);
-        characteristic.setValue(softDeviceImageSize, BluetoothGattCharacteristic.FORMAT_UINT32, 0);
+		characteristic.setValue(new byte[12]);
+		characteristic.setValue(softDeviceImageSize, BluetoothGattCharacteristic.FORMAT_UINT32, 0);
 		characteristic.setValue(bootloaderImageSize, BluetoothGattCharacteristic.FORMAT_UINT32, 4);
-        characteristic.setValue(appImageSize, BluetoothGattCharacteristic.FORMAT_UINT32, 8);
+		characteristic.setValue(appImageSize, BluetoothGattCharacteristic.FORMAT_UINT32, 8);
 		sendLogBroadcast(LOG_LEVEL_VERBOSE, "Writing to characteristic " + characteristic.getUuid());
 		sendLogBroadcast(LOG_LEVEL_DEBUG, "gatt.writeCharacteristic(" + characteristic.getUuid() + ")");
 		gatt.writeCharacteristic(characteristic);
@@ -2923,7 +2923,7 @@ public abstract class DfuBaseService extends IntentService {
 	 * @throws UploadAbortedException
 	 */
 	private void writeInitPacket(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final byte[] buffer, final int size) throws DeviceDisconnectedException, DfuException,
-		UploadAbortedException {
+			UploadAbortedException {
 		byte[] locBuffer = buffer;
 		if (buffer.length != size) {
 			locBuffer = new byte[size];
@@ -2931,12 +2931,12 @@ public abstract class DfuBaseService extends IntentService {
 		}
 
 		mReceivedData = null;
-        mError = 0;
-        mInitPacketSent = false;
+		mError = 0;
+		mInitPacketSent = false;
 
-        characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
-        characteristic.setValue(locBuffer);
-        logi("Sending init packet (Value = " + parse(locBuffer) + ")");
+		characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
+		characteristic.setValue(locBuffer);
+		logi("Sending init packet (Value = " + parse(locBuffer) + ")");
 		sendLogBroadcast(LOG_LEVEL_VERBOSE, "Writing to characteristic " + characteristic.getUuid());
 		sendLogBroadcast(LOG_LEVEL_DEBUG, "gatt.writeCharacteristic(" + characteristic.getUuid() + ")");
 		gatt.writeCharacteristic(characteristic);
@@ -2973,7 +2973,7 @@ public abstract class DfuBaseService extends IntentService {
 	 * @throws UploadAbortedException
 	 */
 	private byte[] uploadFirmwareImage(final BluetoothGatt gatt, final BluetoothGattCharacteristic packetCharacteristic, final InputStream inputStream) throws DeviceDisconnectedException,
-		DfuException, UploadAbortedException {
+			DfuException, UploadAbortedException {
 		mReceivedData = null;
 		mError = 0;
 
@@ -3084,9 +3084,9 @@ public abstract class DfuBaseService extends IntentService {
 			if (createBond != null) {
 				sendLogBroadcast(LOG_LEVEL_DEBUG, "gatt.getDevice().createBond() (hidden)");
 				return (Boolean) createBond.invoke(device);
-            }
-        } catch (final Exception e) {
-            Log.w(TAG, "An exception occurred while creating bond", e);
+			}
+		} catch (final Exception e) {
+			Log.w(TAG, "An exception occurred while creating bond", e);
 		}
 
 		return false;
@@ -3189,11 +3189,11 @@ public abstract class DfuBaseService extends IntentService {
 		final String deviceName = mDeviceName != null ? mDeviceName : getString(R.string.dfu_unknown_name);
 
 
-        //Do not show notification try when Pairing
-        if (mServicePhase == PAIRING_REQUEST ){
-            logi("Not displaying the Progress tray icon as we are in Pairing mode");
-            return;
-        }
+		//Do not show notification try when Pairing
+		if (mServicePhase == PAIRING_REQUEST ){
+			logi("Not displaying the Progress tray icon as we are in Pairing mode");
+			return;
+		}
 		// final Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_stat_notify_dfu); <- this looks bad on Android 5
 		if(progress < 0) {
 			builder = new NotificationCompat.Builder(this).setSmallIcon(android.R.drawable.stat_sys_upload).
@@ -3213,7 +3213,7 @@ public abstract class DfuBaseService extends IntentService {
 
 			case PROGRESS_ENABLING_DFU_MODE:
 				builder.setOngoing(true).setContentTitle(getString(R.string.dfu_status_switching_to_dfu)).setContentText(getString(R.string.dfu_status_switching_to_dfu_msg, deviceName))
-					.setProgress(100, 0, true);
+						.setProgress(100, 0, true);
 
 				break;
 
@@ -3223,32 +3223,32 @@ public abstract class DfuBaseService extends IntentService {
 
 			case PROGRESS_DISCONNECTING:
 				builder.setOngoing(true).setContentTitle(getString(R.string.dfu_status_disconnecting)).setContentText(getString(R.string.dfu_status_disconnecting_msg, deviceName))
-					.setProgress(100, 0, true);
+						.setProgress(100, 0, true);
 
 				break;
 
 			case PROGRESS_COMPLETED:
 				builder.setOngoing(false).setContentTitle(getString(R.string.dfu_status_completed)).setSmallIcon(android.R.drawable.stat_sys_upload_done)
-					.setContentText(getString(R.string.dfu_status_completed_msg)).setAutoCancel(true).setColor(0xFF00B81A);
+						.setContentText(getString(R.string.dfu_status_completed_msg)).setAutoCancel(true).setColor(0xFF00B81A);
 
 				break;
 
 			case PROGRESS_ABORTED:
 				builder.setOngoing(false).setContentTitle(getString(R.string.dfu_status_aborted)).setSmallIcon(android.R.drawable.stat_sys_upload_done)
-					.setContentText(getString(R.string.dfu_status_aborted_msg)).setAutoCancel(true);
+						.setContentText(getString(R.string.dfu_status_aborted_msg)).setAutoCancel(true);
 
 				break;
 
-            case PROGRESS_VALIDATION_FAILED:
-                builder.setOngoing(false).setContentTitle(getString(R.string.dfu_status_error)).setSmallIcon(android.R.drawable.stat_sys_upload_done)
-                        .setContentText(getString(R.string.dfu_validation_failed)).setAutoCancel(true).setColor(Color.RED);
-                break;
+			case PROGRESS_VALIDATION_FAILED:
+				builder.setOngoing(false).setContentTitle(getString(R.string.dfu_status_error)).setSmallIcon(android.R.drawable.stat_sys_upload_done)
+						.setContentText(getString(R.string.dfu_validation_failed)).setAutoCancel(true).setColor(Color.RED);
+				break;
 
 			default:
 				if (progress >= ERROR_MASK) {
 					// progress is an error number
 					builder.setOngoing(false).setContentTitle(getString(R.string.dfu_status_error)).setSmallIcon(android.R.drawable.stat_sys_upload_done)
-						.setContentText(getString(R.string.dfu_status_error_msg)).setAutoCancel(true).setColor(Color.RED);
+							.setContentText(getString(R.string.dfu_status_error_msg)).setAutoCancel(true).setColor(Color.RED);
 				} else {
 					// progress is in percents
 					final String title = mPartsTotal == 1 ? getString(R.string.dfu_status_uploading) : getString(R.string.dfu_status_uploading_part, mPartCurrent, mPartsTotal);
@@ -3271,10 +3271,10 @@ public abstract class DfuBaseService extends IntentService {
 		final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		builder.setContentIntent(pendingIntent);
 
-        final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		// Add Abort action to the notification
-        //Rohit - Disabled Cancel for now
+		//Rohit - Disabled Cancel for now
 		/*
 		if (progress != PROGRESS_ABORTED && progress != PROGRESS_COMPLETED && progress <  0) { //ERROR_MASK) {
 			final Intent abortIntent = new Intent(BROADCAST_ACTION);
@@ -3288,7 +3288,7 @@ public abstract class DfuBaseService extends IntentService {
             builder.addAction(0,null,null);
         */
 
-        manager.notify(NOTIFICATION_ID, builder.build());
+		manager.notify(NOTIFICATION_ID, builder.build());
 	}
 
 	/**
