@@ -136,26 +136,43 @@ public class BLEService extends BLEBaseService {
 	public boolean registerNotifications(boolean enable) {
 
 		if (debug) logi("registerNotifications()");
-		BluetoothGattService button1s = getService(Constants.EVENT_SERVICE);
-		if (button1s == null) {
-			if (debug) logi("registerNotifications() :: not found service " + Constants.EVENT_SERVICE.toString());
+		BluetoothGattService eventService = getService(Constants.EVENT_SERVICE);
+		if (eventService == null) {
+			if (debug) logi("registerNotifications() :: not found service : Constants.EVENT_SERVICE");
 			return false;
 		}
 
-		BluetoothGattCharacteristic button1c = button1s.getCharacteristic(Constants.ES_CLIENT_EVENT);
-		if (button1c == null) {
-			if (debug) logi("registerNotifications() :: not found Characteristic " + Constants.ES_CLIENT_EVENT.toString());
+		logi("Constants.EVENT_SERVICE   = " + Constants.EVENT_SERVICE.toString());
+		logi("Constants.ES_MICROBIT_REQUIREMENTS   = " + Constants.ES_MICROBIT_REQUIREMENTS.toString());
+		logi("Constants.ES_CLIENT_EVENT   = " + Constants.ES_CLIENT_EVENT.toString());
+		logi("Constants.ES_MICROBIT_EVENT   = " + Constants.ES_MICROBIT_EVENT.toString());
+		logi("Constants.ES_CLIENT_REQUIREMENTS   = " + Constants.ES_CLIENT_REQUIREMENTS.toString());
+
+		BluetoothGattCharacteristic requirementCharacteristic = eventService.getCharacteristic(Constants.ES_MICROBIT_REQUIREMENTS);
+		if(requirementCharacteristic == null)
+		{
+			logi("registerNotifications() :: not found Characteristic Constants.ES_MICROBIT_REQUIREMENTS");
+		}
+		BluetoothGattCharacteristic clientRequirement = eventService.getCharacteristic(Constants.ES_CLIENT_REQUIREMENTS);
+		if(clientRequirement == null)
+		{
+			logi("registerNotifications() :: not found Constants.ES_CLIENT_REQUIREMENTS ");
+		}
+
+		BluetoothGattCharacteristic clientCharacteristic = eventService.getCharacteristic(Constants.ES_CLIENT_EVENT);
+		if (clientCharacteristic == null) {
+			if (debug) logi("registerNotifications() :: not found Constants.ES_CLIENT_EVENT ");
 			return false;
 		}
 
-		BluetoothGattDescriptor button1d = button1c.getDescriptor(Constants.CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR);
-		if (button1d == null) {
+		BluetoothGattDescriptor clientCharacteristicDescriptor = clientCharacteristic.getDescriptor(Constants.CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR);
+		if (clientCharacteristicDescriptor == null) {
 			if (debug)
-				logi("registerNotifications() :: not found descriptor " + Constants.CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR.toString());
+				logi("registerNotifications() :: not found descriptor Constants.CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR");
 			return false;
 		}
 
-		enableCharacteristicNotification(button1c, button1d, enable);
+		enableCharacteristicNotification(clientCharacteristic, clientCharacteristicDescriptor, enable);
 		if (debug) logi("registerNotifications() : done");
 		return true;
 	}
