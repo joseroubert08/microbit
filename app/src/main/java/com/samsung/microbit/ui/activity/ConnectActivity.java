@@ -322,6 +322,8 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(broadcastReceiver, broadcastIntentFilter);
 		}
 
+        setupBleController();
+
 		// ************************************************
 		//Remove title barproject_list
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -361,29 +363,20 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
     boolean setupBleController()
     {
         boolean retvalue = true;
+
+
         if (mBluetoothAdapter == null) {
             final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             mBluetoothAdapter = bluetoothManager.getAdapter();
-            if (mBluetoothAdapter == null) retvalue = false;
+        }
+        if (mBluetoothAdapter == null){
+            retvalue = false;
         }
 
         if (Build.VERSION.SDK_INT >= 21 && mLEScanner == null ){
             mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
-            if (mLEScanner == null) retvalue = false;
-        }
-        if (!retvalue) {
-            PopUp.show(MBApp.getContext(),
-                    MBApp.getContext().getString(R.string.error_bluetooth_not_supported),
-                    MBApp.getContext().getString(R.string.turn_on_bluetooth),
-                    R.drawable.bluetooth, R.drawable.blue_btn,
-                    PopUp.TYPE_ALERT,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            PopUp.hide();
-                            finish();
-                        }
-                    }, null);
+            if (mLEScanner == null)
+                retvalue = false;
         }
         return retvalue;
     }
@@ -895,12 +888,15 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
  	*/
 	private void scanLeDevice(final boolean enable) {
 
-        if (!setupBleController())
-            return;
-
-		if (debug) logi("scanLeDevice() :: enable = " + enable);
-
+        if (debug) logi("scanLeDevice() :: enable = " + enable);
 		if (enable) {
+            if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
+                return;
+            }
+            if (!setupBleController())
+            {
+                return;
+            }
 			if (!mScanning && !mPairing) {
 				// Stops scanning after a pre-defined scan period.
 				mScanning = true;
