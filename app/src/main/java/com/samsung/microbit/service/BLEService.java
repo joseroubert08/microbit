@@ -218,18 +218,65 @@ public class BLEService extends BLEBaseService {
 		}
 	}
 
+    protected String errorMessage(int errorCode){
+        String error_message ="";
+
+        switch (errorCode)
+        {
+            case BluetoothGatt.GATT_CONNECTION_CONGESTED:
+                error_message = "GATT CONNECTION CONGESTED";
+                break;
+            case BluetoothGatt.GATT_FAILURE:
+                error_message = "GATT FAILURE";
+                break;
+            case BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION:
+                error_message = "GATT INSUFFICIENT AUTHENTICATION";
+                break;
+            case  BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION:
+                error_message = "GATT INSUFFICIENT ENCRYPTION";
+                break;
+            case BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH:
+                error_message = "GATT INVALID ATTRIBUTE LENGTH";
+                break;
+            case BluetoothGatt.GATT_WRITE_NOT_PERMITTED:
+                error_message = "GATT WRITE NOT PERMITTED";
+                break;
+            case 0x85:
+                error_message = "GATT ERROR";
+                break;
+            case 0x87:
+                error_message = "GATT ILLEGAL PARAMETER";
+                break;
+            case 0x82:
+                error_message = "GATT WRONG STATE";
+                break;
+            case 0x81:
+                error_message = "GATT_INTERNAL_ERROR";
+                break;
+            default:
+                error_message = "Unknown Error [ " + errorCode + " ]";
+        }
+
+        if (debug) logi("error_message() = " + error_message);
+        return error_message;
+    }
 	@Override
 	protected void setNotification(boolean isConnected, int errorCode) {
 
 		if (debug) logi("setNotification() :: isConnected = " + isConnected);
         if (debug) logi("setNotification() :: errorCode = " + errorCode);
-		NotificationManager notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (debug) logi("setNotification() :: actual_Error = " + actual_Error);
+
+
+        NotificationManager notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		String notificationString = null;
         boolean onGoingNotification = false;
 
-		NameValuePair[] args = new NameValuePair[2];
+		NameValuePair[] args = new NameValuePair[3];
+
 		args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
 		args[1] = new NameValuePair(IPCMessageManager.BUNDLE_DEVICE_ADDRESS, deviceAddress);
+		args[2] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_MESSAGE, errorMessage(actual_Error));
 
 		if (!isConnected) {
 			if (debug) logi("setNotification() :: !isConnected");
@@ -238,7 +285,6 @@ public class BLEService extends BLEBaseService {
 
 					if (debug) logi("setNotification() :: !bluetoothAdapter.isEnabled()");
 					reset();
-
 					//bleManager = null;
 					bluetoothDevice = null;
 				}

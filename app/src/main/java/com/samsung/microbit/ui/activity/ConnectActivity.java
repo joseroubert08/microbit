@@ -245,12 +245,18 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
             handleBLENotification(context, intent, true);
 			if (v != 0) {
                 logi("broadcastReceiver Error code =" + v);
+                String message = intent.getStringExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
+                logi("broadcastReceiver Error message = " + message);
+                if (message == null )
+                    message = "Error";
+                final String displayTitle = message ;
+
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
 						PopUp.show(MBApp.getContext(),
 							MBApp.getContext().getString(R.string.micro_bit_reset_msg),
-							"",
+                                displayTitle,
 							R.drawable.error_face, R.drawable.red_btn,
 							PopUp.TYPE_ALERT, null, null);
 					}
