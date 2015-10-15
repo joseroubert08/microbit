@@ -867,7 +867,6 @@ public abstract class DfuBaseService extends IntentService {
 							// Do nothing
 						}
 					}
-
 					// Attempts to discover services after successful connection.
 					final boolean success = gatt.discoverServices();
 					logi("onConnectionStateChange() :: Attempting to start service discovery... " + (success ? "succeed" : "failed"));
@@ -1213,7 +1212,7 @@ public abstract class DfuBaseService extends IntentService {
 
 	ResultReceiver resultReceiver;
 
-    int mServicePhase = 0 ;
+    static int mServicePhase = 0 ;
 
 	@Override
 	protected void onHandleIntent(final Intent intent) {
@@ -1225,7 +1224,7 @@ public abstract class DfuBaseService extends IntentService {
 		int rc = 0;
 
         logi("DFUBaseService onHandleIntent phase = " + phase);
-
+        mServicePhase = 0 ;
 
 		if ((phase & PAIRING_REQUEST) != 0) {
             mServicePhase = PAIRING_REQUEST ;
@@ -1250,7 +1249,7 @@ public abstract class DfuBaseService extends IntentService {
 		updateProgressNotification(PROGRESS_CONNECTING);
 
 		mConnectionState = STATE_DISCONNECTED;
-		mBytesSent = 0;
+        mBytesSent = 0;
 		mBytesConfirmed = 0;
 		mPacketsSentSinceNotification = 0;
 		mError = 0;
@@ -1284,17 +1283,17 @@ public abstract class DfuBaseService extends IntentService {
 		if (mAborted) {
 			logi("Upload aborted");
 			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
-			terminateConnection(gatt, PROGRESS_ABORTED);
-			return false;
-		}
+            terminateConnection(gatt, PROGRESS_ABORTED);
+            return false;
+        }
 
-		return true;
+        return true;
 	}
 
 
 	public boolean registerNotifications(boolean enable) {
 
-		BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
+        BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
 		if (fps == null) {
 			logi("registerNotifications() :: not found service " + FLASH_PAIRING_SERVICE_UUID.toString());
 			return false;
@@ -1307,8 +1306,8 @@ public abstract class DfuBaseService extends IntentService {
 		}
 
 		BluetoothGattDescriptor fpsd = fpsc.getDescriptor(CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR);
-		if (fpsd == null) {
-			logi("registerNotifications() :: not found descriptor " + CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR.toString());
+        if (fpsd == null) {
+            logi("registerNotifications() :: not found descriptor " + CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR.toString());
 			return false;
 		}
 
@@ -1328,7 +1327,7 @@ public abstract class DfuBaseService extends IntentService {
 
 		rc = gatt.writeDescriptor(fpsd);
 		if (rc == false) {
-			logi("gatt.writeDescriptor failed " + rc);
+            logi("gatt.writeDescriptor failed " + rc);
 			return false;
 		} else
 			logi("Registered notification " + enable);
@@ -1346,7 +1345,7 @@ public abstract class DfuBaseService extends IntentService {
 		// Read input parameters
 		final String deviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
 		logi("Start Pairing");
-		String mimeType = intent.getStringExtra(EXTRA_FILE_MIME_TYPE);
+        String mimeType = intent.getStringExtra(EXTRA_FILE_MIME_TYPE);
 
         mDeviceAddress = deviceAddress;
 		/*
@@ -1369,9 +1368,9 @@ public abstract class DfuBaseService extends IntentService {
 		final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
 		if (sfpc == null) {
 			logi("Pairing aborted");
-			sendLogBroadcast(LOG_LEVEL_WARNING, "Pairing aborted");
+            sendLogBroadcast(LOG_LEVEL_WARNING, "Pairing aborted");
             cancelPairing(gatt);
-			return 6;
+            return 6;
 		}
 
 		boolean ret = sfpc.setValue(2, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
@@ -1471,8 +1470,13 @@ public abstract class DfuBaseService extends IntentService {
 
         if (rc == 0) {
             sendProgressBroadcast(PROGRESS_WAITING_REBOOT);
+            //Wait for the device to reboot.
             waitUntilDisconnected();
 			waitUntilConnected();
+            if (Build.VERSION.SDK_INT < 21) {
+                logi("Refreshing the cache before discoverServices() for Android version " + Build.VERSION.SDK_INT);
+                refreshDeviceCache(gatt,true);
+            }
 
             ///TODO : Rohit - Check if this Gatt disconnect and connect is required
 /*			disconnect(gatt);
@@ -1661,31 +1665,15 @@ public abstract class DfuBaseService extends IntentService {
 				logi("Upload aborted");
 				sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
 				terminateConnection(gatt, PROGRESS_ABORTED);
-				return null;
-			}
+                return null;
+            }
 
-			// We have connected to DFU device and services are discoverer
+            // We have connected to DFU device and services are discoverer
 			BluetoothGattService dfuService = null;
 
 
-			int retry = 15;
-			/*do {
-				dfuService = gatt.getService(DFU_SERVICE_UUID); // there was a case when the service was null. I don't know why
-				if (dfuService == null) {
-					retry--;
-					if (retry == 0) {
-						break;
-					}
+            dfuService = gatt.getService(DFU_SERVICE_UUID);
 
-					try {
-						logi("Retry sleep " + retry);
-						Thread.sleep(1000L);
-					} catch (InterruptedException e) {
-					}
-				}
-			} while (dfuService == null);*/
-
-			dfuService = gatt.getService(DFU_SERVICE_UUID); // there was a case when the service was null. I don't know why
 			if (dfuService == null) {
 				loge("DFU service does not exists on the device");
 				sendLogBroadcast(LOG_LEVEL_WARNING, "Connected. DFU Service not found");

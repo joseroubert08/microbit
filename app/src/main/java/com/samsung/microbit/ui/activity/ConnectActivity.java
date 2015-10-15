@@ -194,10 +194,14 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
                 if ((phase & 0x0ff00) == 0) {
                     if (mPairing) {
                         logi("resultReceiver.onReceiveResult() :: PAIRING_CONTROL_CODE_REQUESTED ");
-
-                        TextView textView = (TextView) findViewById(R.id.connectSearchTitle);
-                        if (textView != null)
-                            textView.setText(getString(R.string.pairing_phase2_msg));
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                TextView textView = (TextView) findViewById(R.id.connectSearchTitle);
+                                if (textView != null)
+                                    textView.setText(getString(R.string.pairing_phase2_msg));
+                            }
+                        });
                     }
                 } /*else {
                     logi("resultReceiver.onReceiveResult() :: Phase 1 not complete recieved ");
@@ -899,6 +903,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
                 return;
             }
 			if (!mScanning && !mPairing) {
+                if (debug) logi("scanLeDevice ::   Searching For " + mNewDeviceName.toLowerCase());
 				// Stops scanning after a pre-defined scan period.
 				mScanning = true;
                 TextView textView = (TextView) findViewById(R.id.connectSearchTitle);
@@ -987,7 +992,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
 	public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
 
-		if (debug) logi("mLeScanCallback.onLeScan() :: Start");
+		if (debug) logi("mLeScanCallback.onLeScan() [+]");
 
 		/*
 	 	* TODO : Part of HACK 20150729
@@ -1010,18 +1015,23 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			String s = device.getName().toLowerCase();
 			if (mNewDeviceName.toLowerCase().equals(s)) {
 
-				if (debug) logi("mLeScanCallback.onLeScan() ::   device.getName() == " + device.getName().toLowerCase() + " " + device.getAddress());
+				if (debug) logi("mLeScanCallback.onLeScan() ::   Found micro:bit -" + device.getName().toLowerCase() + " " + device.getAddress());
 				// Stop scanning as device is found.
 				scanLeDevice(false);
                 mNewDeviceAddress = device.getAddress();
-                TextView textView = (TextView) findViewById(R.id.connectSearchTitle);
-                if (textView != null )
-                    textView.setText(getString(R.string.pairing_msg_1));
-                startPairing(mNewDeviceAddress);
+                //Rohit : Do Not Call the TextView.setText directly. It doesn't work on 4.4.4
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        TextView textView = (TextView) findViewById(R.id.connectSearchTitle);
+                        if (textView != null)
+                            textView.setText(getString(R.string.pairing_msg_1));
+                        startPairing(mNewDeviceAddress);
+                    }
+                });
 			} else {
-				if (debug) logi("mLeScanCallback.onLeScan() ::   non-matching - deviceName == " + mNewDeviceName.toLowerCase());
-				if (debug)
-					logi("mLeScanCallback.onLeScan() ::   non-matching found - device.getName() == " + device.getName().toLowerCase());
+
+				if (debug) logi("mLeScanCallback.onLeScan() ::   Found - device.getName() == " + device.getName().toLowerCase());
 			}
 		}
 	}
