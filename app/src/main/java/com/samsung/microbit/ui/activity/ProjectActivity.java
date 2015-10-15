@@ -40,6 +40,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import no.nordicsemi.android.error.GattError;
+
 
 public class ProjectActivity extends Activity implements View.OnClickListener {
 
@@ -541,8 +543,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
                                 logi(error_message);
                                 setFlashState(FLASHING_STATE.FLASH_STATE_NONE);
-                                //PopUp.hide();
-                                PopUp.show(MBApp.getContext(),
+                                PopUp.hide();
+/*                                PopUp.show(MBApp.getContext(),
                                         error_message, //message
                                         getString(R.string.flashing_failed_title), //title
                                         R.drawable.error_face, R.drawable.red_btn,
@@ -550,7 +552,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                         popupOkHandler,//override click listener for ok button
                                         popupOkHandler);//pass null to use default listener
 
-                                LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
+                                LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);*/
                             }
 
                             break;
@@ -644,7 +646,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 setFlashState(FLASHING_STATE.FLASH_STATE_NONE);
                 logi("DFUResultReceiver.onReceive() :: Flashing ERROR!!  Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
                         + "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
-
                 //todo dismiss progress
                 PopUp.hide();
 

@@ -149,7 +149,6 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
                 if (mPairing) {
                     cancelPairing();
-                    //Get the error message
                     PopUp.show(MBApp.getContext(),
                             error_message, //message
                             getString(R.string.pairing_failed_title), //title
@@ -187,25 +186,20 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				if (mPairing) {
 					int pairing_code = resultData.getInt("pairing_code");
 					logi("-----------> Pairing Code is " + pairing_code + " for device " + mNewDeviceCode.toUpperCase());
-					PopUp.hide();
 					ConnectedDevice newDev = new ConnectedDevice(mNewDeviceCode.toUpperCase(), mNewDeviceCode.toUpperCase(), false, mNewDeviceAddress, pairing_code);
 					handlePairingSuccessful(newDev);
 				}
 
             } else if ((phase & Constants.PAIRING_CONTROL_CODE_REQUESTED) != 0) {
                 if ((phase & 0x0ff00) == 0) {
-                    logi("resultReceiver.onReceiveResult() :: PAIRING_CONTROL_CODE_REQUESTED ");
                     if (mPairing) {
-						PopUp.show(MBApp.getContext(),
-								getString(R.string.pairing_phase2_msg), //message
-								getString(R.string.pairing_title), //title
-								R.drawable.flash_face, //image icon res id
-								R.drawable.blue_btn,
-								PopUp.TYPE_SPINNER_NOT_CANCELABLE, //type of popup.
-								null,//override click listener for ok button
-								null);//pass null to use default listener
-					}
-                } else {
+                        logi("resultReceiver.onReceiveResult() :: PAIRING_CONTROL_CODE_REQUESTED ");
+
+                        TextView textView = (TextView) findViewById(R.id.connectSearchTitle);
+                        if (textView != null)
+                            textView.setText(getString(R.string.pairing_phase2_msg));
+                    }
+                } /*else {
                     logi("resultReceiver.onReceiveResult() :: Phase 1 not complete recieved ");
                     if (mPairing) {
                         cancelPairing();
@@ -225,7 +219,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
                                     }
                                 });//pass null to use default listener
                     }
-				}
+				}*/
             }
             super.onReceiveResult(resultCode, resultData);
         }
@@ -684,6 +678,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 				if (debug) logi("onClick() :: ok_name_button");
 				if (mState == PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY) {
 					generateName();
+                    if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
+                        return;
+                    }
 					scanLeDevice(true);
 					displayConnectScreen(PAIRING_STATE.PAIRING_STATE_SEARCHING);
 					break;
@@ -896,11 +893,9 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 
         if (debug) logi("scanLeDevice() :: enable = " + enable);
 		if (enable) {
-            if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
-                return;
-            }
             if (!setupBleController())
             {
+                if (debug) logi("scanLeDevice() :: FAILED ");
                 return;
             }
 			if (!mScanning && !mPairing) {

@@ -3211,10 +3211,9 @@ public abstract class DfuBaseService extends IntentService {
 		if(progress < 0) {
 			builder = new NotificationCompat.Builder(this).setSmallIcon(android.R.drawable.stat_sys_upload).
 					setOnlyAlertOnce(true);//.setLargeIcon(largeIcon);
-
+            builder.setColor(Color.GRAY);
 		}
 
-        builder.setColor(Color.GRAY);
 		switch (progress) {
 			case PROGRESS_CONNECTING:
 				builder.setOngoing(true).setContentTitle(getString(R.string.dfu_status_connecting)).setContentText(getString(R.string.dfu_status_connecting_msg, deviceName)).setProgress(100, 0, true);
