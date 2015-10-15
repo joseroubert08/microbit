@@ -18,6 +18,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
+import android.text.Spannable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -46,6 +47,8 @@ import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.BluetoothSwitch;
 import com.samsung.microbit.ui.PopUp;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Handler;
 
@@ -56,7 +59,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 
     SharedPreferences prefs = null;
     ListView helpList = null ;
-    ArrayAdapter adapter = null ;
+    StableArrayAdapter adapter = null ;
 	/* *************************************************
 	 * TODO setup to Handle BLE Notiifications
 	 */
@@ -67,19 +70,28 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		public void onReceive(Context context, Intent intent) {
 
 			int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-			if (Constants.BLE_DISCONNECTED_FOR_FLASH == v){
+            logi("broadcastReceiver Error code = " + v);
+
+            if (Constants.BLE_DISCONNECTED_FOR_FLASH == v){
 				logi("Bluetooth disconnected for flashing. No need to display pop-up");
                 handleBLENotification(context, intent, false);
 				return;
 			}
             handleBLENotification(context, intent, true);
 			if (v != 0) {
+                String message = intent.getStringExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
+                logi("broadcastReceiver Error message = " + message);
+
+                if (message == null )
+                    message = "Error";
+                final String displayTitle = message ;
+
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
 						PopUp.show(MBApp.getContext(),
-							MBApp.getContext().getString(R.string.micro_bit_reset_msg),
-							"",
+                                MBApp.getContext().getString(R.string.micro_bit_reset_msg),
+                                displayTitle,
 							R.drawable.error_face, R.drawable.red_btn,
 							PopUp.TYPE_ALERT, null, null);
 					}
@@ -104,6 +116,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 			@Override
 			public void run() {
 				updateConnectBarView();
+                //setConnectedDeviceText();
                 if(popupHide)
                     PopUp.hide();
 			}
@@ -119,15 +132,55 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         //setBackground();
     }
 
+/*	private void setConnectedDeviceText() {
+
+		TextView connectedIndicatorText = (TextView) findViewById(R.id.connectedIndicatorText);
+		TextView deviceName1 = (TextView) findViewById(R.id.deviceName);
+		TextView deviceName2 = (TextView) findViewById(R.id.deviceName2);
+		ImageButton connectedIndicatorIcon = (ImageButton) findViewById(R.id.connectedIndicatorIcon);
+
+		if (connectedIndicatorIcon == null || connectedIndicatorText == null)
+			return;
+
+		int startIndex = 0;
+		Spannable span = null;
+		ConnectedDevice device = Utils.getPairedMicrobit(this);
+		if (!device.mStatus) {
+			connectedIndicatorIcon.setImageResource(R.drawable.disconnect_device);
+			connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_disconnect_btn));
+			connectedIndicatorText.setText(getString(R.string.not_connected));
+			if (deviceName1 != null && deviceName2 != null) {
+				//Mobile Device.. 2 lines of display
+				if (device.mName != null)
+					deviceName1.setText(device.mName);
+				if (device.mPattern != null)
+					deviceName2.setText("(" + device.mPattern + ")");
+			} else if (deviceName1 != null) {
+				if (device.mName != null)
+					deviceName1.setText(device.mName + " (" + device.mPattern + ")");
+			}
+		} else {
+			connectedIndicatorIcon.setImageResource(R.drawable.device_connected);
+			connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_connect_btn));
+			connectedIndicatorText.setText(getString(R.string.connected_to));
+			if (deviceName1 != null && deviceName2 != null) {
+				//Mobile Device.. 2 lines of display
+				if (device.mName != null)
+					deviceName1.setText(device.mName);
+				if (device.mPattern != null)
+					deviceName2.setText("(" + device.mPattern + ")");
+			} else if (deviceName1 != null) {
+				if (device.mName != null)
+					deviceName1.setText(device.mName + " (" + device.mPattern + ")");
+			}
+		}
+	}*/
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (debug) logi("onCreate() :: ");
+		logi("onCreate() :: ");
 		MBApp.setContext(this);
-		/* *************************************************
-		 * TODO setup to Handle BLE Notiification
-		 */
 		if (broadcastIntentFilter == null) {
 			broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
 			LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(broadcastReceiver, broadcastIntentFilter);
@@ -160,25 +213,67 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         helpList = (ListView) findViewById(R.id.moreItems);
         if (helpList != null){
             String [] items= getResources().getStringArray(R.array.moreListItems);
-            adapter = new ArrayAdapter<String>(this, R.layout.aligned_right, items) ;
+
+            final ArrayList<String> list = new ArrayList<String>();
+            for (int i = 0; i < items.length; ++i) {
+                list.add(items[i]);
+            }
+
+            adapter = new StableArrayAdapter(this, android.R.layout.simple_list_item_1, list) ;
             helpList.setAdapter(adapter);
 
             helpList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
+                    final String title = (String) parent.getItemAtPosition(position);
+
+/*                    view.animate().setDuration(2000).alpha(0)
+                            .withEndAction(new Runnable() {
+                                @Override
+                                public void run() {
+                                    view.setAlpha(1);
+                                }
+                            });*/
                     switch (position) {
                         case 0:
                         case 1:
-                            startGeneralView(position);
+                        case 2:
+                        case 3:
+                            startGeneralView(title, position);
                             helpList.setVisibility(View.INVISIBLE);
                             break;
                     }
                 }
             });
         }
+        //setConnectedDeviceText();
 	}
 
-    private void startGeneralView(int position) {
+    private class StableArrayAdapter extends ArrayAdapter<String> {
+
+        HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
+
+        public StableArrayAdapter(Context context, int textViewResourceId,
+                                  List<String> objects) {
+            super(context, textViewResourceId, objects);
+            for (int i = 0; i < objects.size(); ++i) {
+                mIdMap.put(objects.get(i), i);
+            }
+        }
+
+        @Override
+        public long getItemId(int position) {
+            String item = getItem(position);
+            return mIdMap.get(item);
+        }
+
+        @Override
+        public boolean hasStableIds() {
+            return true;
+        }
+
+    }
+    private void startGeneralView(String title, int position) {
         Intent i = new Intent(this, GeneralWebView.class);
         switch (position){
             case 0:
@@ -187,8 +282,14 @@ public class HomeActivity extends Activity implements View.OnClickListener {
             case 1:
                 i.putExtra("url", "file:///android_asset/www/about.html");
                 break;
+			case 2:
+				i.putExtra("url", getString(R.string.privacy_policy_url));
+				break;
+			case 3:
+                i.putExtra("url", getString(R.string.terms_of_use_url));
+				break;
         }
-        i.putExtra("title", adapter.getItem(position).toString());
+        i.putExtra("title", title);
         startActivity(i);
     }
 
@@ -200,58 +301,100 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 
 	public void onClick(final View v) {
 		if (debug) logi("onBtnClicked() :: ");
-		if (v.getId() == R.id.addDevice || v.getId() == R.id.addDeviceEmpty) {
-			Intent intent = new Intent(this, ConnectActivity.class);
-			startActivity(intent);
-		} else if (v.getId() == R.id.startNewProject) {
-			Intent intent = new Intent(this, TouchDevActivity.class);
-			intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
-			startActivity(intent);
-		} else if (v.getId() == R.id.numOfProjectsHolder) {
-			Intent intent = new Intent(this, ProjectActivity.class);
-			startActivity(intent);
-		} else if (v.getId() == R.id.connectBtn) {
-			updateConnectBarView();
-			ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
-			if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
-				return;
-			}
-			if (connectedDevice.mPattern != null) {
-				if (connectedDevice.mStatus) {
-					if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleDisconnect()");
-					IPCService.getInstance().bleDisconnect();
-				} else {
-					if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleConnect()");
 
-					// using MBApp.getContext() instead of this causes problem after flashing
-					PopUp.show(MBApp.getContext(),
-						getString(R.string.init_connection),
-						"",
-						R.drawable.flash_face, R.drawable.blue_btn,
-						PopUp.TYPE_SPINNER,
-						null, null);
 
-					IPCService.getInstance().bleConnect();
-				}
-			} else {
-				PopUp.show(MBApp.getContext(),
-					getString(R.string.no_device_paired),
-					"",
-					R.drawable.error_face, R.drawable.red_btn,
-					PopUp.TYPE_ALERT,
-					null, null);
-			}
-		} else if (v.getId() == R.id.moreButton){
-            //Display the ListView
-            if (helpList != null){
-                if (helpList.getVisibility() == View.INVISIBLE) {
-                    helpList.setVisibility(View.VISIBLE);
-                    helpList.bringToFront();
-                }  else {
-                    helpList.setVisibility(View.INVISIBLE);
+        switch (v.getId()) {
+            case R.id.addDevice:
+            case R.id.addDeviceEmpty:
+                {
+                    Intent intent = new Intent(this, ConnectActivity.class);
+                    startActivity(intent);
                 }
-            }
-        }
+                break;
+            case R.id.startNewProject:
+                {
+                    Intent intent = new Intent(this, TouchDevActivity.class);
+                    intent.putExtra(Constants.URL, getString(R.string.touchDevURLNew));
+                    startActivity(intent);
+                }
+                break;
+            case R.id.numOfProjectsHolder:
+                {
+                    Intent intent = new Intent(this, ProjectActivity.class);
+                    startActivity(intent);
+                }
+                break;
+            case R.id.connectBtn:
+                {
+                    updateConnectBarView();
+                    ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
+                    if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
+                        return;
+                    }
+                    if (connectedDevice.mPattern != null) {
+                        if (connectedDevice.mStatus) {
+                            if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleDisconnect()");
+                            IPCService.getInstance().bleDisconnect();
+                        } else {
+                            if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleConnect()");
+
+                            // using MBApp.getContext() instead of this causes problem after flashing
+                            PopUp.show(MBApp.getContext(),
+                                    getString(R.string.init_connection),
+                                    "",
+                                    R.drawable.message_face, R.drawable.blue_btn,
+                                    PopUp.TYPE_SPINNER,
+                                    null, null);
+
+                            IPCService.getInstance().bleConnect();
+                        }
+                    } else {
+                        PopUp.show(MBApp.getContext(),
+                                getString(R.string.no_device_paired),
+                                "",
+                                R.drawable.error_face, R.drawable.red_btn,
+                                PopUp.TYPE_ALERT,
+                                null, null);
+                    }
+                }
+                break;
+            case R.id.moreButton:
+                {
+                    //Display the ListView
+                    if (helpList != null){
+                        if (helpList.getVisibility() == View.INVISIBLE) {
+                            helpList.setVisibility(View.VISIBLE);
+                            helpList.bringToFront();
+                        }  else {
+                            helpList.setVisibility(View.INVISIBLE);
+                        }
+                    }
+                }
+                break;
+            case R.id.connectedIndicatorIcon:
+                {
+                    if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
+                        return;
+                    }
+                    ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
+                    if (connectedDevice.mPattern != null) {
+                        if (connectedDevice.mStatus) {
+                            IPCService.getInstance().bleDisconnect();
+                        } else {
+
+                            PopUp.show(MBApp.getContext(),
+                                    getString(R.string.init_connection),
+                                    "",
+                                    R.drawable.flash_face, R.drawable.blue_btn,
+                                    PopUp.TYPE_SPINNER,
+                                    null, null);
+
+                            IPCService.getInstance().bleConnect();
+                        }
+                    }
+                }
+                break;
+        }//Switch Ends
 	}
 
 	private final void updateConnectBarView() {
@@ -312,6 +455,6 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		MBApp.setContext(this);
 		updateConnectBarView();
         updateProjectBarView();
-
+        //setConnectedDeviceText();
 	}
 }

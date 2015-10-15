@@ -51,11 +51,6 @@
             android:name=".ui.activity.HomeActivity"
             android:configChanges="orientation"
             android:launchMode="singleTop" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ui.activity.ProjectActivity"
@@ -99,16 +94,14 @@
             android:launchMode="singleTask"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
         </activity>
-
         <activity
             android:name=".ui.activity.GeneralWebView"
+            android:configChanges="orientation|screenSize"
             android:label="General Webview"
             android:parentActivityName=".ui.activity.HomeActivity"
-            android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize" >
             >
         </activity>
-
 
         <service
             android:name=".service.DfuService"
@@ -122,7 +115,7 @@
         </service>
         <service
             android:name=".service.BLEService"
-            android:process=":BLEService">
+            android:process=":BLEService" >
             <intent-filter>
                 <action android:name="com.samsung.microbit.service.BLEService" />
             </intent-filter>
@@ -133,6 +126,13 @@
             </intent-filter>
         </service>
 
+        <activity
+            android:name=".ui.activity.SplashScreenActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

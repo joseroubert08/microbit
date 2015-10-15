@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -121,6 +122,18 @@ public class ProjectAdapter extends BaseAdapter {
 		}
 	};
 
+    private void HideEditTextView( View v) {
+        Button bt = (Button) v.getTag(R.id.editbutton);
+        bt.setVisibility(View.VISIBLE);
+        v.setVisibility(View.INVISIBLE);
+    }
+
+    private void ShowEditTextView( View v) {
+        Button bt = (Button) v.getTag(R.id.editbutton);
+        bt.setVisibility(View.INVISIBLE);
+        v.setVisibility(View.VISIBLE);
+    }
+
 	private void dismissKeyBoard(View v, boolean hide,boolean done) {
 
 		logi("dismissKeyBoard() :: ");
@@ -132,7 +145,8 @@ public class ProjectAdapter extends BaseAdapter {
 		imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
 
 		if(hide) {
-			v.setVisibility(View.INVISIBLE);
+            HideEditTextView(v);
+			//v.setVisibility(View.INVISIBLE);
 		}
 
 		if (done) {
@@ -150,11 +164,13 @@ public class ProjectAdapter extends BaseAdapter {
 
 	private void showKeyBoard(final View v) {
 
-		logi("showKeyBoard() :: " + v.getClass().getName());
+        logi("showKeyBoard() :: " + v.getClass().getName());
 		int pos = (Integer) v.getTag(R.id.positionId);
-		logi("showKeyBoard() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
+        logi("showKeyBoard() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
 
-		v.setVisibility(View.VISIBLE);
+        //v.setVisibility(View.VISIBLE);
+        ShowEditTextView(v);
+
 		final InputMethodManager imm = (InputMethodManager) projectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
 		v.postDelayed(new Runnable() {
 			@Override
@@ -279,10 +295,14 @@ public class ProjectAdapter extends BaseAdapter {
 
 		LinearLayout actionBarLayout = (LinearLayout) convertView.findViewById(R.id.actionBarForProgram);
 		if (actionBarLayout != null) {
-			if (project.actionBarExpanded)
+			if (project.actionBarExpanded) {
 				actionBarLayout.setVisibility(View.VISIBLE);
-			else
+				appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getContext(),R.drawable.up_arrow), null);
+			}
+			else {
 				actionBarLayout.setVisibility(View.GONE);
+				appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getContext(),R.drawable.down_arrow), null);
+			}
 		}
 
 		appNameButton.setText(project.name);
@@ -301,9 +321,11 @@ public class ProjectAdapter extends BaseAdapter {
 			appNameEdit.setText(project.name);
 			appNameEdit.setSelection(project.name.length());
 			appNameEdit.requestFocus();
+            appNameButton.setVisibility(View.INVISIBLE);
 
 		} else {
 			appNameEdit.setVisibility(View.INVISIBLE);
+            appNameButton.setVisibility(View.VISIBLE);
 			//dismissKeyBoard(appNameEdit, false);
 		}
 

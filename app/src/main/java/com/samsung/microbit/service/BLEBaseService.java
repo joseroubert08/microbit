@@ -30,6 +30,7 @@ public abstract class BLEBaseService extends Service {
 
 	protected String deviceAddress;
 
+	public int actual_Error = 0 ;
 	protected String TAG = "BLEBaseService";
 	protected boolean debug = true;
 
@@ -64,37 +65,33 @@ public abstract class BLEBaseService extends Service {
 	protected void setupBLE() {
 
 		if (debug) logi("setupBLE()");
-		//if (bleManager != null) {
-		//	return;
-		//}
-
 		this.deviceAddress = getDeviceAddress();
 		if (debug) logi("setupBLE() :: deviceAddress = " + deviceAddress);
 		if (this.deviceAddress != null) {
 			bluetoothDevice = null;
 			if (initialize()) {
-
 				bleManager = new BLEManager(getApplicationContext(), bluetoothDevice,
-					new CharacteristicChangeListener() {
-						@Override
-						public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+						new CharacteristicChangeListener() {
+							@Override
+							public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 
-							if (debug) logi("setupBLE().CharacteristicChangeListener.onCharacteristicChanged()");
-							if (bleManager != null) {
-								handleCharacteristicChanged(gatt, characteristic);
+								if (debug)
+									logi("setupBLE().CharacteristicChangeListener.onCharacteristicChanged()");
+								if (bleManager != null) {
+									handleCharacteristicChanged(gatt, characteristic);
+								}
 							}
-						}
-					},
-					new UnexpectedConnectionEventListener() {
-						@Override
-						public void handleConnectionEvent(int event) {
-							if (debug) logi("setupBLE().CharacteristicChangeListener.handleUnexpectedConnectionEvent()");
-							if (bleManager != null) {
-								handleUnexpectedConnectionEvent(event);
+						},
+						new UnexpectedConnectionEventListener() {
+							@Override
+							public void handleConnectionEvent(int event) {
+								if (debug)
+									logi("setupBLE().CharacteristicChangeListener.handleUnexpectedConnectionEvent()");
+								if (bleManager != null) {
+									handleUnexpectedConnectionEvent(event);
+								}
 							}
-						}
-					});
-
+						});
 				startupConnection();
 				return;
 			}
@@ -167,6 +164,7 @@ public abstract class BLEBaseService extends Service {
 
 		if (rc > 0) {
 			if ((rc & BLEManager.BLE_ERROR_FAIL) != 0) {
+                actual_Error = bleManager.extended_error ;
 				if ((rc & BLEManager.BLE_ERROR_TIMEOUT) != 0) {
 					rc = 10;
 				} else {

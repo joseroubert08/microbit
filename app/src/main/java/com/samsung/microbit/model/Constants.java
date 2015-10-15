@@ -139,6 +139,9 @@ public class Constants {
 	public static final int REG_BATTERYSTRENGTH = 0x040;    // 0x00000040;
 	public static final int REG_TEMPERATURE = 0x080;    // 0x00000080;
 
+
+	public static final byte[] REGISTRATION_ON = {REG_TELEPHONY, REG_MESSAGING, REG_DEVICEORIENTATION,REG_DEVICEGESTURE,REG_DISPLAY,REG_SIGNALSTRENGTH,REG_BATTERYSTRENGTH  };
+	public static final byte[] REGISTRATION_OFF = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00 ,0x00};
 	/*
 	 * BLE UUID's for Service and Characteristic
 	 */
@@ -215,10 +218,12 @@ public class Constants {
 	public static final UUID IOPS_PARALLEL_PORT = makeUUID(MICROBIT_BASE_UUID_STR, 0x060cf);
 
 	public static final UUID EVENT_SERVICE = makeUUID(MICROBIT_BASE_UUID_STR, 0x093af);
-	public static final UUID ES_MICROBIT_REQUIREMENTS = makeUUID(MICROBIT_BASE_UUID_STR, 0x03ad2);
-	public static final UUID ES_CLIENT_EVENT = makeUUID(MICROBIT_BASE_UUID_STR, 0x09775);
+	public static final UUID ES_MICROBIT_REQUIREMENTS = makeUUID(MICROBIT_BASE_UUID_STR, 0x0B84C);
+
+    public static final UUID ES_CLIENT_EVENT = makeUUID(MICROBIT_BASE_UUID_STR, 0x09775);
 	public static final UUID ES_MICROBIT_EVENT = makeUUID(MICROBIT_BASE_UUID_STR, 0x05404);
-	public static final UUID ES_CLIENT_REQUIREMENTS = makeUUID(MICROBIT_BASE_UUID_STR, 0x023c4);
+
+    public static final UUID ES_CLIENT_REQUIREMENTS = makeUUID(MICROBIT_BASE_UUID_STR, 0x023C4);
 
 	public static UUID makeUUID(String baseUUID, long shortUUID) {
 
@@ -245,7 +250,7 @@ public class Constants {
     public static String ZIP_INTERNAL_NAME = "raw/samples";
 
 	public static int NOTIFICATION_ID = 1001 ;
-    public static int BLE_DISCONNECTED_FOR_FLASH = 99 ;
+    public static int BLE_DISCONNECTED_FOR_FLASH = 501 ;
     public static int PAIRING_CONTROL_CODE_REQUESTED = 0x01 ;
     public static int FLASHING_PHASE_2_COMPLETE = 0x02 ;
     public static int FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED = 0X33 ;

@@ -18,7 +18,7 @@
 		android:drawableRight="@drawable/new_project"
 		android:gravity="center_vertical|left"
 		android:onClick="onClick"
-		android:text="@string/create_new_project_project"
+		android:text="@string/my_scripts"
 		android:textSize="@dimen/button_text_size"/>
 
 	<Spinner

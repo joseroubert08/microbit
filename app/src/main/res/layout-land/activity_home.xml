@@ -1,51 +1,92 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent" android:layout_height="fill_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:background="@drawable/bg">
 
-    <ImageButton
-        android:id="@+id/moreButton"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/headerBar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="@dimen/activity_top_margin"
-        android:src="@drawable/ic_more_vert"
-        android:onClick="onClick"
-        android:background="@null"/>
+        android:background="#ffffff"
+        android:elevation="@dimen/activity_vertical_margin">
+
+        <ImageButton
+            android:id="@+id/moreButton"
+            android:layout_width="@dimen/header_btn_size"
+            android:layout_height="@dimen/header_btn_size"
+            android:background="@android:color/transparent"
+            android:layout_alignParentStart="true"
+            android:onClick="onClick"
+            android:src="@drawable/ic_more_vert"/>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/header_btn_size"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="0dp"
+            android:layout_marginRight="@dimen/header_right_margin"
+            android:background="@drawable/project_text_box"
+            android:layout_marginTop="0dp">
+
+            <!--<TextView
+                style="@style/p2"
+                android:id="@+id/connectedIndicatorText"
+                android:layout_width="@dimen/header_title_width"
+                android:layout_marginTop="@dimen/header_right_margin"
+                android:layout_marginLeft="@dimen/header_right_margin"
+                android:layout_height="wrap_content"
+                android:editable="false"
+                android:gravity="top"
+                android:maxWidth="@dimen/header_device_name_max"
+                android:minWidth="@dimen/header_device_name_min"/>
+            <TextView
+                style="@style/p2"
+                android:id="@+id/deviceName"
+                android:layout_width="@dimen/header_title_width"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/connectedIndicatorText"
+                android:layout_marginLeft="@dimen/header_right_margin"
+                android:textColor="@color/blue_button_up"
+                android:editable="false"
+                android:gravity="top"
+                android:maxWidth="@dimen/header_device_name_max"
+                android:minWidth="@dimen/header_device_name_min"/>
+            <TextView
+                style="@style/p2"
+                android:id="@+id/deviceName2"
+                android:layout_width="@dimen/header_title_width"
+                android:layout_marginLeft="@dimen/header_right_margin"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/deviceName"
+                android:textColor="@color/blue_button_up"
+                android:editable="false"
+                android:gravity="top"
+                android:maxWidth="@dimen/header_device_name_max"
+                android:minWidth="@dimen/header_device_name_min"/>
+
+            <ImageButton
+                android:id="@+id/connectedIndicatorIcon"
+                android:layout_width="@dimen/header_btn_size"
+                android:layout_height="@dimen/header_btn_size"
+                android:layout_toRightOf="@id/connectedIndicatorText"
+                android:background="@drawable/project_connect_btn"
+                android:onClick="onClick"
+                android:src="@drawable/device_connected"/>
+-->
+        </RelativeLayout>
+    </RelativeLayout>
 
     <ListView
         android:id="@+id/moreItems"
         android:layout_width="@dimen/home_no_project_btn_width"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
         android:clickable="true"
-        android:layout_below="@id/moreButton"
+        android:background="@color/white_color"
+        android:layout_below="@id/headerBar"
         android:visibility="invisible"
         android:fastScrollEnabled="false"
         android:alpha="1" />
 
-    <RelativeLayout
-        android:id="@+id/logoArea"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/logo_area_margin"
-        android:layout_marginBottom="@dimen/logo_area_margin">
-        <ImageView
-            android:id="@+id/bbcLogo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/bbc_microbit"
-            android:layout_marginRight="@dimen/logo_gap_margin"/>
-
-        <ImageView
-            android:id="@+id/samsungLogo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/samsung"
-            android:layout_toRightOf="@id/bbcLogo" />
-    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/connectBarView"
@@ -53,7 +94,8 @@
         android:layout_height="@dimen/home_tile_bar_height"
         android:layout_marginLeft="@dimen/home_activity_margin"
         android:layout_marginRight="@dimen/home_activity_margin"
-        android:layout_below="@id/logoArea"
+        android:layout_marginTop="@dimen/content_margin"
+        android:layout_below="@id/headerBar"
         android:layout_centerHorizontal="true"
         android:background="@drawable/white_bg">
 
@@ -176,9 +218,9 @@
             android:layout_width="@dimen/home_start_btn_width"
             android:layout_height="@dimen/home_button_height"
             android:layout_margin="@dimen/widget_margin"
-            android:background="@drawable/yellow_btn"
+            android:background="@drawable/white_btn"
             android:layout_toRightOf="@id/numOfProjectsHolder"
-            android:src="@drawable/new_project"
+            android:src="@drawable/encouragement_emojio"
             android:onClick="onClick"
             android:gravity="left|center"
             android:layout_centerVertical="true"

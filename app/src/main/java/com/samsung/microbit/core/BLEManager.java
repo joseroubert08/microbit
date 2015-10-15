@@ -39,9 +39,12 @@ public class BLEManager {
 	public static int OP_RELIABLE_WRITE_COMPLETED = 8;
 	public static int OP_READ_REMOTE_RSSI = 9;
 	public static int OP_MTU_CHANGED = 10;
+    public static int extended_error = 0;
+
 
 	protected volatile int bleState = 0;
 	protected volatile int error = 0;
+
 
 	protected volatile int inBleOp = 0;
 	protected volatile boolean callbackCompleted = false;
@@ -149,7 +152,7 @@ public class BLEManager {
 
 	public int connect(boolean autoReconnect) {
 
-		if (debug) logi("connect() :: autoReconnect=" + autoReconnect);
+
 		int rc = BLE_ERROR_NOOP;
 
 		if (gatt == null) {
@@ -161,8 +164,10 @@ public class BLEManager {
 						if (debug) logi("connect() :: bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback)");
 						gatt = bluetoothDevice.connectGatt(context, false, bluetoothGattCallback);
 
-						if(gatt == null)
+						if(gatt == null) {
+							if (debug) logi("connectGatt failed with AutoReconnect = false. Trying again.. autoReconnect=" + autoReconnect);
 							bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback);
+						}
 
 						if (gatt != null) {
 							error = 0;
@@ -203,13 +208,14 @@ public class BLEManager {
 					if (bleState == 0) {
 						callbackCompleted = false;
 						if (debug) logi("gattConnect() :: gatt.connect()");
-						gatt.connect();
+						boolean result = gatt.connect();
+                        logi("gatt.connect() returns = " + result);
 						locker.wait(BLE_WAIT_TIMEOUT);
 						if (debug) logi("gattConnect() :: remote device = " + gatt.getDevice().getAddress());
 						if (!callbackCompleted) {
+                            logi("BLE_ERROR_FAIL | BLE_ERROR_TIMEOUT");
 							error = (BLE_ERROR_FAIL | BLE_ERROR_TIMEOUT);
 						}
-
 						rc = error | bleState;
 					}
 				} catch (Exception e) {
@@ -236,7 +242,7 @@ public class BLEManager {
 					error = 0;
 					if (bleState != 0) {
 						callbackCompleted = false;
-						gatt.disconnect();
+                        gatt.disconnect();
 						locker.wait(BLE_WAIT_TIMEOUT);
 						if (!callbackCompleted) {
 							error = (BLE_ERROR_FAIL | BLE_ERROR_TIMEOUT);
@@ -484,22 +490,33 @@ public class BLEManager {
 
 			super.onConnectionStateChange(gatt, status, newState);
 
-			int state;
+            if (debug)
+                logi("BluetoothGattCallback.onConnectionStateChange() :: start : status = " + status + " newState = " + newState);
+
+            int state = BLE_DISCONNECTED;
 			int error = 0;
-			if (status == BluetoothGatt.GATT_SUCCESS) {
-				if (newState == BluetoothProfile.STATE_CONNECTED) {
-					state = BLE_CONNECTED;
-				} else {
-					state = BLE_DISCONNECTED;
-				}
-			} else {
+            switch (status){
+                case BluetoothGatt.GATT_SUCCESS:
+                    {
+                        if (newState == BluetoothProfile.STATE_CONNECTED) {
+                            state = BLE_CONNECTED;
+                        } else  if (newState == BluetoothProfile.STATE_DISCONNECTED){
+                            state = BLE_DISCONNECTED;
+                            if (gatt != null) {
+                                if (debug) logi("onConnectionStateChange() :: gatt != null : closing gatt");
+                                gatt.disconnect();
+                                gatt.close();
+                            }
+                        }
+                    }
+                    break;
+            }
+
+			if (status != BluetoothGatt.GATT_SUCCESS)  {
 				state = BLE_DISCONNECTED;
 				error = BLE_ERROR_FAIL;
 			}
-
 			synchronized (locker) {
-				if (debug)
-					logi("BluetoothGattCallback.onConnectionStateChange() :: start : status = " + status + " newState = " + newState);
 
 				if (inBleOp == OP_CONNECT) {
 
@@ -507,9 +524,9 @@ public class BLEManager {
 					if (state != (bleState & BLE_CONNECTED)) {
 						bleState = state;
 					}
-
 					callbackCompleted = true;
-					BLEManager.this.error = error;
+                    BLEManager.this.error = error;
+                    BLEManager.this.extended_error = status;
 					locker.notify();
 				} else {
 					if (debug) logi("onConnectionStateChange() :: inBleOp != OP_CONNECT");

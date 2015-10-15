@@ -16,10 +16,14 @@
 
 <resources>
 
-	<string name="app_name">Companion</string>
+	<string name="app_name">micro:bit</string>
 	<string name="poweredBy">Powered by\r\n SAMSUNG</string>
+    <string name="copyright">Copyright © 1995-2015 SAMSUNG</string>
 
-	<string name="touchDevURLNew">https://live.microbit.co.uk/</string>
+	<string name="touchDevURLNew">https://www.microbit.co.uk/</string>
+    <string name="touchDevURLMyScripts">https://www.microbit.co.uk/</string>
+    <string name="privacy_policy_url">https://www.microbit.co.uk/privacy</string>
+    <string name="terms_of_use_url">https://www.microbit.co.uk/terms-of-use</string>
     <string name="user_agent">SamsungBrowser/microbit Profile/OTA-DFU1.0</string>
 
 	<string name="search_BLE_activity">Search micro:bit</string>
@@ -59,8 +63,8 @@
 	<string name="pattern_to_flash">Enter the pattern displayed on your micro:bit to flash</string>
 	<string name="pattern_to_pair">Enter the pattern displayed on your micro:bit to pair</string>
 
-	<string name="pairing_failed_message">No micro:bit displaying the pattern you entered could be found. Please enter the pattern displayed on your micro:bit and try again.</string>
-	<string name="pairing_failed_title">Linking unsuccessful</string>
+	<string name="pairing_failed_message">Cannot connect to the micro:bit.\n Please try again.</string>
+	<string name="pairing_failed_title">Connecting unsuccessful</string>
 	<string name="pairing_success_message_1">You have successfully linked with micro:bit </string>
 	<string name="pairing_success_title">micro:bit found</string>
 	<string name="run_code_button_name">Continue to Flash</string>
@@ -117,14 +121,16 @@
 	<string name="name_empty_error">Please enter device name.</string>
 	<string name="connect">Connect</string>
 	<string name="gamepad">Gamepad</string>
-	<string name="connectNew">Connect a new micro:bit</string>
+	<string name="connectNew">Pair a new micro:bit</string>
 	<string name="connectTipTitle">How to pair your micro:bit</string>
 	<string name="connectTipText">To know the pattern of your micro:bit :- \nPlease hold A and B buttons down and then press RESET on your micro:bit</string>
 	<string name="connectSearchingTitle">Connecting...</string>
 	<string name="searchingTitle">Searching for micro:bit...</string>
+	<string name="pairing_msg_1">Found micro:bit. \n \nInitiating pairing...</string>
 
 	<!--Connect Popup messages -->
 	<string name="pairingErrorTitle">Error</string>
+    <string name="timeOut">Timeout</string>
 	<string name="pairingErrorMessage">We cannot find that micro:bit\nPlease try again</string>
 	<string name="deleteMicrobitTitle">Delete micro:bit?</string>
 	<string name="deleteMicrobitMessage">Are you sure you want to remove this device?</string>
@@ -142,7 +148,7 @@
 	<string name="audio_recorder_notification">micro:bit Audio Recorder</string>
 
 	<string name="create_new_project">Create\na new project</string>
-    <string name="create_new_project_project">Create a new project</string>
+    <string name="my_scripts">My Scripts</string>
 
 	<string name="download_existing">Download Existing</string>
 	<string name="downloading">Downloading...</string>
@@ -163,14 +169,15 @@
     <string name="pairing_title">Pairing</string>
 	<string name="flashing_error_msg">micro:bit not in correct state</string>
 	<string name="flashing_phase1_msg">Finding the device..</string>
-	<string name="pairing_phase2_msg">Press button "A" on micro:bit.</string>
+	<string name="pairing_phase2_msg">Press button "A" on micro:bit to pair successfully.</string>
 
 	<string name="web_view_demo">Web View Demo</string>
 	<string name="flashing_project">Flashing \'%s\'</string>
 	<string name="sending_project">Flashing project</string>
 	<string name="send_project">Flash Project</string>
     <string name="validating_microbit">Verifying the pairing code</string>
-	<string name="init_connection">Finding micro:bit..</string>
+    <string name="waiting_reboot">Waiting for micro:bit to reboot</string>
+	<string name="init_connection">Connecting to micro:bit..</string>
     <string name="dfu_status_starting_msg">Initializing flashing process&#8230;</string>
     <string name="multple_flashing_session_msg">A project is currently being flashed. Wait for it to complete!</string>
 	<string name="no_device_paired">Cannot connect.  No micro:bit paired</string>
@@ -185,5 +192,11 @@
 	<string name="bluetooth_turn_on_guide">Please click the green tick to turn on your Bluetooth</string>
 	<string name="tray_notification_failure">micro:bit Disconnected. Click to connect</string>
     <string name="tray_notification_sucsess">micro:bit Connected. Click to disconnect</string>
+
+    <string name="title_activity_splash_screen">SplashScreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="hello_world">Hello world!</string>
 
 </resources>

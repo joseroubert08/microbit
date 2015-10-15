@@ -204,8 +204,8 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
         touchDevelopView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         touchDevelopView.getSettings().setJavaScriptEnabled(true);
         touchDevelopView.setBackgroundColor(Color.argb(1, 0, 0, 0));
-        touchDevelopView.getSettings().setBuiltInZoomControls(true);
-        touchDevelopView.getSettings().setSupportZoom(true);
+        //touchDevelopView.getSettings().setBuiltInZoomControls(true);
+        //touchDevelopView.getSettings().setSupportZoom(true);
 
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ){
             touchDevelopView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
@@ -239,6 +239,7 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
 
         touchDevelopView.setVisibility(View.INVISIBLE);
 
+        /*
         headerBar.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent me) {
@@ -267,6 +268,7 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
                 return false;
             }
         });
+        */
     }
 
     public void onClick(final View v) {

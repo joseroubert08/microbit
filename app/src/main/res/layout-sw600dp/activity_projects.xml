@@ -53,7 +53,7 @@
 				android:minWidth="@dimen/header_device_name_min"/>
 
             <TextView
-                style="@style/p1"
+                style="@style/p2"
                 android:id="@+id/deviceName"
                 android:layout_width="@dimen/header_title_width"
                 android:layout_marginLeft="@dimen/header_right_margin"
