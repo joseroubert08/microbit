@@ -3265,7 +3265,7 @@ public abstract class DfuBaseService extends IntentService {
 					// progress is in percents
 					final String title = mPartsTotal == 1 ? getString(R.string.dfu_status_uploading) : getString(R.string.dfu_status_uploading_part, mPartCurrent, mPartsTotal);
 					final String text = (mFileType & TYPE_APPLICATION) > 0 ? getString(R.string.dfu_status_uploading_msg, deviceName) : getString(R.string.dfu_status_uploading_components_msg, deviceName);
-					builder.setOngoing(true).setContentTitle(title).setContentText(text).setProgress(100, progress, false);
+					builder.setOngoing(true).setContentTitle(title).setContentText(text).setProgress(100, progress, false).setColor(Color.BLUE);
 				}
 		}
 		// send progress or error broadcast
