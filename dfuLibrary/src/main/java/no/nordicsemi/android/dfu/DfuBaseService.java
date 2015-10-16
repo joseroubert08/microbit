@@ -1473,10 +1473,11 @@ public abstract class DfuBaseService extends IntentService {
             //Wait for the device to reboot.
             waitUntilDisconnected();
 			waitUntilConnected();
-            if (Build.VERSION.SDK_INT < 21) {
+			//Forcing this after comments from BBC
+            //if (Build.VERSION.SDK_INT < 21) {
                 logi("Refreshing the cache before discoverServices() for Android version " + Build.VERSION.SDK_INT);
                 refreshDeviceCache(gatt,true);
-            }
+            //}
 
             ///TODO : Rohit - Check if this Gatt disconnect and connect is required
 /*			disconnect(gatt);
