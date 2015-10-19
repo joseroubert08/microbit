@@ -57,7 +57,7 @@ import com.samsung.microbit.ui.adapter.LEDAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.Objects;
 
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -377,7 +377,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
             retvalue = false;
         }
 
-        if (Build.VERSION.SDK_INT >= 21 && mLEScanner == null ){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mLEScanner == null ){
             mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
             if (mLEScanner == null)
                 retvalue = false;
@@ -911,23 +911,23 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
                     textView.setText(getString(R.string.searchingTitle));
 
                 mHandler.postDelayed(scanTimedOut, SCAN_PERIOD);
-				if (Build.VERSION.SDK_INT < 21){
-                    mBluetoothAdapter.startLeScan(mLeScanCallback);
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){ //Lollipop
+                    mBluetoothAdapter.startLeScan((BluetoothAdapter.LeScanCallback)getBlueToothCallBack());
                 }
                 else {
                     List<ScanFilter> filters = new ArrayList<ScanFilter>();
                     ScanSettings settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
-                    mLEScanner.startScan(filters, settings ,mScanCallBack );
+                    mLEScanner.startScan(filters, settings ,(ScanCallback)getBlueToothCallBack() );
                 }
 			}
 		} else {
 			if (mScanning) {
 				mScanning = false;
                 mHandler.removeCallbacks(scanTimedOut);
-                if (Build.VERSION.SDK_INT < 21) {
-                    mBluetoothAdapter.stopLeScan(mLeScanCallback);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                    mBluetoothAdapter.stopLeScan((BluetoothAdapter.LeScanCallback)getBlueToothCallBack());
                 } else {
-                    mLEScanner.stopScan(mScanCallBack);
+                    mLEScanner.stopScan((ScanCallback)getBlueToothCallBack());
                 }
 			}
 		}
@@ -952,43 +952,49 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			handlePairingFailed();
 		}
 	}
+    private static Object mBluetoothScanCallBack = null ;
 
-	// Device scan callback.
-	private static BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
-		@Override
-		public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
-			ConnectActivity.instance.onLeScan(device, rssi, scanRecord);
-		}
-	};
+    private static Object getBlueToothCallBack()
+    {
+        if (mBluetoothScanCallBack == null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mBluetoothScanCallBack = (ScanCallback) new ScanCallback() {
+                    @Override
+                    public void onScanResult(int callbackType, ScanResult result) {
+                        super.onScanResult(callbackType, result);
+                        Log.i("callbackType = ", String.valueOf(callbackType));
+                        Log.i("result = ", result.toString());
+                        BluetoothDevice btDevice = result.getDevice();
+                        ConnectActivity.instance.onLeScan(result.getDevice(), result.getRssi(), result.getScanRecord().getBytes());
+                    }
 
-    private static ScanCallback mScanCallBack = new ScanCallback() {
-        @Override
-        public void onScanResult(int callbackType, ScanResult result) {
-            super.onScanResult(callbackType, result);
-            Log.i("callbackType = ", String.valueOf(callbackType));
-            Log.i("result = ", result.toString());
-            BluetoothDevice btDevice = result.getDevice();
-            ConnectActivity.instance.onLeScan(result.getDevice(), result.getRssi(), result.getScanRecord().getBytes());
-        }
+                    @Override
+                    public void onBatchScanResults(List<ScanResult> results) {
+                        super.onBatchScanResults(results);
+                        for (ScanResult sr : results) {
+                            Log.i("Scan result - Results ", sr.toString());
+                        }
+                    }
 
-        @Override
-        public void onBatchScanResults(List<ScanResult> results) {
-            super.onBatchScanResults(results);
-            for (ScanResult sr : results){
-                Log.i("Scan result - Results ", sr.toString());
+                    @Override
+                    public void onScanFailed(int errorCode) {
+                        super.onScanFailed(errorCode);
+                        Log.i("Scan failed", "Error Code : " + errorCode);
+                    }
+                };
+
+                return (mBluetoothScanCallBack);
+            } else {
+                mBluetoothScanCallBack = new BluetoothAdapter.LeScanCallback() {
+                    @Override
+                    public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+                        ConnectActivity.instance.onLeScan(device, rssi, scanRecord);
+                    }
+                };
             }
         }
-
-        @Override
-        public void onScanFailed(int errorCode) {
-            super.onScanFailed(errorCode);
-            Log.i("Scan failed", "Error Code : " + errorCode);
-        }
-    };
-
-	/*
-	 * =================================================================
-	 */
+        return mBluetoothScanCallBack;
+    }
 
 	public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
 
