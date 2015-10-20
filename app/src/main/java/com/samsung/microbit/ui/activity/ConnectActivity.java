@@ -272,7 +272,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 		}
         mPrevDeviceArray = mPrevDevList.loadPrevMicrobits();
 
-		if (mCurrentDevice.mPattern != null && mCurrentDevice.mPattern.equals(mPrevDeviceArray[0].mPattern)) {
+		if (mCurrentDevice.mPattern != null && mPrevDeviceArray !=null && mCurrentDevice.mPattern.equals(mPrevDeviceArray[0].mPattern)) {
             mPrevDeviceArray[0].mStatus = mCurrentDevice.mStatus;
             mPrevDevList.changeMicrobitState(0, mPrevDeviceArray[0], mPrevDeviceArray[0].mStatus, true);
 			populateConnectedDeviceList(false);
