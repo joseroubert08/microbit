@@ -12,9 +12,6 @@ import com.samsung.microbit.ui.activity.CameraActivity_OldAPI;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.service.PluginService;
 
-/**
- * Created by t.maestri on 11/05/2015.
- */
 public class CameraPlugin {
 
 	private static Context context = null;

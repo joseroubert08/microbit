@@ -12,9 +12,6 @@ import java.util.TimerTask;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.Constants;
 
-/**
- * Created by a.obzhirov on 14/05/2015.
- */
 public class RemoteControlPlugin {
 
 	private static Context context = null;

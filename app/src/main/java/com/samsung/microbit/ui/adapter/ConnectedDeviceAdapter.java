@@ -1,8 +1,5 @@
 package com.samsung.microbit.ui.adapter;
 
-/**
- * Created by Kupes on 04/02/2015.
- */
 
 import android.content.Context;
 import android.graphics.Bitmap;

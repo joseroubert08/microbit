@@ -29,9 +29,6 @@ import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.model.NameValuePair;
 import com.samsung.microbit.service.PluginService;
 
-/**
- * Created by frederic.ma on 10/05/2015.
- */
 public class InformationPlugin {
 	private static Context mContext = null;
 

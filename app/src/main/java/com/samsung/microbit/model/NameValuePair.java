@@ -2,9 +2,6 @@ package com.samsung.microbit.model;
 
 import java.io.Serializable;
 
-/**
- * Created by balbirs on 30/06/15.
- */
 public class NameValuePair {
 	private String name;
 	private Serializable value;

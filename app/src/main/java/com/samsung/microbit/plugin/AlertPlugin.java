@@ -18,10 +18,6 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
- * Created by kkulendiran on 10/05/2015.
- * Updated by t.maestri on 15/09/2015
- */
 public class AlertPlugin {
 
 	private static Context context = null;

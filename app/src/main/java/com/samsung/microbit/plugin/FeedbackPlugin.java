@@ -12,9 +12,6 @@ import com.samsung.microbit.core.BroadcastMonitor;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.service.PluginService;
 
-/**
- * Created by kkulendiran on 10/05/2015.
- */
 public class FeedbackPlugin {
 
 	private static Context mContext = null;

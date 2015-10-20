@@ -16,9 +16,6 @@ import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.service.PluginService;
 
-/**
- * Created by t.maestri on 16/05/2015.
- */
 public class TelephonyPlugin
 {
     private static Context mContext = null;

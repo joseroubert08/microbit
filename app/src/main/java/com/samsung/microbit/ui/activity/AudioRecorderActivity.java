@@ -36,9 +36,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-/**
- * Created by frederic.ma on 14/06/2015.
- */
 public class AudioRecorderActivity extends Activity {
 
     static final int NOTIFICATION_ID = 1;

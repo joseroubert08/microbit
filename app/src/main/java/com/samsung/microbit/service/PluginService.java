@@ -20,9 +20,6 @@ import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.plugin.InformationPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
 
-/**
- * Created by kkulendiran on 10/05/2015.
- */
 public class PluginService extends Service {
 
 	static final String TAG = "PluginService";
