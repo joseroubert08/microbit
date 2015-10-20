@@ -17,9 +17,6 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-/**
- * Created by kkulendiran on 26/06/15.
- */
 public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
 
 	private final Object locker = new Object();
@@ -190,21 +187,30 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
 	}
 
 	protected void onPostExecute(final String result) {
-		PopUp.show(MBApp.getContext(),
-			MBApp.getContext().getString(R.string.download_complete),
-			"",
-			R.drawable.message_face, R.drawable.blue_btn,
-			PopUp.TYPE_CHOICE,
-			new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					PopUp.hide();
-					Intent intent = new Intent(MBApp.getContext(), ProjectActivity.class);
-					intent.putExtra("download_file", result);
-					//Toast.makeText(MBApp.getContext(), "File result "+result,Toast.LENGTH_SHORT).show();
-					MBApp.getContext().startActivity(intent);
-					//Write your own code
-				}
-			}, null);
+
+		if (result == null){
+            PopUp.show(MBApp.getContext(),
+                    MBApp.getContext().getString(R.string.download_failed_msg),
+                    MBApp.getContext().getString(R.string.download_failed_title),
+                    R.drawable.error_face, R.drawable.red_btn,
+                    PopUp.TYPE_ALERT,
+                    null, null);
+
+        } else {
+            PopUp.show(MBApp.getContext(),
+                    MBApp.getContext().getString(R.string.download_complete),
+                    "",
+                    R.drawable.message_face, R.drawable.blue_btn,
+                    PopUp.TYPE_CHOICE,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            PopUp.hide();
+                            Intent intent = new Intent(MBApp.getContext(), ProjectActivity.class);
+                            intent.putExtra("download_file", result);
+                            MBApp.getContext().startActivity(intent);
+                        }
+                    }, null);
+        }
 	}
 }

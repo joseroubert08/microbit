@@ -125,13 +125,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		logi("handleBLENotification()");
         final boolean popupHide = hide;
 		runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                setConnectedDeviceText();
-                if(popupHide)
-                PopUp.hide();
-            }
-        });
+			@Override
+			public void run() {
+				setConnectedDeviceText();
+				if (popupHide)
+					PopUp.hide();
+			}
+		});
 
 		int cause = intent.getIntExtra(IPCService.NOTIFICATION_CAUSE, 0);
 		if (cause == IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED) {
@@ -410,8 +410,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             {
                                 programToSend = toSend;
                                 IPCService.getInstance().bleDisconnectForFlash();
-                            } else
-                            initiateFlashing(toSend);
+                            } else{
+								initiateFlashing(toSend);
+							}
                         }
                     },//override click listener for ok button
                     new View.OnClickListener() {
