@@ -223,13 +223,18 @@ public class BLEService extends BLEBaseService {
 
 		if (debug) logi("setNotification() :: isConnected = " + isConnected);
         if (debug) logi("setNotification() :: errorCode = " + errorCode);
-		NotificationManager notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (debug) logi("setNotification() :: actual_Error = " + actual_Error);
+
+
+        NotificationManager notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		String notificationString = null;
         boolean onGoingNotification = false;
 
-		NameValuePair[] args = new NameValuePair[2];
+		NameValuePair[] args = new NameValuePair[3];
+
 		args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
 		args[1] = new NameValuePair(IPCMessageManager.BUNDLE_DEVICE_ADDRESS, deviceAddress);
+		args[2] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_MESSAGE, Utils.broadcastGetErrorMessage(actual_Error));
 
 		if (!isConnected) {
 			if (debug) logi("setNotification() :: !isConnected");
@@ -238,7 +243,6 @@ public class BLEService extends BLEBaseService {
 
 					if (debug) logi("setNotification() :: !bluetoothAdapter.isEnabled()");
 					reset();
-
 					//bleManager = null;
 					bluetoothDevice = null;
 				}

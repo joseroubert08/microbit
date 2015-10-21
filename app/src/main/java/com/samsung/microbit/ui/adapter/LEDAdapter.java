@@ -9,9 +9,6 @@ import android.widget.ImageView;
 
 import com.samsung.microbit.R;
 
-/**
- * Created by Kupes on 21/06/2015.
- */
 public class LEDAdapter extends BaseAdapter {
     private Context mContext;
     private String mDeviceCodeArray[];

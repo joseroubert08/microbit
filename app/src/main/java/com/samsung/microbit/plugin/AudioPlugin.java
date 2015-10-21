@@ -16,9 +16,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-/**
- * Created by frederic.ma on 13/05/2015.
- */
 public class AudioPlugin {
 	private static Context context = null;
 

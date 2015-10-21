@@ -15,9 +15,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Created by Mythri.Venugopal on 25/07/2015.
- */
 public class PreviousDeviceList{
 
     private final String PREFERENCES_PREVDEV_PREFNAME = "PreviousDevices";

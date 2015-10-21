@@ -19,9 +19,6 @@ import android.widget.TextView;
 import com.samsung.microbit.R;
 import com.samsung.microbit.ui.PopUp;
 
-/**
- * Created by fma on 28/07/15.
- */
 public class PopUpActivity extends Activity implements View.OnClickListener{
 
     //intent from PopUpActivity to PopUp

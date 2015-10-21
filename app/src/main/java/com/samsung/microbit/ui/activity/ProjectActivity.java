@@ -40,6 +40,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import no.nordicsemi.android.error.GattError;
+
 
 public class ProjectActivity extends Activity implements View.OnClickListener {
 
@@ -97,12 +99,18 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             }
             handleBLENotification(context, intent, true);
 			if (v != 0 ) {
+                String message = intent.getStringExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
+                logi("broadcastReceiver Error message = " + message);
+                if (message == null )
+                    message = "Error";
+                final String displayTitle = message ;
+
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
 						PopUp.show(MBApp.getContext(),
 							MBApp.getContext().getString(R.string.micro_bit_reset_msg),
-							"",
+                                displayTitle,
 							R.drawable.error_face, R.drawable.red_btn,
 							PopUp.TYPE_ALERT, null, null);
 					}
@@ -117,13 +125,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		logi("handleBLENotification()");
         final boolean popupHide = hide;
 		runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                setConnectedDeviceText();
-                if(popupHide)
-                PopUp.hide();
-            }
-        });
+			@Override
+			public void run() {
+				setConnectedDeviceText();
+				if (popupHide)
+					PopUp.hide();
+			}
+		});
 
 		int cause = intent.getIntExtra(IPCService.NOTIFICATION_CAUSE, 0);
 		if (cause == IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED) {
@@ -402,8 +410,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             {
                                 programToSend = toSend;
                                 IPCService.getInstance().bleDisconnectForFlash();
-                            } else
-                            initiateFlashing(toSend);
+                            } else{
+								initiateFlashing(toSend);
+							}
                         }
                     },//override click listener for ok button
                     new View.OnClickListener() {
@@ -475,22 +484,22 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 	class DFUResultReceiver extends BroadcastReceiver {
 
-		private boolean isCompleted = false;
-		private boolean inInit = false;
-		private boolean inProgress = false;
+        private boolean isCompleted = false;
+        private boolean inInit = false;
+        private boolean inProgress = false;
 
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String message = "Broadcast intent detected " + intent.getAction();
-			logi("DFUResultReceiver.onReceive :: " + message);
-			if (intent.getAction() == DfuService.BROADCAST_PROGRESS) {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = "Broadcast intent detected " + intent.getAction();
+            logi("DFUResultReceiver.onReceive :: " + message);
+            if (intent.getAction() == DfuService.BROADCAST_PROGRESS) {
 
-				int state = intent.getIntExtra(DfuService.EXTRA_DATA, 0);
-				if (state < 0) {
-					logi("DFUResultReceiver.onReceive :: state -- " + state);
-					switch (state) {
+                int state = intent.getIntExtra(DfuService.EXTRA_DATA, 0);
+                if (state < 0) {
+                    logi("DFUResultReceiver.onReceive :: state -- " + state);
+                    switch (state) {
                         case DfuService.PROGRESS_STARTING:
-                            setFlashState( FLASHING_STATE.FLASH_STATE_INIT_DEVICE);
+                            setFlashState(FLASHING_STATE.FLASH_STATE_INIT_DEVICE);
                             PopUp.show(MBApp.getContext(),
                                     getString(R.string.dfu_status_starting_msg), //message
                                     getString(R.string.send_project), //title
@@ -505,70 +514,70 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                     },//override click listener for ok button
                                     null);//pass null to use default listener
                             break;
-						case DfuService.PROGRESS_COMPLETED:
-							if (!isCompleted) {
-								// todo progress bar dismiss
-								PopUp.hide();
-                                setFlashState( FLASHING_STATE.FLASH_STATE_NONE);
-								LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
-								dfuResultReceiver = null;
-								PopUp.show(MBApp.getContext(),
-									getString(R.string.flashing_success_message), //message
-									getString(R.string.flashing_success_title), //title
-									R.drawable.message_face, R.drawable.blue_btn,
-									PopUp.TYPE_ALERT, //type of popup.
-									popupOkHandler,//override click listener for ok button
-                                    popupOkHandler);//pass null to use default listener
-							}
+                        case DfuService.PROGRESS_COMPLETED:
+                            if (!isCompleted) {
+                                // todo progress bar dismiss
+                                PopUp.hide();
+                                setFlashState(FLASHING_STATE.FLASH_STATE_NONE);
+                                LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
+                                dfuResultReceiver = null;
+                                PopUp.show(MBApp.getContext(),
+                                        getString(R.string.flashing_success_message), //message
+                                        getString(R.string.flashing_success_title), //title
+                                        R.drawable.message_face, R.drawable.blue_btn,
+                                        PopUp.TYPE_ALERT, //type of popup.
+                                        popupOkHandler,//override click listener for ok button
+                                        popupOkHandler);//pass null to use default listener
+                            }
 
-							isCompleted = true;
-							inInit = false;
-							inProgress = false;
+                            isCompleted = true;
+                            inInit = false;
+                            inProgress = false;
 
-							break;
+                            break;
 
-						case DfuService.PROGRESS_DISCONNECTING:
-							if ((isCompleted == false) && (inProgress == false))// Disconnecting event because of error
-							{
-								String error_message = "Error Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
-									+ "] \n Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]";
+                        case DfuService.PROGRESS_DISCONNECTING:
+                            if ((isCompleted == false) && (inProgress == false))// Disconnecting event because of error
+                            {
+                                String error_message = "Error Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
+                                        + "] \n Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]";
 
-								logi(error_message);
-                                setFlashState( FLASHING_STATE.FLASH_STATE_NONE);
-								//PopUp.hide();
-								PopUp.show(MBApp.getContext(),
-									error_message, //message
-									getString(R.string.flashing_failed_title), //title
-									R.drawable.error_face, R.drawable.red_btn,
-									PopUp.TYPE_ALERT, //type of popup.
-                                    popupOkHandler,//override click listener for ok button
-                                    popupOkHandler);//pass null to use default listener
+                                logi(error_message);
+                                setFlashState(FLASHING_STATE.FLASH_STATE_NONE);
+                                PopUp.hide();
+/*                                PopUp.show(MBApp.getContext(),
+                                        error_message, //message
+                                        getString(R.string.flashing_failed_title), //title
+                                        R.drawable.error_face, R.drawable.red_btn,
+                                        PopUp.TYPE_ALERT, //type of popup.
+                                        popupOkHandler,//override click listener for ok button
+                                        popupOkHandler);//pass null to use default listener
 
-								LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
-							}
+                                LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);*/
+                            }
 
-							break;
+                            break;
 
-						case DfuService.PROGRESS_CONNECTING:
-							if ((!inInit) && (!isCompleted)) {
+                        case DfuService.PROGRESS_CONNECTING:
+                            if ((!inInit) && (!isCompleted)) {
                                 setFlashState(FLASHING_STATE.FLASH_STATE_INIT_DEVICE);
-								PopUp.show(MBApp.getContext(),
-									getString(R.string.init_connection), //message
-									getString(R.string.send_project), //title
-									R.drawable.flash_face, R.drawable.blue_btn,
-									PopUp.TYPE_SPINNER_NOT_CANCELABLE, //type of popup.
-									new View.OnClickListener() {
-										@Override
-										public void onClick(View v) {
-                                            //Do nothing. As this is non-cancellable pop-up
-										}
-									},//override click listener for ok button
-									null);//pass null to use default listener
-							}
+                                PopUp.show(MBApp.getContext(),
+                                        getString(R.string.init_connection), //message
+                                        getString(R.string.send_project), //title
+                                        R.drawable.flash_face, R.drawable.blue_btn,
+                                        PopUp.TYPE_SPINNER_NOT_CANCELABLE, //type of popup.
+                                        new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                //Do nothing. As this is non-cancellable pop-up
+                                            }
+                                        },//override click listener for ok button
+                                        null);//pass null to use default listener
+                            }
 
-							inInit = true;
-							isCompleted = false;
-							break;
+                            inInit = true;
+                            isCompleted = false;
+                            break;
                         case DfuService.PROGRESS_VALIDATING:
                             setFlashState(FLASHING_STATE.FLASH_STATE_VERIFY_DEVICE);
                             PopUp.show(MBApp.getContext(),
@@ -585,7 +594,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                     },//override click listener for ok button
                                     null);//pass null to use default listener
                             break;
-						case DfuService.PROGRESS_WAITING_REBOOT:
+                        case DfuService.PROGRESS_WAITING_REBOOT:
                             setFlashState(FLASHING_STATE.FLASH_STATE_WAIT_DEVICE_REBOOT);
                             PopUp.show(MBApp.getContext(),
                                     getString(R.string.waiting_reboot), //message
@@ -600,10 +609,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                         }
                                     },//override click listener for ok button
                                     null);//pass null to use default listener
-							break;
+                            break;
                         case DfuService.PROGRESS_VALIDATION_FAILED:
                         case DfuService.PROGRESS_ABORTED:
-                            setFlashState( FLASHING_STATE.FLASH_STATE_NONE);
+                            setFlashState(FLASHING_STATE.FLASH_STATE_NONE);
                             PopUp.show(MBApp.getContext(),
                                     getString(R.string.flashing_failed_message), //message
                                     "Operation Aborted", //title
@@ -616,121 +625,48 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             dfuResultReceiver = null;
                             break;
 
-					}
-				} else if ((state > 0) && (state < 100)) {
-					if (!inProgress) {
+                    }
+                } else if ((state > 0) && (state < 100)) {
+                    if (!inProgress) {
                         setFlashState(FLASHING_STATE.FLASH_STATE_PROGRESS);
-						// TODO Update progress bar check if correct.
-						PopUp.show(MBApp.getContext(),
-							MBApp.getContext().getString(R.string.flashing_progress_message),
-							String.format(MBApp.getContext().getString(R.string.flashing_project), programToSend.name),
-							R.drawable.flash_face, R.drawable.blue_btn,
-							PopUp.TYPE_PROGRESS_NOT_CANCELABLE, null, null);
+                        // TODO Update progress bar check if correct.
+                        PopUp.show(MBApp.getContext(),
+                                MBApp.getContext().getString(R.string.flashing_progress_message),
+                                String.format(MBApp.getContext().getString(R.string.flashing_project), programToSend.name),
+                                R.drawable.flash_face, R.drawable.blue_btn,
+                                PopUp.TYPE_PROGRESS_NOT_CANCELABLE, null, null);
 
-						inProgress = true;
-					}
+                        inProgress = true;
+                    }
 
-					PopUp.updateProgressBar(state);
+                    PopUp.updateProgressBar(state);
 
-				}
-			} else if (intent.getAction() == DfuService.BROADCAST_ERROR) {
-				String error_message = broadcastGetErrorMessage(intent.getIntExtra(DfuService.EXTRA_DATA, 0));
-                setFlashState( FLASHING_STATE.FLASH_STATE_NONE);
-				logi("DFUResultReceiver.onReceive() :: Flashing ERROR!!  Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
-					+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
+                }
+            } else if (intent.getAction() == DfuService.BROADCAST_ERROR) {
+                String error_message = Utils.broadcastGetErrorMessage(intent.getIntExtra(DfuService.EXTRA_DATA, 0));
+                setFlashState(FLASHING_STATE.FLASH_STATE_NONE);
+                logi("DFUResultReceiver.onReceive() :: Flashing ERROR!!  Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
+                        + "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
+                //todo dismiss progress
+                PopUp.hide();
 
-				//todo dismiss progress
-				PopUp.hide();
+                //TODO popup flashing failed
+                PopUp.show(MBApp.getContext(),
+                        error_message, //message
+                        getString(R.string.flashing_failed_title), //title
+                        R.drawable.error_face, R.drawable.red_btn,
+                        PopUp.TYPE_ALERT, //type of popup.
+                        popupOkHandler,//override click listener for ok button
+                        popupOkHandler);//pass null to use default listener
 
-				//TODO popup flashing failed
-				PopUp.show(MBApp.getContext(),
-					error_message, //message
-					getString(R.string.flashing_failed_title), //title
-					R.drawable.error_face, R.drawable.red_btn,
-					PopUp.TYPE_ALERT, //type of popup.
-                    popupOkHandler,//override click listener for ok button
-                    popupOkHandler);//pass null to use default listener
+                LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
+                dfuResultReceiver = null;
 
-				LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
-				dfuResultReceiver = null;
+            }
+        }
+    }
 
-			}
-		}
 
-		private String broadcastGetErrorMessage(int errorCode) {
-			String errorMessage;
-
-			switch (errorCode) {
-				case DfuService.ERROR_DEVICE_DISCONNECTED:
-					errorMessage = "micro:bit disconnected";
-					break;
-				case DfuService.ERROR_FILE_NOT_FOUND:
-					errorMessage = "File not found";
-					break;
-				/**
-				 * Thrown if service was unable to open the file ({@link java.io.IOException} has been thrown).
-				 */
-				case DfuService.ERROR_FILE_ERROR:
-					errorMessage = "Unable to open file";
-					break;
-				/**
-				 * Thrown then input file is not a valid HEX or ZIP file.
-				 */
-				case DfuService.ERROR_FILE_INVALID:
-					errorMessage = "File not a valid HEX";
-					break;
-				/**
-				 * Thrown when {@link java.io.IOException} occurred when reading from file.
-				 */
-				case DfuService.ERROR_FILE_IO_EXCEPTION:
-					errorMessage = "Unable to read file";
-					break;
-				/**
-				 * Error thrown then {@code gatt.discoverServices();} returns false.
-				 */
-				case DfuService.ERROR_SERVICE_DISCOVERY_NOT_STARTED:
-					errorMessage = "Bluetooth Discovery not started";
-					break;
-				/**
-				 * Thrown when the service discovery has finished but the DFU service has not been found. The device does not support DFU of is not in DFU mode.
-				 */
-				case DfuService.ERROR_SERVICE_NOT_FOUND:
-					errorMessage = "Dfu Service not found";
-					break;
-				/**
-				 * Thrown when the required DFU service has been found but at least one of the DFU characteristics is absent.
-				 */
-				case DfuService.ERROR_CHARACTERISTICS_NOT_FOUND:
-					errorMessage = "Dfu Characteristics not found";
-					break;
-				/**
-				 * Thrown when unknown response has been obtained from the target. The DFU target must follow specification.
-				 */
-				case DfuService.ERROR_INVALID_RESPONSE:
-					errorMessage = "Invalid response from micro:bit";
-					break;
-
-				/**
-				 * Thrown when the the service does not support given type or mime-type.
-				 */
-				case DfuService.ERROR_FILE_TYPE_UNSUPPORTED:
-					errorMessage = "Unsupported file type";
-					break;
-
-				/**
-				 * Thrown when the the Bluetooth adapter is disabled.
-				 */
-				case DfuService.ERROR_BLUETOOTH_DISABLED:
-					errorMessage = "Bluetooth Disabled";
-					break;
-				default:
-					errorMessage = "Unknown Error";
-					break;
-			}
-
-			return errorMessage;
-		}
-	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

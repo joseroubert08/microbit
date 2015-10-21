@@ -30,6 +30,7 @@ public abstract class BLEBaseService extends Service {
 
 	protected String deviceAddress;
 
+	public int actual_Error = 0 ;
 	protected String TAG = "BLEBaseService";
 	protected boolean debug = true;
 
@@ -163,6 +164,7 @@ public abstract class BLEBaseService extends Service {
 
 		if (rc > 0) {
 			if ((rc & BLEManager.BLE_ERROR_FAIL) != 0) {
+                actual_Error = bleManager.extended_error ;
 				if ((rc & BLEManager.BLE_ERROR_TIMEOUT) != 0) {
 					rc = 10;
 				} else {

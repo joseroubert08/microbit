@@ -12,9 +12,6 @@ import android.view.View;
 import com.samsung.microbit.ui.activity.PopUpActivity;
 import com.samsung.microbit.ui.activity.PopUpHolderActivity;
 
-/**
- * Created by frederic.ma on 23/06/2015.
- */
 /*
 How to use:
 

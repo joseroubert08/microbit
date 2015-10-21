@@ -184,9 +184,12 @@ public class IPCService extends Service {
 
 			int errorCode = (int) msg.getData().getSerializable(IPCMessageManager.BUNDLE_ERROR_CODE);
 
+            String error_message = (String) msg.getData().getSerializable(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
+
 			Intent intent = new Intent(INTENT_BLE_NOTIFICATION);
 			intent.putExtra(NOTIFICATION_CAUSE, msg.arg1);
 			intent.putExtra(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
+            intent.putExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE, error_message);
 			LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 		} else if (msg.what == IPCMessageManager.MICROBIT_MESSAGE) {
 			if (debug) logi("handleIncomingMessage() :: IPCMessageManager.MICROBIT_MESSAGE msg.arg1 = " + msg.arg1);

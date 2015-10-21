@@ -23,6 +23,7 @@ public final class IPCMessageManager {
 	public static final String BUNDLE_DATA = "data";
 	public static final String BUNDLE_VALUE = "value";
 	public static final String BUNDLE_ERROR_CODE = "BUNDLE_ERROR_CODE";
+	public static final String BUNDLE_ERROR_MESSAGE = "BUNDLE_ERROR_MESSAGE";
 	public static final String BUNDLE_SERVICE_GUID = "BUNDLE_SERVICE_GUID";
 	public static final String BUNDLE_CHARACTERISTIC_GUID = "BUNDLE_CHARACTERISTIC_GUID";
 	public static final String BUNDLE_CHARACTERISTIC_TYPE = "BUNDLE_CHARACTERISTIC_TYPE";

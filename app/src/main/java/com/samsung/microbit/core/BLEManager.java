@@ -39,9 +39,12 @@ public class BLEManager {
 	public static int OP_RELIABLE_WRITE_COMPLETED = 8;
 	public static int OP_READ_REMOTE_RSSI = 9;
 	public static int OP_MTU_CHANGED = 10;
+    public static int extended_error = 0;
+
 
 	protected volatile int bleState = 0;
 	protected volatile int error = 0;
+
 
 	protected volatile int inBleOp = 0;
 	protected volatile boolean callbackCompleted = false;
@@ -507,37 +510,6 @@ public class BLEManager {
                         }
                     }
                     break;
-
-                case BluetoothGatt.GATT_CONNECTION_CONGESTED:
-                    logi("onConnectionStateChange() :: GATT_CONNECTION_CONGESTED");
-                    break;
-                case BluetoothGatt.GATT_FAILURE:
-                    logi("onConnectionStateChange() :: GATT_FAILURE");
-                    break;
-                case BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION:
-                    logi("onConnectionStateChange() :: GATT_INSUFFICIENT_AUTHENTICATION");
-                    break;
-                case  BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION:
-                    logi("onConnectionStateChange() :: GATT_INSUFFICIENT_ENCRYPTION");
-                    break;
-                case BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH:
-                    logi("onConnectionStateChange() :: GATT_INVALID_ATTRIBUTE_LENGTH");
-                    break;
-                case BluetoothGatt.GATT_WRITE_NOT_PERMITTED:
-                    logi("onConnectionStateChange() :: GATT_WRITE_NOT_PERMITTED");
-                    break;
-                case 0x85:
-                    logi("onConnectionStateChange() :: GATT_ERROR ");
-                    break;
-                case 0x87:
-                    logi("onConnectionStateChange() :: GATT_ILLEGAL_PARAMETER ");
-                    break;
-                case 0x82:
-                    logi("onConnectionStateChange() :: GATT_WRONG_STATE ");
-                    break;
-                case 0x81:
-                    logi("onConnectionStateChange() :: GATT_INTERNAL_ERROR ");
-                    break;
             }
 
 			if (status != BluetoothGatt.GATT_SUCCESS)  {
@@ -552,9 +524,9 @@ public class BLEManager {
 					if (state != (bleState & BLE_CONNECTED)) {
 						bleState = state;
 					}
-
 					callbackCompleted = true;
-					BLEManager.this.error = error;
+                    BLEManager.this.error = error;
+                    BLEManager.this.extended_error = status;
 					locker.notify();
 				} else {
 					if (debug) logi("onConnectionStateChange() :: inBleOp != OP_CONNECT");

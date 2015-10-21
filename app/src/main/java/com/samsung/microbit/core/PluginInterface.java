@@ -30,9 +30,6 @@ import org.json.JSONObject;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
- * Created by frederic.ma on 16/05/2015.
- */
 public class PluginInterface  extends CordovaPlugin {
 
     private static PluginInterface instance = null;

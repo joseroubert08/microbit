@@ -27,7 +27,7 @@
             android:background="@drawable/project_text_box"
             android:layout_marginTop="0dp">
 
-            <TextView
+            <!--<TextView
                 style="@style/p2"
                 android:id="@+id/connectedIndicatorText"
                 android:layout_width="@dimen/header_title_width"
@@ -71,7 +71,7 @@
                 android:background="@drawable/project_connect_btn"
                 android:onClick="onClick"
                 android:src="@drawable/device_connected"/>
-
+-->
         </RelativeLayout>
     </RelativeLayout>
 

@@ -70,7 +70,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		public void onReceive(Context context, Intent intent) {
 
 			int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-            logi("broadcastReceiver Error code =" + v);
+            logi("broadcastReceiver Error code = " + v);
 
             if (Constants.BLE_DISCONNECTED_FOR_FLASH == v){
 				logi("Bluetooth disconnected for flashing. No need to display pop-up");
@@ -79,12 +79,19 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 			}
             handleBLENotification(context, intent, true);
 			if (v != 0) {
+                String message = intent.getStringExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
+                logi("broadcastReceiver Error message = " + message);
+
+                if (message == null )
+                    message = "Error";
+                final String displayTitle = message ;
+
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
 						PopUp.show(MBApp.getContext(),
-							MBApp.getContext().getString(R.string.micro_bit_reset_msg),
-							"",
+                                MBApp.getContext().getString(R.string.micro_bit_reset_msg),
+                                displayTitle,
 							R.drawable.error_face, R.drawable.red_btn,
 							PopUp.TYPE_ALERT, null, null);
 					}
@@ -109,7 +116,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 			@Override
 			public void run() {
 				updateConnectBarView();
-                setConnectedDeviceText();
+                //setConnectedDeviceText();
                 if(popupHide)
                     PopUp.hide();
 			}
@@ -125,7 +132,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         //setBackground();
     }
 
-	private void setConnectedDeviceText() {
+/*	private void setConnectedDeviceText() {
 
 		TextView connectedIndicatorText = (TextView) findViewById(R.id.connectedIndicatorText);
 		TextView deviceName1 = (TextView) findViewById(R.id.deviceName);
@@ -167,7 +174,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 					deviceName1.setText(device.mName + " (" + device.mPattern + ")");
 			}
 		}
-	}
+	}*/
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -239,7 +246,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
                 }
             });
         }
-        setConnectedDeviceText();
+        //setConnectedDeviceText();
 	}
 
     private class StableArrayAdapter extends ArrayAdapter<String> {
@@ -448,6 +455,6 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		MBApp.setContext(this);
 		updateConnectBarView();
         updateProjectBarView();
-        setConnectedDeviceText();
+        //setConnectedDeviceText();
 	}
 }

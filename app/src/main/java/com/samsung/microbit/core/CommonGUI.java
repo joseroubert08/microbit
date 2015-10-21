@@ -5,9 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.text.Html;
 
-/**
- * Created by balbirs on 14/07/15.
- */
 public class CommonGUI {
 
 	public static void commonAlertDialog(Context parent, String title, String message) {
