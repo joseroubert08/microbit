@@ -516,8 +516,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             break;
                         case DfuService.PROGRESS_COMPLETED:
                             if (!isCompleted) {
-                                // todo progress bar dismiss
-                                PopUp.hide();
                                 setFlashState(FLASHING_STATE.FLASH_STATE_NONE);
                                 LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
                                 dfuResultReceiver = null;
@@ -535,17 +533,15 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             inProgress = false;
 
                             break;
-
                         case DfuService.PROGRESS_DISCONNECTING:
-                            if ((isCompleted == false) && (inProgress == false))// Disconnecting event because of error
-                            {
-                                String error_message = "Error Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
-                                        + "] \n Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]";
+                            String error_message = "Error Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
+                                    + "] \n Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]";
 
+/*                            if ((isCompleted == false) && (inProgress == false))// Disconnecting event because of error
+                            {
                                 logi(error_message);
                                 setFlashState(FLASHING_STATE.FLASH_STATE_NONE);
-                                PopUp.hide();
-/*                                PopUp.show(MBApp.getContext(),
+                                PopUp.show(MBApp.getContext(),
                                         error_message, //message
                                         getString(R.string.flashing_failed_title), //title
                                         R.drawable.error_face, R.drawable.red_btn,
@@ -553,9 +549,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                         popupOkHandler,//override click listener for ok button
                                         popupOkHandler);//pass null to use default listener
 
-                                LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);*/
-                            }
-
+                                LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
+                            }*/
                             break;
 
                         case DfuService.PROGRESS_CONNECTING:
@@ -611,11 +606,23 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                     null);//pass null to use default listener
                             break;
                         case DfuService.PROGRESS_VALIDATION_FAILED:
+                            setFlashState(FLASHING_STATE.FLASH_STATE_NONE);
+                            PopUp.show(MBApp.getContext(),
+                                    getString(R.string.flashing_verifcation_failed), //message
+                                    getString(R.string.flashing_verifcation_failed_title),
+                                    R.drawable.error_face, R.drawable.red_btn,
+                                    PopUp.TYPE_ALERT, //type of popup.
+                                    popupOkHandler,//override click listener for ok button
+                                    popupOkHandler);//pass null to use default listener
+
+                            LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
+                            dfuResultReceiver = null;
+							break;
                         case DfuService.PROGRESS_ABORTED:
                             setFlashState(FLASHING_STATE.FLASH_STATE_NONE);
                             PopUp.show(MBApp.getContext(),
-                                    getString(R.string.flashing_failed_message), //message
-                                    "Operation Aborted", //title
+                                    getString(R.string.flashing_aborted), //message
+                                    getString(R.string.flashing_aborted_title),
                                     R.drawable.error_face, R.drawable.red_btn,
                                     PopUp.TYPE_ALERT, //type of popup.
                                     popupOkHandler,//override click listener for ok button
@@ -629,7 +636,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 } else if ((state > 0) && (state < 100)) {
                     if (!inProgress) {
                         setFlashState(FLASHING_STATE.FLASH_STATE_PROGRESS);
-                        // TODO Update progress bar check if correct.
                         PopUp.show(MBApp.getContext(),
                                 MBApp.getContext().getString(R.string.flashing_progress_message),
                                 String.format(MBApp.getContext().getString(R.string.flashing_project), programToSend.name),
@@ -647,10 +653,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 setFlashState(FLASHING_STATE.FLASH_STATE_NONE);
                 logi("DFUResultReceiver.onReceive() :: Flashing ERROR!!  Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
                         + "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
-                //todo dismiss progress
-                PopUp.hide();
-
-                //TODO popup flashing failed
                 PopUp.show(MBApp.getContext(),
                         error_message, //message
                         getString(R.string.flashing_failed_title), //title

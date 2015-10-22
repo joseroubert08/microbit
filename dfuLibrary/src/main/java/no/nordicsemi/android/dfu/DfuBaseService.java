@@ -1419,12 +1419,11 @@ public abstract class DfuBaseService extends IntentService {
 		logi("Phase2 s");
 
         updateProgressNotification(PROGRESS_VALIDATING);
-        sendProgressBroadcast(PROGRESS_VALIDATING);
 
         int rc = 1;
 		final BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
 		if (fps == null) {
-            logi("Upload aborted");
+            logi("Error Cannot find FLASH_PAIRING_SERVICE_UUID");
             sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
 			terminateConnection(gatt, PROGRESS_ABORTED);
 			return 6;
@@ -1433,7 +1432,7 @@ public abstract class DfuBaseService extends IntentService {
         logi("Finding FLASH_PAIRING_CODE_CHARACTERISTIC_UUID ....");
         final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CODE_CHARACTERISTIC_UUID);
         if (sfpc == null) {
-            logi("Error Cannot find the PAIRING CODE CHARACTERISTIC");
+            logi("Error Cannot find the FLASH_PAIRING_CODE_CHARACTERISTIC_UUID");
             sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
             terminateConnection(gatt, PROGRESS_ABORTED);
             return 6;
@@ -1453,7 +1452,7 @@ public abstract class DfuBaseService extends IntentService {
         //Add Complete
 		final BluetoothGattCharacteristic sfpc1 = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
         if (sfpc == null) {
-            logi("Upload aborted");
+			logi("Error Cannot find FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID");
             sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
             terminateConnection(gatt, PROGRESS_ABORTED);
             return 6;
