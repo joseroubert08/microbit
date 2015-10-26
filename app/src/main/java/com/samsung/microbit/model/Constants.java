@@ -29,7 +29,7 @@ public class Constants {
 	 * Events that Samsung devices respond to:
 	 */
 	public static final int SAMSUNG_REMOTE_CONTROL_ID = 1001;
-	//public static final int SAMSUNG_REMOTE_CONTROL_IDF = SAMSUNG_REMOTE_CONTROL_ID << 16;
+	public static final int SAMSUNG_REMOTE_CONTROL_IDF = SAMSUNG_REMOTE_CONTROL_ID << 16;
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_PLAY = 0;
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_PAUSE = 1;
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_STOP = 2;
@@ -41,7 +41,7 @@ public class Constants {
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN = 8;
 
 	public static final int SAMSUNG_CAMERA_ID = 1002;
-	//public static final int SAMSUNG_CAMERA_IDF = SAMSUNG_CAMERA_ID << 16;
+	public static final int SAMSUNG_CAMERA_IDF = SAMSUNG_CAMERA_ID << 16;
 	public static final int SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE = 0;
 	public static final int SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE = 1;
 	public static final int SAMSUNG_CAMERA_EVT_TAKE_PHOTO = 2;
@@ -52,14 +52,14 @@ public class Constants {
 	public static final int SAMSUNG_CAMERA_EVT_TOGGLE_FRONT_REAR = 7;
 
 	public static final int SAMSUNG_AUDIO_RECORDER_ID = 1003;
-	//public static final int SAMSUNG_AUDIO_RECORDER_IDF = SAMSUNG_AUDIO_RECORDER_ID << 16;
+	public static final int SAMSUNG_AUDIO_RECORDER_IDF = SAMSUNG_AUDIO_RECORDER_ID << 16;
 	public static final int SAMSUNG_AUDIO_RECORDER_EVT_LAUNCH = 0;
 	public static final int SAMSUNG_AUDIO_RECORDER_EVT_START_CAPTURE = 1;
 	public static final int SAMSUNG_AUDIO_RECORDER_EVT_STOP_CAPTURE = 2;
 	public static final int SAMSUNG_AUDIO_RECORDER_EVT_STOP = 3;
 
 	public static final int SAMSUNG_ALERTS_ID = 1004;
-	//public static final int SAMSUNG_ALERTS_IDF = SAMSUNG_ALERTS_ID << 16;
+	public static final int SAMSUNG_ALERTS_IDF = SAMSUNG_ALERTS_ID << 16;
 	public static final int SAMSUNG_ALERT_EVT_DISPLAY_TOAST = 0;
 	public static final int SAMSUNG_ALERT_EVT_VIBRATE = 1;
 	public static final int SAMSUNG_ALERT_EVT_PLAY_SOUND = 2;

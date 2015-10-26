@@ -133,7 +133,8 @@ public class BLEService extends BLEBaseService {
 		logi("onDestroy()");
 	}
 
-	public boolean registerNotifications(boolean enable) {
+	public boolean
+    registerNotifications(boolean enable) {
 
 		if (debug) logi("registerNotifications()");
 		BluetoothGattService eventService = getService(Constants.EVENT_SERVICE);
@@ -148,22 +149,34 @@ public class BLEService extends BLEBaseService {
 		logi("Constants.ES_MICROBIT_EVENT   = " + Constants.ES_MICROBIT_EVENT.toString());
 		logi("Constants.ES_CLIENT_REQUIREMENTS   = " + Constants.ES_CLIENT_REQUIREMENTS.toString());
 
-		BluetoothGattCharacteristic requirementCharacteristic = eventService.getCharacteristic(Constants.ES_MICROBIT_REQUIREMENTS);
-		if(requirementCharacteristic != null)
+		BluetoothGattCharacteristic microbit_requirements = eventService.getCharacteristic(Constants.ES_MICROBIT_REQUIREMENTS);
+		if(microbit_requirements != null)
 		{
 			logi("registerNotifications() :: found Characteristic Constants.ES_MICROBIT_REQUIREMENTS");
-
 			//TODO Read from the micro:bit requirements (register for notification) and only send those events to micro:bit
             // Other events if sent to micro:bit are ignored
 		}
 
+        BluetoothGattCharacteristic app_requirements = eventService.getCharacteristic(Constants.ES_CLIENT_REQUIREMENTS);
+        if(app_requirements != null)
+        {
+            logi("registerNotifications() :: found Constants.ES_CLIENT_REQUIREMENTS ");
+            //Registering for everything at the moment
+            // <1,0> which means give me all the events from ButtonA.
+            // <2,0> which means give me all the events from ButtonB.
+            // <0,0> which means give me all the events from everything.
+            //writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), 0, BluetoothGattCharacteristic.FORMAT_UINT32);
+            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_REMOTE_CONTROL_IDF, BluetoothGattCharacteristic.FORMAT_UINT32);
+            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_CAMERA_IDF, BluetoothGattCharacteristic.FORMAT_UINT32);
+            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_AUDIO_RECORDER_IDF, BluetoothGattCharacteristic.FORMAT_UINT32);
+            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_ALERTS_ID, BluetoothGattCharacteristic.FORMAT_UINT32);
+        }
 
-		BluetoothGattCharacteristic microbit_event = eventService.getCharacteristic(Constants.ES_MICROBIT_EVENT);
-		if (microbit_event == null) {
-			if (debug) logi("registerNotifications() :: not found Constants.ES_MICROBIT_EVENT ");
-			return false;
-		}
-
+        BluetoothGattCharacteristic microbit_event = eventService.getCharacteristic(Constants.ES_MICROBIT_EVENT);
+        if (microbit_event == null) {
+            if (debug) logi("registerNotifications() :: not found Constants.ES_MICROBIT_EVENT ");
+            return false;
+        }
 		BluetoothGattDescriptor microbit_eventDescriptor = microbit_event.getDescriptor(Constants.CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR);
 		if (microbit_eventDescriptor == null) {
 			if (debug)
@@ -172,17 +185,6 @@ public class BLEService extends BLEBaseService {
 		}
 
 		enableCharacteristicNotification(microbit_event, microbit_eventDescriptor, enable);
-
-        BluetoothGattCharacteristic clientRequirement = eventService.getCharacteristic(Constants.ES_CLIENT_REQUIREMENTS);
-        if(clientRequirement != null)
-        {
-            logi("registerNotifications() :: found Constants.ES_CLIENT_REQUIREMENTS ");
-            //Registering for everything at the moment
-            // <1,0> which means give me all the events from ButtonA.
-            // <2,0> which means give me all the events from ButtonB.
-            // <0,0> which means give me all the events from everything.
-            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), 0, BluetoothGattCharacteristic.FORMAT_UINT32);
-        }
 		if (debug) logi("registerNotifications() : done");
 		return true;
 	}
@@ -401,20 +403,25 @@ public class BLEService extends BLEBaseService {
 	public void writeCharacteristic(String serviceGuid, String characteristic, int value, int type) {
 
 		if (!isConnected()) {
+            if (debug) logi("writeCharacteristic() :: Not connected. Returning");
 			return;
 		}
 
 		BluetoothGattService s = getService(UUID.fromString(serviceGuid));
-		if (s != null) {
-			BluetoothGattCharacteristic c = s.getCharacteristic(UUID.fromString(characteristic));
-			if (c != null) {
-				/*
-			 	 * TODO Need to try and write, to see if we have an endian issue
-		 		*/
-				c.setValue(value, type, 0);
-				writeCharacteristic(c);
-			}
-		}
+        if (s ==null)
+        {
+            if (debug) logi("writeCharacteristic() :: Service not found");
+            return;
+        }
+
+        BluetoothGattCharacteristic c = s.getCharacteristic(UUID.fromString(characteristic));
+        if (c ==null)
+        {
+            if (debug) logi("writeCharacteristic() :: characteristic not found");
+            return;
+        }
+		c.setValue(value, type, 0);
+		writeCharacteristic(c);
 	}
 
 	private void handleIncomingMessage(Message msg) {
