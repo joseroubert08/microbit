@@ -152,32 +152,37 @@ public class BLEService extends BLEBaseService {
 		if(requirementCharacteristic != null)
 		{
 			logi("registerNotifications() :: found Characteristic Constants.ES_MICROBIT_REQUIREMENTS");
-		}
-		BluetoothGattCharacteristic clientRequirement = eventService.getCharacteristic(Constants.ES_CLIENT_REQUIREMENTS);
-		if(clientRequirement != null)
-		{
-			logi("registerNotifications() :: found Constants.ES_CLIENT_REQUIREMENTS ");
-			//Registering for everything at the moment
-			// <1,0> which means give me all the events from ButtonA.
-			// <2,0> which means give me all the events from ButtonB.
-			// <0,0> which means give me all the events from everything.
-            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), 0, BluetoothGattCharacteristic.FORMAT_UINT32);
+
+			//TODO Read from the micro:bit requirements (register for notification) and only send those events to micro:bit
+            // Other events if sent to micro:bit are ignored
 		}
 
-		BluetoothGattCharacteristic clientCharacteristic = eventService.getCharacteristic(Constants.ES_MICROBIT_EVENT);
-		if (clientCharacteristic == null) {
-			if (debug) logi("registerNotifications() :: not found Constants.ES_CLIENT_EVENT ");
+
+		BluetoothGattCharacteristic microbit_event = eventService.getCharacteristic(Constants.ES_MICROBIT_EVENT);
+		if (microbit_event == null) {
+			if (debug) logi("registerNotifications() :: not found Constants.ES_MICROBIT_EVENT ");
 			return false;
 		}
 
-		BluetoothGattDescriptor clientCharacteristicDescriptor = clientCharacteristic.getDescriptor(Constants.CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR);
-		if (clientCharacteristicDescriptor == null) {
+		BluetoothGattDescriptor microbit_eventDescriptor = microbit_event.getDescriptor(Constants.CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR);
+		if (microbit_eventDescriptor == null) {
 			if (debug)
 				logi("registerNotifications() :: not found descriptor Constants.CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR");
 			return false;
 		}
 
-		enableCharacteristicNotification(clientCharacteristic, clientCharacteristicDescriptor, enable);
+		enableCharacteristicNotification(microbit_event, microbit_eventDescriptor, enable);
+
+        BluetoothGattCharacteristic clientRequirement = eventService.getCharacteristic(Constants.ES_CLIENT_REQUIREMENTS);
+        if(clientRequirement != null)
+        {
+            logi("registerNotifications() :: found Constants.ES_CLIENT_REQUIREMENTS ");
+            //Registering for everything at the moment
+            // <1,0> which means give me all the events from ButtonA.
+            // <2,0> which means give me all the events from ButtonB.
+            // <0,0> which means give me all the events from everything.
+            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), 0, BluetoothGattCharacteristic.FORMAT_UINT32);
+        }
 		if (debug) logi("registerNotifications() : done");
 		return true;
 	}
@@ -190,13 +195,13 @@ public class BLEService extends BLEBaseService {
 
 		int value = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
 		int eventSrc = value & 0x0ffff;
+
         logi("Characteristic UUID = " + UUID);
         logi("Characteristic Value = " + value);
         logi("eventSrc = " + eventSrc) ;
 		if (eventSrc < 1001) {
 			return;
 		}
-
 		int event = (value >> 16) & 0x0ffff;
         logi("event = " + event) ;
 		sendMessage(eventSrc, event);
