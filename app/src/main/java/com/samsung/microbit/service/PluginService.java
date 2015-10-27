@@ -177,9 +177,10 @@ public class PluginService extends Service {
 	public static void sendMessageToBle(int value)
 	{
 		//TODO: instance is null because anysystem broadcast receiver run inside different process than the process who built the PluginService instance.
+        Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + "sendMessageToBle()");
 		NameValuePair[] args = new NameValuePair[4];
 		args[0] = new NameValuePair(IPCMessageManager.BUNDLE_SERVICE_GUID, Constants.EVENT_SERVICE.toString());
-		args[1] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_GUID, Constants.ES_MICROBIT_EVENT.toString());
+		args[1] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_GUID, Constants.ES_CLIENT_EVENT.toString());
 		args[2] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_VALUE, value);
 		args[3] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE, Constants.FORMAT_UINT32);
 		PluginService.instance.sendtoBLEService(IPCMessageManager.MICROBIT_MESSAGE,
@@ -238,6 +239,7 @@ public class PluginService extends Service {
 		if (msg.what == IPCMessageManager.ANDROID_MESSAGE) {
 			if (debug) logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
 		} else if (msg.what == IPCMessageManager.MICROBIT_MESSAGE) {
+			if (debug) logi("handleIncomingMessage() :: IPCMessageManager.MICROBIT_MESSAGE msg.arg1 = " + msg.arg1);
 			handleMessage(msg);
 		}
 	}
