@@ -212,9 +212,10 @@ public class BLEService extends BLEBaseService {
 		logi("Constants.ES_CLIENT_REQUIREMENTS   = " + Constants.ES_CLIENT_REQUIREMENTS.toString());
 
         if (!registerMicrobitRequirements(eventService, enable)){
-            logi("Failed to registerMicrobitRequirements");
-            return false;
+            logi("***************** Cannot Register Microbit Requirements.. Will continue ************** ");
+            logi("***************** Rectify Later ************** ");
         }
+
         register_AppRequirement(eventService, enable);
 
         if (!registerMicroBitEvents(eventService, enable)){
@@ -233,13 +234,13 @@ public class BLEService extends BLEBaseService {
 
 		int value = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
 		int eventSrc = value & 0x0ffff;
-
-        logi("Characteristic UUID = " + UUID);
-        logi("Characteristic Value = " + value);
-        logi("eventSrc = " + eventSrc) ;
 		if (eventSrc < 1001) {
 			return;
 		}
+        logi("Characteristic UUID = " + UUID);
+        logi("Characteristic Value = " + value);
+        logi("eventSrc = " + eventSrc) ;
+
 		int event = (value >> 16) & 0x0ffff;
         logi("event = " + event) ;
 		sendMessage(eventSrc, event);
