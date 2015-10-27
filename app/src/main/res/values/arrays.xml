@@ -13,4 +13,10 @@
 		<item>Privacy Policy</item>
 		<item>Terms of Use</item>
     </array>
+
+    <string-array name="website_array">
+        <item>Live</item>
+        <item>Stage</item>
+        <item>Test</item>
+    </string-array>
 </resources>

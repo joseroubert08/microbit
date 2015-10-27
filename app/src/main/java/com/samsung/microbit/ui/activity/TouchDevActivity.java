@@ -15,8 +15,11 @@ import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.PermissionRequest;
 import android.webkit.WebView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
@@ -191,6 +194,10 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
 		MBApp.setContext(this);
 	}
 
+    @Override
+    protected void onStop (){
+        super.onStop();
+    }
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -229,8 +236,8 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
 
         //Load URL now
         if(baseURL == null) {
-            touchDevelopView.loadUrl(getString(R.string.touchDevURLNew));
-            baseURL = getString(R.string.touchDevURLNew);
+            touchDevelopView.loadUrl(getString(R.string.touchDevLiveURL));
+            baseURL = getString(R.string.touchDevLiveURL);
         } else {
             touchDevelopView.loadUrl(baseURL);
         }
@@ -269,6 +276,47 @@ public class TouchDevActivity extends Activity implements CordovaInterface {
             }
         });
         */
+
+        //Fill the spinner from website_array
+        // Test code starts ***************************************************************
+        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.website_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch (position){
+                    case 0:
+                        touchDevelopView.stopLoading();
+                        touchDevelopView.loadUrl(getString(R.string.touchDevLiveURL));
+                        baseURL = getString(R.string.touchDevLiveURL);
+                        break;
+                    case 1:
+                        touchDevelopView.stopLoading();
+                        touchDevelopView.loadUrl(getString(R.string.touchDevStageURL));
+                        baseURL = getString(R.string.touchDevStageURL);
+                        break;
+                    case 2:
+                        touchDevelopView.stopLoading();
+                        touchDevelopView.loadUrl(getString(R.string.touchDevTestURL));
+                        baseURL = getString(R.string.touchDevTestURL);
+                        break;
+                    default:
+                        touchDevelopView.stopLoading();
+                        touchDevelopView.loadUrl(getString(R.string.touchDevLiveURL));
+                        baseURL = getString(R.string.touchDevLiveURL);
+                        break;
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        //Test code ends ***************************************************************
     }
 
     public void onClick(final View v) {
