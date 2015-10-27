@@ -444,7 +444,7 @@ public class ConnectActivity extends Activity implements View.OnClickListener {
 			}
 		}
         mNewDeviceCode = mNewDeviceName;
-        mNewDeviceName = "BBC micro:bit [" + mNewDeviceName + "]";
+        mNewDeviceName = "BBC microbit [" + mNewDeviceName + "]";
 		//Toast.makeText(this, "Pattern :"+mNewDeviceCode, Toast.LENGTH_SHORT).show();
 	}
 
