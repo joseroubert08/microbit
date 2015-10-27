@@ -220,8 +220,8 @@ public class Constants {
 	public static final UUID EVENT_SERVICE = makeUUID(MICROBIT_BASE_UUID_STR, 0x093af);
 	public static final UUID ES_MICROBIT_REQUIREMENTS = makeUUID(MICROBIT_BASE_UUID_STR, 0x0B84C);
 
-    public static final UUID ES_CLIENT_EVENT = makeUUID(MICROBIT_BASE_UUID_STR, 0x09775);
-	public static final UUID ES_MICROBIT_EVENT = makeUUID(MICROBIT_BASE_UUID_STR, 0x05404);
+    public static final UUID ES_CLIENT_EVENT = makeUUID(MICROBIT_BASE_UUID_STR, 0x09775); //Events going to the micro:bit. For this  ES_MICROBIT_REQUIREMENTS needs to be set properly.
+	public static final UUID ES_MICROBIT_EVENT = makeUUID(MICROBIT_BASE_UUID_STR, 0x05404); //Events Coming from micro:bit. For this  ES_CLIENT_REQUIREMENTS needs to be set properly.
 
     public static final UUID ES_CLIENT_REQUIREMENTS = makeUUID(MICROBIT_BASE_UUID_STR, 0x023C4);
 

@@ -149,17 +149,22 @@ public class BLEService extends BLEBaseService {
 		logi("Constants.ES_CLIENT_REQUIREMENTS   = " + Constants.ES_CLIENT_REQUIREMENTS.toString());
 
 		BluetoothGattCharacteristic requirementCharacteristic = eventService.getCharacteristic(Constants.ES_MICROBIT_REQUIREMENTS);
-		if(requirementCharacteristic == null)
+		if(requirementCharacteristic != null)
 		{
-			logi("registerNotifications() :: not found Characteristic Constants.ES_MICROBIT_REQUIREMENTS");
+			logi("registerNotifications() :: found Characteristic Constants.ES_MICROBIT_REQUIREMENTS");
 		}
 		BluetoothGattCharacteristic clientRequirement = eventService.getCharacteristic(Constants.ES_CLIENT_REQUIREMENTS);
-		if(clientRequirement == null)
+		if(clientRequirement != null)
 		{
-			logi("registerNotifications() :: not found Constants.ES_CLIENT_REQUIREMENTS ");
+			logi("registerNotifications() :: found Constants.ES_CLIENT_REQUIREMENTS ");
+			//Registering for everything at the moment
+			// <1,0> which means give me all the events from ButtonA.
+			// <2,0> which means give me all the events from ButtonB.
+			// <0,0> which means give me all the events from everything.
+            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), 0, BluetoothGattCharacteristic.FORMAT_UINT32);
 		}
 
-		BluetoothGattCharacteristic clientCharacteristic = eventService.getCharacteristic(Constants.ES_CLIENT_EVENT);
+		BluetoothGattCharacteristic clientCharacteristic = eventService.getCharacteristic(Constants.ES_MICROBIT_EVENT);
 		if (clientCharacteristic == null) {
 			if (debug) logi("registerNotifications() :: not found Constants.ES_CLIENT_EVENT ");
 			return false;

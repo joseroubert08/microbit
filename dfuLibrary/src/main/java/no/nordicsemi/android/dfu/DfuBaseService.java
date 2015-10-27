@@ -607,9 +607,9 @@ public abstract class DfuBaseService extends IntentService {
 	private static final UUID DFU_VERSION = new UUID(0x000015341212EFDEl, 0x1523785FEABCD123l);
 	private static final UUID CLIENT_CHARACTERISTIC_CONFIG = new UUID(0x0000290200001000l, 0x800000805f9b34fbl);
 
-	private static final UUID FLASH_PAIRING_SERVICE_UUID = UUID.fromString("d8af991c-7144-43d7-954b-99512f95f99c");
-	private static final UUID FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID = UUID.fromString("97109547-e63a-442a-bf89-9d730413dc2f");
-	private static final UUID FLASH_PAIRING_CODE_CHARACTERISTIC_UUID = UUID.fromString("947b6934-64d1-4fad-9bd0-cc9d6e9f3ea3");
+	private static final UUID FLASH_PAIRING_SERVICE_UUID = UUID.fromString("E95D93B0-251D-470A-A062-FA1922DFA9A8");
+	private static final UUID FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID = UUID.fromString("E95D93B1-251D-470A-A062-FA1922DFA9A8");
+	private static final UUID FLASH_PAIRING_CODE_CHARACTERISTIC_UUID = UUID.fromString("E95D93B2-251D-470A-A062-FA1922DFA9A8");
 	private static final UUID CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
 
@@ -867,6 +867,7 @@ public abstract class DfuBaseService extends IntentService {
 							// Do nothing
 						}
 					}
+
 					// Attempts to discover services after successful connection.
 					final boolean success = gatt.discoverServices();
 					logi("onConnectionStateChange() :: Attempting to start service discovery... " + (success ? "succeed" : "failed"));
@@ -1249,7 +1250,7 @@ public abstract class DfuBaseService extends IntentService {
 		updateProgressNotification(PROGRESS_CONNECTING);
 
 		mConnectionState = STATE_DISCONNECTED;
-        mBytesSent = 0;
+		mBytesSent = 0;
 		mBytesConfirmed = 0;
 		mPacketsSentSinceNotification = 0;
 		mError = 0;
@@ -1283,17 +1284,17 @@ public abstract class DfuBaseService extends IntentService {
 		if (mAborted) {
 			logi("Upload aborted");
 			sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
-            terminateConnection(gatt, PROGRESS_ABORTED);
-            return false;
-        }
+			terminateConnection(gatt, PROGRESS_ABORTED);
+			return false;
+		}
 
-        return true;
+		return true;
 	}
 
 
 	public boolean registerNotifications(boolean enable) {
 
-        BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
+		BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
 		if (fps == null) {
 			logi("registerNotifications() :: not found service " + FLASH_PAIRING_SERVICE_UUID.toString());
 			return false;
@@ -1306,8 +1307,8 @@ public abstract class DfuBaseService extends IntentService {
 		}
 
 		BluetoothGattDescriptor fpsd = fpsc.getDescriptor(CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR);
-        if (fpsd == null) {
-            logi("registerNotifications() :: not found descriptor " + CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR.toString());
+		if (fpsd == null) {
+			logi("registerNotifications() :: not found descriptor " + CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR.toString());
 			return false;
 		}
 
@@ -1327,7 +1328,7 @@ public abstract class DfuBaseService extends IntentService {
 
 		rc = gatt.writeDescriptor(fpsd);
 		if (rc == false) {
-            logi("gatt.writeDescriptor failed " + rc);
+			logi("gatt.writeDescriptor failed " + rc);
 			return false;
 		} else
 			logi("Registered notification " + enable);
@@ -1345,7 +1346,7 @@ public abstract class DfuBaseService extends IntentService {
 		// Read input parameters
 		final String deviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
 		logi("Start Pairing");
-        String mimeType = intent.getStringExtra(EXTRA_FILE_MIME_TYPE);
+		String mimeType = intent.getStringExtra(EXTRA_FILE_MIME_TYPE);
 
         mDeviceAddress = deviceAddress;
 		/*
@@ -1368,9 +1369,9 @@ public abstract class DfuBaseService extends IntentService {
 		final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
 		if (sfpc == null) {
 			logi("Pairing aborted");
-            sendLogBroadcast(LOG_LEVEL_WARNING, "Pairing aborted");
+			sendLogBroadcast(LOG_LEVEL_WARNING, "Pairing aborted");
             cancelPairing(gatt);
-            return 6;
+			return 6;
 		}
 
 		boolean ret = sfpc.setValue(2, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
@@ -1665,10 +1666,10 @@ public abstract class DfuBaseService extends IntentService {
 				logi("Upload aborted");
 				sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
 				terminateConnection(gatt, PROGRESS_ABORTED);
-                return null;
-            }
+				return null;
+			}
 
-            // We have connected to DFU device and services are discoverer
+			// We have connected to DFU device and services are discoverer
 			BluetoothGattService dfuService = null;
 
 
