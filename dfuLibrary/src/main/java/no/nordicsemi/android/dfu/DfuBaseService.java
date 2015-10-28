@@ -889,7 +889,7 @@ public abstract class DfuBaseService extends IntentService {
                     mConnectionState = STATE_DISCONNECTED;
                     if (mServicePhase == PAIRING_REQUEST ){
                         mServicePhase = PAIRING_FAILED ;
-                        updateProgressNotification(ERROR_BLUETOOTH_DISABLED);
+                        updateProgressNotification(status);
                     }
                 }
 				mPaused = false;
@@ -3192,7 +3192,6 @@ public abstract class DfuBaseService extends IntentService {
         } else if (mServicePhase == PAIRING_FAILED)
         {
             logi("Pairing has failed");
-            mServicePhase = 0 ;
             sendErrorBroadcast(progress);
             return;
         }
