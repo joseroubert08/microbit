@@ -1,6 +1,7 @@
 package com.samsung.microbit.ui.activity;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -279,8 +280,59 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 	protected void onStart() {
 		super.onStart();
 	}
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+        if (requestCode == Constants.REQUEST_ENABLE_BT) {
+            if(resultCode == Activity.RESULT_OK){
+                toggleConnection();
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                PopUp.show(MBApp.getContext(),
+                        getString(R.string.bluetooth_off_cannot_continue), //message
+                        "",
+                        R.drawable.error_face, R.drawable.red_btn,
+                        PopUp.TYPE_ALERT,
+                        null, null);
+            }
+        }
+    }
 
+    private void startBluetooth(){
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        startActivityForResult(enableBtIntent, Constants.REQUEST_ENABLE_BT);
+    }
+
+    private void toggleConnection(){
+        updateConnectBarView();
+        ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
+        if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
+            return;
+        }
+        if (connectedDevice.mPattern != null) {
+            if (connectedDevice.mStatus) {
+                if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleDisconnect()");
+                IPCService.getInstance().bleDisconnect();
+            } else {
+                if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleConnect()");
+                // using MBApp.getContext() instead of this causes problem after flashing
+                PopUp.show(MBApp.getContext(),
+                        getString(R.string.init_connection),
+                        "",
+                        R.drawable.message_face, R.drawable.blue_btn,
+                        PopUp.TYPE_SPINNER,
+                        null, null);
+                IPCService.getInstance().bleConnect();
+            }
+        } else {
+            PopUp.show(MBApp.getContext(),
+                    getString(R.string.no_device_paired),
+                    "",
+                    R.drawable.error_face, R.drawable.red_btn,
+                    PopUp.TYPE_ALERT,
+                    null, null);
+        }
+    }
 	public void onClick(final View v) {
 		if (debug) logi("onBtnClicked() :: ");
 
@@ -308,36 +360,11 @@ public class HomeActivity extends Activity implements View.OnClickListener {
                 break;
             case R.id.connectBtn:
                 {
-                    updateConnectBarView();
-                    ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
-                    if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
+                    if (!BluetoothSwitch.getInstance().isBluetoothON()) {
+                        startBluetooth();
                         return;
                     }
-                    if (connectedDevice.mPattern != null) {
-                        if (connectedDevice.mStatus) {
-                            if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleDisconnect()");
-                            IPCService.getInstance().bleDisconnect();
-                        } else {
-                            if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleConnect()");
-
-                            // using MBApp.getContext() instead of this causes problem after flashing
-                            PopUp.show(MBApp.getContext(),
-                                    getString(R.string.init_connection),
-                                    "",
-                                    R.drawable.message_face, R.drawable.blue_btn,
-                                    PopUp.TYPE_SPINNER,
-                                    null, null);
-
-                            IPCService.getInstance().bleConnect();
-                        }
-                    } else {
-                        PopUp.show(MBApp.getContext(),
-                                getString(R.string.no_device_paired),
-                                "",
-                                R.drawable.error_face, R.drawable.red_btn,
-                                PopUp.TYPE_ALERT,
-                                null, null);
-                    }
+                    toggleConnection();
                 }
                 break;
             case R.id.moreButton:
@@ -353,6 +380,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
                     }
                 }
                 break;
+            /*
             case R.id.connectedIndicatorIcon:
                 {
                     if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
@@ -376,6 +404,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
                     }
                 }
                 break;
+                */
         }//Switch Ends
 	}
 
