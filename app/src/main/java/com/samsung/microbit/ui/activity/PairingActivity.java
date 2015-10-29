@@ -129,6 +129,18 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 	//private Runnable scanFailedCallback;
     private static BluetoothLeScanner mLEScanner = null;
 
+
+    private enum ACTIVITY_STATE {
+        STATE_IDLE,
+        STATE_ENABLE_BT_FOR_CONNECT,
+        STATE_ENABLE_BT_FOR_PAIRING,
+    };
+    private static ACTIVITY_STATE mActivityState = ACTIVITY_STATE.STATE_IDLE;
+    private int    selectedDeviceForConnect = 0 ;
+
+
+
+
 	/*
 	 * =================================================================
 	 */
@@ -386,7 +398,11 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         Log.d("Microbit", "onActivityResult");
 		if (requestCode == Constants.REQUEST_ENABLE_BT) {
             if(resultCode == Activity.RESULT_OK){
-                 //TODO Complete
+                if (mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_FOR_PAIRING){
+                    startWithPairing();
+                } else if (mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_FOR_CONNECT){
+                    toggleConnection(selectedDeviceForConnect);
+                }
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 PopUp.show(MBApp.getContext(),
@@ -396,6 +412,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                         PopUp.TYPE_ALERT,
                         null, null);
             }
+            //Change state back to Idle
+            mActivityState = ACTIVITY_STATE.STATE_IDLE;
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
@@ -656,27 +674,58 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         }
     };
 
+    private void startBluetooth(){
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        startActivityForResult(enableBtIntent, Constants.REQUEST_ENABLE_BT);
+    }
+
+
+    public void startWithPairing()
+    {
+        if (mBottomPairButton != null) {
+            mPrevDeviceView.setVisibility(View.GONE);
+        }
+
+        if (mPairButtonView != null) {
+            displayConnectScreen(PAIRING_STATE.PAIRING_STATE_TIP);
+        }
+    }
+
+    public void toggleConnection(int pos)
+    {
+        boolean currentState = mPrevDeviceArray[pos].mStatus;
+        if (!currentState) {
+            PopUp.show(MBApp.getContext(),
+                    getString(R.string.init_connection),
+                    "",
+                    R.drawable.message_face, R.drawable.blue_btn,
+                    PopUp.TYPE_SPINNER,
+                    null, null);
+            mPrevDevList.changeMicrobitState(pos, mPrevDeviceArray[pos], true, false);
+            IPCService.getInstance().bleConnect();
+        } else {
+            mPrevDeviceArray[pos].mStatus = !currentState;
+            mPrevDevList.changeMicrobitState(pos, mPrevDeviceArray[pos], false, false);
+            populateConnectedDeviceList(true);
+        }
+
+    }
 	public void onClick(final View v) {
 		int pos;
 
 		switch (v.getId()) {
 			case R.id.pairButton:
-				if (debug) logi("onClick() :: connectButton");
-                if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
+				if (debug) logi("onClick() :: pairButton");
+                if (!BluetoothSwitch.getInstance().isBluetoothON()) {
+                    mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_PAIRING;
+                    startBluetooth();
                     return;
                 }
-
-				if (mBottomPairButton != null) {
-                    mPrevDeviceView.setVisibility(View.GONE);
-				}
-
-				if (mPairButtonView != null) {
-					displayConnectScreen(PAIRING_STATE.PAIRING_STATE_TIP);
-				}
+                startWithPairing();
 				break;
 
 			case R.id.ok_pair_button:
-				if (debug) logi("onClick() :: ok_connect_button");
+				if (debug) logi("onClick() :: ok_pair_button");
 				displayConnectScreen(PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY);
 				break;
 
@@ -725,26 +774,14 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
 			case R.id.connectBtn:
 				if (debug) logi("onClick() :: connectBtn");
-                if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
+                pos = (Integer) v.getTag();
+                if (!BluetoothSwitch.getInstance().isBluetoothON()) {
+                    selectedDeviceForConnect = pos;
+                    mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_CONNECT;
+                    startBluetooth();
                     return;
                 }
-
-				pos = (Integer) v.getTag();
-				boolean currentState = mPrevDeviceArray[pos].mStatus;
-				if (!currentState) {
-					PopUp.show(MBApp.getContext(),
-						getString(R.string.init_connection),
-						"",
-						R.drawable.message_face, R.drawable.blue_btn,
-						PopUp.TYPE_SPINNER,
-						null, null);
-                    mPrevDevList.changeMicrobitState(pos, mPrevDeviceArray[pos], true, false);
-                    IPCService.getInstance().bleConnect();
-				} else {
-                    mPrevDeviceArray[pos].mStatus = !currentState;
-                    mPrevDevList.changeMicrobitState(pos, mPrevDeviceArray[pos], false, false);
-                    populateConnectedDeviceList(true);
-                }
+                toggleConnection(pos);
 				break;
 
 			case R.id.deleteBtn:
