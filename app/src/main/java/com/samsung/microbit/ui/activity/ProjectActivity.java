@@ -127,6 +127,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                setConnectedDeviceText();
                 if (popupHide)
                     PopUp.hide();
             }
