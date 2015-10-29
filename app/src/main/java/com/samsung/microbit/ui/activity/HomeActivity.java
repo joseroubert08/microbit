@@ -289,7 +289,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
             case R.id.addDevice:
             case R.id.addDeviceEmpty:
                 {
-                    Intent intent = new Intent(this, ConnectActivity.class);
+                    Intent intent = new Intent(this, PairingActivity.class);
                     startActivity(intent);
                 }
                 break;

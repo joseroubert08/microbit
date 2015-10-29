@@ -2,10 +2,6 @@ package com.samsung.microbit.ui.adapter;
 
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.text.Html;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,13 +9,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.ConnectedDevice;
-import com.samsung.microbit.ui.activity.ConnectActivity;
+import com.samsung.microbit.ui.activity.PairingActivity;
 
 import java.util.List;
 
@@ -97,7 +91,7 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
             connectBtn.setTag(pos);
             deleteBtn.setTag(pos);
 
-            if(ConnectActivity.disableListView()) {
+            if(PairingActivity.disableListView()) {
                 connectBtn.setEnabled(false);
                 deleteBtn.setEnabled(false);
             } else {

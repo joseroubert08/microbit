@@ -60,7 +60,7 @@
             android:name=".ui.activity.NotificationActivity"
             android:label="@string/device_details" />
         <activity
-            android:name=".ui.activity.ConnectActivity"
+            android:name=".ui.activity.PairingActivity"
             android:label="@string/title_activity_connect"
             android:launchMode="singleTop"
             android:parentActivityName=".ui.activity.HomeActivity"

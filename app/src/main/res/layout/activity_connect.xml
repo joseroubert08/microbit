@@ -61,7 +61,7 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/bottomConnectButton"
+        android:id="@+id/bottomPairButton"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="@dimen/device_main_margin"

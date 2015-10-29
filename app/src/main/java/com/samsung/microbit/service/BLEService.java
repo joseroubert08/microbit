@@ -23,7 +23,7 @@ import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.model.NameValuePair;
-import com.samsung.microbit.ui.activity.ConnectActivity;
+import com.samsung.microbit.ui.activity.PairingActivity;
 
 import java.util.UUID;
 
@@ -325,7 +325,7 @@ public class BLEService extends BLEBaseService {
                             .setOngoing(onGoingNotification)
                             .setContentText(notificationString);
 
-            Intent intent = new Intent(this, ConnectActivity.class);
+            Intent intent = new Intent(this, PairingActivity.class);
             PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             mBuilder.setContentIntent(resultPendingIntent);
             notifyMgr.notify(Constants.NOTIFICATION_ID, mBuilder.build());

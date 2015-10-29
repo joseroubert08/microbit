@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 android:layout_height="fill_parent"
-android:id="@+id/connectButtonView"
+android:id="@+id/pairButtonView"
 android:layout_toRightOf="@id/prevDeviceView"
 android:layout_width="wrap_content"
 android:visibility="visible">
@@ -16,7 +16,7 @@ android:visibility="visible">
         style="@style/h2"
         android:layout_width="fill_parent"
         android:layout_height="@dimen/connect_lv_item_height"
-        android:id="@+id/connectButton"
+        android:id="@+id/pairButton"
         android:background="@drawable/yellow_btn"
         android:text="@string/connectNew"
         android:layout_marginTop="@dimen/widget_margin"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 android:layout_height="fill_parent"
-android:id="@+id/connectSearchView"
+android:id="@+id/pairSearchView"
 android:layout_toRightOf="@id/prevDeviceView"
 android:layout_width="fill_parent"
 android:layout_below="@id/headerBar"
@@ -9,7 +9,7 @@ android:visibility="gone">
 
 <TextView
     style="@style/h1"
-    android:id="@+id/connectSearchTitle"
+    android:id="@+id/pairSearchTitle"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="@string/searchingTitle"
@@ -24,8 +24,8 @@ android:visibility="gone">
 <RelativeLayout
     android:layout_height="fill_parent"
     android:layout_width="fill_parent"
-    android:id="@+id/connectSearchImage"
-    android:layout_below="@id/connectSearchTitle">
+    android:id="@+id/pairSearchImage"
+    android:layout_below="@id/pairSearchTitle">
 
 
     <ImageButton
