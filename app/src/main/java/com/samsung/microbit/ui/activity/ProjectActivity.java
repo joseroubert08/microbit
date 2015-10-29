@@ -72,8 +72,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         FLASH_STATE_PROGRESS
     };
 
-
-
 	protected void logi(String message) {
 		if (debug) {
 			Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
@@ -129,7 +127,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                setConnectedDeviceText();
                 if (popupHide)
                     PopUp.hide();
             }
@@ -147,6 +144,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
     {
         logi("Flash state old - " + mActivityState + " new - " + newState);
         mActivityState=newState;
+        setConnectedDeviceText();
     }
 
 	@Override
@@ -228,6 +226,20 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         if (connectedIndicatorIcon == null || connectedIndicatorText == null)
             return;
 
+        //Override the connection Icon incse of active flashing
+        if (mActivityState == ACTIVITY_STATE.FLASH_STATE_FIND_DEVICE
+                || mActivityState == ACTIVITY_STATE.FLASH_STATE_VERIFY_DEVICE
+                || mActivityState == ACTIVITY_STATE.FLASH_STATE_WAIT_DEVICE_REBOOT
+                || mActivityState == ACTIVITY_STATE.FLASH_STATE_INIT_DEVICE
+                || mActivityState == ACTIVITY_STATE.FLASH_STATE_PROGRESS
+
+                )
+        {
+            connectedIndicatorIcon.setImageResource(R.drawable.device_connected);
+            connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_connect_btn));
+            connectedIndicatorText.setText(getString(R.string.connected_to));
+            return;
+        }
         int startIndex = 0;
         Spannable span = null;
         ConnectedDevice device = Utils.getPairedMicrobit(this);
@@ -490,7 +502,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	}
 
 	protected void initiateFlashing() {
-
 		if (dfuResultReceiver != null) {
 			LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
 			dfuResultReceiver = null;
