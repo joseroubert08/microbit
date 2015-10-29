@@ -191,6 +191,7 @@
 	<string name="init_connection">Connecting to micro:bit..</string>
     <string name="dfu_status_starting_msg">Initializing flashing process&#8230;</string>
     <string name="multple_flashing_session_msg">A project is currently being flashed. Wait for it to complete!</string>
+    <string name="internal_error_msg">Internal error. Please try again</string>
 	<string name="no_device_paired">Cannot connect.  No micro:bit paired</string>
 
 	<string name="send">Change ID To FLASH</string>
@@ -200,6 +201,7 @@
 	<string name="title_activity_new_device">NewDevice</string>
 
 	<string name="turn_on_bluetooth">Turn your bluetooth on?</string>
+    <string name="bluetooth_off_cannot_continue">Cannot continue without enabling Bluetooth</string>
 	<string name="bluetooth_turn_on_guide">Please click the green tick to turn on your Bluetooth</string>
 	<string name="tray_notification_failure">micro:bit Disconnected. Click to connect</string>
     <string name="tray_notification_sucsess">micro:bit Connected. Click to disconnect</string>

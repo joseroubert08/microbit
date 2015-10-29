@@ -255,5 +255,7 @@ public class Constants {
     public static int FLASHING_PHASE_2_COMPLETE = 0x02 ;
     public static int FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED = 0X33 ;
 
+    public static int REQUEST_ENABLE_BT = 12345 ; //Magic number
+
 
 }
