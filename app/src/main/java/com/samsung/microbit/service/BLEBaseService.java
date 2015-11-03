@@ -173,6 +173,7 @@ public abstract class BLEBaseService extends Service {
 					rc = 99;
 				}
 			} else {
+                actual_Error = 0;
 				rc &= 0x0ffff;
 				if ((rc & goodCode) != 0) {
 					rc = 0;
