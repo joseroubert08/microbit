@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -211,12 +212,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         //TODO Refactor this code here!! There must be only 1 FLASH state. Not 2 as before once we start using external Browser
         if (fileToDownload == null ){
             //Request coming because of the intent-filter
-            fileToDownload = getIntent().getData().getEncodedPath();
+            if (getIntent() != null && getIntent().getData() !=null && getIntent().getData().getEncodedPath() !=null)
+                fileToDownload = getIntent().getData().getEncodedPath();
             if (fileToDownload != null){
                 setActivityState(ACTIVITY_STATE.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST);
             }
         }
-
 		if (fileToDownload != null) {
 			programToSend = new Project(fileToDownload, Constants.HEX_FILE_DIR + "/" + fileToDownload, 0, null, false);
             if (!BluetoothSwitch.getInstance().isBluetoothON()){
@@ -401,10 +402,14 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 		switch (v.getId()) {
 			case R.id.createProject:
-				intent = new Intent(this, TouchDevActivity.class);
+
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.touchDevURLMyScripts)));
+                startActivity(browserIntent);
+                finish();
+				/*intent = new Intent(this, TouchDevActivity.class);
 				intent.putExtra(Constants.URL, getString(R.string.touchDevURLMyScripts));
 				startActivity(intent);
-				finish();
+				finish();*/
 				break;
 
 			case R.id.backBtn:
