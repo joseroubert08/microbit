@@ -514,8 +514,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                     initiateFlashing();
                 }
             }
-/*          */
-
         }
 	}
 
