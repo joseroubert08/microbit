@@ -205,9 +205,19 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		}
 		setConnectedDeviceText();
 		String fileToDownload = getIntent().getStringExtra("download_file");
+        if (fileToDownload != null){
+            setActivityState(ACTIVITY_STATE.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST);
+        }
+        //TODO Refactor this code here!! There must be only 1 FLASH state. Not 2 as before once we start using external Browser
+        if (fileToDownload == null ){
+            //Request coming because of the intent-filter
+            fileToDownload = getIntent().getData().getEncodedPath();
+            if (fileToDownload != null){
+                setActivityState(ACTIVITY_STATE.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST);
+            }
+        }
 
 		if (fileToDownload != null) {
-            setActivityState(ACTIVITY_STATE.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST);
 			programToSend = new Project(fileToDownload, Constants.HEX_FILE_DIR + "/" + fileToDownload, 0, null, false);
             if (!BluetoothSwitch.getInstance().isBluetoothON()){
                 startBluetooth();
@@ -452,6 +462,23 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         null, null);
                 return;
             }
+            if (mActivityState == ACTIVITY_STATE.FLASH_STATE_FIND_DEVICE
+                    || mActivityState == ACTIVITY_STATE.FLASH_STATE_VERIFY_DEVICE
+                    || mActivityState == ACTIVITY_STATE.FLASH_STATE_WAIT_DEVICE_REBOOT
+                    || mActivityState == ACTIVITY_STATE.FLASH_STATE_INIT_DEVICE
+                    || mActivityState == ACTIVITY_STATE.FLASH_STATE_PROGRESS
+
+                    )
+            {
+                // Another download session is in progress
+                PopUp.show(MBApp.getContext(),
+                        getString(R.string.multple_flashing_session_msg),
+                        "",
+                        R.drawable.flash_face, R.drawable.blue_btn,
+                        PopUp.TYPE_ALERT,
+                        null, null);
+                return;
+            }
             if (mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST) {
                 //Check final device from user and start flashing
                 PopUp.show(MBApp.getContext(),
@@ -487,17 +514,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                     initiateFlashing();
                 }
             }
-/*          if(mActivityState != ACTIVITY_STATE.STATE_IDLE)
-            {
-                // Another download session is in progress
-                PopUp.show(MBApp.getContext(),
-                        getString(R.string.multple_flashing_session_msg),
-                        "",
-                        R.drawable.flash_face, R.drawable.blue_btn,
-                        PopUp.TYPE_ALERT,
-                        null, null);
-                return;
-            }*/
+/*          */
 
         }
 	}

@@ -53,11 +53,26 @@
             android:configChanges="orientation"
             android:launchMode="singleTop" >
         </activity>
+
         <activity
             android:name=".ui.activity.ProjectActivity"
             android:screenOrientation="portrait"
             android:parentActivityName=".ui.activity.HomeActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize">
+            <!-- Register for the HEX file -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="microbit.co.uk" />
+                <data android:scheme="https" android:host="microbit.co.uk" />
+                <data android:scheme="content" android:host="*" />
+                <data android:scheme="file" android:host="*" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.hex" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".ui.activity.NotificationActivity"
             android:screenOrientation="portrait"
