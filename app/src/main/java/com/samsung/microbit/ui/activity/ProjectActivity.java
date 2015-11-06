@@ -54,7 +54,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 	private DFUResultReceiver dfuResultReceiver;
 	private int projectListSortOrder = 0;
-
+    private boolean connectionInitiated = false;
 	// DEBUG
 	protected boolean debug = true;
 	protected String TAG = "ProjectActivity";
@@ -129,8 +129,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             @Override
             public void run() {
                 setConnectedDeviceText();
-                if (popupHide)
+                if (popupHide && connectionInitiated) {
+                    connectionInitiated = false;
                     PopUp.hide();
+                }
             }
         });
 
@@ -383,7 +385,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             if (connectedDevice.mStatus) {
                 IPCService.getInstance().bleDisconnect();
             } else {
-
+                connectionInitiated = true;
                 PopUp.show(MBApp.getContext(),
                         getString(R.string.init_connection),
                         "",

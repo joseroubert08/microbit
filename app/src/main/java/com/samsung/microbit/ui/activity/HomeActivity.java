@@ -43,6 +43,8 @@ public class HomeActivity extends Activity implements View.OnClickListener {
     SharedPreferences prefs = null;
     ListView helpList = null ;
     StableArrayAdapter adapter = null ;
+
+    boolean connectionInitiated = false;
 	/* *************************************************
 	 * TODO setup to Handle BLE Notiifications
 	 */
@@ -100,8 +102,9 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 			public void run() {
 				updateConnectBarView();
                 //setConnectedDeviceText();
-                if(popupHide)
+                if(popupHide && connectionInitiated)
                     PopUp.hide();
+                    connectionInitiated = false;
 			}
 		});
 	}
@@ -306,16 +309,13 @@ public class HomeActivity extends Activity implements View.OnClickListener {
     private void toggleConnection(){
         updateConnectBarView();
         ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
-        if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
-            return;
-        }
         if (connectedDevice.mPattern != null) {
             if (connectedDevice.mStatus) {
                 if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleDisconnect()");
                 IPCService.getInstance().bleDisconnect();
             } else {
                 if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleConnect()");
-                // using MBApp.getContext() instead of this causes problem after flashing
+                connectionInitiated = true;
                 PopUp.show(MBApp.getContext(),
                         getString(R.string.init_connection),
                         "",
