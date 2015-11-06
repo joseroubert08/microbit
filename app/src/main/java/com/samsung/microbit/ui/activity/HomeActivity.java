@@ -1,5 +1,6 @@
 package com.samsung.microbit.ui.activity;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
@@ -8,10 +9,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -167,7 +170,9 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 
 		logi("onCreate() :: ");
 		MBApp.setContext(this);
-		if (broadcastIntentFilter == null) {
+
+
+        if (broadcastIntentFilter == null) {
 			broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
 			LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(broadcastReceiver, broadcastIntentFilter);
 		}
@@ -347,9 +352,8 @@ public class HomeActivity extends Activity implements View.OnClickListener {
                 break;
             case R.id.startNewProject:
                 {
-                    Intent intent = new Intent(this, TouchDevActivity.class);
-                    intent.putExtra(Constants.URL, getString(R.string.touchDevLiveURL));
-                    startActivity(intent);
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.touchDevLiveURL)));
+                    startActivity(browserIntent);
                 }
                 break;
             case R.id.numOfProjectsHolder:

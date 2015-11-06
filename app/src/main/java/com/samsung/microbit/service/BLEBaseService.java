@@ -16,7 +16,6 @@ import com.samsung.microbit.core.BLEManager;
 import com.samsung.microbit.core.CharacteristicChangeListener;
 import com.samsung.microbit.core.UnexpectedConnectionEventListener;
 import com.samsung.microbit.core.Utils;
-import com.squareup.okhttp.internal.Util;
 
 import java.util.List;
 import java.util.UUID;
