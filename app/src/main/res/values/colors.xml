@@ -22,5 +22,7 @@
 
     <color name="yellow_button_up">#ffcc31</color>
     <color name="yellow_button_down">#d3a331</color>
+    <color name="accent_material_light_1">#d7dbdb</color>
+    <color name="gray_green">#394535</color>
 
 </resources>

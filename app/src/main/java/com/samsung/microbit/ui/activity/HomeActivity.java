@@ -1,6 +1,5 @@
 package com.samsung.microbit.ui.activity;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
@@ -11,15 +10,21 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,16 +41,15 @@ import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.BluetoothSwitch;
 import com.samsung.microbit.ui.PopUp;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class HomeActivity extends Activity implements View.OnClickListener {
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
 
     SharedPreferences prefs = null;
-    ListView helpList = null ;
     StableArrayAdapter adapter = null ;
+    private AppCompatDelegate delegate;
 
     boolean connectionInitiated = false;
 	/* *************************************************
@@ -104,7 +108,6 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 			@Override
 			public void run() {
 				updateConnectBarView();
-                //setConnectedDeviceText();
                 if(popupHide && connectionInitiated)
                     PopUp.hide();
                     connectionInitiated = false;
@@ -117,53 +120,8 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         //handle orientation change to prevent re-creation of activity.
         //i.e. while recording we need to preserve state of recorder
         super.onConfigurationChanged(newConfig);
-
-        //setBackground();
     }
 
-/*	private void setConnectedDeviceText() {
-
-		TextView connectedIndicatorText = (TextView) findViewById(R.id.connectedIndicatorText);
-		TextView deviceName1 = (TextView) findViewById(R.id.deviceName);
-		TextView deviceName2 = (TextView) findViewById(R.id.deviceName2);
-		ImageButton connectedIndicatorIcon = (ImageButton) findViewById(R.id.connectedIndicatorIcon);
-
-		if (connectedIndicatorIcon == null || connectedIndicatorText == null)
-			return;
-
-		int startIndex = 0;
-		Spannable span = null;
-		ConnectedDevice device = Utils.getPairedMicrobit(this);
-		if (!device.mStatus) {
-			connectedIndicatorIcon.setImageResource(R.drawable.disconnect_device);
-			connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_disconnect_btn));
-			connectedIndicatorText.setText(getString(R.string.not_connected));
-			if (deviceName1 != null && deviceName2 != null) {
-				//Mobile Device.. 2 lines of display
-				if (device.mName != null)
-					deviceName1.setText(device.mName);
-				if (device.mPattern != null)
-					deviceName2.setText("(" + device.mPattern + ")");
-			} else if (deviceName1 != null) {
-				if (device.mName != null)
-					deviceName1.setText(device.mName + " (" + device.mPattern + ")");
-			}
-		} else {
-			connectedIndicatorIcon.setImageResource(R.drawable.device_connected);
-			connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_connect_btn));
-			connectedIndicatorText.setText(getString(R.string.connected_to));
-			if (deviceName1 != null && deviceName2 != null) {
-				//Mobile Device.. 2 lines of display
-				if (device.mName != null)
-					deviceName1.setText(device.mName);
-				if (device.mPattern != null)
-					deviceName2.setText("(" + device.mPattern + ")");
-			} else if (deviceName1 != null) {
-				if (device.mName != null)
-					deviceName1.setText(device.mName + " (" + device.mPattern + ")");
-			}
-		}
-	}*/
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -171,13 +129,14 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		logi("onCreate() :: ");
 		MBApp.setContext(this);
 
+        setContentView(R.layout.activity_home);
+        setupDrawer();
+
 
         if (broadcastIntentFilter == null) {
 			broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
 			LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(broadcastReceiver, broadcastIntentFilter);
 		}
-
-		setContentView(R.layout.activity_home);
 
 		RelativeLayout connectBarView = (RelativeLayout) findViewById(R.id.connectBarView);
 		connectBarView.getBackground().setAlpha(128);
@@ -200,45 +159,91 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		startService(intent);
 
         prefs = getSharedPreferences("com.samsung.microbit", MODE_PRIVATE);
-
-        helpList = (ListView) findViewById(R.id.moreItems);
-        if (helpList != null){
-            String [] items= getResources().getStringArray(R.array.moreListItems);
-
-            final ArrayList<String> list = new ArrayList<String>();
-            for (int i = 0; i < items.length; ++i) {
-                list.add(items[i]);
-            }
-
-            adapter = new StableArrayAdapter(this, android.R.layout.simple_list_item_1, list) ;
-            helpList.setAdapter(adapter);
-
-            helpList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
-                    final String title = (String) parent.getItemAtPosition(position);
-
-/*                    view.animate().setDuration(2000).alpha(0)
-                            .withEndAction(new Runnable() {
-                                @Override
-                                public void run() {
-                                    view.setAlpha(1);
-                                }
-                            });*/
-                    switch (position) {
-                        case 0:
-                        case 1:
-                        case 2:
-                        case 3:
-                            startGeneralView(title, position);
-                            helpList.setVisibility(View.INVISIBLE);
-                            break;
-                    }
-                }
-            });
-        }
-        //setConnectedDeviceText();
 	}
+
+
+    private void setupDrawer()
+    {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setLogo(R.drawable.bbc_microbit);
+
+/*      FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });*/
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        switch (id){
+            case R.id.nav_Help:
+                break;
+            case R.id.nav_About:
+                break;
+            case R.id.nav_Privacy:
+                break;
+            case R.id.nav_TC:
+                break;
+            case R.id.nav_demo1:
+                break;
+            case R.id.nav_demo2:
+                break;
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        //getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+
 
     private class StableArrayAdapter extends ArrayAdapter<String> {
 
@@ -371,44 +376,6 @@ public class HomeActivity extends Activity implements View.OnClickListener {
                     toggleConnection();
                 }
                 break;
-            case R.id.moreButton:
-                {
-                    //Display the ListView
-                    if (helpList != null){
-                        if (helpList.getVisibility() == View.INVISIBLE) {
-                            helpList.setVisibility(View.VISIBLE);
-                            helpList.bringToFront();
-                        }  else {
-                            helpList.setVisibility(View.INVISIBLE);
-                        }
-                    }
-                }
-                break;
-            /*
-            case R.id.connectedIndicatorIcon:
-                {
-                    if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()){
-                        return;
-                    }
-                    ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
-                    if (connectedDevice.mPattern != null) {
-                        if (connectedDevice.mStatus) {
-                            IPCService.getInstance().bleDisconnect();
-                        } else {
-
-                            PopUp.show(MBApp.getContext(),
-                                    getString(R.string.init_connection),
-                                    "",
-                                    R.drawable.flash_face, R.drawable.blue_btn,
-                                    PopUp.TYPE_SPINNER,
-                                    null, null);
-
-                            IPCService.getInstance().bleConnect();
-                        }
-                    }
-                }
-                break;
-                */
         }//Switch Ends
 	}
 
@@ -470,6 +437,5 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		MBApp.setContext(this);
 		updateConnectBarView();
         updateProjectBarView();
-        //setConnectedDeviceText();
 	}
 }

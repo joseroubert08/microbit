@@ -1,11 +1,15 @@
 <resources>
-
-    <style name="AppTheme" parent="AppBaseTheme">
-        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+         <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
         <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
-        <item name="android:windowFullscreen">false</item>
-        <item name="android:windowNoTitle">true</item>
     </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
         <item name="android:fontFamily">sans-serif-light</item>
