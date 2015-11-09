@@ -464,7 +464,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 			}
 		}
         mNewDeviceCode = mNewDeviceName;
-        mNewDeviceName = "BBC micro:git bit [" + mNewDeviceName + "]";
+        mNewDeviceName = "BBC microbit [" + mNewDeviceName + "]";
 		//Toast.makeText(this, "Pattern :"+mNewDeviceCode, Toast.LENGTH_SHORT).show();
 	}
 
