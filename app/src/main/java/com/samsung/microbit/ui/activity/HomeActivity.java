@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.LocalBroadcastManager;
@@ -392,8 +391,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.startNewProject:
                 {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.touchDevLiveURL)));
-                    startActivity(browserIntent);
+                    Intent intent = new Intent(this, TouchDevActivity.class);
+                    intent.putExtra(Constants.URL, getString(R.string.touchDevLiveURL));
+                    startActivity(intent);
                 }
                 break;
             case R.id.numOfProjectsHolder:

@@ -17,7 +17,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.samsung.microbit"
     android:versionCode="1"
-    android:versionName="1.3.4" >
+    android:versionName="1.3.5" >
 
     <uses-sdk android:minSdkVersion="19" />
 
@@ -85,6 +85,13 @@
             android:launchMode="singleTop"
             android:parentActivityName=".ui.activity.HomeActivity"
             android:windowSoftInputMode="stateHidden|adjustPan" >
+        </activity>
+        <activity
+            android:name=".ui.activity.TouchDevActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize"
+            android:parentActivityName=".ui.activity.HomeActivity"
+            android:windowSoftInputMode="adjustResize" >
         </activity>
         <activity
             android:name=".ui.activity.PopUpHolderActivity"

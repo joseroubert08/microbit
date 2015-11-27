@@ -408,14 +408,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
 		switch (v.getId()) {
 			case R.id.createProject:
-
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.touchDevURLMyScripts)));
-                startActivity(browserIntent);
-                finish();
-				/*intent = new Intent(this, TouchDevActivity.class);
+				intent = new Intent(this, TouchDevActivity.class);
 				intent.putExtra(Constants.URL, getString(R.string.touchDevURLMyScripts));
 				startActivity(intent);
-				finish();*/
+				finish();
 				break;
 
 			case R.id.backBtn:
