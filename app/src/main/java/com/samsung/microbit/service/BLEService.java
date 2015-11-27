@@ -1,7 +1,6 @@
 package com.samsung.microbit.service;
 
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
@@ -12,7 +11,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.samsung.microbit.R;
@@ -23,7 +21,6 @@ import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.model.NameValuePair;
-import com.samsung.microbit.ui.activity.PairingActivity;
 
 import java.util.UUID;
 
@@ -309,6 +306,7 @@ public class BLEService extends BLEBaseService {
 			sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null, args);
 		}
 
+		/*
         if (!isConnected && Constants.BLE_DISCONNECTED_FOR_FLASH == errorCode){
             //Diconnected for flashing. Remove the icon
             if (notifyMgr!= null) {
@@ -330,6 +328,7 @@ public class BLEService extends BLEBaseService {
             mBuilder.setContentIntent(resultPendingIntent);
             notifyMgr.notify(Constants.NOTIFICATION_ID, mBuilder.build());
         }
+        */
 
     }
 

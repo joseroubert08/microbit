@@ -1074,7 +1074,8 @@ public abstract class DfuBaseService extends IntentService {
 		public void onCharacteristicChanged(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
 
 
-			if (FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_OLD.equals(characteristic.getUuid())) {
+			if (FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_OLD.equals(characteristic.getUuid())
+                    || FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_NEW.equals(characteristic.getUuid())) {
 				// Possible press of button A after a 2 has been written to FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID_OLD
 				logi("FLashing code written notification");
                 int responseType = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
@@ -1440,18 +1441,38 @@ public abstract class DfuBaseService extends IntentService {
         updateProgressNotification(PROGRESS_VALIDATING);
 
         int rc = 1;
-		final BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID_OLD);
+
+        UUID PAIRING_SERVICE = UUID.randomUUID();
+        UUID PAIRING_CONTROL = UUID.randomUUID();
+        UUID PAIRING_CODE    = UUID.randomUUID();
+
+        PAIRING_SERVICE = FLASH_PAIRING_SERVICE_UUID_OLD ;
+
+		BluetoothGattService fps = gatt.getService(PAIRING_SERVICE);
 		if (fps == null) {
-            logi("Error Cannot find FLASH_PAIRING_SERVICE_UUID_OLD");
+            logi("Cannot find FLASH_PAIRING_SERVICE_UUID_OLD serivce. Trying new UUID");
+            PAIRING_SERVICE = FLASH_PAIRING_SERVICE_UUID_NEW ;
+            fps = gatt.getService(PAIRING_SERVICE);
+            if (fps !=null){
+                PAIRING_CONTROL = FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID_NEW ;
+                PAIRING_CODE = FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_NEW;
+            }
+        } else { //Working on Old system
+            PAIRING_CONTROL = FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID_OLD ;
+            PAIRING_CODE = FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_OLD;
+        }
+
+        if (fps == null){
             sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
-			terminateConnection(gatt, PROGRESS_ABORTED);
-			return 6;
-		}
+            terminateConnection(gatt, PROGRESS_ABORTED);
+            return 6;
+        }
+
         //Write the flashing code if Known
-        logi("Finding FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_OLD ....");
-        final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_OLD);
+        logi("Finding PAIRING_CODE ....");
+        final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(PAIRING_CODE);
         if (sfpc == null) {
-            logi("Error Cannot find the FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_OLD");
+            logi("Error Cannot find the PAIRING_CODE");
             sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
             terminateConnection(gatt, PROGRESS_ABORTED);
             return 6;
@@ -1460,7 +1481,7 @@ public abstract class DfuBaseService extends IntentService {
         sfpc.setValue(mDevicePairingCode , BluetoothGattCharacteristic.FORMAT_UINT32, 0);
 
         try {
-            logi("Writing FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_OLD ....");
+            logi("Writing PAIRING_CODE ....");
             writeCharacteristic(gatt, sfpc);
             rc = 0;
         } catch (Exception e) {
@@ -1469,9 +1490,9 @@ public abstract class DfuBaseService extends IntentService {
 
 
         //Add Complete
-		final BluetoothGattCharacteristic sfpc1 = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID_OLD);
+		final BluetoothGattCharacteristic sfpc1 = fps.getCharacteristic(PAIRING_CONTROL);
         if (sfpc == null) {
-			logi("Error Cannot find FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID_OLD");
+			logi("Error Cannot find PAIRING_CONTROL");
             sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
             terminateConnection(gatt, PROGRESS_ABORTED);
             return 6;
@@ -1479,7 +1500,7 @@ public abstract class DfuBaseService extends IntentService {
 
         sfpc1.setValue(1, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 		try {
-            logi("Writing FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID_OLD ....");
+            logi("Writing PAIRING_CONTROL ....");
 			writeCharacteristic(gatt, sfpc1);
 			rc = 0;
 		} catch (Exception e) {
