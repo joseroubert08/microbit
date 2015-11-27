@@ -228,6 +228,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 adviceOnMicrobitState();
             }
         }
+        if (MBApp.getApp().getEcho()!= null) {
+            logi("Page View test for ProjectActivity");
+            MBApp.getApp().getEcho().viewEvent("com.samsung.microbit.ui.activity.projectactivity.page", null);
+        }
 	}
 
 	private void setConnectedDeviceText() {

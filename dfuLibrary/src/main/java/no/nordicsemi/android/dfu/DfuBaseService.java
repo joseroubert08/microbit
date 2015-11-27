@@ -27,8 +27,6 @@ package no.nordicsemi.android.dfu;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.IntentService;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -43,7 +41,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -51,9 +48,10 @@ import android.os.ResultReceiver;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
+import com.samsung.dfulibrary.R;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
@@ -61,11 +59,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.UUID;
-
-import com.samsung.dfulibrary.R;
 
 import no.nordicsemi.android.dfu.exception.DeviceDisconnectedException;
 import no.nordicsemi.android.dfu.exception.DfuException;
@@ -607,9 +602,15 @@ public abstract class DfuBaseService extends IntentService {
 	private static final UUID DFU_VERSION = new UUID(0x000015341212EFDEl, 0x1523785FEABCD123l);
 	private static final UUID CLIENT_CHARACTERISTIC_CONFIG = new UUID(0x0000290200001000l, 0x800000805f9b34fbl);
 
-	private static final UUID FLASH_PAIRING_SERVICE_UUID = UUID.fromString("d8af991c-7144-43d7-954b-99512f95f99c");
-	private static final UUID FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID = UUID.fromString("97109547-e63a-442a-bf89-9d730413dc2f");
-	private static final UUID FLASH_PAIRING_CODE_CHARACTERISTIC_UUID = UUID.fromString("947b6934-64d1-4fad-9bd0-cc9d6e9f3ea3");
+	private static final UUID FLASH_PAIRING_SERVICE_UUID_OLD = UUID.fromString("d8af991c-7144-43d7-954b-99512f95f99c");
+    private static final UUID FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID_OLD = UUID.fromString("97109547-e63a-442a-bf89-9d730413dc2f");
+    private static final UUID FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_OLD = UUID.fromString("947b6934-64d1-4fad-9bd0-cc9d6e9f3ea3");
+
+
+    private static final UUID FLASH_PAIRING_SERVICE_UUID_NEW = UUID.fromString("E95D93B0-251D-470A-A062-FA1922DFA9A8");
+    private static final UUID FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID_NEW = UUID.fromString("E95D93B1-251D-470A-A062-FA1922DFA9A8");
+    private static final UUID FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_NEW = UUID.fromString("E95D93B2-251D-470A-A062-FA1922DFA9A8");
+
 	private static final UUID CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
 
@@ -1027,7 +1028,7 @@ public abstract class DfuBaseService extends IntentService {
 					sendLogBroadcast(LOG_LEVEL_INFO, "Data written to " + characteristic.getUuid() + ", value (0x): " + parse(characteristic));
 					mRequestCompleted = true;
 				}
-			} else if (characteristic.getUuid().equals(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID)) {
+			} else if (characteristic.getUuid().equals(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID_OLD)) {
 				if (status == BluetoothGatt.GATT_SUCCESS)
 					mRequestCompleted = true;
 			} else {
@@ -1073,8 +1074,8 @@ public abstract class DfuBaseService extends IntentService {
 		public void onCharacteristicChanged(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
 
 
-			if (FLASH_PAIRING_CODE_CHARACTERISTIC_UUID.equals(characteristic.getUuid())) {
-				// Possible press of button A after a 2 has been written to FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID
+			if (FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_OLD.equals(characteristic.getUuid())) {
+				// Possible press of button A after a 2 has been written to FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID_OLD
 				logi("FLashing code written notification");
                 int responseType = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
                 int pairingCode = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
@@ -1292,23 +1293,23 @@ public abstract class DfuBaseService extends IntentService {
 	}
 
 
-	public boolean registerNotifications(boolean enable) {
+	public boolean registerNotificationsForPairCode(UUID pairingServiceUUID, UUID pairingCodeCharacteristicUUID, boolean enable) {
 
-		BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
+		BluetoothGattService fps = gatt.getService(pairingServiceUUID);
 		if (fps == null) {
-			logi("registerNotifications() :: not found service " + FLASH_PAIRING_SERVICE_UUID.toString());
+			logi("registerNotificationsForPairCode() :: not found service " + pairingServiceUUID.toString());
 			return false;
 		}
 
-		BluetoothGattCharacteristic fpsc = fps.getCharacteristic(FLASH_PAIRING_CODE_CHARACTERISTIC_UUID);
+		BluetoothGattCharacteristic fpsc = fps.getCharacteristic(pairingCodeCharacteristicUUID);
 		if (fpsc == null) {
-			logi("registerNotifications() :: not found Characteristic " + FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID.toString());
+			logi("registerNotificationsForPairCode() :: not found Characteristic " + pairingCodeCharacteristicUUID.toString());
 			return false;
 		}
 
 		BluetoothGattDescriptor fpsd = fpsc.getDescriptor(CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR);
 		if (fpsd == null) {
-			logi("registerNotifications() :: not found descriptor " + CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR.toString());
+			logi("registerNotificationsForPairCode() :: not found descriptor " + CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR.toString());
 			return false;
 		}
 
@@ -1335,10 +1336,6 @@ public abstract class DfuBaseService extends IntentService {
 		return true;
 	}
 
-
-	/* TODO
-		Temporary code till we have callbacks for FLASH_PAIRING_CODE_CHARACTERISTIC_UUID
-	*/
 	int pairing(Intent intent) {
 
 		final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -1356,17 +1353,38 @@ public abstract class DfuBaseService extends IntentService {
 		if (!makeGattConnection(deviceAddress))
             return 5;
 
-		final BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
 
-		if (fps == null) {
-			logi("Pairing aborted");
-			sendLogBroadcast(LOG_LEVEL_WARNING, "Pairing aborted");
+        UUID PAIRING_SERVICE = UUID.randomUUID();
+        UUID PAIRING_CONTROL = UUID.randomUUID();
+        UUID PAIRING_CODE    = UUID.randomUUID();
+
+        //Start with old values
+        PAIRING_SERVICE = FLASH_PAIRING_SERVICE_UUID_OLD ;
+
+        BluetoothGattService fps = gatt.getService(PAIRING_SERVICE);
+
+        if (fps == null) {
+            logi("Cannot find FLASH_PAIRING_SERVICE_UUID_OLD serivce. Trying new UUID");
+            PAIRING_SERVICE = FLASH_PAIRING_SERVICE_UUID_NEW ;
+            fps = gatt.getService(PAIRING_SERVICE);
+            if (fps !=null){
+                PAIRING_CONTROL = FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID_NEW ;
+                PAIRING_CODE = FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_NEW;
+
+            }
+
+        } else { //Working on Old system
+            PAIRING_CONTROL = FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID_OLD ;
+            PAIRING_CODE = FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_OLD;
+        }
+
+        if (fps == null){
+            sendLogBroadcast(LOG_LEVEL_WARNING, "Pairing aborted");
             cancelPairing(gatt);
-			return 6;
-		}
+            return 6;
+        }
 
-
-		final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
+		final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(PAIRING_CONTROL);
 		if (sfpc == null) {
 			logi("Pairing aborted");
 			sendLogBroadcast(LOG_LEVEL_WARNING, "Pairing aborted");
@@ -1386,7 +1404,7 @@ public abstract class DfuBaseService extends IntentService {
 			e.printStackTrace();
 		}
 
-		registerNotifications(true);
+		registerNotificationsForPairCode(PAIRING_SERVICE, PAIRING_CODE, true);
 
 		if (mConnectionState == STATE_DISCONNECTED) {
 			logi("Gatt disconnected");
@@ -1422,18 +1440,18 @@ public abstract class DfuBaseService extends IntentService {
         updateProgressNotification(PROGRESS_VALIDATING);
 
         int rc = 1;
-		final BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID);
+		final BluetoothGattService fps = gatt.getService(FLASH_PAIRING_SERVICE_UUID_OLD);
 		if (fps == null) {
-            logi("Error Cannot find FLASH_PAIRING_SERVICE_UUID");
+            logi("Error Cannot find FLASH_PAIRING_SERVICE_UUID_OLD");
             sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
 			terminateConnection(gatt, PROGRESS_ABORTED);
 			return 6;
 		}
         //Write the flashing code if Known
-        logi("Finding FLASH_PAIRING_CODE_CHARACTERISTIC_UUID ....");
-        final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CODE_CHARACTERISTIC_UUID);
+        logi("Finding FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_OLD ....");
+        final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_OLD);
         if (sfpc == null) {
-            logi("Error Cannot find the FLASH_PAIRING_CODE_CHARACTERISTIC_UUID");
+            logi("Error Cannot find the FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_OLD");
             sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
             terminateConnection(gatt, PROGRESS_ABORTED);
             return 6;
@@ -1442,7 +1460,7 @@ public abstract class DfuBaseService extends IntentService {
         sfpc.setValue(mDevicePairingCode , BluetoothGattCharacteristic.FORMAT_UINT32, 0);
 
         try {
-            logi("Writing FLASH_PAIRING_CODE_CHARACTERISTIC_UUID ....");
+            logi("Writing FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_OLD ....");
             writeCharacteristic(gatt, sfpc);
             rc = 0;
         } catch (Exception e) {
@@ -1451,9 +1469,9 @@ public abstract class DfuBaseService extends IntentService {
 
 
         //Add Complete
-		final BluetoothGattCharacteristic sfpc1 = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID);
+		final BluetoothGattCharacteristic sfpc1 = fps.getCharacteristic(FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID_OLD);
         if (sfpc == null) {
-			logi("Error Cannot find FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID");
+			logi("Error Cannot find FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID_OLD");
             sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
             terminateConnection(gatt, PROGRESS_ABORTED);
             return 6;
@@ -1461,7 +1479,7 @@ public abstract class DfuBaseService extends IntentService {
 
         sfpc1.setValue(1, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 		try {
-            logi("Writing FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID ....");
+            logi("Writing FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID_OLD ....");
 			writeCharacteristic(gatt, sfpc1);
 			rc = 0;
 		} catch (Exception e) {
@@ -3289,7 +3307,7 @@ public abstract class DfuBaseService extends IntentService {
 
         if(progress>0)
             builder.addAction(0,null,null);
-        */
+
 
         manager.notify(NOTIFICATION_ID, builder.build());
         */

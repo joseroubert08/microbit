@@ -198,10 +198,10 @@ public class BLEService extends BLEBaseService {
     }
 	public boolean registerNotifications(boolean enable) {
 
-		if (debug) logi("registerNotifications()");
+		if (debug) logi("registerNotificationsForPairCode()");
 		BluetoothGattService eventService = getService(Constants.EVENT_SERVICE);
 		if (eventService == null) {
-			if (debug) logi("registerNotifications() :: not found service : Constants.EVENT_SERVICE");
+			if (debug) logi("registerNotificationsForPairCode() :: not found service : Constants.EVENT_SERVICE");
 			return false;
 		}
 
@@ -222,7 +222,7 @@ public class BLEService extends BLEBaseService {
             logi("Failed to registerMicroBitEvents");
             return false;
         }
-		if (debug) logi("registerNotifications() : done");
+		if (debug) logi("registerNotificationsForPairCode() : done");
 		return true;
 	}
 

@@ -45,9 +45,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import uk.co.bbc.echo.EchoConfigKeys;
-import uk.co.bbc.echo.Media;
-import uk.co.bbc.echo.enumerations.MediaAvType;
-import uk.co.bbc.echo.enumerations.MediaConsumptionMode;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -139,6 +136,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_home);
         setupDrawer();
 
+        //Set up Echo
+        setupEcho();
 
         if (broadcastIntentFilter == null) {
 			broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
@@ -167,59 +166,38 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         prefs = getSharedPreferences("com.samsung.microbit", MODE_PRIVATE);
 
-        //Set up Echo
-        setupEcho();
+        if (app.getEcho()!= null) {
+            logi("Page View test for HomeActivity");
+            //Page view test
+            app.getEcho().viewEvent("com.samsung.microbit.ui.activity.homeactivity.page", null);
+        }
 	}
 
 
     private void setupEcho(){
         // Echo Config
-        app = ((MBApp) getApplicationContext());
+        app = (MBApp) MBApp.getApp().getApplicationContext();
 
         HashMap<String, String> config = new HashMap<String, String>();
 
         //Use ECHO_TRACE value for searching in echo chamber
-        config.put(EchoConfigKeys.ECHO_TRACE, "trace123");
-
+        config.put(EchoConfigKeys.ECHO_TRACE, "microbit_android_app"); //TODO Change later
         //Use CS debug mode
         config.put(EchoConfigKeys.COMSCORE_DEBUG_MODE, "1");
-
         // Send Comscore events to EchoChamber
         config.put(EchoConfigKeys.COMSCORE_URL, "http://data.bbc.co.uk/v1/analytics-echo-chamber-inbound/comscore");
-
         //Enable debug mode
         config.put(EchoConfigKeys.ECHO_DEBUG, "1");
-
-        // Send RUM events to EchoChamber
-//        config.put(EchoConfigKeys.RUM_ENABLED, "true");
-        config.put(EchoConfigKeys.RUM_URL, "http://data.bbc.co.uk/v1/analytics-echo-chamber-inbound/rum");
+       // Send RUM events to EchoChamber
+       //config.put(EchoConfigKeys.RUM_ENABLED, "true");
+       //config.put(EchoConfigKeys.RUM_URL, "http://data.bbc.co.uk/v1/analytics-echo-chamber-inbound/rum");
 
         // Send BARB events
-        config.put(EchoConfigKeys.BARB_ENABLED, "true");
-        config.put(EchoConfigKeys.BARB_SITE_CODE, "bbcandroidtest");
+        //config.put(EchoConfigKeys.BARB_ENABLED, "true");
+        //config.put(EchoConfigKeys.BARB_SITE_CODE, "bbcandroidtest");
 
         // Instantiate EchoClient
         app.initialiseEcho(config);
-
-        // Android also requires these player
-        // attributes to be set
-        app.getEcho().setPlayerName("micro:bit Android");
-        app.getEcho().setPlayerVersion("1.3.4");
-        //app.getEcho().setPlayerDelegate(mediaPosition);
-
-
-        //Send view event with countername
-        app.getEcho().viewEvent("countername123",null);
-
-        //Create new media object
-        Media media = new Media( MediaAvType.VIDEO, MediaConsumptionMode.ON_DEMAND);
-        media.setClipId("clipid");
-        media.setVersionId("versionid");
-        media.setEpisodeId("episodeid");
-        media.setServiceId("serviceid");
-
-        //set media object
-        app.getEcho().setMedia(media);
     }
 
     private void setupDrawer()
@@ -402,6 +380,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.addDevice:
             case R.id.addDeviceEmpty:
                 {
+                    /*
+                    if (app.getEcho()!= null) {
+                        logi("User action test for Click on Add microbit");
+                        app.getEcho().userActionEvent("click", "AddMicrobitButton", null);
+                    }
+                    */
                     Intent intent = new Intent(this, PairingActivity.class);
                     startActivity(intent);
                 }

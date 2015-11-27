@@ -370,6 +370,11 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 		WebView animation = (WebView) findViewById(R.id.animationwebView);
 		animation.setBackgroundColor(Color.TRANSPARENT);
 		animation.loadUrl("file:///android_asset/htmls/animation.html");
+
+        if (MBApp.getApp().getEcho()!= null) {
+            logi("Page View test for PairingActivity");
+            MBApp.getApp().getEcho().viewEvent("com.samsung.microbit.ui.activity.pairingactivity.page", null);
+        }
 	}
 
     boolean setupBleController()
