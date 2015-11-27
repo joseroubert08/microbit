@@ -754,7 +754,7 @@ public abstract class DfuBaseService extends IntentService {
 	 */
 	private byte[] mReceivedData = null;
 
-	static NotificationCompat.Builder builder=null;
+	//static NotificationCompat.Builder builder=null;
 	private final BroadcastReceiver mConnectionStateBroadcastReceiver = new BroadcastReceiver() {
 
 		@Override
@@ -3195,6 +3195,7 @@ public abstract class DfuBaseService extends IntentService {
             sendErrorBroadcast(progress);
             return;
         }
+		/*
 		// final Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_stat_notify_dfu); <- this looks bad on Android 5
 		if(progress < 0) {
 			builder = new NotificationCompat.Builder(this).setSmallIcon(android.R.drawable.stat_sys_upload).
@@ -3256,12 +3257,14 @@ public abstract class DfuBaseService extends IntentService {
 					builder.setOngoing(true).setContentTitle(title).setContentText(text).setProgress(100, progress, false).setColor(Color.BLUE);
 				}
 		}
+		*/
 		// send progress or error broadcast
 		if (progress < ERROR_MASK)
 			sendProgressBroadcast(progress);
 		else
 			sendErrorBroadcast(progress);
 
+        /*
 		// update the notification
 		final Intent intent = new Intent(this, getNotificationTarget());
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -3275,7 +3278,7 @@ public abstract class DfuBaseService extends IntentService {
 
 		// Add Abort action to the notification
         //Rohit - Disabled Cancel for now
-		/*
+
 		if (progress != PROGRESS_ABORTED && progress != PROGRESS_COMPLETED && progress <  0) { //ERROR_MASK) {
 			final Intent abortIntent = new Intent(BROADCAST_ACTION);
 			abortIntent.putExtra(EXTRA_ACTION, ACTION_ABORT);
@@ -3286,9 +3289,9 @@ public abstract class DfuBaseService extends IntentService {
 
         if(progress>0)
             builder.addAction(0,null,null);
-        */
 
         manager.notify(NOTIFICATION_ID, builder.build());
+        */
 	}
 
 	/**
