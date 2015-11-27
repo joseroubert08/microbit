@@ -44,6 +44,11 @@ import com.samsung.microbit.ui.PopUp;
 import java.util.HashMap;
 import java.util.List;
 
+import uk.co.bbc.echo.EchoConfigKeys;
+import uk.co.bbc.echo.Media;
+import uk.co.bbc.echo.enumerations.MediaAvType;
+import uk.co.bbc.echo.enumerations.MediaConsumptionMode;
+
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
 
@@ -52,6 +57,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private AppCompatDelegate delegate;
 
     boolean connectionInitiated = false;
+
+    private MBApp app = null ;
 	/* *************************************************
 	 * TODO setup to Handle BLE Notiifications
 	 */
@@ -159,23 +166,67 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 		startService(intent);
 
         prefs = getSharedPreferences("com.samsung.microbit", MODE_PRIVATE);
+
+        //Set up Echo
+        setupEcho();
 	}
 
+
+    private void setupEcho(){
+        // Echo Config
+        app = ((MBApp) getApplicationContext());
+
+        HashMap<String, String> config = new HashMap<String, String>();
+
+        //Use ECHO_TRACE value for searching in echo chamber
+        config.put(EchoConfigKeys.ECHO_TRACE, "trace123");
+
+        //Use CS debug mode
+        config.put(EchoConfigKeys.COMSCORE_DEBUG_MODE, "1");
+
+        // Send Comscore events to EchoChamber
+        config.put(EchoConfigKeys.COMSCORE_URL, "http://data.bbc.co.uk/v1/analytics-echo-chamber-inbound/comscore");
+
+        //Enable debug mode
+        config.put(EchoConfigKeys.ECHO_DEBUG, "1");
+
+        // Send RUM events to EchoChamber
+//        config.put(EchoConfigKeys.RUM_ENABLED, "true");
+        config.put(EchoConfigKeys.RUM_URL, "http://data.bbc.co.uk/v1/analytics-echo-chamber-inbound/rum");
+
+        // Send BARB events
+        config.put(EchoConfigKeys.BARB_ENABLED, "true");
+        config.put(EchoConfigKeys.BARB_SITE_CODE, "bbcandroidtest");
+
+        // Instantiate EchoClient
+        app.initialiseEcho(config);
+
+        // Android also requires these player
+        // attributes to be set
+        app.getEcho().setPlayerName("micro:bit Android");
+        app.getEcho().setPlayerVersion("1.3.4");
+        //app.getEcho().setPlayerDelegate(mediaPosition);
+
+
+        //Send view event with countername
+        app.getEcho().viewEvent("countername123",null);
+
+        //Create new media object
+        Media media = new Media( MediaAvType.VIDEO, MediaConsumptionMode.ON_DEMAND);
+        media.setClipId("clipid");
+        media.setVersionId("versionid");
+        media.setEpisodeId("episodeid");
+        media.setServiceId("serviceid");
+
+        //set media object
+        app.getEcho().setMedia(media);
+    }
 
     private void setupDrawer()
     {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setLogo(R.drawable.bbc_microbit);
-
-/*      FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

@@ -1058,9 +1058,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 			if (debug) logi("mLeScanCallback.onLeScan() ::   Cannot Compare "+device.getAddress() +" " + rssi + " "+scanRecord.toString());
 		} else {
 			String s = device.getName().toLowerCase();
-			//Fix for #64 - Remove the : from the name if available
-            s.replaceAll(":", "");
-
+            //Replace all : to blank - Fix for #64
+            //TODO Use pattern recognition instead
+			s.replaceAll(":","");
 			if (mNewDeviceName.toLowerCase().equals(s)) {
 
 				if (debug) logi("mLeScanCallback.onLeScan() ::   Found micro:bit -" + device.getName().toLowerCase() + " " + device.getAddress());

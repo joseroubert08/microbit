@@ -3289,6 +3289,7 @@ public abstract class DfuBaseService extends IntentService {
 
         if(progress>0)
             builder.addAction(0,null,null);
+        */
 
         manager.notify(NOTIFICATION_ID, builder.build());
         */
