@@ -217,6 +217,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 urlToOpen = getString(R.string.touchDevTestURL);
                 break;
         }
+
         return super.onOptionsItemSelected(item);
     }
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -280,7 +281,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.startNewProject:
                 {
                     //Debug feature to be added. Start Browser with live, stage or test URL
-                    if (urlToOpen.isEmpty()) {
+                    if (urlToOpen == null) {
                         urlToOpen = getString(R.string.touchDevLiveURL);
                     }
                     Intent intent = new Intent(Intent.ACTION_VIEW);
