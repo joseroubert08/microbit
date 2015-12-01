@@ -28,7 +28,7 @@
     <string name="terms_of_use_url">https://www.microbit.co.uk/terms-of-use</string>
 	<string name="remote_config_url">https://files.microbit.co.uk/appconfig/microbit/android/%s/config.json</string>
 
-	
+
     <string name="user_agent">SamsungBrowser/microbit Profile/OTA-DFU1.0</string>
 
 	<string name="search_BLE_activity">Search micro:bit</string>
