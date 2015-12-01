@@ -1,36 +1,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:background="@drawable/bg"
     app:layout_behavior="@string/appbar_scrolling_view_behavior" tools:showIn="@layout/app_bar_main"
-    tools:context=".HomeActivity">
-
-
-    <RelativeLayout
+    tools:context=".HomeActivity"
         android:id="@+id/connectBarView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/drawer_layout"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/content_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:background="@drawable/white_bg">
+            android:layout_below="@id/drawer_layout"
+    android:layout_centerHorizontal="true">
 
-        <TextView
-            style="@style/h1"
-            android:id="@+id/title"
-            android:layout_width="@dimen/home_connect_title_width"
-            android:layout_height="wrap_content"
-            android:text="@string/connect"
-            android:singleLine="true"
-            android:layout_margin="@dimen/widget_margin"/>
-
-        <Button
+       <Button
             style="@style/p1"
             android:id="@+id/addDeviceEmpty"
             android:layout_width="@dimen/home_device_name_empty_width"
@@ -39,13 +22,73 @@
             android:textColor="@color/gray_color"
             android:background="@drawable/white_btn"
             android:layout_below="@id/title"
-            android:drawableRight="@drawable/connect_device"
+            android:drawableEnd="@drawable/connect_device"
+           android:gravity="left|center_vertical"
+            android:onClick="onClick"
+            android:visibility="visible"
+            android:ellipsize="end"
+            android:scrollHorizontally="true"
+            android:lines="1"
+            android:text="Connect"
+            android:elevation="@dimen/elevation"/>
+<!-- New button 2 - [Flash]-->
+        <Button
+            style="@style/p1"
+            android:id="@+id/flashMicrobit"
+            android:layout_width="@dimen/home_device_name_empty_width"
+            android:layout_height="@dimen/home_button_height"
+            android:layout_margin="@dimen/widget_margin"
+            android:textColor="@color/gray_color"
+            android:background="@drawable/white_btn"
+            android:layout_below="@id/addDeviceEmpty"
+            android:drawableEnd="@drawable/connect_device"
             android:gravity="left|center_vertical"
             android:onClick="onClick"
             android:visibility="visible"
             android:ellipsize="end"
             android:scrollHorizontally="true"
             android:lines="1"
+            android:text="Flash"
+            android:elevation="@dimen/elevation"/>
+
+        <!-- create project code -->
+        <Button
+            style="@style/p1"
+            android:id="@+id/startNewProject"
+            android:layout_width="@dimen/home_device_name_empty_width"
+            android:layout_height="@dimen/home_button_height"
+            android:layout_margin="@dimen/widget_margin"
+            android:textColor="@color/gray_color"
+            android:background="@drawable/white_btn"
+            android:layout_below="@id/flashMicrobit"
+            android:drawableEnd="@drawable/encouragement_emojio"
+            android:gravity="left|center_vertical"
+            android:onClick="onClick"
+            android:visibility="visible"
+            android:ellipsize="end"
+            android:scrollHorizontally="true"
+            android:lines="1"
+            android:text="Create"
+            android:elevation="@dimen/elevation"/>
+
+        <!-- Discover -->
+        <Button
+            style="@style/p1"
+            android:id="@+id/discover"
+            android:layout_width="@dimen/home_device_name_empty_width"
+            android:layout_height="@dimen/home_button_height"
+            android:layout_margin="@dimen/widget_margin"
+            android:textColor="@color/gray_color"
+            android:background="@drawable/white_btn"
+            android:layout_below="@id/startNewProject"
+            android:drawableEnd="@drawable/connect_device"
+            android:gravity="left|center_vertical"
+            android:onClick="onClick"
+            android:visibility="visible"
+            android:ellipsize="end"
+            android:scrollHorizontally="true"
+            android:lines="1"
+            android:text="Discover"
             android:elevation="@dimen/elevation"/>
 
         <Button
@@ -57,7 +100,7 @@
             android:background="@drawable/white_btn"
             android:textColor="@color/blue_button_up"
             android:layout_below="@id/title"
-            android:drawableRight="@drawable/add_device"
+            android:drawableEnd="@drawable/add_device"
             android:gravity="left|center_vertical"
             android:onClick="onClick"
             android:visibility="gone"
@@ -80,70 +123,70 @@
             android:visibility="gone"
             android:elevation="@dimen/elevation"/>
 
-    </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/projectBarView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/content_margin"
-        android:layout_marginBottom="@dimen/content_margin"
-        android:layout_below="@id/connectBarView"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/white_bg">
 
-        <TextView
-            style="@style/h1"
-            android:id="@+id/projects"
-            android:layout_width="@dimen/home_project_title_width"
-            android:layout_height="wrap_content"
-            android:text="@string/your_projects"
-            android:singleLine="true"
-            android:layout_margin="@dimen/widget_margin" />
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/projectBarView"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="@dimen/content_margin"-->
+        <!--android:layout_marginBottom="@dimen/content_margin"-->
+        <!--android:layout_below="@id/connectBarView"-->
+        <!--android:layout_marginLeft="@dimen/activity_horizontal_margin"-->
+        <!--android:layout_marginRight="@dimen/activity_horizontal_margin"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:background="@drawable/white_bg">-->
 
-        <RelativeLayout
-            android:layout_width="@dimen/home_no_project_btn_width"
-            android:layout_height="@dimen/home_button_height"
-            android:id="@+id/numOfProjectsHolder"
-            android:layout_below="@id/projects"
-            android:layout_margin="@dimen/widget_margin"
-            android:layout_centerVertical="true"
-            android:background="@drawable/white_btn"
-            android:onClick="onClick"
-            android:elevation="@dimen/elevation">
-                <TextView
-                    android:id="@+id/numOfProjects"
-                    style="@style/h3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:gravity="center_vertical"/>
-                <TextView
-                    style="@style/p1"
-                    android:layout_marginLeft="@dimen/content_margin"
-                    android:layout_toRightOf="@id/numOfProjects"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:gravity="center_vertical"
-                    android:singleLine="true"
-                    android:text="@string/saved_projects" />
-        </RelativeLayout>
-        <ImageButton
-            style="@style/p1"
-            android:id="@+id/startNewProject"
-            android:layout_width="@dimen/home_start_btn_width"
-            android:layout_height="@dimen/home_button_height"
-            android:layout_margin="@dimen/widget_margin"
-            android:background="@drawable/white_btn"
-            android:layout_toRightOf="@id/numOfProjectsHolder"
-            android:src="@drawable/encouragement_emojio"
-            android:layout_below="@id/projects"
-            android:onClick="onClick"
-            android:gravity="left|center"
-            android:elevation="@dimen/elevation"/>
+        <!--<TextView-->
+            <!--style="@style/h1"-->
+            <!--android:id="@+id/projects"-->
+            <!--android:layout_width="@dimen/home_project_title_width"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/your_projects"-->
+            <!--android:singleLine="true"-->
+            <!--android:layout_margin="@dimen/widget_margin" />-->
 
-    </RelativeLayout>
+        <!--<RelativeLayout-->
+            <!--android:layout_width="@dimen/home_no_project_btn_width"-->
+            <!--android:layout_height="@dimen/home_button_height"-->
+            <!--android:id="@+id/numOfProjectsHolder"-->
+            <!--android:layout_below="@id/projects"-->
+            <!--android:layout_margin="@dimen/widget_margin"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:background="@drawable/white_btn"-->
+            <!--android:onClick="onClick"-->
+            <!--android:elevation="@dimen/elevation">-->
+            <!--<TextView-->
+                <!--android:id="@+id/numOfProjects"-->
+                <!--style="@style/h3"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="fill_parent"-->
+                <!--android:gravity="center_vertical"/>-->
+            <!--<TextView-->
+                <!--style="@style/p1"-->
+                <!--android:layout_marginLeft="@dimen/content_margin"-->
+                <!--android:layout_toRightOf="@id/numOfProjects"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="fill_parent"-->
+                <!--android:gravity="center_vertical"-->
+                <!--android:singleLine="true"-->
+                <!--android:text="@string/saved_projects" />-->
+      <!--//  </RelativeLayout>-->
+        <!--<ImageButton-->
+            <!--style="@style/p1"-->
+            <!--android:id="@+id/startNewProject"-->
+            <!--android:layout_width="@dimen/home_start_btn_width"-->
+            <!--android:layout_height="@dimen/home_button_height"-->
+            <!--android:layout_margin="@dimen/widget_margin"-->
+            <!--android:background="@drawable/white_btn"-->
+            <!--android:layout_toRightOf="@id/numOfProjectsHolder"-->
+            <!--android:src="@drawable/encouragement_emojio"-->
+            <!--android:layout_below="@id/projects"-->
+            <!--android:onClick="onClick"-->
+            <!--android:gravity="left|center"-->
+            <!--android:elevation="@dimen/elevation"/>-->
+
+    <!--</RelativeLayout>-->
 
 
 </RelativeLayout>

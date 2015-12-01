@@ -25,7 +25,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
@@ -56,7 +55,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private MBApp app = null ;
 	/* *************************************************
-	 * TODO setup to Handle BLE Notiifications
+	 * TODO setup to Handle BLE Notifications
 	 */
 	IntentFilter broadcastIntentFilter;
 	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -66,7 +65,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 			int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
             logi("broadcastReceiver Error code = " + v);
-
             if (Constants.BLE_DISCONNECTED_FOR_FLASH == v){
 				logi("Bluetooth disconnected for flashing. No need to display pop-up");
                 handleBLENotification(context, intent, false);
@@ -148,10 +146,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 		updateConnectBarView();
 
-		RelativeLayout projectBarView = (RelativeLayout) findViewById(R.id.projectBarView);
-		projectBarView.getBackground().setAlpha(128);
+//		RelativeLayout projectBarView = (RelativeLayout) findViewById(R.id.projectBarView);
+//		projectBarView.getBackground().setAlpha(128);
 
-		updateProjectBarView();
+	//	updateProjectBarView();
 
 		// Start the other services - local service to handle IPC in the main process
 		Intent ipcIntent = new Intent(this, IPCService.class);
@@ -396,12 +394,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     startActivity(intent);
                 }
                 break;
-            case R.id.numOfProjectsHolder:
-                {
-                    Intent intent = new Intent(this, ProjectActivity.class);
-                    startActivity(intent);
-                }
-                break;
+// TODO - remove this case
+//      case R.id.numOfProjectsHolder:
+//                {
+//                    Intent intent = new Intent(this, ProjectActivity.class);
+//                    startActivity(intent);
+//                }
+//                break;
             case R.id.connectBtn:
                 {
                     if (!BluetoothSwitch.getInstance().isBluetoothON()) {
@@ -445,8 +444,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 	}
 
 	private final void updateProjectBarView() {
-		TextView numOfProjects = (TextView) findViewById(R.id.numOfProjects);
-		numOfProjects.setText(Integer.toString(Utils.findProgramsAndPopulate(null, null)));
+		//TextView numOfProjects = (TextView) findViewById(R.id.numOfProjects);
+	//	numOfProjects.setText(Integer.toString(Utils.findProgramsAndPopulate(null, null)));
 	}
 
 	@Override
@@ -471,6 +470,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 		MBApp.setContext(this);
 		updateConnectBarView();
-        updateProjectBarView();
+        //updateProjectBarView();
 	}
 }
