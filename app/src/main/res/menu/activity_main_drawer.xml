@@ -1,24 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_Help" android:icon="@android:drawable/ic_menu_help"
-            android:title="Help" />
-        <item android:id="@+id/nav_About" android:icon="@android:drawable/ic_dialog_info"
+    <group android:id="@+id/main_menu">
+
+        <item
+            android:id="@+id/nav_menu"
+            android:title="Menu" />
+        <item
+            android:id="@+id/nav_explore"
+            android:title="Explore" />
+        <item
+            android:id="@+id/nav_about"
             android:title="About" />
-        <item android:id="@+id/nav_TC" android:icon="@android:drawable/ic_menu_info_details"
-            android:title="Terms &amp; Conditions" />
-        <item android:id="@+id/nav_Privacy" android:icon="@android:drawable/ic_secure"
-            android:title="Privacy" />
+        <item
+            android:id="@+id/nav_help"
+            android:title="Help" />
     </group>
 
-    <item android:title="Demos">
-        <menu>
-            <item android:id="@+id/nav_demo1" android:icon="@android:drawable/ic_dialog_dialer"
-                android:title="Demo 1" />
-            <item android:id="@+id/nav_demo2" android:icon="@android:drawable/ic_dialog_dialer"
-                android:title="Demo 2" />
-        </menu>
-    </item>
+
+    <group android:id="@+id/sub_menu_data">
+
+        <item
+            android:id="@+id/nav_privacy"
+            android:icon="@drawable/message_face"
+            android:title="Privacy &amp; Cookies" />
+        <item
+            android:id="@+id/nav_terms_conditions"
+            android:icon="@drawable/message_face"
+            android:title="Terms &amp; Conditions" />
+
+    </group>
+
+    <group android:id="@+id/sub_menu_feedback">
+        <item
+            android:id="@+id/nav_feedback"
+            android:title="Send us your feedback" />
+    </group>
+
+
+    <group android:id="@+id/sub_menu_stats">
+
+        <item
+            android:id="@+id/nav_shareable"
+            android:title="Share statistics" />
+    </group>
+
 
 </menu>

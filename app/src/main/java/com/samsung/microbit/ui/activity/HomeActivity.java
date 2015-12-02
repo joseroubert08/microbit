@@ -18,7 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
@@ -27,6 +27,7 @@ import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.service.PluginService;
+import com.samsung.microbit.ui.PopUp;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,25 +38,40 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
     SharedPreferences prefs = null;
-    StableArrayAdapter adapter = null ;
+    StableArrayAdapter adapter = null;
     private AppCompatDelegate delegate;
 
     boolean connectionInitiated = false;
 
-    private MBApp app = null ;
-	protected String TAG = "HomeActivity";
-	protected boolean debug = true;
+    private MBApp app = null;
+    protected String TAG = "HomeActivity";
+    protected boolean debug = true;
 
     /* Debug code*/
-    private String urlToOpen = null ;
+    private String urlToOpen = null;
     /* Debug code ends*/
 
 
-	protected void logi(String message) {
-		if (debug) {
-			Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
-		}
-	}
+    protected void logi(String message) {
+        if (debug) {
+            Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+        }
+    }
+
+    private void handleBLENotification(Context context, Intent intent, boolean hide) {
+        final boolean popupHide = hide;
+        logi("handleBLENotification()");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //updateConnectBarView();
+                if (popupHide && connectionInitiated)
+                    PopUp.hide();
+                connectionInitiated = false;
+            }
+        });
+    }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         //handle orientation change to prevent re-creation of activity.
@@ -63,12 +79,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onConfigurationChanged(newConfig);
     }
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		logi("onCreate() :: ");
-		MBApp.setContext(this);
+        logi("onCreate() :: ");
+        MBApp.setContext(this);
 
         setContentView(R.layout.activity_home);
         setupDrawer();
@@ -76,22 +92,29 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         //Set up Echo
         setupEcho();
 
-		RelativeLayout connectBarView = (RelativeLayout) findViewById(R.id.connectBarView);
-		connectBarView.getBackground().setAlpha(128);
+        LinearLayout connectBarView = (LinearLayout) findViewById(R.id.connectBarView);
+        connectBarView.getBackground().setAlpha(128);
 
-		// Start the other services - local service to handle IPC in the main process
-		Intent ipcIntent = new Intent(this, IPCService.class);
-		startService(ipcIntent);
+        //updateConnectBarView();
 
-		Intent bleIntent = new Intent(this, BLEService.class);
-		startService(bleIntent);
+//		RelativeLayout projectBarView = (RelativeLayout) findViewById(R.id.projectBarView);
+//		projectBarView.getBackground().setAlpha(128);
 
-		final Intent intent = new Intent(this, PluginService.class);
-		startService(intent);
+        //	updateProjectBarView();
+
+        // Start the other services - local service to handle IPC in the main process
+        Intent ipcIntent = new Intent(this, IPCService.class);
+        startService(ipcIntent);
+
+        Intent bleIntent = new Intent(this, BLEService.class);
+        startService(bleIntent);
+
+        final Intent intent = new Intent(this, PluginService.class);
+        startService(intent);
 
         prefs = getSharedPreferences("com.samsung.microbit", MODE_PRIVATE);
 
-        if (app.getEcho()!= null) {
+        if (app.getEcho() != null) {
             logi("Page View test for HomeActivity");
             //Page view test
             app.getEcho().viewEvent("com.samsung.microbit.ui.activity.homeactivity.page", null);
@@ -99,14 +122,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         /* Debug code*/
         MenuItem item = (MenuItem) findViewById(R.id.live);
-        if (item != null){
+        if (item != null) {
             item.setChecked(true);
         }
         /* Debug code ends*/
-	}
+    }
 
 
-    private void setupEcho(){
+    private void setupEcho() {
         // Echo Config
         app = (MBApp) MBApp.getApp().getApplicationContext();
 
@@ -120,9 +143,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         config.put(EchoConfigKeys.COMSCORE_URL, "http://data.bbc.co.uk/v1/analytics-echo-chamber-inbound/comscore");
         //Enable debug mode
         config.put(EchoConfigKeys.ECHO_DEBUG, "1");
-       // Send RUM events to EchoChamber
-       //config.put(EchoConfigKeys.RUM_ENABLED, "true");
-       //config.put(EchoConfigKeys.RUM_URL, "http://data.bbc.co.uk/v1/analytics-echo-chamber-inbound/rum");
+        // Send RUM events to EchoChamber
+        //config.put(EchoConfigKeys.RUM_ENABLED, "true");
+        //config.put(EchoConfigKeys.RUM_URL, "http://data.bbc.co.uk/v1/analytics-echo-chamber-inbound/rum");
 
         // Send BARB events
         //config.put(EchoConfigKeys.BARB_ENABLED, "true");
@@ -132,8 +155,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         app.initialiseEcho(config);
     }
 
-    private void setupDrawer()
-    {
+    private void setupDrawer() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setLogo(R.drawable.bbc_microbit);
@@ -154,30 +176,35 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        switch (id){
-            case R.id.nav_Help:
+        switch (id) {
+
+            case R.id.nav_menu:
+                Toast.makeText(this, "Menu ", Toast.LENGTH_LONG).show();
                 break;
-            case R.id.nav_About:
+            case R.id.nav_explore:
+                Toast.makeText(this, "Explore ", Toast.LENGTH_LONG).show();
                 break;
-            case R.id.nav_Privacy:
-                {
-                    String url = getString(R.string.privacy_policy_url);
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(url));
-                    startActivity(intent);
-                }
+            case R.id.nav_about:
+                Toast.makeText(this, "About", Toast.LENGTH_LONG).show();
                 break;
-            case R.id.nav_TC:
-                {
-                    String url = getString(R.string.terms_of_use_url);
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(url));
-                    startActivity(intent);
-                }
+            case R.id.nav_help:
+                Toast.makeText(this, "help", Toast.LENGTH_LONG).show();
                 break;
-            case R.id.nav_demo1:
-                break;
-            case R.id.nav_demo2:
+            case R.id.nav_privacy: {
+                String url = getString(R.string.privacy_policy_url);
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
+            }
+            break;
+            case R.id.nav_terms_conditions: {
+                String url = getString(R.string.terms_of_use_url);
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
+            }
+            case R.id.nav_feedback:
+                Toast.makeText(this, "Sending Feedback", Toast.LENGTH_LONG).show();
                 break;
 
         }
@@ -186,6 +213,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -202,8 +230,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        switch(id)
-        {
+        switch (id) {
             case R.id.live:
                 item.setChecked(true);
                 urlToOpen = getString(R.string.touchDevLiveURL);
@@ -220,12 +247,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         return super.onOptionsItemSelected(item);
     }
+
     public boolean onCreateOptionsMenu(Menu menu) {
         /* Debug menu. To be removed later */
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-
 
 
     private class StableArrayAdapter extends ArrayAdapter<String> {
@@ -252,56 +279,69 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
+
     @Override
-	protected void onStart() {
-		super.onStart();
-	}
+    protected void onStart() {
+        super.onStart();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         /* function may be needed */
     }
+
     public void onClick(final View v) {
-		if (debug) logi("onBtnClicked() :: ");
+        if (debug) logi("onBtnClicked() :: ");
 
 
         switch (v.getId()) {
             case R.id.addDevice:
-            case R.id.addDeviceEmpty:
-                {
+            case R.id.addDeviceEmpty: {
                     /*
                     if (app.getEcho()!= null) {
                         logi("User action test for Click on Add microbit");
                         app.getEcho().userActionEvent("click", "AddMicrobitButton", null);
                     }
                     */
-                    Intent intent = new Intent(this, PairingActivity.class);
-                    startActivity(intent);
+                Intent intent = new Intent(this, PairingActivity.class);
+                startActivity(intent);
+            }
+            break;
+            case R.id.startNewProject: {
+                //Debug feature to be added. Start Browser with live, stage or test URL
+                if (urlToOpen == null) {
+                    urlToOpen = getString(R.string.touchDevLiveURL);
                 }
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(urlToOpen));
+                startActivity(intent);
+            }
+            break;
+            case R.id.flashMicrobit:
+                Toast.makeText(this, "Flashing", Toast.LENGTH_LONG).show();
                 break;
-            case R.id.startNewProject:
-                {
-                    //Debug feature to be added. Start Browser with live, stage or test URL
-                    if (urlToOpen == null) {
-                        urlToOpen = getString(R.string.touchDevLiveURL);
-                    }
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(urlToOpen));
-                    startActivity(intent);
+            case R.id.discover:
+                //Debug feature to be added. Start Browser with live, stage or test URL
+                if (urlToOpen == null) {
+                    urlToOpen = getString(R.string.touchDevDiscoverURL);
                 }
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(urlToOpen));
+                startActivity(intent);
                 break;
         }//Switch Ends
-	}
+    }
 
-	@Override
-	public void onResume() {
-		if (debug) logi("onResume() :: ");
-		super.onResume();
+    @Override
+    public void onResume() {
+        if (debug) logi("onResume() :: ");
+        super.onResume();
 
         /* TODO Remove this code in commercial build*/
 
         if (prefs.getBoolean("firstrun", true)) {
             //First Run. Install the Sample applications
-            Toast.makeText(MBApp.getContext(), "Installing Sample HEX files. The projects number will be updated in some time" ,Toast.LENGTH_LONG).show();
+            Toast.makeText(MBApp.getContext(), "Installing Sample HEX files. The projects number will be updated in some time", Toast.LENGTH_LONG).show();
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -313,6 +353,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             logi("Not the first run");
         }
         /* Code removal ends */
-		MBApp.setContext(this);
-	}
+        MBApp.setContext(this);
+        //updateConnectBarView();
+        //updateProjectBarView();
+    }
 }

@@ -69,7 +69,7 @@
     <!--p1 font style -->
     <style name="p1" parent="@android:style/TextAppearance">
         <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textSize">22sp</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <!--p2 font style -->

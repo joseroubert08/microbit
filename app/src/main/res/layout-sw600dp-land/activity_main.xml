@@ -9,7 +9,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior" tools:showIn="@layout/app_bar_main"
     tools:context=".HomeActivity">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/connectBarView"
         android:layout_width="fill_parent"
         android:layout_height="@dimen/home_tile_bar_height"
@@ -75,7 +75,7 @@
             android:layout_centerVertical="true"
             android:elevation="@dimen/elevation"/>
 
-    </RelativeLayout>
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/projectBarView"
