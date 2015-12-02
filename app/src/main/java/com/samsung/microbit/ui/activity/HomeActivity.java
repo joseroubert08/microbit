@@ -1,11 +1,10 @@
 package com.samsung.microbit.ui.activity;
 
-import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -25,13 +24,9 @@ import android.widget.Toast;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.Utils;
-import com.samsung.microbit.model.ConnectedDevice;
-import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.service.PluginService;
-import com.samsung.microbit.ui.BluetoothSwitch;
-import com.samsung.microbit.ui.PopUp;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +45,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private MBApp app = null ;
 	protected String TAG = "HomeActivity";
 	protected boolean debug = true;
+
+    /* Debug code*/
+    private String urlToOpen = null ;
+    /* Debug code ends*/
+
 
 	protected void logi(String message) {
 		if (debug) {
@@ -96,6 +96,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             //Page view test
             app.getEcho().viewEvent("com.samsung.microbit.ui.activity.homeactivity.page", null);
         }
+
+        /* Debug code*/
+        MenuItem item = (MenuItem) findViewById(R.id.live);
+        if (item != null){
+            item.setChecked(true);
+        }
+        /* Debug code ends*/
 	}
 
 
@@ -153,8 +160,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.nav_About:
                 break;
             case R.id.nav_Privacy:
+                {
+                    String url = getString(R.string.privacy_policy_url);
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    startActivity(intent);
+                }
                 break;
             case R.id.nav_TC:
+                {
+                    String url = getString(R.string.terms_of_use_url);
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    startActivity(intent);
+                }
                 break;
             case R.id.nav_demo1:
                 break;
@@ -183,17 +202,26 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch(id)
+        {
+            case R.id.live:
+                item.setChecked(true);
+                urlToOpen = getString(R.string.touchDevLiveURL);
+                break;
+            case R.id.stage:
+                item.setChecked(true);
+                urlToOpen = getString(R.string.touchDevStageURL);
+                break;
+            case R.id.test:
+                item.setChecked(true);
+                urlToOpen = getString(R.string.touchDevTestURL);
+                break;
         }
-
         return super.onOptionsItemSelected(item);
     }
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.main, menu);
+        /* Debug menu. To be removed later */
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -223,80 +251,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
-    private void startGeneralView(String title, int position) {
-        Intent i = new Intent(this, GeneralWebView.class);
-        switch (position){
-            case 0:
-                i.putExtra("url", "file:///android_asset/www/help.html");
-                break;
-            case 1:
-                i.putExtra("url", "file:///android_asset/www/about.html");
-                break;
-			case 2:
-				i.putExtra("url", getString(R.string.privacy_policy_url));
-				break;
-			case 3:
-                i.putExtra("url", getString(R.string.terms_of_use_url));
-				break;
-        }
-        i.putExtra("title", title);
-        startActivity(i);
-    }
-
     @Override
 	protected void onStart() {
 		super.onStart();
 	}
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (requestCode == Constants.REQUEST_ENABLE_BT) {
-            if(resultCode == Activity.RESULT_OK){
-                toggleConnection();
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                PopUp.show(MBApp.getContext(),
-                        getString(R.string.bluetooth_off_cannot_continue), //message
-                        "",
-                        R.drawable.error_face, R.drawable.red_btn,
-                        PopUp.TYPE_ALERT,
-                        null, null);
-            }
-        }
+        /* function may be needed */
     }
-
-    private void startBluetooth(){
-        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        startActivityForResult(enableBtIntent, Constants.REQUEST_ENABLE_BT);
-    }
-
-    private void toggleConnection(){
-        ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
-        if (connectedDevice.mPattern != null) {
-            if (connectedDevice.mStatus) {
-                if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleDisconnect()");
-                IPCService.getInstance().bleDisconnect();
-            } else {
-                if (debug) logi("onBtnClicked() :: IPCService.getInstance().bleConnect()");
-                connectionInitiated = true;
-                PopUp.show(MBApp.getContext(),
-                        getString(R.string.init_connection),
-                        "",
-                        R.drawable.message_face, R.drawable.blue_btn,
-                        PopUp.TYPE_SPINNER,
-                        null, null);
-                IPCService.getInstance().bleConnect();
-            }
-        } else {
-            PopUp.show(MBApp.getContext(),
-                    getString(R.string.no_device_paired),
-                    "",
-                    R.drawable.error_face, R.drawable.red_btn,
-                    PopUp.TYPE_ALERT,
-                    null, null);
-        }
-    }
-	public void onClick(final View v) {
+    public void onClick(final View v) {
 		if (debug) logi("onBtnClicked() :: ");
 
 
@@ -316,18 +279,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.startNewProject:
                 {
-                    Intent intent = new Intent(this, TouchDevActivity.class);
-                    intent.putExtra(Constants.URL, getString(R.string.touchDevLiveURL));
-                    startActivity(intent);
-                }
-                break;
-            case R.id.connectBtn:
-                {
-                    if (!BluetoothSwitch.getInstance().isBluetoothON()) {
-                        startBluetooth();
-                        return;
+                    //Debug feature to be added. Start Browser with live, stage or test URL
+                    if (urlToOpen.isEmpty()) {
+                        urlToOpen = getString(R.string.touchDevLiveURL);
                     }
-                    toggleConnection();
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(urlToOpen));
+                    startActivity(intent);
                 }
                 break;
         }//Switch Ends

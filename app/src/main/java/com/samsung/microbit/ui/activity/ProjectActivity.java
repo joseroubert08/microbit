@@ -404,13 +404,15 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	public void onClick(final View v) {
 
 		int pos;
-		Intent intent;
 
 		switch (v.getId()) {
 			case R.id.createProject:
-				intent = new Intent(this, TouchDevActivity.class);
-				intent.putExtra(Constants.URL, getString(R.string.touchDevURLMyScripts));
-				startActivity(intent);
+                {
+                    String url = getString(R.string.touchDevURLMyScripts);
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    startActivity(intent);
+                }
 				finish();
 				break;
 
