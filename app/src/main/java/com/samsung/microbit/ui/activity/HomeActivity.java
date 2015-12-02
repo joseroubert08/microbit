@@ -2,15 +2,12 @@ package com.samsung.microbit.ui.activity;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,14 +19,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
@@ -54,45 +48,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     boolean connectionInitiated = false;
 
     private MBApp app = null ;
-	/* *************************************************
-	 * TODO setup to Handle BLE Notifications
-	 */
-	IntentFilter broadcastIntentFilter;
-	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-
-			int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-            logi("broadcastReceiver Error code = " + v);
-            if (Constants.BLE_DISCONNECTED_FOR_FLASH == v){
-				logi("Bluetooth disconnected for flashing. No need to display pop-up");
-                handleBLENotification(context, intent, false);
-				return;
-			}
-            handleBLENotification(context, intent, true);
-			if (v != 0) {
-                String message = intent.getStringExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
-                logi("broadcastReceiver Error message = " + message);
-
-                if (message == null )
-                    message = "Error";
-                final String displayTitle = message ;
-
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						PopUp.show(MBApp.getContext(),
-                                MBApp.getContext().getString(R.string.micro_bit_reset_msg),
-                                displayTitle,
-							R.drawable.error_face, R.drawable.red_btn,
-							PopUp.TYPE_ALERT, null, null);
-					}
-				});
-			}
-		}
-	};
-
 	protected String TAG = "HomeActivity";
 	protected boolean debug = true;
 
@@ -101,21 +56,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 			Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 		}
 	}
-
-	private void handleBLENotification(Context context, Intent intent, boolean hide) {
-        final boolean popupHide = hide;
-		logi("handleBLENotification()");
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				updateConnectBarView();
-                if(popupHide && connectionInitiated)
-                    PopUp.hide();
-                    connectionInitiated = false;
-			}
-		});
-	}
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         //handle orientation change to prevent re-creation of activity.
@@ -136,20 +76,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         //Set up Echo
         setupEcho();
 
-        if (broadcastIntentFilter == null) {
-			broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
-			LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(broadcastReceiver, broadcastIntentFilter);
-		}
-
 		RelativeLayout connectBarView = (RelativeLayout) findViewById(R.id.connectBarView);
 		connectBarView.getBackground().setAlpha(128);
-
-		updateConnectBarView();
-
-//		RelativeLayout projectBarView = (RelativeLayout) findViewById(R.id.projectBarView);
-//		projectBarView.getBackground().setAlpha(128);
-
-	//	updateProjectBarView();
 
 		// Start the other services - local service to handle IPC in the main process
 		Intent ipcIntent = new Intent(this, IPCService.class);
@@ -343,7 +271,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void toggleConnection(){
-        updateConnectBarView();
         ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
         if (connectedDevice.mPattern != null) {
             if (connectedDevice.mStatus) {
@@ -394,13 +321,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     startActivity(intent);
                 }
                 break;
-// TODO - remove this case
-//      case R.id.numOfProjectsHolder:
-//                {
-//                    Intent intent = new Intent(this, ProjectActivity.class);
-//                    startActivity(intent);
-//                }
-//                break;
             case R.id.connectBtn:
                 {
                     if (!BluetoothSwitch.getInstance().isBluetoothON()) {
@@ -413,46 +333,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }//Switch Ends
 	}
 
-	private final void updateConnectBarView() {
-		Button addDeviceButton = (Button) findViewById(R.id.addDevice);
-		Button addDeviceEmpty = (Button) findViewById(R.id.addDeviceEmpty);
-		ImageButton connectButton = (ImageButton) findViewById(R.id.connectBtn);
-		ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
-
-		if (connectedDevice.mPattern != null) {
-			addDeviceButton.setVisibility(View.VISIBLE);
-			connectButton.setVisibility(View.VISIBLE);
-			if (connectedDevice.mName!= null)
-				addDeviceButton.setText(connectedDevice.mName + " (" + connectedDevice.mPattern + ")" );
-			else
-				addDeviceButton.setText("");
-			addDeviceEmpty.setVisibility(View.GONE);
-		} else {
-			addDeviceButton.setVisibility(View.GONE);
-			connectButton.setVisibility(View.GONE);
-			addDeviceEmpty.setVisibility(View.VISIBLE);
-            addDeviceEmpty.setText(R.string.connect_to_mbit);
-		}
-
-		if (connectedDevice.mPattern != null && connectedDevice.mStatus) {
-			connectButton.setImageResource(R.drawable.device_connected);
-			connectButton.setBackground(getResources().getDrawable(R.drawable.green_btn));
-		} else {
-			connectButton.setImageResource(R.drawable.disconnect_device);
-			connectButton.setBackground(getResources().getDrawable(R.drawable.red_btn));
-		}
-	}
-
-	private final void updateProjectBarView() {
-		//TextView numOfProjects = (TextView) findViewById(R.id.numOfProjects);
-	//	numOfProjects.setText(Integer.toString(Utils.findProgramsAndPopulate(null, null)));
-	}
-
 	@Override
 	public void onResume() {
 		if (debug) logi("onResume() :: ");
 		super.onResume();
 
+        /* TODO Remove this code in commercial build*/
 
         if (prefs.getBoolean("firstrun", true)) {
             //First Run. Install the Sample applications
@@ -467,9 +353,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             logi("Not the first run");
         }
-
+        /* Code removal ends */
 		MBApp.setContext(this);
-		updateConnectBarView();
-        //updateProjectBarView();
 	}
 }
