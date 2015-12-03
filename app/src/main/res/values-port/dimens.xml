@@ -7,7 +7,7 @@
 
 	<!-- Generic margin TODO maybe rename -->
 	<dimen name="widget_margin">8dp</dimen>
-	<dimen name="content_margin">10dp</dimen>
+	<dimen name="content_margin">16dp</dimen>
 
 	<!-- Generic Buttons TODO maybe remove-->
 	<dimen name="button_text_size">25sp</dimen>

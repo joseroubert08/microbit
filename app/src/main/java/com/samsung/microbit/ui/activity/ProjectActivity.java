@@ -80,7 +80,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 	}
 
 	/* *************************************************
-	 * TODO setup to Handle BLE Notiifications
+	 * TODO setup to Handle BLE Notifications
 	 */
 	IntentFilter broadcastIntentFilter;
 	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -200,7 +200,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		updateProjectsListSortOrder(true);
 
 		/* *************************************************
-		 * TODO setup to Handle BLE Notiification
+		 * TODO setup to Handle BLE Notification
 		 */
 		if (broadcastIntentFilter == null) {
 			broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
