@@ -1,13 +1,15 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <!-- app bar-->
     <RelativeLayout
         android:id="@+id/headerBar"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#ffffff"
         android:elevation="@dimen/activity_bottom_margin">
@@ -31,39 +33,102 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
+
+    <!-- Paired micro:bits -->
+    <LinearLayout
         android:id="@+id/prevDeviceView"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/headerBar"
-        android:layout_marginBottom="@dimen/device_lv_bottom_margin"
-        android:layout_marginTop="@dimen/device_main_margin"
-        android:paddingLeft="@dimen/device_main_margin"
-        android:paddingRight="@dimen/device_main_margin">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/prevDeviceTxt"
-            style="@style/h1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/device_main_margin"
-            android:text="@string/previous_devices" />
+        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/prevDeviceViewCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <ListView
-            android:id="@+id/connectedDeviceList"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_below="@id/prevDeviceTxt"
-            android:layout_weight="1"
-            android:clickable="false"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="@dimen/connect_content_margin" />
+            <TextView
+                android:id="@+id/prevDeviceTxt"
+                style="@style/h1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/device_main_margin"
+                android:text="@string/previous_devices" />
 
-    </RelativeLayout>
+            <ListView
+                android:id="@+id/connectedDeviceList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="false"
+                android:divider="@android:color/transparent"
+                android:dividerHeight="@dimen/connect_content_margin" />
+
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/title_manage_microbit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:lines="2"
+                    android:maxLines="2"
+                    android:minLines="2"
+                    android:layout_centerHorizontal="true"
+                    android:text="How do i manage and remove paired micro:bits?" />
+
+                <TextView
+                    android:id="@+id/description_manage_microbit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/title_manage_microbit"
+                    android:layout_margin="16dp"
+                    android:lines="4"
+                    android:maxLines="4"
+                    android:minLines="2"
+                    android:text="To manage and remove paired micro:bit devices go to your Bluetooth Settings on your device" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/title_manage_microbit"
+                    android:layout_toRightOf="@+id/description_manage_microbit"
+                    android:src="@drawable/greetings_emojio" />
+                <!--  Notice about how to manage and remove microbits -->
+
+                <Button
+                    android:id="@+id/go_bluetooth_settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/description_manage_microbit"
+                    android:drawableEnd="@drawable/bluetooth"
+                    android:text="Go to bluetooth settings" />
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/bottomPairButton"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/headerBar"
         android:layout_marginBottom="2dp"
@@ -81,4 +146,5 @@
 
     </RelativeLayout>
 
-</RelativeLayout>
+</LinearLayout>
+

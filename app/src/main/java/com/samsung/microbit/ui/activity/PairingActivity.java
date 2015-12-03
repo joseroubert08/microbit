@@ -35,6 +35,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -105,7 +106,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 	RelativeLayout mNewDeviceView;
 	RelativeLayout mPairSearchView;
 	RelativeLayout mBottomPairButton;
-	RelativeLayout mPrevDeviceView;
+	LinearLayout mPrevDeviceView;
 
 	List<ConnectedDevice> connectedDeviceList = new ArrayList<ConnectedDevice>();
 	ConnectedDeviceAdapter connectedDeviceAdapter;
@@ -352,7 +353,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 		populateConnectedDeviceList(false);
 
         mBottomPairButton = (RelativeLayout) findViewById(R.id.bottomPairButton);
-        mPrevDeviceView = (RelativeLayout) findViewById(R.id.prevDeviceView);
+        mPrevDeviceView = (LinearLayout) findViewById(R.id.prevDeviceView);
 
         mPairButtonView = (RelativeLayout) findViewById(R.id.pairButtonView);
         mPairTipView = (RelativeLayout) findViewById(R.id.pairTipView);
