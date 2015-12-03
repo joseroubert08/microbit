@@ -27,7 +27,6 @@ import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.service.PluginService;
-import com.samsung.microbit.ui.PopUp;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,20 +57,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void handleBLENotification(Context context, Intent intent, boolean hide) {
-        final boolean popupHide = hide;
-        logi("handleBLENotification()");
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                //updateConnectBarView();
-                if (popupHide && connectionInitiated)
-                    PopUp.hide();
-                connectionInitiated = false;
-            }
-        });
-    }
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         //handle orientation change to prevent re-creation of activity.
@@ -94,13 +79,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         LinearLayout connectBarView = (LinearLayout) findViewById(R.id.connectBarView);
         connectBarView.getBackground().setAlpha(128);
-
-        //updateConnectBarView();
-
-//		RelativeLayout projectBarView = (RelativeLayout) findViewById(R.id.projectBarView);
-//		projectBarView.getBackground().setAlpha(128);
-
-        //	updateProjectBarView();
 
         // Start the other services - local service to handle IPC in the main process
         Intent ipcIntent = new Intent(this, IPCService.class);
@@ -339,7 +317,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onResume();
 
         /* TODO Remove this code in commercial build*/
-
         if (prefs.getBoolean("firstrun", true)) {
             //First Run. Install the Sample applications
             Toast.makeText(MBApp.getContext(), "Installing Sample HEX files. The projects number will be updated in some time", Toast.LENGTH_LONG).show();
@@ -355,7 +332,5 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         /* Code removal ends */
         MBApp.setContext(this);
-        //updateConnectBarView();
-        //updateProjectBarView();
     }
 }
