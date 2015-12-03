@@ -11,9 +11,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".HomeActivity"
     tools:showIn="@layout/app_bar_main">
-
-    <!--android:layout_below="@id/drawer_layout"-->
-
+    
     <ImageView
         android:id="@+id/homeScreenIcon"
         android:layout_width="wrap_content"
@@ -41,6 +39,7 @@
         android:text="@string/connect_device"
         android:textColor="@color/gray_color"
         android:visibility="visible" />
+
     <!-- Flash -->
     <Button
         android:id="@+id/flashMicrobit"
@@ -118,15 +117,3 @@
         android:textColor="@color/blue_button_up"
         android:visibility="gone" />
 </LinearLayout>
-
-    <!--<ImageButton--><!--android:id="@+id/connectBtn"--><!--style="@style/p1"--><!--android:layout_width="@dimen/home_start_btn_width"--><!--android:layout_height="@dimen/home_button_height"--><!--android:layout_margin="@dimen/widget_margin"--><!--android:layout_toRightOf="@id/addDevice"--><!--android:background="@drawable/white_btn"--><!--android:elevation="@dimen/elevation"--><!--android:onClick="onClick"--><!--android:src="@drawable/device_connected"--><!--android:visibility="gone" />-->
-
-
-    <!--<RelativeLayout--><!--android:id="@+id/projectBarView"--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content"--><!--android:layout_marginTop="@dimen/content_margin"--><!--android:layout_marginBottom="@dimen/content_margin"--><!--android:layout_below="@id/connectBarView"--><!--android:layout_marginLeft="@dimen/activity_horizontal_margin"--><!--android:layout_marginRight="@dimen/activity_horizontal_margin"--><!--android:layout_centerHorizontal="true"--><!--android:background="@drawable/white_bg">-->
-
-    <!--<TextView--><!--style="@style/h1"--><!--android:id="@+id/projects"--><!--android:layout_width="@dimen/home_project_title_width"--><!--android:layout_height="wrap_content"--><!--android:text="@string/your_projects"--><!--android:singleLine="true"--><!--android:layout_margin="@dimen/widget_margin" />-->
-
-    <!--<RelativeLayout--><!--android:layout_width="@dimen/home_no_project_btn_width"--><!--android:layout_height="@dimen/home_button_height"--><!--android:id="@+id/numOfProjectsHolder"--><!--android:layout_below="@id/projects"--><!--android:layout_margin="@dimen/widget_margin"--><!--android:layout_centerVertical="true"--><!--android:background="@drawable/white_btn"--><!--android:onClick="onClick"--><!--android:elevation="@dimen/elevation">--><!--<TextView--><!--android:id="@+id/numOfProjects"--><!--style="@style/h3"--><!--android:layout_width="wrap_content"--><!--android:layout_height="fill_parent"--><!--android:gravity="center_vertical"/>--><!--<TextView--><!--style="@style/p1"--><!--android:layout_marginLeft="@dimen/content_margin"--><!--android:layout_toRightOf="@id/numOfProjects"--><!--android:layout_width="wrap_content"--><!--android:layout_height="fill_parent"--><!--android:gravity="center_vertical"--><!--android:singleLine="true"--><!--android:text="@string/saved_projects" />--><!--//  </RelativeLayout>--><!--<ImageButton--><!--style="@style/p1"--><!--android:id="@+id/startNewProject"--><!--android:layout_width="@dimen/home_start_btn_width"--><!--android:layout_height="@dimen/home_button_height"--><!--android:layout_margin="@dimen/widget_margin"--><!--android:background="@drawable/white_btn"--><!--android:layout_toRightOf="@id/numOfProjectsHolder"--><!--android:src="@drawable/encouragement_emojio"--><!--android:layout_below="@id/projects"--><!--android:onClick="onClick"--><!--android:gravity="left|center"--><!--android:elevation="@dimen/elevation"/>-->
-
-    <!--</RelativeLayout>-->
-

@@ -318,7 +318,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.flashMicrobit:
-                Toast.makeText(this, "Flashing", Toast.LENGTH_LONG).show();
+                Intent i = new Intent(this, ProjectActivity.class);
+                startActivity(i);
                 break;
             case R.id.discover:
                 //Debug feature to be added. Start Browser with live, stage or test URL
