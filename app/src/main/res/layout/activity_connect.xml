@@ -3,43 +3,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg"
-    android:orientation="vertical"
-    tools:context=".MainActivity">
+    android:orientation="vertical">
 
     <!-- app bar-->
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/headerBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="top"
         android:background="#ffffff"
-        android:elevation="@dimen/activity_bottom_margin">
+        android:elevation="@dimen/activity_bottom_margin"
+        android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/backBtn"
-            android:layout_width="@dimen/header_btn_size"
-            android:layout_height="@dimen/header_btn_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|start"
             android:background="@android:color/transparent"
             android:onClick="onClick"
+            android:padding="16dp"
             android:src="@drawable/back" />
 
         <TextView
             android:id="@+id/titleTxt"
             style="@style/h1"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/header_title_height"
-            android:layout_toRightOf="@id/backBtn"
-            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|start"
             android:text="@string/pair_my_device" />
 
-    </RelativeLayout>
-
+    </LinearLayout>
 
     <!-- Paired micro:bits -->
     <LinearLayout
         android:id="@+id/prevDeviceView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/headerBar"
+        android:layout_gravity="top"
         android:orientation="vertical">
 
         <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
@@ -52,14 +53,12 @@
                 style="@style/h1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/device_main_margin"
                 android:text="@string/previous_devices" />
 
             <ListView
                 android:id="@+id/connectedDeviceList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:clickable="false"
                 android:divider="@android:color/transparent"
                 android:dividerHeight="@dimen/connect_content_margin" />
@@ -68,69 +67,68 @@
 
     </LinearLayout>
 
-
+    <!-- Manage micro:bits -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:gravity="fill">
 
         <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/title_manage_microbit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
                     android:layout_margin="16dp"
+                    android:gravity="center"
                     android:lines="2"
                     android:maxLines="2"
                     android:minLines="2"
-                    android:layout_centerHorizontal="true"
-                    android:text="How do i manage and remove paired micro:bits?" />
+                    android:text="How do i manage and remove paired micro:bits?"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/description_manage_microbit"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
                     android:layout_below="@+id/title_manage_microbit"
                     android:layout_margin="16dp"
+                    android:layout_toStartOf="@+id/img_pair_microbit"
                     android:lines="4"
                     android:maxLines="4"
-                    android:minLines="2"
                     android:text="To manage and remove paired micro:bit devices go to your Bluetooth Settings on your device" />
 
                 <ImageView
+                    android:id="@+id/img_pair_microbit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
                     android:layout_below="@+id/title_manage_microbit"
-                    android:layout_toRightOf="@+id/description_manage_microbit"
-                    android:src="@drawable/greetings_emojio" />
-                <!--  Notice about how to manage and remove microbits -->
+                    android:src="@drawable/bbc_microbit_vertical" />
 
                 <Button
                     android:id="@+id/go_bluetooth_settings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/description_manage_microbit"
+                    android:layout_below="@+id/img_pair_microbit"
                     android:drawableEnd="@drawable/bluetooth"
                     android:text="Go to bluetooth settings" />
             </RelativeLayout>
-
         </android.support.v7.widget.CardView>
-
-
     </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/bottomPairButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/headerBar"
         android:layout_marginBottom="2dp"
         android:paddingLeft="@dimen/device_main_margin"
         android:paddingRight="@dimen/device_main_margin"
