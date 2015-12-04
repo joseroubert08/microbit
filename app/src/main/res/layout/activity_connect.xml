@@ -76,7 +76,6 @@
             android:id="@+id/manageDeviceView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/yellow_button_up"
             android:orientation="vertical">
 
             <TextView
@@ -131,7 +130,7 @@
             </LinearLayout>
         </LinearLayout>
     </android.support.v7.widget.CardView>
-
+    <!--TODO - add divider padding-->
     <!-- Pairing button -->
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/pairButtonView"

@@ -1,84 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="wrap_content"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/newDeviceView"
-    android:layout_below="@id/headerBar"
     android:layout_width="match_parent"
-    android:visibility="gone">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!--android:visibility="gone"  >-->
 
     <TextView
-        style="@style/h1"
         android:id="@+id/newDeviceTxt"
+        style="@style/h1"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
         android:text="@string/new_devices_pattern_null"
-        android:textColor="@color/black_color"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/connect_margin_top"/>
+        android:textColor="@color/black_color" />
 
     <GridView
         android:id="@+id/gridview"
         android:layout_width="@dimen/led_grid_width"
         android:layout_height="@dimen/led_grid_width"
+        android:layout_gravity="center"
+        android:layout_weight="1"
         android:numColumns="5"
-        android:verticalSpacing="@dimen/led_gap"
-        android:horizontalSpacing="@dimen/led_gap"
-        android:layout_marginLeft="@dimen/content_margin"
-        android:layout_below="@id/newDeviceTxt"
-        android:layout_marginRight="@dimen/content_margin"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/connect_margin_top"/>
+        android:verticalSpacing="@dimen/led_gap" />
+
 
     <Button
-        style="@style/p1"
         android:id="@+id/nameNewButton"
+        style="@style/p1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:drawableRight="@drawable/rename"
         android:background="@drawable/white_bg"
         android:clickable="true"
+        android:drawableEnd="@drawable/rename"
         android:textColor="@color/black_color"
-        android:layout_below="@id/gridview"
-        android:layout_marginTop="@dimen/widget_margin"
-        android:layout_marginRight="@dimen/content_margin"
-        android:visibility="invisible"/>
+        android:visibility="invisible" />
+
     <EditText
         android:id="@+id/nameNewEdit"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/gridview"
-        android:lines="3"
-        android:background="@drawable/edit_box"
-        android:layout_marginTop="@dimen/widget_margin"
         android:layout_marginRight="@dimen/content_margin"
+        android:layout_marginTop="@dimen/widget_margin"
+        android:background="@drawable/edit_box"
         android:inputType="textVisiblePassword|textNoSuggestions"
-        android:visibility="invisible"/>
+        android:lines="3"
+        android:visibility="invisible" />
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
+    <!--TODO - add divider padding-->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_below="@id/nameNewEdit"
-        android:layout_centerInParent="true">
+        android:layout_gravity="bottom"
+        android:layout_weight="1"
+        android:orientation="horizontal">
 
-        <ImageButton
+        <Button
             android:id="@+id/cancel_name_button"
-            android:layout_width="@dimen/header_btn_size"
-            android:layout_height="@dimen/header_btn_size"
-            android:src="@drawable/white_cross"
-            android:background="@drawable/popup_cancel_button"
-            android:visibility="invisible"
-            android:layout_marginRight="50dp"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/red_cross"
+            android:gravity="center_vertical"
+            android:text="Cancel"
+            android:visibility="invisible" />
 
-        <ImageButton
+        <Button
             android:id="@+id/ok_name_button"
-            android:layout_width="@dimen/header_btn_size"
-            android:layout_height="@dimen/header_btn_size"
-            android:src="@drawable/white_tick"
-            android:background="@drawable/popup_ok_button"
-            android:layout_toRightOf="@id/cancel_name_button"
-            android:visibility="invisible"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/red_cross"
+            android:gravity="center_vertical"
+            android:text="OK"
+            android:visibility="invisible" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

@@ -21,6 +21,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.ResultReceiver;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -103,10 +104,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     // @formatter:on
 
 
-    LinearLayout mManageDeviceView;
+    CardView mManageDeviceCard;
     LinearLayout mPairButtonView;
-    RelativeLayout mPairTipView;
-    RelativeLayout mNewDeviceView;
+    LinearLayout mPairTipView;
+    LinearLayout mNewDeviceView;
     RelativeLayout mPairSearchView;
     RelativeLayout mBottomPairButton;
     LinearLayout mPrevDeviceView;
@@ -360,10 +361,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         mBottomPairButton = (RelativeLayout) findViewById(R.id.bottomPairButton);
         mPrevDeviceView = (LinearLayout) findViewById(R.id.prevDeviceView);
 
-        mManageDeviceView = (LinearLayout) findViewById(R.id.manageDeviceView); // new card
+        mManageDeviceCard = (CardView) findViewById(R.id.manageDeviceCard); // new card
         mPairButtonView = (LinearLayout) findViewById(R.id.pairButtonView);
-        mPairTipView = (RelativeLayout) findViewById(R.id.pairTipView);
-        mNewDeviceView = (RelativeLayout) findViewById(R.id.newDeviceView);
+        mPairTipView = (LinearLayout) findViewById(R.id.pairTipView);
+        mNewDeviceView = (LinearLayout) findViewById(R.id.newDeviceView);
         mPairSearchView = (RelativeLayout) findViewById(R.id.pairSearchView);
 
         displayConnectScreen(mState);
@@ -577,11 +578,11 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         if (isPortraitMode() && (disableListView())) {
             mPrevDeviceView.setVisibility(View.GONE);
-            mManageDeviceView.setVisibility(View.GONE); // gone device view
+            mManageDeviceCard.setVisibility(View.GONE);
         } else {
             populateConnectedDeviceList(true);
             mPrevDeviceView.setVisibility(View.VISIBLE);
-            mManageDeviceView.setVisibility(View.VISIBLE); // gone device view
+            mManageDeviceCard.setVisibility(View.VISIBLE);
         }
 
         switch (gotoState) {
@@ -699,7 +700,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     public void startWithPairing() {
         if (mBottomPairButton != null) {
             mPrevDeviceView.setVisibility(View.GONE);
-            mManageDeviceView.setVisibility(View.GONE); // TODO - check manage device card disappears on cue
+            mManageDeviceCard.setVisibility(View.GONE); // TODO - check manage device card disappears on cue
         }
 
         if (mPairButtonView != null) {
@@ -1061,8 +1062,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         if (!mScanning) {
             return;
         }
-		/*
-		 * =================================================================
+        /*
+         * =================================================================
 		 */
 
         if (device == null) {
@@ -1105,7 +1106,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mManageDeviceView.setVisibility(View.GONE); // manage device
+        mManageDeviceCard.setVisibility(View.GONE); // manage device
         mPairButtonView.setVisibility(View.GONE);
         mPairTipView.setVisibility(View.GONE);
         mNewDeviceView.setVisibility(View.GONE);

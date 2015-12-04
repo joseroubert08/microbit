@@ -1,78 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/pairTipView"
     android:layout_width="match_parent"
-    android:layout_below="@id/headerBar"
-    android:visibility="gone">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
+    <!-- remember visibility is gone initially-->
+
+    <!-- Title -->
     <TextView
-        style="@style/h1"
         android:id="@+id/pairTipTitle"
+        style="@style/h1"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/connectTipTitle"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/activity_top_margin"/>
-
-    <TextView
-        style="@style/p1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/connectTipText"
-        android:id="@+id/pairTipTextview"
-        android:layout_marginTop="@dimen/content_margin"
-        android:layout_below="@id/pairTipTitle"
+        android:layout_height="0dp"
+        android:layout_gravity="center|top"
+        android:layout_marginTop="@dimen/activity_top_margin"
+        android:layout_weight="1"
         android:gravity="center"
-        android:layout_centerHorizontal="true"/>
+        android:text="@string/connectTipTitle" />
 
-    <RelativeLayout
+    <!-- Images -->
+    <LinearLayout
         android:id="@+id/tipImageView"
         android:layout_width="wrap_content"
+        android:layout_height="128dp"
+        android:layout_margin="16dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/microbit_tip_image"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:src="@drawable/tip_mb" />
+
+        <ImageView
+            android:id="@+id/microbit_tip_image_back"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:src="@drawable/tip_mb_back" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/connect_tip_image_margin_top"
-        android:layout_below="@+id/pairTipTextview"
-        android:layout_centerInParent="true">
+        android:layout_weight="1">
 
-    <ImageView
-        android:id="@+id/microbit_tip_image"
-        android:layout_width="@dimen/mbit_tip_img_size"
-        android:layout_height="@dimen/mbit_tip_img_size"
-        android:src="@drawable/tip_mb" />
+        <TextView
+            android:id="@+id/pairTipTextview"
+            style="@style/p1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_margin="16dp"
+            android:layout_marginTop="@dimen/content_margin"
+            android:gravity="start|center_vertical"
+            android:lines="3"
+            android:maxLines="3"
+            android:text="@string/connectTipText" />
+    </LinearLayout>
 
-    <ImageView
-        android:id="@+id/microbit_tip_image_back"
-        android:layout_width="@dimen/mbit_tip_img_size"
-        android:layout_height="@dimen/mbit_tip_img_size"
-        android:src="@drawable/tip_mb_back"
-        android:layout_toRightOf="@id/microbit_tip_image"
-        android:layout_marginStart="10dp" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_below="@id/tipImageView"
-        android:layout_centerInParent="true">
+        android:layout_gravity="bottom"
+        android:layout_weight="1"
+        android:orientation="horizontal">
 
-    <ImageButton
-        android:id="@+id/cancel_tip_button"
-        android:layout_width="@dimen/header_btn_size"
-        android:layout_height="@dimen/header_btn_size"
-        android:src="@drawable/white_cross"
-        android:background="@drawable/popup_cancel_button"
-        android:layout_marginRight="50dp"/>
+        <Button
+            android:id="@+id/cancel_tip_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/red_cross"
+            android:gravity="center_vertical"
+            android:text="cancel" />
 
-    <ImageButton
-        android:id="@+id/ok_pair_button"
-        android:layout_toRightOf="@id/cancel_tip_button"
-        android:layout_width="@dimen/header_btn_size"
-        android:layout_height="@dimen/header_btn_size"
-        android:src="@drawable/white_tick"
-        android:background="@drawable/popup_ok_button" />
-
-    </RelativeLayout>
-
-</RelativeLayout>
+        <Button
+            android:id="@+id/ok_pair_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:gravity="center_vertical"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/red_cross"
+            android:text="Pair"
+            android:textAppearance="@style/p1" />
+    </LinearLayout>
+</LinearLayout>

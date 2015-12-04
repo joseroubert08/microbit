@@ -138,7 +138,8 @@
 	<string name="gamepad">Gamepad</string>
 	<string name="connectNew">Pair a new micro:bit</string>
 	<string name="connectTipTitle">How to pair your micro:bit</string>
-	<string name="connectTipText">To know the pattern of your micro:bit :- \nPlease hold A and B buttons down and then press RESET on your micro:bit</string>
+	<string name="connectTipText"> Step 1 \n Hold the A buttons,\n then PRESS RESET</string>
+	<!--<string name="connectTipText">To know the pattern of your micro:bit :- \nPlease hold A and B buttons down and then press RESET on your micro:bit</string>-->
 	<string name="connectSearchingTitle">Connecting...</string>
 	<string name="searchingTitle">Searching for micro:bit...</string>
 	<string name="pairing_msg_1">Found micro:bit. \n \nInitiating pairing...</string>
