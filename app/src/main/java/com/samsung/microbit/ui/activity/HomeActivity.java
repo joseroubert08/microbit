@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.RemoteConfig;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
@@ -104,6 +105,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             item.setChecked(true);
         }
         /* Debug code ends*/
+        RemoteConfig.getInstance().init();
     }
 
 
@@ -163,27 +165,53 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "Explore ", Toast.LENGTH_LONG).show();
                 break;
             case R.id.nav_about:
-                Toast.makeText(this, "About", Toast.LENGTH_LONG).show();
-                break;
+            {
+                String url = RemoteConfig.getInstance().getAboutURL();
+                if (url.isEmpty()){
+                    Log.d(TAG, "Failed to get the about url from remoteConfig");
+                    url = getString(R.string.terms_of_use_url);
+                }
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
+            }
+            break;
             case R.id.nav_help:
                 Toast.makeText(this, "help", Toast.LENGTH_LONG).show();
                 break;
             case R.id.nav_privacy: {
-                String url = getString(R.string.privacy_policy_url);
+                String url = RemoteConfig.getInstance().getPrivacyURL();
+                if (url.isEmpty()){
+                    Log.d(TAG, "Failed to get the privacy url from remoteConfig");
+                    url = getString(R.string.privacy_policy_url);
+                }
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(url));
                 startActivity(intent);
             }
             break;
             case R.id.nav_terms_conditions: {
-                String url = getString(R.string.terms_of_use_url);
+                String url = RemoteConfig.getInstance().getTermsOfUseURL();
+                if (url.isEmpty()){
+                    Log.d(TAG, "Failed to get the terms of use url from remoteConfig");
+                    url = getString(R.string.terms_of_use_url);
+                }
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(url));
                 startActivity(intent);
             }
-            case R.id.nav_feedback:
-                Toast.makeText(this, "Sending Feedback", Toast.LENGTH_LONG).show();
-                break;
+            break;
+            case R.id.nav_feedback: {
+                String emailAddress = RemoteConfig.getInstance().getSendEmailAddress();
+                Toast.makeText(this, "Sending Feedback to : " + emailAddress, Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("message/rfc822");
+                intent.putExtra(Intent.EXTRA_EMAIL, new String[] {emailAddress});
+                intent.putExtra(Intent.EXTRA_SUBJECT, "[User feedback] ");
+                Intent mailer = Intent.createChooser(intent, null);
+                startActivity(mailer);
+            }
+            break;
 
         }
 
