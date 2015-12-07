@@ -38,7 +38,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -101,12 +100,11 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             "Z", "U", "Z", "U", "Z"};
     // @formatter:on
 
-
     CardView mManageDeviceCard;
     LinearLayout mPairButtonView;
     LinearLayout mPairTipView;
     LinearLayout mNewDeviceView;
-    RelativeLayout mPairSearchView;
+    LinearLayout mPairSearchView;
     LinearLayout mBottomPairButton;
     LinearLayout mPrevDeviceView;
 
@@ -365,7 +363,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         mPairButtonView = (LinearLayout) findViewById(R.id.pairButtonView);
         mPairTipView = (LinearLayout) findViewById(R.id.pairTipView);
         mNewDeviceView = (LinearLayout) findViewById(R.id.newDeviceView);
-        mPairSearchView = (RelativeLayout) findViewById(R.id.pairSearchView);
+        mPairSearchView = (LinearLayout) findViewById(R.id.pairSearchView);
 
         displayConnectScreen(mState);
         findViewById(R.id.pairButton).setOnClickListener(this);
@@ -578,8 +576,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         if (isPortraitMode() && (disableListView())) {
             mPrevDeviceView.setVisibility(View.GONE);
-            mManageDeviceCard.setVisibility(View.VISIBLE);
-            //  TODO      mAppBar.setVisibility(View.GONE); // app bar
         } else {
             populateConnectedDeviceList(true);
             mPrevDeviceView.setVisibility(View.VISIBLE);
@@ -601,6 +597,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
             case PAIRING_STATE_TIP:
                 mPairTipView.setVisibility(View.VISIBLE);
+             //   mManageDeviceCard.setVisibility(View.VISIBLE);//
+            //    mAppBar.setVisibility(View.VISIBLE); //
+            //    mPrevDeviceView.setVisibility(View.VISIBLE); //
                 findViewById(R.id.ok_pair_button).setOnClickListener(this);
                 break;
 
@@ -613,6 +612,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 findViewById(R.id.ok_name_button).setVisibility(View.GONE);
                 findViewById(R.id.nameNewButton).setVisibility(View.GONE);
                 findViewById(R.id.nameNewEdit).setVisibility(View.GONE);
+
+
                 displayLedGrid();
                 break;
 
@@ -701,13 +702,20 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
     public void startWithPairing() {
         if (mBottomPairButton != null) {
+            mAppBar.setVisibility(View.GONE);
             mPrevDeviceView.setVisibility(View.GONE);
             mManageDeviceCard.setVisibility(View.GONE);
+            mPairButtonView.setVisibility(View.GONE);
         }
 
         if (mPairButtonView != null) {
             displayConnectScreen(PAIRING_STATE.PAIRING_STATE_TIP);
-            mAppBar.setVisibility(View.GONE); // TODO - check manage device card disappears on cue
+            mAppBar.setVisibility(View.GONE);
+            mPrevDeviceView.setVisibility(View.GONE);
+            mManageDeviceCard.setVisibility(View.GONE);
+            mPairButtonView.setVisibility(View.GONE);
+
+            // TODO - check manage device card disappears on cue
         }
     }
 
