@@ -11,11 +11,11 @@
     <TextView
         android:id="@+id/pairTipTitle"
         style="@style/h1"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center|top"
-        android:layout_marginTop="@dimen/activity_top_margin"
         android:layout_weight="1"
+        android:background="@color/ok_button_down"
         android:gravity="center"
         android:text="@string/connectTipTitle" />
 
@@ -23,9 +23,9 @@
     <LinearLayout
         android:id="@+id/tipImageView"
         android:layout_width="wrap_content"
-        android:layout_height="128dp"
-        android:layout_margin="16dp"
+        android:layout_height="0dp"
         android:layout_weight="1"
+        android:background="@color/gray_green"
         android:orientation="horizontal">
 
         <ImageView
@@ -45,49 +45,61 @@
             android:src="@drawable/tip_mb_back" />
     </LinearLayout>
 
+    <!--  instructions -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="1">
 
         <TextView
             android:id="@+id/pairTipTextview"
             style="@style/p1"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
             android:layout_margin="16dp"
-            android:layout_marginTop="@dimen/content_margin"
             android:gravity="start|center_vertical"
             android:lines="3"
             android:maxLines="3"
             android:text="@string/connectTipText" />
     </LinearLayout>
 
+    <!-- Pairing Confirmation buttons -->
+        <!--android:layout_weight="1"-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_weight="1"
-        android:orientation="horizontal">
+        android:divider="?android:dividerHorizontal"
+        android:dividerPadding="16dp"
+        android:orientation="horizontal"
+        android:showDividers="end"
+        android:visibility="visible">
 
         <Button
             android:id="@+id/cancel_tip_button"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="start"
+            android:layout_margin="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:layout_weight="1"
-            android:drawableEnd="@drawable/red_cross"
-            android:gravity="center_vertical"
-            android:text="cancel" />
+            android:background="@drawable/yellow_btn"
+            android:drawableEnd="@drawable/add_device"
+            android:text="Cancel"
+            android:textAppearance="?android:textAppearanceSmall" />
 
         <Button
             android:id="@+id/ok_pair_button"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:gravity="center_vertical"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
             android:layout_weight="1"
-            android:drawableEnd="@drawable/red_cross"
+            android:background="@drawable/yellow_btn"
+            android:drawableEnd="@drawable/add_device"
+            android:gravity="center_vertical|start"
             android:text="Pair"
             android:textAppearance="@style/p1" />
     </LinearLayout>

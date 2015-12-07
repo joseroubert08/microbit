@@ -30,7 +30,7 @@
             style="@style/h1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center|start"
+            android:layout_gravity="center_vertical|start"
             android:text="@string/pair_my_device" />
 
     </LinearLayout>
@@ -41,7 +41,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="16dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:paddingTop="16dp">
 
         <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:id="@+id/prevDeviceViewCard"
@@ -60,102 +64,110 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="false"
-                android:divider="@android:color/transparent"
-                android:dividerHeight="@dimen/connect_content_margin" />
+                android:divider="@android:color/transparent" />
         </android.support.v7.widget.CardView>
     </LinearLayout>
 
     <!-- Manage micro:bits -->
-    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/manageDeviceCard"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/gray_color">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingBottom="16dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp">
 
-        <LinearLayout
-            android:id="@+id/manageDeviceView"
+        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/manageDeviceCard"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/title_manage_microbit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:gravity="center"
-                android:lines="2"
-                android:maxLines="2"
-                android:minLines="2"
-                android:text="How do i manage and remove paired micro:bits?"
-                android:textSize="16sp" />
+            android:background="@color/gray_color">
 
             <LinearLayout
+                android:id="@+id/manageDeviceView"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingBottom="16dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp">
 
                 <TextView
-                    android:id="@+id/description_manage_microbit"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:layout_weight="3"
-                    android:lines="4"
-                    android:maxLines="4"
-                    android:text="To manage and remove paired micro:bit devices go to your Bluetooth Settings on your device" />
-
-                <ImageView
-                    android:id="@+id/img_pair_microbit"
+                    android:id="@+id/title_manage_microbit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|top"
+                    android:layout_margin="16dp"
+                    android:gravity="center"
+                    android:lines="2"
+                    android:maxLines="2"
+                    android:text="How do i manage and remove paired micro:bits?"
+                    android:textSize="16sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:src="@drawable/bbc_microbit_vertical" />
-            </LinearLayout>
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="visible">
+                    <TextView
+                        android:id="@+id/description_manage_microbit"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:maxLines="5"
+                        android:minLines="3"
+                        android:text="To manage and remove paired micro:bit devices,\ngo to your Bluetooth \nSettings on your device" />
 
-                <Button
-                    android:id="@+id/go_bluetooth_settings"
+                    <ImageView
+                        android:id="@+id/img_pair_microbit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:padding="16dp"
+                        android:src="@drawable/flash_face" />
+                </LinearLayout>
+
+                <!-- Bluetooth settings -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:drawableEnd="@drawable/bluetooth"
-                    android:text="Go to bluetooth settings" />
+                    android:visibility="visible">
+
+                    <Button
+                        android:id="@+id/go_bluetooth_settings"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableEnd="@drawable/bluetooth"
+                        android:text="Go to bluetooth settings" />
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
-    </android.support.v7.widget.CardView>
-    <!--TODO - add divider padding-->
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+
     <!-- Pairing button -->
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/pairButtonView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:divider="?android:dividerHorizontal"
+        android:gravity="center"
         android:orientation="vertical"
+        android:showDividers="beginning"
         android:visibility="visible">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:background="@color/gray_color" />
 
         <Button
             android:id="@+id/pairButton"
             style="@style/h2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/widget_margin"
+            android:layout_margin="16dp"
             android:background="@drawable/yellow_btn"
-            android:text="@string/connectNew" />
+            android:drawableEnd="@drawable/add_device"
+            android:gravity="center_vertical|start"
+            android:text="@string/connectNew"
+            android:textAppearance="?android:textAppearanceSmall" />
 
     </LinearLayout>
 
@@ -163,9 +175,6 @@
         android:id="@+id/bottomPairButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp"
-        android:paddingLeft="@dimen/device_main_margin"
-        android:paddingRight="@dimen/device_main_margin"
         android:visibility="visible">
 
         <!--<include layout="@layout/view_pairing_start" />-->

@@ -112,6 +112,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     RelativeLayout mBottomPairButton;
     LinearLayout mPrevDeviceView;
 
+    LinearLayout mAppBar; // App bar
+
     List<ConnectedDevice> connectedDeviceList = new ArrayList<ConnectedDevice>();
     ConnectedDeviceAdapter connectedDeviceAdapter;
     private ListView lvConnectedDevice;
