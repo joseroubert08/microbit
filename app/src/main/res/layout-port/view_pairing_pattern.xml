@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:visibility="gone">
+    >
     <!-- visible gone-->
 
     <!-- New Device title -->
@@ -22,13 +22,12 @@
     <!-- Grid to enter pattern -->
     <GridView
         android:id="@+id/gridview"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_gravity="center"
         android:layout_weight="1"
         android:numColumns="5"
         android:verticalSpacing="@dimen/led_gap" />
-
 
     <Button
         android:id="@+id/nameNewButton"
@@ -93,7 +92,7 @@
             android:layout_marginTop="16dp"
             android:layout_weight="1"
             android:background="@drawable/yellow_btn"
-            android:drawableEnd="@drawable/add_device"
+            android:drawableEnd="@drawable/red_cross"
             android:text="Cancel"
             android:visibility="invisible" />
 
@@ -106,7 +105,7 @@
             android:layout_marginTop="16dp"
             android:layout_weight="1"
             android:background="@drawable/yellow_btn"
-            android:drawableEnd="@drawable/add_device"
+            android:drawableEnd="@drawable/red_cross"
             android:gravity="center_vertical|start"
             android:text="OK"
             android:textAppearance="@style/p1"
