@@ -140,6 +140,7 @@
 	<string name="connectNew">Pair a new micro:bit</string>
 	<string name="connectTipTitle">How to pair your micro:bit</string>
 	<string name="connectTipText">Step 1 \nHold the A buttons,\nthen PRESS RESET</string>
+	<string name="enterPatternTipText">Step 2 \nCopy the pattern from your\n device and PRESS OK</string>
 	<!--<string name="connectTipText">To know the pattern of your micro:bit :- \nPlease hold A and B buttons down and then press RESET on your micro:bit</string>-->
 	<string name="connectSearchingTitle">Connecting...</string>
 	<string name="searchingTitle">Searching for micro:bit...</string>

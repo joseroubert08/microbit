@@ -13,7 +13,8 @@
         android:layout_gravity="top"
         android:background="#ffffff"
         android:elevation="@dimen/activity_bottom_margin"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <ImageButton
             android:id="@+id/backBtn"
@@ -45,7 +46,8 @@
         android:paddingBottom="16dp"
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
-        android:paddingTop="16dp">
+        android:paddingTop="16dp"
+        android:visibility="gone">
 
         <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:id="@+id/prevDeviceViewCard"
@@ -75,7 +77,8 @@
         android:layout_weight="1"
         android:paddingBottom="16dp"
         android:paddingEnd="16dp"
-        android:paddingStart="16dp">
+        android:paddingStart="16dp"
+        android:visibility="gone">
 
         <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:id="@+id/manageDeviceCard"
@@ -155,8 +158,8 @@
         android:gravity="center"
         android:orientation="vertical"
         android:showDividers="beginning"
-        android:visibility="visible">
-
+        android:visibility="gone">
+        <!-- Visible-->
         <Button
             android:id="@+id/pairButton"
             style="@style/h2"
@@ -171,10 +174,11 @@
 
     </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/bottomPairButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/blue_button_up"
         android:visibility="visible">
 
         <!--<include layout="@layout/view_pairing_start" />-->
@@ -185,7 +189,7 @@
 
         <include layout="@layout/view_pairing_searching" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>
 

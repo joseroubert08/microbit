@@ -15,7 +15,7 @@
         android:layout_height="0dp"
         android:layout_gravity="center|top"
         android:layout_weight="1"
-        android:background="@color/ok_button_down"
+        android:background="@color/ok_button_up"
         android:gravity="center"
         android:text="@string/connectTipTitle" />
 
@@ -25,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@color/gray_green"
+        android:background="@color/blue_button_down"
         android:orientation="horizontal">
 
         <ImageView
@@ -49,7 +49,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:background="@color/cancel_button_down">
 
         <TextView
             android:id="@+id/pairTipTextview"
@@ -65,10 +66,12 @@
     </LinearLayout>
 
     <!-- Pairing Confirmation buttons -->
-        <!--android:layout_weight="1"-->
+    <!--android:layout_weight="1"-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/black_color"
         android:divider="?android:dividerHorizontal"
         android:dividerPadding="16dp"
         android:orientation="horizontal"
@@ -83,6 +86,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
+
             android:layout_weight="1"
             android:background="@drawable/yellow_btn"
             android:drawableEnd="@drawable/add_device"

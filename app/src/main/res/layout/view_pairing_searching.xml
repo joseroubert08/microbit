@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_height="fill_parent"
-android:id="@+id/pairSearchView"
-android:layout_toRightOf="@id/prevDeviceView"
-android:layout_width="fill_parent"
-android:layout_below="@id/headerBar"
-android:visibility="gone">
+    android:id="@+id/pairSearchView"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_toRightOf="@id/prevDeviceView"
+    android:visibility="gone">
 
-<TextView
-    style="@style/h1"
-    android:id="@+id/pairSearchTitle"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/searchingTitle"
-    android:layout_marginTop="@dimen/activity_top_margin"
-    android:layout_centerHorizontal="true" />
+    <TextView
+        android:id="@+id/pairSearchTitle"
+        style="@style/h1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/activity_top_margin"
+        android:text="@string/searchingTitle" />
 
     <WebView
+        android:id="@+id/animationwebView"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:id="@+id/animationwebView"
-        android:layout_centerInParent="true"/>
-<RelativeLayout
-    android:layout_height="fill_parent"
-    android:layout_width="fill_parent"
-    android:id="@+id/pairSearchImage"
-    android:layout_below="@id/pairSearchTitle">
+        android:layout_centerInParent="true" />
+
+    <RelativeLayout
+        android:id="@+id/pairSearchImage"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/pairSearchTitle">
 
 
-    <ImageButton
-        android:id="@+id/cancel_search_button"
-        android:layout_width="@dimen/button_size"
-        android:layout_height="@dimen/button_size"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="@dimen/activity_bottom_margin"
-        android:background="@drawable/red_circle_btn"
-        android:src="@drawable/white_cross"
-        android:clickable="true"/>
+        <ImageButton
+            android:id="@+id/cancel_search_button"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/activity_bottom_margin"
+            android:background="@drawable/red_circle_btn"
+            android:clickable="true"
+            android:src="@drawable/white_cross" />
 
-</RelativeLayout>
+    </RelativeLayout>
 
 </RelativeLayout>
