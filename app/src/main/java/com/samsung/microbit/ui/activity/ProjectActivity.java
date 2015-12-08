@@ -619,6 +619,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                 setActivityState(ACTIVITY_STATE.STATE_IDLE);
                                 LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
                                 dfuResultReceiver = null;
+                                //Update Stats
+                                if (MBApp.getApp().getEcho()!= null) {
+                                    logi("User action test for delete project");
+                                    //TODO add more data action_location (app/web), hex_file_size, binary_size, firmware <Micro:bit firmware version >
+                                    MBApp.getApp().getEcho().userActionEvent("hex_file_flash", "success", null);
+                                }
                                 PopUp.show(MBApp.getContext(),
                                         getString(R.string.flashing_success_message), //message
                                         getString(R.string.flashing_success_title), //title
@@ -707,6 +713,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             break;
                         case DfuService.PROGRESS_VALIDATION_FAILED:
 							setActivityState(ACTIVITY_STATE.STATE_IDLE);
+                            //Update Stats
+                            if (MBApp.getApp().getEcho()!= null) {
+                                logi("User action test for delete project");
+                                //TODO add more data action_location (app/web), hex_file_size, binary_size, firmware <Micro:bit firmware version >
+                                MBApp.getApp().getEcho().userActionEvent("hex_file_flash", "fail", null);
+                            }
                             PopUp.show(MBApp.getContext(),
                                     getString(R.string.flashing_verifcation_failed), //message
                                     getString(R.string.flashing_verifcation_failed_title),
@@ -720,6 +732,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 							break;
                         case DfuService.PROGRESS_ABORTED:
                             setActivityState(ACTIVITY_STATE.STATE_IDLE);
+                            //Update Stats
+                            if (MBApp.getApp().getEcho()!= null) {
+                                logi("User action test for delete project");
+                                //TODO add more data action_location (app/web), hex_file_size, binary_size, firmware <Micro:bit firmware version >
+                                MBApp.getApp().getEcho().userActionEvent("hex_file_flash", "fail", null);
+                            }
                             PopUp.show(MBApp.getContext(),
                                     getString(R.string.flashing_aborted), //message
                                     getString(R.string.flashing_aborted_title),
@@ -753,6 +771,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 				setActivityState(ACTIVITY_STATE.STATE_IDLE);
 				logi("DFUResultReceiver.onReceive() :: Flashing ERROR!!  Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
 						+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
+                //Update Stats
+                if (MBApp.getApp().getEcho()!= null) {
+                    logi("User action test for delete project");
+                    //TODO add more data action_location (app/web), hex_file_size, binary_size, firmware <Micro:bit firmware version >
+                    MBApp.getApp().getEcho().userActionEvent("hex_file_flash", "fail", null);
+                }
                 PopUp.show(MBApp.getContext(),
                         error_message, //message
                         getString(R.string.flashing_failed_title), //title
