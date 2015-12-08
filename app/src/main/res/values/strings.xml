@@ -21,10 +21,10 @@
 	<string name="poweredBy">Powered by\r\n SAMSUNG</string>
     <string name="copyright">Copyright © 1995-2015 SAMSUNG</string>
 
-	<string name="touchDevLiveURL">https://www.microbit.co.uk/</string>
+	<string name="touchDevLiveURL">https://www.microbit.co.uk/create-code</string>
 	<string name="touchDevDiscoverURL">https://www.microbit.co.uk/</string>
-	<string name="touchDevTestURL">https://test.microbit.co.uk/</string>
-    <string name="touchDevStageURL">https://stage.microbit.co.uk/</string>
+	<string name="touchDevTestURL">https://test.microbit.co.uk/create-code</string>
+    <string name="touchDevStageURL">https://stage.microbit.co.uk/create-code</string>
     <string name="touchDevURLMyScripts">https://www.microbit.co.uk/</string>
     <string name="myScriptsURL">https://www.microbit.co.uk/app/#</string>
     <string name="privacy_policy_url">https://www.microbit.co.uk/privacy</string>

@@ -333,17 +333,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.addDevice:
             case R.id.addDeviceEmpty: {
-                    /*
-                    if (app.getEcho()!= null) {
-                        logi("User action test for Click on Add microbit");
-                        app.getEcho().userActionEvent("click", "AddMicrobitButton", null);
-                    }
-                    */
                 Intent intent = new Intent(this, PairingActivity.class);
                 startActivity(intent);
             }
             break;
             case R.id.startNewProject: {
+                //Update Stats
+                if (app!= null && app.getEcho()!= null) {
+                    logi("User action test for delete project");
+                    app.getEcho().userActionEvent("click", "CreateCode", null);
+                }
                 //Debug feature to be added. Start Browser with live, stage or test URL
                 if (urlToOpen == null) {
                     urlToOpen = getString(R.string.touchDevLiveURL);
