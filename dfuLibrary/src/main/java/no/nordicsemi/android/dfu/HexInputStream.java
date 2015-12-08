@@ -22,6 +22,8 @@
 
 package no.nordicsemi.android.dfu;
 
+import android.util.Log;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.FilterInputStream;
@@ -49,28 +51,41 @@ public class HexInputStream extends FilterInputStream {
 	private int available, bytesRead;
 	private final int MBRSize;
 
-	/**
-	 * Creates the HEX Input Stream. The constructor calculates the size of the BIN content which is available through {@link #sizeInBytes()}. If HEX file is invalid then the bin size is 0.
-	 * 
-	 * @param in
-	 *            the input stream to read from
-	 * @param mbrSize
-	 *            The MBR (Master Boot Record) size in bytes. Data with addresses below than number will be trimmed and not transferred to DFU target.
-	 * @throws HexFileValidationException
-	 *             if HEX file is invalid. F.e. there is no semicolon (':') on the beginning of each line.
-	 * @throws java.io.IOException
-	 *             if the stream is closed or another IOException occurs.
-	 */
-	protected HexInputStream(final InputStream in, final int mbrSize) throws HexFileValidationException, IOException {
-		super(new BufferedInputStream(in));
-		this.localBuf = new byte[LINE_LENGTH];
-		this.localPos = LINE_LENGTH; // we are at the end of the local buffer, new one must be obtained
-		this.size = localBuf.length;
-		this.lastAddress = 0;
-		this.MBRSize = mbrSize;
 
-		this.available = calculateBinSize(mbrSize);
-	}
+    protected HexInputStream(final InputStream in) throws HexFileValidationException, IOException {
+        super(new BufferedInputStream(in));
+        this.localBuf = new byte[LINE_LENGTH];
+        this.localPos = LINE_LENGTH; // we are at the end of the local buffer, new one must be obtained
+        this.size = localBuf.length;
+        this.lastAddress = 0;
+        this.MBRSize = -1;
+        this.available = calculateBinSizeAlternative();
+        Log.d("HexInputStrem", "calculateBinSizeAlternative = " + this.available/1024 + "Kb");
+    }
+
+    /**
+     * Creates the HEX Input Stream. The constructor calculates the size of the BIN content which is available through {@link #sizeInBytes()}. If HEX file is invalid then the bin size is 0.
+     *
+     * @param in
+     *            the input stream to read from
+     * @param mbrSize
+     *            The MBR (Master Boot Record) size in bytes. Data with addresses below than number will be trimmed and not transferred to DFU target.
+     * @throws HexFileValidationException
+     *             if HEX file is invalid. F.e. there is no semicolon (':') on the beginning of each line.
+     * @throws java.io.IOException
+     *             if the stream is closed or another IOException occurs.
+     */
+    protected HexInputStream(final InputStream in, final int mbrSize) throws HexFileValidationException, IOException {
+        super(new BufferedInputStream(in));
+        this.localBuf = new byte[LINE_LENGTH];
+        this.localPos = LINE_LENGTH; // we are at the end of the local buffer, new one must be obtained
+        this.size = localBuf.length;
+        this.lastAddress = 0;
+        this.MBRSize = mbrSize;
+
+        this.available = calculateBinSize(mbrSize);
+        Log.d("HexInputStrem", "calculateBinSize = " + this.available/1024 + "Kb");
+    }
 
 	protected HexInputStream(final byte[] data, final int mbrSize) throws HexFileValidationException, IOException {
 		super(new ByteArrayInputStream(data));
@@ -81,9 +96,79 @@ public class HexInputStream extends FilterInputStream {
 		this.MBRSize = mbrSize;
 
 		this.available = calculateBinSize(mbrSize);
+        Log.d("HexInputStrem", "calculateBinSize = " + this.available/1024 + "Kb");
 	}
 
-	private int calculateBinSize(final int mbrSize) throws IOException {
+    private int calculateBinSizeAlternative() throws IOException {
+        int binSize = 0;
+        final InputStream in = this.in;
+        in.mark(in.available());
+
+        int b, lineSize, offset, type;
+        int lastBaseAddress = 0; // last Base Address, default 0
+        int lastAddress;
+        try {
+            b = in.read();
+            while (true) {
+                checkComma(b);
+
+                lineSize = readByte(in); // reading the length of the data in this line
+                offset = readAddress(in);// reading the offset
+                type = readByte(in); // reading the line type
+                switch (type) {
+                    case 0x01:
+                        // end of file
+                        return binSize;
+                    case 0x04: {
+                        // extended linear address record
+					/*
+					 * The HEX file may contain jump to different addresses. The MSB of LBA (Linear Base Address) is given using the line type 4.
+					 * We only support files where bytes are located together, no jumps are allowed. Therefore the newULBA may be only lastULBA + 1 (or any, if this is the first line of the HEX)
+					 */
+                        final int newULBA = readAddress(in);
+                        if (binSize > 0 && newULBA != (lastBaseAddress >> 16) + 1)
+                            return binSize;
+                        lastBaseAddress = newULBA << 16;
+                        in.skip(2 /* check sum */);
+                        break;
+                    }
+                    case 0x02: {
+                        // extended segment address record
+                        final int newSBA = readAddress(in) << 4;
+                        if (binSize > 0 && (newSBA >> 16) != (lastBaseAddress >> 16) + 1)
+                            return binSize;
+                        lastBaseAddress = newSBA;
+                        in.skip(2 /* check sum */);
+                        break;
+                    }
+                    case 0x00:
+                        // data type line
+                        lastAddress = lastBaseAddress + offset;
+                        if (lastAddress >= DfuSettingsConstants.APP_CODE_BASE_START && lastAddress <= DfuSettingsConstants.APP_CODE_BASE_END)
+                        {
+                            //Log.d("HexInputStrem", "Found FOTA Start address");
+                            binSize += lineSize;
+                        }
+                        // no break!
+                    default:
+                        in.skip(lineSize * 2 /* 2 hex per one byte */+ 2 /* check sum */);
+                        break;
+                }
+                // skip end of line
+                while (true) {
+                    b = in.read();
+
+                    if (b != '\n' && b != '\r') {
+                        break;
+                    }
+                }
+            }
+        } finally {
+            in.reset();
+        }
+    }
+
+    private int calculateBinSize(final int mbrSize) throws IOException {
 		int binSize = 0;
 		final InputStream in = this.in;
 		in.mark(in.available());
@@ -127,7 +212,7 @@ public class HexInputStream extends FilterInputStream {
 				}
 				case 0x00:
 					// data type line
-					lastAddress = lastBaseAddress + offset;
+ 					lastAddress = lastBaseAddress + offset;
 					if (lastAddress >= mbrSize) // we must skip all data from below last MBR address (default 0x1000) as those are the MBR. The Soft Device starts at the end of MBR (0x1000), the app and bootloader farther more
 						binSize += lineSize;
 					// no break!
@@ -262,10 +347,19 @@ public class HexInputStream extends FilterInputStream {
 			switch (type) {
 			case 0x00:
 				// data type
-				if (lastAddress + offset < MBRSize) { // skip MBR
-					type = -1; // some other than 0
-					pos += in.skip(lineSize * 2 /* 2 hex per one byte */+ 2 /* check sum */);
-				}
+                if (MBRSize == -1){ //This is for fixed address case
+                    int fullAddress = lastAddress + offset ;
+                    if (fullAddress < DfuSettingsConstants.APP_CODE_BASE_START || fullAddress > DfuSettingsConstants.APP_CODE_BASE_END){ //Skip Non Fota
+                        type = -1; // some other than 0
+                        pos += in.skip(lineSize * 2 /* 2 hex per one byte */ + 2 /* check sum */);
+                    }
+
+                } else {
+                    if (lastAddress + offset < MBRSize) { // skip MBR
+                        type = -1; // some other than 0
+                        pos += in.skip(lineSize * 2 /* 2 hex per one byte */ + 2 /* check sum */);
+                    }
+                }
 				break;
 			case 0x01:
 				// end of file

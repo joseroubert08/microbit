@@ -29,4 +29,7 @@ public interface DfuSettingsConstants {
 	public static final int SETTINGS_DEFAULT_MBR_SIZE = 0x1000;
 	public static final int SETTINGS_NUMBER_OF_PACKETS_DEFAULT = 10;
 	public static final int TIME_TO_WAIT_IN_MILLISECONDS = 30*1000;
+	public static final int APP_CODE_BASE_START =0x18000;
+    public static final int APP_CODE_BASE_END =0x3BBFF;
+    //public static final int APP_CODE_BASE_END =0x2FFFF;
 }

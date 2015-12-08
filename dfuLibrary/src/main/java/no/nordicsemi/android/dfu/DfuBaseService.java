@@ -2347,8 +2347,10 @@ public abstract class DfuBaseService extends IntentService {
 		if (MIME_TYPE_ZIP.equals(mimeType))
 			return new ArchiveInputStream(is, mbrSize, types);
 
-		if (filePath.toLowerCase(Locale.US).endsWith("hex"))
-			return new HexInputStream(is, mbrSize);
+		if (filePath.toLowerCase(Locale.US).endsWith("hex")) {
+			//return new HexInputStream(is, mbrSize);
+			return new HexInputStream(is);
+		}
 
 		return is;
 	}
@@ -2373,8 +2375,10 @@ public abstract class DfuBaseService extends IntentService {
 			if (cursor.moveToNext()) {
 				final String fileName = cursor.getString(0 /* DISPLAY_NAME*/);
 
-				if (fileName.toLowerCase(Locale.US).endsWith("hex"))
-					return new HexInputStream(is, mbrSize);
+				if (fileName.toLowerCase(Locale.US).endsWith("hex")) {
+                    //return new HexInputStream(is, mbrSize);
+                    return new HexInputStream(is);
+                }
 			}
 		} finally {
 			cursor.close();
