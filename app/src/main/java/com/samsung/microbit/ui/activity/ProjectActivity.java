@@ -408,7 +408,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		switch (v.getId()) {
 			case R.id.createProject:
                 {
-                    String url = getString(R.string.touchDevURLMyScripts);
+                    String url = getString(R.string.myScriptsURL);
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(Uri.parse(url));
                     startActivity(intent);
