@@ -13,20 +13,22 @@
         style="@style/h1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_gravity="center|top"
+        android:layout_gravity="center"
         android:layout_weight="1"
         android:background="@color/ok_button_up"
         android:gravity="center"
-        android:text="@string/connectTipTitle" />
+        android:text="@string/connectTipTitle"
+        android:visibility="gone" />
 
     <!-- Images -->
     <LinearLayout
         android:id="@+id/tipImageView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="2"
         android:background="@color/blue_button_down"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/microbit_tip_image"
@@ -49,9 +51,9 @@
     <LinearLayout
         android:id="@+id/pairTipButtonText"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@color/cancel_button_down">
+        android:layout_height="wrap_content"
+        android:background="@color/cancel_button_down"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/pairTipTextview"
@@ -67,7 +69,6 @@
     </LinearLayout>
 
     <!-- Pairing Confirmation buttons -->
-    <!--android:layout_weight="1"-->
     <LinearLayout
         android:id="@+id/pairTipButtonView"
         android:layout_width="match_parent"
@@ -81,13 +82,12 @@
 
         <Button
             android:id="@+id/cancel_tip_button"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-
             android:layout_weight="1"
             android:background="@drawable/yellow_btn"
             android:drawableEnd="@drawable/add_device"
@@ -96,7 +96,7 @@
 
         <Button
             android:id="@+id/ok_pair_button"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:layout_marginStart="8dp"

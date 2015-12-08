@@ -3,7 +3,8 @@
     android:id="@+id/newDeviceView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
     <!-- visible gone-->
 
     <!-- New Device title -->
@@ -11,9 +12,8 @@
         android:id="@+id/newDeviceTxt"
         style="@style/h1"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center|top"
-        android:layout_weight="1"
         android:gravity="center"
         android:text="@string/new_devices_pattern_null"
         android:textColor="@color/black_color" />
@@ -23,36 +23,37 @@
         android:id="@+id/gridview"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_gravity="center"
+        android:layout_gravity="center_horizontal"
         android:layout_weight="1"
         android:numColumns="5"
+        android:layout_margin="8dp"
         android:verticalSpacing="@dimen/led_gap" />
 
-    <Button
-        android:id="@+id/nameNewButton"
-        style="@style/p1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/white_bg"
-        android:clickable="true"
-        android:drawableEnd="@drawable/rename"
-        android:textColor="@color/black_color"
-        android:visibility="invisible" />
+    <!--<Button-->
+    <!--android:id="@+id/nameNewButton"-->
+    <!--style="@style/p1"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:background="@drawable/white_bg"-->
+    <!--android:clickable="true"-->
+    <!--android:drawableEnd="@drawable/rename"-->
+    <!--android:textColor="@color/black_color"-->
+    <!--android:visibility="gone" />-->
 
-    <EditText
-        android:id="@+id/nameNewEdit"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/edit_box"
-        android:inputType="textVisiblePassword|textNoSuggestions"
-        android:lines="3"
-        android:visibility="invisible" />
+    <!--<EditText-->
+    <!--android:id="@+id/nameNewEdit"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:background="@drawable/edit_box"-->
+    <!--android:inputType="textVisiblePassword|textNoSuggestions"-->
+    <!--android:lines="3"-->
+    <!--android:visibility="gone" />-->
 
     <!--  instructions -->
     <LinearLayout
+        android:id="@+id/viewPairingPatternTipView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:background="@color/cancel_button_down">
 
         <TextView
@@ -68,9 +69,9 @@
             android:text="@string/enterPatternTipText" />
     </LinearLayout>
 
-
     <!-- Pairing confirmation buttons-->
     <LinearLayout
+        android:id="@+id/enterPatternConfirmationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
@@ -92,6 +93,7 @@
             android:layout_weight="1"
             android:background="@drawable/yellow_btn"
             android:drawableEnd="@drawable/red_cross"
+            android:gravity="start|center_vertical"
             android:text="Cancel"
             android:visibility="invisible" />
 

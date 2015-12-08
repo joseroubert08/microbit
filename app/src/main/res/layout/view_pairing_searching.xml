@@ -3,7 +3,8 @@
     android:id="@+id/pairSearchView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
 
     <TextView
         android:id="@+id/pairSearchTitle"
@@ -22,14 +23,33 @@
         android:layout_gravity="center|fill"
         android:layout_weight="1" />
 
-    <ImageButton
-        android:id="@+id/cancel_search_button"
-        android:layout_width="wrap_content"
+    <!-- Pairing Confirmation buttons -->
+    <LinearLayout
+        android:id="@+id/pairTipButtonView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:background="@drawable/red_circle_btn"
-        android:clickable="true"
-        android:padding="16dp"
-        android:src="@drawable/white_cross" />
+        android:layout_gravity="bottom"
+        android:background="@color/black_color"
+        android:divider="?android:dividerHorizontal"
+        android:dividerPadding="16dp"
+        android:orientation="horizontal"
+        android:showDividers="end">
 
+        <Button
+            android:id="@+id/cancel_search_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"
+            android:background="@drawable/yellow_btn"
+            android:drawableEnd="@drawable/red_cross"
+            android:text="Cancel"
+            android:gravity="start|center_vertical"
+            android:textAppearance="?android:textAppearanceSmall" />
+
+
+    </LinearLayout>
 </LinearLayout>
