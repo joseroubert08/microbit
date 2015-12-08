@@ -14,11 +14,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ResultReceiver;
+import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -28,6 +30,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
@@ -362,12 +365,12 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.ok_name_button).setOnClickListener(this);
         findViewById(R.id.cancel_name_button).setOnClickListener(this);
         findViewById(R.id.cancel_search_button).setOnClickListener(this);
-
-        // TODO - Remove animation changed
+        findViewById(R.id.go_bluetooth_settings).setOnClickListener(this);
+        // TODO - change animation
         // Animation
-        //    WebView animation = (WebView) findViewById(R.id.animationwebView);  animation //
-        //    animation.setBackgroundColor(Color.TRANSPARENT);
-        //    animation.loadUrl("file:///android_asset/htmls/animation.html");
+        WebView animation = (WebView) findViewById(R.id.animationwebView);
+        animation.setBackgroundColor(Color.TRANSPARENT);
+        animation.loadUrl("file:///android_asset/htmls/animation.html");
 
         if (MBApp.getApp().getEcho() != null) {
             logi("Page View test for PairingActivity");
@@ -735,7 +738,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 }
                 startWithPairing();
                 break;
-
+            case R.id.go_bluetooth_settings: //Bluetooth
+                Intent goToBlueToothIntent = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
+                startActivity(goToBlueToothIntent);
+                break;
             case R.id.ok_pair_button:
                 if (debug) logi("onClick() :: ok_pair_button");
                 displayConnectScreen(PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY);

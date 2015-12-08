@@ -23,7 +23,8 @@
             android:background="@android:color/transparent"
             android:onClick="onClick"
             android:padding="16dp"
-            android:src="@drawable/back" />
+            android:src="@drawable/back"
+            />
 
         <TextView
             android:id="@+id/titleTxt"
@@ -153,6 +154,7 @@
         android:divider="?android:dividerHorizontal"
         android:gravity="center"
         android:orientation="vertical"
+        android:dividerPadding="16dp"
         android:showDividers="beginning">
         <!-- Visible-->
         <Button

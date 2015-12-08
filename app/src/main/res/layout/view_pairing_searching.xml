@@ -3,27 +3,50 @@
     android:id="@+id/pairSearchView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:visibility="gone">
+    android:background="@color/black_color"
+    android:orientation="vertical">
 
     <!-- pairing animation -->
     <TextView
         android:id="@+id/pairSearchTitle"
         style="@style/h1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_gravity="center|top"
-        android:layout_marginTop="@dimen/activity_top_margin"
+        android:layout_margin="16dp"
+        android:layout_weight="1"
         android:gravity="center"
-        android:text="@string/searchingTitle" />
+        android:text="@string/searchingTitle"
+        android:textColor="@color/white_color" />
 
-    <!-- pairing animation-->
-    <!--<WebView-->
-    <!--android:id="@+id/animationwebView"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="0dp"-->
-    <!--android:layout_gravity="center|fill"-->
-    <!--android:layout_weight="1" />-->
+    <!--pairing animation-->
+    <WebView
+        android:id="@+id/animationwebView"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center"
+        android:layout_margin="16dp"
+        android:layout_weight="5" />
+
+    <!--  instructions -->
+    <LinearLayout
+        android:id="@+id/searchingTipView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/searchingTipText"
+            style="@style/p1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
+            android:layout_margin="16dp"
+            android:gravity="start|center_vertical"
+            android:lines="3"
+            android:maxLines="3"
+            android:text="@string/searchingTipText"
+            android:textColor="@color/white_color" />
+    </LinearLayout>
 
     <!-- Pairing Confirmation buttons -->
     <LinearLayout
@@ -31,7 +54,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/black_color"
         android:divider="?android:dividerHorizontal"
         android:dividerPadding="16dp"
         android:orientation="horizontal"
@@ -46,12 +68,11 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_weight="1"
-            android:background="@drawable/yellow_btn"
+            android:background="@color/cancel_button_up"
             android:drawableEnd="@drawable/red_cross"
             android:gravity="start|center_vertical"
+            android:padding="8dp"
             android:text="Cancel"
             android:textAppearance="?android:textAppearanceSmall" />
-
-
     </LinearLayout>
 </LinearLayout>

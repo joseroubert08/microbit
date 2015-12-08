@@ -3,15 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="@dimen/content_margin"
+    android:padding="16dp"
     android:visibility="visible">
 
     <ListView
         android:id="@+id/projectListView"
-        android:clipToPadding="false"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:clipToPadding="false"
         android:divider="@android:color/transparent"
         android:dividerHeight="@dimen/widget_margin" />
 
@@ -29,9 +29,10 @@
         android:layout_height="wrap_content"
         android:background="@drawable/yellow_btn"
         android:drawableEnd="@drawable/new_project"
-        android:gravity="center_vertical"
+        android:gravity="center_vertical|start"
         android:onClick="onClick"
-        android:text="@string/my_scripts" />
+        android:text="@string/my_scripts"
+        android:textAppearance="?android:textAppearanceSmall" />
 
 
 </LinearLayout>
