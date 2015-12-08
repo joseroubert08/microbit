@@ -223,4 +223,17 @@
 	<string name="flash_microbit">Flash</string>
 	<string name="connect_device">Connect</string>
 	<string name="discover">Discover</string>
+
+    <string name="email_body" formatted="false" >
+        <![CDATA[
+            <p> <b> About my device* </b> </p>
+            <p> micro:bit %s </p>
+            <p> %s Android %s </p>
+
+            <p> * This information is really helpful when pinpointing issues.
+            No personal or sensitive data is passed to us by sending this information.
+            For more information on the micro:bit Privacy Policy, please click <a href=\"%s\">here</a>
+            </p>
+        ]]>
+    </string>
 </resources>

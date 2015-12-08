@@ -3,8 +3,11 @@ package com.samsung.microbit.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,6 +16,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,6 +55,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private String urlToOpen = null;
     /* Debug code ends*/
 
+
+    private String emailBodyString = null ;
 
     protected void logi(String message) {
         if (debug) {
@@ -203,11 +209,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             break;
             case R.id.nav_feedback: {
                 String emailAddress = RemoteConfig.getInstance().getSendEmailAddress();
-                Toast.makeText(this, "Sending Feedback to : " + emailAddress, Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("message/rfc822");
-                intent.putExtra(Intent.EXTRA_EMAIL, new String[] {emailAddress});
+                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{emailAddress});
                 intent.putExtra(Intent.EXTRA_SUBJECT, "[User feedback] ");
+                //Prepare the body of email
+                String body = prepareEmailBody();
+                intent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(body));
                 Intent mailer = Intent.createChooser(intent, null);
                 startActivity(mailer);
             }
@@ -218,6 +226,28 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private String prepareEmailBody() {
+        if (emailBodyString != null) {
+            return emailBodyString;
+        }
+        String emailBody = getString(R.string.email_body);
+        String version = "0.1.0";
+        PackageManager manager = MBApp.getContext().getPackageManager();
+        PackageInfo info = null;
+        try {
+            info = manager.getPackageInfo(MBApp.getContext().getPackageName(), 0);
+            version = info.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        emailBodyString = String.format(emailBody,
+                version,
+                Build.MODEL,
+                Build.VERSION.RELEASE,
+                RemoteConfig.getInstance().getPrivacyURL());
+        return emailBodyString ;
     }
 
     @Override
