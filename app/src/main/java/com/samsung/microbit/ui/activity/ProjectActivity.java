@@ -334,7 +334,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		projectListView.setEmptyView(emptyText);
 		if (reReadFS) {
 			projectList.clear();
-			Utils.findProgramsAndPopulate(prettyFileNameMap, projectList);
+			int totalPrograms = Utils.findProgramsAndPopulate(prettyFileNameMap, projectList);
+            //Update Stats
+            if (MBApp.getApp()!=null && MBApp.getApp().getEcho()!= null) {
+                MBApp.getApp().getEcho().userActionEvent("saved_projects", Integer.toString(totalPrograms), null);
+            }
 		}
 
 		projectListSortOrder = Utils.getListOrderPrefs(this);
@@ -408,6 +412,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		switch (v.getId()) {
 			case R.id.createProject:
                 {
+                    if (MBApp.getApp().getEcho()!= null) {
+                        MBApp.getApp().getEcho().userActionEvent("onClick", "myScripts", null);
+                    }
                     String url = getString(R.string.myScriptsURL);
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(Uri.parse(url));
@@ -621,7 +628,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                 dfuResultReceiver = null;
                                 //Update Stats
                                 if (MBApp.getApp().getEcho()!= null) {
-                                    logi("User action test for delete project");
                                     //TODO add more data action_location (app/web), hex_file_size, binary_size, firmware <Micro:bit firmware version >
                                     MBApp.getApp().getEcho().userActionEvent("hex_file_flash", "success", null);
                                 }
@@ -715,7 +721,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 							setActivityState(ACTIVITY_STATE.STATE_IDLE);
                             //Update Stats
                             if (MBApp.getApp().getEcho()!= null) {
-                                logi("User action test for delete project");
                                 //TODO add more data action_location (app/web), hex_file_size, binary_size, firmware <Micro:bit firmware version >
                                 MBApp.getApp().getEcho().userActionEvent("hex_file_flash", "fail", null);
                             }
@@ -734,7 +739,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             setActivityState(ACTIVITY_STATE.STATE_IDLE);
                             //Update Stats
                             if (MBApp.getApp().getEcho()!= null) {
-                                logi("User action test for delete project");
                                 //TODO add more data action_location (app/web), hex_file_size, binary_size, firmware <Micro:bit firmware version >
                                 MBApp.getApp().getEcho().userActionEvent("hex_file_flash", "fail", null);
                             }
@@ -773,7 +777,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 						+ "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
                 //Update Stats
                 if (MBApp.getApp().getEcho()!= null) {
-                    logi("User action test for delete project");
                     //TODO add more data action_location (app/web), hex_file_size, binary_size, firmware <Micro:bit firmware version >
                     MBApp.getApp().getEcho().userActionEvent("hex_file_flash", "fail", null);
                 }

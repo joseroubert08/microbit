@@ -237,7 +237,6 @@ public class ProjectAdapter extends BaseAdapter {
 			final int pos = (int) v.getTag();
             //Update Stats
             if (MBApp.getApp().getEcho()!= null) {
-                logi("User action test for delete project");
                 MBApp.getApp().getEcho().userActionEvent("click", "DeleteProject", null);
             }
             PopUp.show(MBApp.getContext(),
