@@ -1,10 +1,7 @@
 package com.samsung.microbit.ui.adapter;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -24,8 +21,8 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.Project;
-import com.samsung.microbit.ui.activity.ProjectActivity;
 import com.samsung.microbit.ui.PopUp;
+import com.samsung.microbit.ui.activity.ProjectActivity;
 import com.samsung.microbit.ui.control.ExtendedEditText;
 
 import java.util.List;
@@ -238,7 +235,12 @@ public class ProjectAdapter extends BaseAdapter {
 
 			logi("deleteBtnClickListener() :: ");
 			final int pos = (int) v.getTag();
-			PopUp.show(MBApp.getContext(),
+            //Update Stats
+            if (MBApp.getApp().getEcho()!= null) {
+                logi("User action test for delete project");
+                MBApp.getApp().getEcho().userActionEvent("click", "DeleteProject", null);
+            }
+            PopUp.show(MBApp.getContext(),
 				MBApp.getContext().getString(R.string.delete_project_message),
 				MBApp.getContext().getString(R.string.delete_project_title),
 				R.drawable.delete_project, R.drawable.red_btn,
