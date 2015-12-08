@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    >
+    android:visibility="gone">
     <!-- visible gone-->
 
     <!-- New Device title -->
@@ -16,7 +16,8 @@
         android:layout_gravity="center|top"
         android:gravity="center"
         android:text="@string/new_devices_pattern_null"
-        android:textColor="@color/black_color" />
+        android:textColor="@color/black_color"
+        android:visibility="gone" />
 
     <!-- Grid to enter pattern -->
     <GridView
@@ -24,10 +25,13 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
+        android:layout_margin="8dp"
         android:layout_weight="1"
         android:numColumns="5"
-        android:layout_margin="8dp"
-        android:verticalSpacing="@dimen/led_gap" />
+        android:verticalSpacing="@dimen/led_gap"
+        android:visibility="gone"
+
+        />
 
     <!--<Button-->
     <!--android:id="@+id/nameNewButton"-->
@@ -51,13 +55,14 @@
 
     <!--  instructions -->
     <LinearLayout
-        android:id="@+id/viewPairingPatternTipView"
+        android:id="@+id/pairingPatternTipView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/cancel_button_down">
+        android:background="@color/cancel_button_down"
+        android:visibility="gone">
 
         <TextView
-            android:id="@+id/viewPairingPatternTip"
+            android:id="@+id/pairingPatternTip"
             style="@style/p1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -80,7 +85,9 @@
         android:dividerPadding="16dp"
         android:orientation="horizontal"
         android:showDividers="end"
-        android:visibility="visible">
+        android:visibility="gone"
+
+        >
 
         <Button
             android:id="@+id/cancel_name_button"

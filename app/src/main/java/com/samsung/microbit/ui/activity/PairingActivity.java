@@ -14,7 +14,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,7 +28,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
@@ -98,15 +96,12 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             "Z", "U", "Z", "U", "Z"};
     // @formatter:on
 
-    LinearLayout mManageDeviceView;
     LinearLayout mPairButtonView;
     LinearLayout mPairTipView;
+    LinearLayout mConnectDeviceView; // new layout
     LinearLayout mNewDeviceView;
     LinearLayout mPairSearchView;
     LinearLayout mBottomPairButton;
-    LinearLayout mPrevDeviceView;
-
-    LinearLayout mAppBar; // App bar
 
     List<ConnectedDevice> connectedDeviceList = new ArrayList<ConnectedDevice>();
     ConnectedDeviceAdapter connectedDeviceAdapter;
@@ -355,11 +350,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         populateConnectedDeviceList(false);
 
         mBottomPairButton = (LinearLayout) findViewById(R.id.bottomPairButton);
-        mPrevDeviceView = (LinearLayout) findViewById(R.id.prevDeviceView);
-        mAppBar = (LinearLayout) findViewById(R.id.headerBar); // app bar
-        mManageDeviceView = (LinearLayout) findViewById(R.id.manageDeviceView); // new card
         mPairButtonView = (LinearLayout) findViewById(R.id.pairButtonView);
         mPairTipView = (LinearLayout) findViewById(R.id.pairTipView);
+        mConnectDeviceView = (LinearLayout) findViewById(R.id.connectDeviceView); // Connect device view
         mNewDeviceView = (LinearLayout) findViewById(R.id.newDeviceView);
         mPairSearchView = (LinearLayout) findViewById(R.id.pairSearchView);
 
@@ -370,10 +363,11 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.cancel_name_button).setOnClickListener(this);
         findViewById(R.id.cancel_search_button).setOnClickListener(this);
 
-        //Animation
-        WebView animation = (WebView) findViewById(R.id.animationwebView);
-        animation.setBackgroundColor(Color.TRANSPARENT);
-        animation.loadUrl("file:///android_asset/htmls/animation.html");
+        // TODO - Remove animation changed
+        // Animation
+        //    WebView animation = (WebView) findViewById(R.id.animationwebView);  animation //
+        //    animation.setBackgroundColor(Color.TRANSPARENT);
+        //    animation.loadUrl("file:///android_asset/htmls/animation.html");
 
         if (MBApp.getApp().getEcho() != null) {
             logi("Page View test for PairingActivity");
@@ -558,7 +552,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     }
 
     private void displayConnectScreen(PAIRING_STATE gotoState) {
-        mPairButtonView.setVisibility(View.GONE);
         mPairTipView.setVisibility(View.GONE);
         mNewDeviceView.setVisibility(View.GONE);
         mPairSearchView.setVisibility(View.GONE);
@@ -573,19 +566,16 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             DISABLE_DEVICE_LIST = true;
 
         if (isPortraitMode() && (disableListView())) {
-            mPrevDeviceView.setVisibility(View.GONE);
+            // mPrevDeviceView.setVisibility(View.GONE); TODO debug
         } else {
             populateConnectedDeviceList(true);
-            mPrevDeviceView.setVisibility(View.VISIBLE);
-            mManageDeviceView.setVisibility(View.VISIBLE);
-            mAppBar.setVisibility(View.VISIBLE);
+            mConnectDeviceView.setVisibility(View.VISIBLE);
         }
 
         switch (gotoState) {
             case PAIRING_STATE_CONNECT_BUTTON:
             case PAIRING_STATE_ERROR:
-                // TODO - manage device error handle
-                mPairButtonView.setVisibility(View.VISIBLE);
+                //   mPairButtonView.setVisibility(View.VISIBLE);// TODO debug - error case
                 lvConnectedDevice.setEnabled(true);
                 Arrays.fill(deviceCodeArray, "0");
                 findViewById(R.id.gridview).setEnabled(true);
@@ -595,10 +585,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
             case PAIRING_STATE_TIP:
                 mPairTipView.setVisibility(View.VISIBLE);
-
-             //mManageDeviceView.setVisibility(View.VISIBLE);//
-            //    mAppBar.setVisibility(View.VISIBLE); //
-            //    mPrevDeviceView.setVisibility(View.VISIBLE); //
+                mConnectDeviceView.setVisibility(View.GONE);
                 findViewById(R.id.ok_pair_button).setOnClickListener(this);
                 break;
 
@@ -608,9 +595,15 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 mNewDeviceView.setVisibility(View.VISIBLE);
                 findViewById(R.id.cancel_name_button).setVisibility(View.VISIBLE);
                 findViewById(R.id.newDeviceTxt).setVisibility(View.VISIBLE);
+
+                // test
+                findViewById(R.id.gridview).setVisibility(View.VISIBLE);
+                findViewById(R.id.pairingPatternTipView).setVisibility(View.VISIBLE);
+                findViewById(R.id.enterPatternConfirmationView).setVisibility(View.VISIBLE);
+                //
                 findViewById(R.id.ok_name_button).setVisibility(View.GONE);
-           //     findViewById(R.id.nameNewButton).setVisibility(View.GONE); Temp disabling
-            //    findViewById(R.id.nameNewEdit).setVisibility(View.GONE);
+                //     findViewById(R.id.nameNewButton).setVisibility(View.GONE); Temp disabling TODO - remove 'renaming microbit feature'
+                //    findViewById(R.id.nameNewEdit).setVisibility(View.GONE);
 
 
                 displayLedGrid();
@@ -620,21 +613,22 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 findViewById(R.id.gridview).setEnabled(false);
                 findViewById(R.id.connectedDeviceList).setClickable(false);
                 mNewDeviceView.setVisibility(View.VISIBLE);
-        //        Button newNameButton = (Button) findViewById(R.id.nameNewButton); // temp disabling
-           //     EditText newNameEdit = (EditText) findViewById(R.id.nameNewEdit);
-        //        newNameButton.setTag(R.id.textEdit, newNameEdit);              // temp disabling
-         //       newNameButton.setOnClickListener(microbitRenameClickListener); //temp disabling
-           //     newNameEdit.setTag(R.id.editbutton, newNameButton);               // temp disabling
+                //  TODO - remove 'renaming microbit feature'
+                //        Button newNameButton = (Button) findViewById(R.id.nameNewButton); // temp disabling
+                //     EditText newNameEdit = (EditText) findViewById(R.id.nameNewEdit);
+                //        newNameButton.setTag(R.id.textEdit, newNameEdit);              // temp disabling
+                //       newNameButton.setOnClickListener(microbitRenameClickListener); //temp disabling
+                //     newNameEdit.setTag(R.id.editbutton, newNameButton);               // temp disabling
                 // newNameEdit.setOnEditorActionListener(editorOnActionListener);
                 if ((mPrevDeviceArray == null) || (mPrevDeviceArray[0].mName == null) || (mPrevDeviceArray[0].mName.equals(""))) {
-          //          newNameButton.setText(mNewDeviceCode); // temp
-         //           newNameEdit.setText(mNewDeviceCode);
+                    //          newNameButton.setText(mNewDeviceCode); // temp
+                    //           newNameEdit.setText(mNewDeviceCode);
                 } else {
-      //              newNameButton.setText(mPrevDeviceArray[0].mName);// temp
-        //            newNameEdit.setText(mPrevDeviceArray[0].mName);
+                    //              newNameButton.setText(mPrevDeviceArray[0].mName);// temp
+                    //            newNameEdit.setText(mPrevDeviceArray[0].mName);
                 }
-         //       newNameButton.setVisibility(View.VISIBLE);// Temp
-        //        newNameEdit.setVisibility(View.INVISIBLE);
+                //       newNameButton.setVisibility(View.VISIBLE);// Temp
+                //        newNameEdit.setVisibility(View.INVISIBLE);
                 findViewById(R.id.ok_name_button).setVisibility(View.VISIBLE);
                 findViewById(R.id.cancel_name_button).setVisibility(View.VISIBLE);
                 displayLedGrid();
@@ -671,24 +665,25 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 mPrevDeviceArray[0].mName = newName;
                 mPrevDevList.changeMicrobitName(0, mPrevDeviceArray[0]);
                 populateConnectedDeviceList(true);
-        //        Button newNameButton = (Button) findViewById(R.id.nameNewButton); // temp disabling
+                //        Button newNameButton = (Button) findViewById(R.id.nameNewButton); // temp disabling
                 // newNameButton.setText(newName); // Temp disabling
-               // newNameButton.setVisibility(View.VISIBLE); // Temp disabling
+                // newNameButton.setVisibility(View.VISIBLE); // Temp disabling
                 ed.setVisibility(View.INVISIBLE);
             }
         }
     }
 
+    // TODO - remove microbit rename
     private View.OnClickListener microbitRenameClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-        //    Button newNameButton = (Button) findViewById(R.id.nameNewButton); //
-     //       EditText newNameEdit = (EditText) findViewById(R.id.nameNewEdit);
-       //     newNameEdit.setVisibility(View.VISIBLE);
-       //     newNameButton.setVisibility(View.INVISIBLE); // temp disabling of newname
-        //    newNameEdit.setText(mNewDeviceCode);
-       //     newNameEdit.setSelection(mNewDeviceCode.length());
-       //     newNameEdit.requestFocus();
+            //    Button newNameButton = (Button) findViewById(R.id.nameNewButton); //
+            //       EditText newNameEdit = (EditText) findViewById(R.id.nameNewEdit);
+            //     newNameEdit.setVisibility(View.VISIBLE);
+            //     newNameButton.setVisibility(View.INVISIBLE); // temp disabling of newname
+            //    newNameEdit.setText(mNewDeviceCode);
+            //     newNameEdit.setSelection(mNewDeviceCode.length());
+            //     newNameEdit.requestFocus();
             showKeyboard();
         }
     };
@@ -698,23 +693,13 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         startActivityForResult(enableBtIntent, Constants.REQUEST_ENABLE_BT);
     }
 
-
     public void startWithPairing() {
         if (mBottomPairButton != null) {
-            mAppBar.setVisibility(View.GONE);
-            mPrevDeviceView.setVisibility(View.GONE);
-            mManageDeviceView.setVisibility(View.GONE);
-            mPairButtonView.setVisibility(View.GONE);
+            mConnectDeviceView.setVisibility(View.GONE);
         }
 
         if (mPairButtonView != null) {
             displayConnectScreen(PAIRING_STATE.PAIRING_STATE_TIP);
-            mAppBar.setVisibility(View.GONE);
-            mPrevDeviceView.setVisibility(View.GONE);
-            mManageDeviceView.setVisibility(View.GONE);
-            mPairButtonView.setVisibility(View.GONE);
-
-            // TODO - check manage device card disappears on cue
         }
     }
 
@@ -768,17 +753,17 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     break;
                 }
 
-           //     EditText editText = (EditText) findViewById(R.id.nameNewEdit); temp disabled
-           //     String newname = editText.getText().toString().trim();
-        //        if (newname.isEmpty()) {
-           //         editText.setText("");
-           //         editText.setError(getString(R.string.name_empty_error));
-           //     } else {
+                //     EditText editText = (EditText) findViewById(R.id.nameNewEdit); temp disabled
+                //     String newname = editText.getText().toString().trim();
+                //        if (newname.isEmpty()) {
+                //         editText.setText("");
+                //         editText.setError(getString(R.string.name_empty_error));
+                //     } else {
 //                    hideKeyboard(editText);
 //                    mPrevDeviceArray[0].mName = newname;
-           //         mPrevDevList.changeMicrobitName(0, mPrevDeviceArray[0]);
-            //        displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
-           //     }
+                //         mPrevDevList.changeMicrobitName(0, mPrevDeviceArray[0]);
+                //        displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                //     }
                 break;
 
             case R.id.cancel_tip_button:
@@ -1116,11 +1101,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mManageDeviceView.setVisibility(View.GONE); // manage device
-        mPairButtonView.setVisibility(View.GONE);
         mPairTipView.setVisibility(View.GONE);
         mNewDeviceView.setVisibility(View.GONE);
         mPairSearchView.setVisibility(View.GONE);
+        mConnectDeviceView.setVisibility(View.GONE); // TODO check this
     }
 
     @Override

@@ -4,8 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    >
+    android:visibility="gone">
 
+    <!-- pairing animation -->
     <TextView
         android:id="@+id/pairSearchTitle"
         style="@style/h1"
@@ -16,12 +17,13 @@
         android:gravity="center"
         android:text="@string/searchingTitle" />
 
-    <WebView
-        android:id="@+id/animationwebView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center|fill"
-        android:layout_weight="1" />
+    <!-- pairing animation-->
+    <!--<WebView-->
+    <!--android:id="@+id/animationwebView"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="0dp"-->
+    <!--android:layout_gravity="center|fill"-->
+    <!--android:layout_weight="1" />-->
 
     <!-- Pairing Confirmation buttons -->
     <LinearLayout
@@ -46,8 +48,8 @@
             android:layout_weight="1"
             android:background="@drawable/yellow_btn"
             android:drawableEnd="@drawable/red_cross"
-            android:text="Cancel"
             android:gravity="start|center_vertical"
+            android:text="Cancel"
             android:textAppearance="?android:textAppearanceSmall" />
 
 
