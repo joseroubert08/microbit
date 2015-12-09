@@ -56,7 +56,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     /* Debug code ends*/
 
 
-    private String emailBodyString = null ;
+    private String emailBodyString = null;
 
     protected void logi(String message) {
         if (debug) {
@@ -153,8 +153,21 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-
         navigationView.setNavigationItemSelectedListener(this);
+
+        // Todo [Hack]: NavigationView items for selection by user
+        findViewById(R.id.btn_nav_menu).setOnClickListener(this);
+        findViewById(R.id.btn_explore).setOnClickListener(this);
+        findViewById(R.id.btn_about).setOnClickListener(this);
+        findViewById(R.id.btn_help).setOnClickListener(this);
+        findViewById(R.id.btn_privacy_cookies).setOnClickListener(this);
+        findViewById(R.id.btn_terms_conditions).setOnClickListener(this);
+        findViewById(R.id.btn_send_feedback).setOnClickListener(this);
+
+    }
+
+    public void testToast() {
+        Toast.makeText(this, "Stats are shareable ", Toast.LENGTH_LONG).show();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -171,10 +184,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.nav_explore:
                 Toast.makeText(this, "Explore ", Toast.LENGTH_LONG).show();
                 break;
-            case R.id.nav_about:
-            {
+            case R.id.nav_about: {
                 String url = RemoteConfig.getInstance().getAboutURL();
-                if (url.isEmpty()){
+                if (url.isEmpty()) {
                     Log.d(TAG, "Failed to get the about url from remoteConfig");
                     url = getString(R.string.terms_of_use_url);
                 }
@@ -188,7 +200,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.nav_privacy: {
                 String url = RemoteConfig.getInstance().getPrivacyURL();
-                if (url.isEmpty()){
+                if (url.isEmpty()) {
                     Log.d(TAG, "Failed to get the privacy url from remoteConfig");
                     url = getString(R.string.privacy_policy_url);
                 }
@@ -199,7 +211,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             break;
             case R.id.nav_terms_conditions: {
                 String url = RemoteConfig.getInstance().getTermsOfUseURL();
-                if (url.isEmpty()){
+                if (url.isEmpty()) {
                     Log.d(TAG, "Failed to get the terms of use url from remoteConfig");
                     url = getString(R.string.terms_of_use_url);
                 }
@@ -224,9 +236,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             break;
             case R.id.nav_shareable:
                 Toast.makeText(this, "Stats are shareable ", Toast.LENGTH_LONG).show();
-                item.setCheckable(true);
-                item.setChecked(true);
-                item.setIcon(R.drawable.add_device);
                 break;
         }
 
@@ -254,7 +263,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 Build.MODEL,
                 Build.VERSION.RELEASE,
                 RemoteConfig.getInstance().getPrivacyURL());
-        return emailBodyString ;
+        return emailBodyString;
     }
 
     @Override
@@ -333,9 +342,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         /* function may be needed */
     }
 
+    @Override
     public void onClick(final View v) {
         if (debug) logi("onBtnClicked() :: ");
-
 
         switch (v.getId()) {
             case R.id.addDevice:
@@ -346,7 +355,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             break;
             case R.id.startNewProject: {
                 //Update Stats
-                if (app!= null && app.getEcho()!= null) {
+                if (app != null && app.getEcho() != null) {
                     logi("User action test for delete project");
                     app.getEcho().userActionEvent("click", "CreateCode", null);
                 }
@@ -372,6 +381,70 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 intent.setData(Uri.parse(urlToOpen));
                 startActivity(intent);
                 break;
+
+            // TODO: HACK - Navigation View items from drawer here instead of [onNavigationItemSelected]
+            case R.id.btn_nav_menu:
+                Toast.makeText(this, "Menu ", Toast.LENGTH_LONG).show();
+                break;
+            case R.id.btn_explore:
+                Toast.makeText(this, "Explore ", Toast.LENGTH_LONG).show();
+                break;
+            case R.id.btn_about: {
+                String url = RemoteConfig.getInstance().getAboutURL();
+                if (url.isEmpty()) {
+                    Log.d(TAG, "Failed to get the about url from remoteConfig");
+                    url = getString(R.string.terms_of_use_url);
+                }
+                Intent aboutIntent = new Intent(Intent.ACTION_VIEW);
+                aboutIntent.setData(Uri.parse(url));
+                startActivity(aboutIntent);
+            }
+            break;
+            case R.id.btn_help:
+                Toast.makeText(this, "help", Toast.LENGTH_LONG).show();
+                break;
+            case R.id.btn_privacy_cookies: {
+                String url = RemoteConfig.getInstance().getPrivacyURL();
+                if (url.isEmpty()) {
+                    Log.d(TAG, "Failed to get the privacy url from remoteConfig");
+                    url = getString(R.string.privacy_policy_url);
+                }
+                Intent privacyIntent = new Intent(Intent.ACTION_VIEW);
+                privacyIntent.setData(Uri.parse(url));
+                startActivity(privacyIntent);
+            }
+            break;
+            case R.id.btn_terms_conditions: {
+                String url = RemoteConfig.getInstance().getTermsOfUseURL();
+                if (url.isEmpty()) {
+                    Log.d(TAG, "Failed to get the terms of use url from remoteConfig");
+                    url = getString(R.string.terms_of_use_url);
+                }
+                Intent termsIntent = new Intent(Intent.ACTION_VIEW);
+                termsIntent.setData(Uri.parse(url));
+                startActivity(termsIntent);
+            }
+            break;
+
+            case R.id.btn_send_feedback: {
+                String emailAddress = RemoteConfig.getInstance().getSendEmailAddress();
+                Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
+                feedbackIntent.setType("message/rfc822");
+                feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{emailAddress});
+                feedbackIntent.putExtra(Intent.EXTRA_SUBJECT, "[User feedback] ");
+                //Prepare the body of email
+                String body = prepareEmailBody();
+                feedbackIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(body));
+                Intent mailer = Intent.createChooser(feedbackIntent, null);
+                startActivity(mailer);
+            }
+            break;
+            case R.id.share_statistics: {
+                Toast.makeText(this, "Stats are shareable ", Toast.LENGTH_LONG).show();
+            }
+            break;
+
+
         }//Switch Ends
     }
 
