@@ -206,22 +206,14 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                // Initiate bluetooth pairing request
                                 if (mEnterPinView != null) {
                                     mPairSearchView.setVisibility(View.GONE);
                                     mEnterPinView.setVisibility(View.VISIBLE);
                                 }
-
-                                //     TextView textView = (TextView) findViewById(R.id.pairSearchTitle);
-                                //  TextView textViewSearchTip = (TextView) findViewById(R.id.searchingTipText);//
-                                //   WebView animationLoading = (WebView) findViewById(R.id.animationwebView);//
-                                //           if (textView != null)
-                                //                textView.setText(getString(R.string.pairing_phase2_msg_New));
-                                //       if (animationLoading != null && )
-                                //         animationLoading.setVisibility(View.GONE);//
-
-                                // show the new image of pressing button A
-                                //        textViewSearchTip.setText(R.string.enterPinToPairText);// NEw screen
-
+//                                TextView textView = (TextView) findViewById(R.id.pairSearchTitle);
+//                                if (textView != null)
+//                                    textView.setText(getString(R.string.pairing_phase2_msg_New));
                             }
                         });
                     }
@@ -379,6 +371,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.cancel_name_button).setOnClickListener(this);
         findViewById(R.id.cancel_search_button).setOnClickListener(this);
         findViewById(R.id.go_bluetooth_settings).setOnClickListener(this);
+        findViewById(R.id.cancel_enter_button).setOnClickListener(this);
         // TODO - change animation
         // Animation
         WebView animation = (WebView) findViewById(R.id.animationwebView);
@@ -820,7 +813,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 pos = (Integer) v.getTag();
                 handleDeleteMicrobit(pos);
                 break;
-
+            case R.id.cancel_enter_button:
+                displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                break;
             case R.id.backBtn:
                 if (debug) logi("onClick() :: backBtn");
                 handleResetAll();
@@ -915,8 +910,28 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 populateConnectedDeviceList(true);
 
                 if (debug) logi("handlePairingSuccessful() :: sending intent to BLEService.class");
+                // Pairing successful hide enter pin screen
+                if (mEnterPinView != null) {
+                    mEnterPinView.setVisibility(View.GONE);
+                }
+                // Pop up to show pairing successful
+                PopUp.show(MBApp.getContext(),
+                        " Micro:bit paired successfully", // message
+                        getString(R.string.pairing_success_message_1), //title
+                        R.drawable.message_face, //image icon res id
+                        R.drawable.green_btn,
+                        PopUp.TYPE_ALERT, //type of popup.
+                        null,//override click listener for ok button
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                PopUp.hide();
+                                displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                            }
+                        });
+                //pass null to use default listener
+                //displayConnectScreen(PAIRING_STATE.PAIRING_STATE_NEW_NAME);
 
-                displayConnectScreen(PAIRING_STATE.PAIRING_STATE_NEW_NAME);
             }
         };
 

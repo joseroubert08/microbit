@@ -38,13 +38,13 @@
     </group>
 
 
-    <group android:id="@+id/sub_menu_stats"
+    <group
+        android:id="@+id/sub_menu_stats"
         android:checkableBehavior="all">
 
         <item
             android:id="@+id/nav_shareable"
-            android:title="Share statistics"
-              />
+            android:title="Share statistics" />
     </group>
 
 
