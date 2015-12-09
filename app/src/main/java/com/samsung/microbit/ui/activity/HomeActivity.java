@@ -153,6 +153,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -207,6 +208,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
             }
             break;
+
             case R.id.nav_feedback: {
                 String emailAddress = RemoteConfig.getInstance().getSendEmailAddress();
                 Intent intent = new Intent(Intent.ACTION_SEND);
@@ -220,7 +222,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(mailer);
             }
             break;
-
+            case R.id.nav_shareable:
+                Toast.makeText(this, "Stats are shareable ", Toast.LENGTH_LONG).show();
+                item.setCheckable(true);
+                item.setChecked(true);
+                item.setIcon(R.drawable.add_device);
+                break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
