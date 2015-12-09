@@ -105,7 +105,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     LinearLayout mNewDeviceView;
     LinearLayout mPairSearchView;
     LinearLayout mBottomPairButton;
-
+    LinearLayout mEnterPinView; // pin view
     List<ConnectedDevice> connectedDeviceList = new ArrayList<ConnectedDevice>();
     ConnectedDeviceAdapter connectedDeviceAdapter;
     private ListView lvConnectedDevice;
@@ -206,9 +206,22 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                TextView textView = (TextView) findViewById(R.id.pairSearchTitle);
-                                if (textView != null)
-                                    textView.setText(getString(R.string.pairing_phase2_msg));
+                                if (mEnterPinView != null) {
+                                    mPairSearchView.setVisibility(View.GONE);
+                                    mEnterPinView.setVisibility(View.VISIBLE);
+                                }
+
+                                //     TextView textView = (TextView) findViewById(R.id.pairSearchTitle);
+                                //  TextView textViewSearchTip = (TextView) findViewById(R.id.searchingTipText);//
+                                //   WebView animationLoading = (WebView) findViewById(R.id.animationwebView);//
+                                //           if (textView != null)
+                                //                textView.setText(getString(R.string.pairing_phase2_msg_New));
+                                //       if (animationLoading != null && )
+                                //         animationLoading.setVisibility(View.GONE);//
+
+                                // show the new image of pressing button A
+                                //        textViewSearchTip.setText(R.string.enterPinToPairText);// NEw screen
+
                             }
                         });
                     }
@@ -358,7 +371,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         mConnectDeviceView = (LinearLayout) findViewById(R.id.connectDeviceView); // Connect device view
         mNewDeviceView = (LinearLayout) findViewById(R.id.newDeviceView);
         mPairSearchView = (LinearLayout) findViewById(R.id.pairSearchView);
-
+        mEnterPinView = (LinearLayout) findViewById(R.id.enterPinView); // pin view
         displayConnectScreen(mState);
         findViewById(R.id.pairButton).setOnClickListener(this);
         findViewById(R.id.cancel_tip_button).setOnClickListener(this);
@@ -558,7 +571,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         mPairTipView.setVisibility(View.GONE);
         mNewDeviceView.setVisibility(View.GONE);
         mPairSearchView.setVisibility(View.GONE);
-
+        mEnterPinView.setVisibility(View.GONE); // disable
         Log.d("Microbit", "********** Connect: state from " + mState + " to " + gotoState);
         mState = gotoState;
 
@@ -600,9 +613,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 findViewById(R.id.newDeviceTxt).setVisibility(View.VISIBLE);
 
                 // test
-                findViewById(R.id.gridview).setVisibility(View.VISIBLE);
-                findViewById(R.id.pairingPatternTipView).setVisibility(View.VISIBLE);
-                findViewById(R.id.enterPatternConfirmationView).setVisibility(View.VISIBLE);
+                //     findViewById(R.id.gridview).setVisibility(View.VISIBLE);
+                //     findViewById(R.id.pairingPatternTipView).setVisibility(View.VISIBLE);
+                //     findViewById(R.id.enterPatternConfirmationView).setVisibility(View.VISIBLE);
                 //
                 findViewById(R.id.ok_name_button).setVisibility(View.GONE);
                 //     findViewById(R.id.nameNewButton).setVisibility(View.GONE); Temp disabling TODO - remove 'renaming microbit feature'
@@ -1111,6 +1124,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         mNewDeviceView.setVisibility(View.GONE);
         mPairSearchView.setVisibility(View.GONE);
         mConnectDeviceView.setVisibility(View.GONE); // TODO check this
+        mEnterPinView.setVisibility(View.GONE); // TODO check this
     }
 
     @Override

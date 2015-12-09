@@ -6,7 +6,6 @@
     android:background="@color/black_color"
     android:orientation="vertical"
     android:visibility="gone">
-    >
 
     <!-- New Device title -->
     <TextView
@@ -27,13 +26,11 @@
         android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
         android:layout_margin="16dp"
-        android:layout_weight="3"
+        android:layout_weight="2.5"
         android:cacheColorHint="@color/cancel_button_up"
         android:horizontalSpacing="@dimen/led_gap"
         android:numColumns="5"
-        android:verticalSpacing="@dimen/led_gap"
-
-        />
+        android:verticalSpacing="@dimen/led_gap" />
 
     <!--<Button-->
     <!--android:id="@+id/nameNewButton"-->

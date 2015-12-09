@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg"
     android:visibility="visible">
-    
+
     <!-- Connecting microbit screen -->
     <include layout="@layout/view_connect_microbit" />
     <!-- device pairing tip screen -->
@@ -13,6 +13,7 @@
     <include layout="@layout/view_pairing_pattern" />
     <!-- searching for microbit screen-->
     <include layout="@layout/view_pairing_searching" />
-
+    <!-- enter pin screem -->
+    <include layout="@layout/view_enter_pin" />
 </LinearLayout>
 

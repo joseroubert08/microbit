@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/pairSearchView"
+    android:id="@+id/enterPinView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black_color"
@@ -8,25 +8,27 @@
 
     <!-- pairing animation -->
     <TextView
-        android:id="@+id/pairSearchTitle"
+        android:id="@+id/enterPinTitle"
         style="@style/h1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_gravity="center_horizontal|top"
+        android:layout_gravity="center|top"
         android:layout_margin="16dp"
         android:layout_weight="1"
+        android:lines="2"
         android:gravity="center"
-        android:text="@string/searchingTitle"
+        android:text="@string/pairing_phase2_msg_New"
         android:textColor="@color/white_color" />
 
     <!--pairing animation-->
-    <WebView
+    <ImageView
         android:id="@+id/animationwebView"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_gravity="center"
         android:layout_margin="16dp"
-        android:layout_weight="4" />
+        android:layout_weight="4"
+        android:src="@drawable/tip_mb" />
 
     <!--  instructions -->
     <LinearLayout
@@ -35,7 +37,7 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/searchingTipText"
+            android:id="@+id/enterPinTipText"
             style="@style/p1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -44,7 +46,7 @@
             android:gravity="start|center_vertical"
             android:lines="3"
             android:maxLines="3"
-            android:text="@string/searchingTipText"
+            android:text="@string/enterPinToPairText"
             android:textColor="@color/white_color" />
     </LinearLayout>
 
@@ -60,7 +62,7 @@
         android:showDividers="end">
 
         <Button
-            android:id="@+id/cancel_search_button"
+            android:id="@+id/cancel_enter_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
