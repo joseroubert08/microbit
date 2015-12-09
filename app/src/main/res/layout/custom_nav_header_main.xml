@@ -4,18 +4,19 @@
     android:id="@+id/ll_nav_header_custom"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black_color"
+    android:background="#212121"
     android:orientation="vertical">
 
     <View
         android:layout_width="match_parent"
         android:layout_height="16dp"
-        android:background="@color/yellow_button_up" />
+        android:background="#212121" />
 
     <Button
         android:id="@+id/btn_nav_menu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#212121"
         android:gravity="center_vertical|start"
         android:paddingBottom="23dp"
         android:paddingStart="16dp"
@@ -27,15 +28,18 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.25dp"
+
         android:background="@color/gray_color" />
 
     <Button
         android:id="@+id/btn_explore"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#212121"
         android:gravity="center_vertical|start"
         android:paddingBottom="23dp"
         android:paddingStart="16dp"
+
         android:paddingTop="20dp"
         android:text="Explore"
         android:textAppearance="?textAppearanceListItem"
@@ -50,6 +54,8 @@
         android:id="@+id/btn_about"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#212121"
+
         android:gravity="center_vertical|start"
         android:paddingBottom="23dp"
         android:paddingStart="16dp"
@@ -67,8 +73,10 @@
         android:id="@+id/btn_help"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#212121"
         android:gravity="center_vertical|start"
         android:paddingBottom="23dp"
+
         android:paddingStart="16dp"
         android:paddingTop="20dp"
         android:text="Help"
@@ -83,7 +91,9 @@
     <Button
         android:id="@+id/btn_privacy_cookies"
         android:layout_width="match_parent"
+
         android:layout_height="wrap_content"
+        android:background="#212121"
         android:gravity="center_vertical|start"
         android:paddingBottom="23dp"
         android:paddingStart="16dp"
@@ -101,6 +111,8 @@
         android:id="@+id/btn_terms_conditions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#212121"
+
         android:gravity="center_vertical|start"
         android:paddingBottom="24dp"
         android:paddingStart="16dp"
@@ -118,7 +130,9 @@
         android:id="@+id/btn_send_feedback"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#212121"
         android:gravity="center_vertical|start"
+
         android:paddingBottom="23dp"
         android:paddingStart="16dp"
         android:paddingTop="20dp"
@@ -130,8 +144,7 @@
         android:layout_width="match_parent"
         android:layout_height="0.25dp"
         android:background="@color/gray_color" />
-
-
+    
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
