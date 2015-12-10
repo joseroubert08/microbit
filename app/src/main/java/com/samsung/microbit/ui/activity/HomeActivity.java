@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -40,6 +41,8 @@ import uk.co.bbc.echo.EchoConfigKeys;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
+    // share stats checkbox
+    CheckBox shareStatsCheckBox;
 
     SharedPreferences prefs = null;
     StableArrayAdapter adapter = null;
@@ -155,7 +158,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // Todo [Hack]: NavigationView items for selection by user
+        /* Todo [Hack]:
+        * NavigationView items for selection by user using
+        * onClick listener instead of overriding onNavigationItemSelected*/
         findViewById(R.id.btn_nav_menu).setOnClickListener(this);
         findViewById(R.id.btn_explore).setOnClickListener(this);
         findViewById(R.id.btn_about).setOnClickListener(this);
@@ -163,11 +168,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btn_privacy_cookies).setOnClickListener(this);
         findViewById(R.id.btn_terms_conditions).setOnClickListener(this);
         findViewById(R.id.btn_send_feedback).setOnClickListener(this);
-
-    }
-
-    public void testToast() {
-        Toast.makeText(this, "Stats are shareable ", Toast.LENGTH_LONG).show();
+        // Share stats checkbox
+        shareStatsCheckBox = (CheckBox) findViewById(R.id.share_statistics_status);
+        shareStatsCheckBox.setOnClickListener(this);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -346,6 +349,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(final View v) {
         if (debug) logi("onBtnClicked() :: ");
 
+        // Drawer closes only after certain items are selected from the Navigation View
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         switch (v.getId()) {
             case R.id.addDevice:
             case R.id.addDeviceEmpty: {
@@ -383,12 +389,19 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             // TODO: HACK - Navigation View items from drawer here instead of [onNavigationItemSelected]
-            case R.id.btn_nav_menu:
-                Toast.makeText(this, "Menu ", Toast.LENGTH_LONG).show();
-                break;
-            case R.id.btn_explore:
+            // NavigationView items
+            case R.id.btn_nav_menu: {
+                Toast.makeText(this, "Menu...", Toast.LENGTH_LONG).show();
+                // Close drawer
+                drawer.closeDrawer(GravityCompat.START);
+            }
+            break;
+            case R.id.btn_explore: {
                 Toast.makeText(this, "Explore ", Toast.LENGTH_LONG).show();
-                break;
+                // Close drawer
+                drawer.closeDrawer(GravityCompat.START);
+            }
+            break;
             case R.id.btn_about: {
                 String url = RemoteConfig.getInstance().getAboutURL();
                 if (url.isEmpty()) {
@@ -398,11 +411,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 Intent aboutIntent = new Intent(Intent.ACTION_VIEW);
                 aboutIntent.setData(Uri.parse(url));
                 startActivity(aboutIntent);
+                // Close drawer
+                drawer.closeDrawer(GravityCompat.START);
             }
             break;
-            case R.id.btn_help:
+            case R.id.btn_help: {
                 Toast.makeText(this, "help", Toast.LENGTH_LONG).show();
-                break;
+                // Close drawer
+                drawer.closeDrawer(GravityCompat.START);
+            }
+            break;
             case R.id.btn_privacy_cookies: {
                 String url = RemoteConfig.getInstance().getPrivacyURL();
                 if (url.isEmpty()) {
@@ -412,6 +430,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 Intent privacyIntent = new Intent(Intent.ACTION_VIEW);
                 privacyIntent.setData(Uri.parse(url));
                 startActivity(privacyIntent);
+                // Close drawer
+                drawer.closeDrawer(GravityCompat.START);
             }
             break;
             case R.id.btn_terms_conditions: {
@@ -423,6 +443,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 Intent termsIntent = new Intent(Intent.ACTION_VIEW);
                 termsIntent.setData(Uri.parse(url));
                 startActivity(termsIntent);
+
+                // Close drawer
+                drawer.closeDrawer(GravityCompat.START);
+
             }
             break;
 
@@ -437,13 +461,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 feedbackIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(body));
                 Intent mailer = Intent.createChooser(feedbackIntent, null);
                 startActivity(mailer);
+                // Close drawer
+                if (drawer != null) {
+                    drawer.closeDrawer(GravityCompat.START);
+                }
             }
             break;
-            case R.id.share_statistics: {
-                Toast.makeText(this, "Stats are shareable ", Toast.LENGTH_LONG).show();
+            case R.id.share_statistics_status: {
+                // Store checked value to indicate whether stats should be saved
+                prefs.edit().putBoolean("share_stats", shareStatsCheckBox.isChecked()).apply();
             }
             break;
-
 
         }//Switch Ends
     }

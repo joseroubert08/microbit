@@ -7,11 +7,7 @@
     android:background="#212121"
     android:orientation="vertical">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="16dp"
-        android:background="#212121" />
-
+    <!-- Menu-->
     <Button
         android:id="@+id/btn_nav_menu"
         android:layout_width="match_parent"
@@ -19,6 +15,7 @@
         android:background="#212121"
         android:gravity="center_vertical|start"
         android:paddingBottom="23dp"
+        android:paddingEnd="16dp"
         android:paddingStart="16dp"
         android:paddingTop="20dp"
         android:text="Menu"
@@ -28,9 +25,9 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.25dp"
-
         android:background="@color/gray_color" />
 
+    <!-- Explore-->
     <Button
         android:id="@+id/btn_explore"
         android:layout_width="match_parent"
@@ -38,8 +35,8 @@
         android:background="#212121"
         android:gravity="center_vertical|start"
         android:paddingBottom="23dp"
+        android:paddingEnd="16dp"
         android:paddingStart="16dp"
-
         android:paddingTop="20dp"
         android:text="Explore"
         android:textAppearance="?textAppearanceListItem"
@@ -50,14 +47,15 @@
         android:layout_height="0.25dp"
         android:background="@color/gray_color" />
 
+    <!-- About-->
     <Button
         android:id="@+id/btn_about"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#212121"
-
         android:gravity="center_vertical|start"
         android:paddingBottom="23dp"
+        android:paddingEnd="16dp"
         android:paddingStart="16dp"
         android:paddingTop="20dp"
         android:text="About"
@@ -69,6 +67,7 @@
         android:layout_height="0.25dp"
         android:background="@color/gray_color" />
 
+    <!-- Help -->
     <Button
         android:id="@+id/btn_help"
         android:layout_width="match_parent"
@@ -76,7 +75,7 @@
         android:background="#212121"
         android:gravity="center_vertical|start"
         android:paddingBottom="23dp"
-
+        android:paddingEnd="16dp"
         android:paddingStart="16dp"
         android:paddingTop="20dp"
         android:text="Help"
@@ -88,14 +87,15 @@
         android:layout_height="0.25dp"
         android:background="@color/gray_color" />
 
+    <!-- Privacy & cookies -->
     <Button
         android:id="@+id/btn_privacy_cookies"
         android:layout_width="match_parent"
-
         android:layout_height="wrap_content"
         android:background="#212121"
         android:gravity="center_vertical|start"
         android:paddingBottom="23dp"
+        android:paddingEnd="16dp"
         android:paddingStart="16dp"
         android:paddingTop="20dp"
         android:text="Privacy and Cookies"
@@ -107,14 +107,15 @@
         android:layout_height="0.25dp"
         android:background="@color/gray_color" />
 
+    <!-- Terms & Conditions -->
     <Button
         android:id="@+id/btn_terms_conditions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#212121"
-
         android:gravity="center_vertical|start"
         android:paddingBottom="24dp"
+        android:paddingEnd="16dp"
         android:paddingStart="16dp"
         android:paddingTop="20dp"
         android:text="Terms and Conditions"
@@ -126,14 +127,15 @@
         android:layout_height="0.25dp"
         android:background="@color/gray_color" />
 
+    <!-- Send Feedback -->
     <Button
         android:id="@+id/btn_send_feedback"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#212121"
         android:gravity="center_vertical|start"
-
         android:paddingBottom="23dp"
+        android:paddingEnd="16dp"
         android:paddingStart="16dp"
         android:paddingTop="20dp"
         android:text="Send us your feedback"
@@ -144,7 +146,8 @@
         android:layout_width="match_parent"
         android:layout_height="0.25dp"
         android:background="@color/gray_color" />
-    
+
+    <!-- Share statistics-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -158,6 +161,7 @@
             android:layout_weight="1"
             android:gravity="center_vertical|start"
             android:paddingBottom="16dp"
+            android:paddingEnd="16dp"
             android:paddingStart="16dp"
             android:paddingTop="16dp"
             android:text="Share Statistics"
@@ -169,10 +173,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|start"
-            android:checked="true"
+            android:checked="false"
             android:enabled="true"
+            android:gravity="center_vertical|end"
             android:paddingStart="16dp"
-            android:saveEnabled="true" />
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:saveEnabled="true"
+            android:textColorHint="@color/white_color" />
 
     </LinearLayout>
 
@@ -180,10 +188,10 @@
         android:id="@+id/share_statistics_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:alpha="1"
+        android:alpha="0.5"
         android:lines="6"
+        android:paddingEnd="16dp"
         android:paddingStart="16dp"
-        android:paddingTop="16dp"
         android:text="The BBC will only use this\ninformation to analyse and improve\nthe services offered through this app.\nFor information, see our privacy policy."
         android:textAppearance="?textAppearanceListItem"
         android:textColor="@color/white_color" />
