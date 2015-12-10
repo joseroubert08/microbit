@@ -380,12 +380,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(i);
                 break;
             case R.id.discover:
-                //Debug feature to be added. Start Browser with live, stage or test URL
-                if (urlToOpen == null) {
-                    urlToOpen = getString(R.string.touchDevDiscoverURL);
-                }
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(urlToOpen));
+                intent.setData(Uri.parse(getString(R.string.touchDevDiscoverURL)));
                 startActivity(intent);
                 break;
 
