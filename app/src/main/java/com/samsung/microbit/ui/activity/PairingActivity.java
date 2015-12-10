@@ -197,6 +197,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     logi("-----------> Pairing Code is " + pairing_code + " for device " + mNewDeviceCode.toUpperCase());
                     ConnectedDevice newDev = new ConnectedDevice(mNewDeviceCode.toUpperCase(), mNewDeviceCode.toUpperCase(), false, mNewDeviceAddress, pairing_code);
                     handlePairingSuccessful(newDev);
+                    return;
                 }
 
             } else if ((phase & Constants.PAIRING_CONTROL_CODE_REQUESTED) != 0) {
@@ -914,21 +915,29 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 if (mEnterPinView != null) {
                     mEnterPinView.setVisibility(View.GONE);
                 }
+                runOnUiThread(new Runnable() {
+                                  @Override
+                                  public void run() {
+                                      Toast.makeText(MBApp.getContext(), "Paired successfully", Toast.LENGTH_LONG).show();
+                                  }
+                              }
+                );
+                displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
                 // Pop up to show pairing successful
-                PopUp.show(MBApp.getContext(),
+/*                PopUp.show(MBApp.getContext(),
                         " Micro:bit paired successfully", // message
                         getString(R.string.pairing_success_message_1), //title
                         R.drawable.message_face, //image icon res id
                         R.drawable.green_btn,
                         PopUp.TYPE_ALERT, //type of popup.
-                        null,//override click listener for ok button
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 PopUp.hide();
                                 displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
                             }
-                        });
+
+                        }, null);*/
                 //pass null to use default listener
                 //displayConnectScreen(PAIRING_STATE.PAIRING_STATE_NEW_NAME);
 
