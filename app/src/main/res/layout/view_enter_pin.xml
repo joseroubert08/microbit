@@ -6,7 +6,7 @@
     android:background="@color/black_color"
     android:orientation="vertical">
 
-    <!-- pairing animation -->
+    <!-- pin title -->
     <TextView
         android:id="@+id/enterPinTitle"
         style="@style/h1"

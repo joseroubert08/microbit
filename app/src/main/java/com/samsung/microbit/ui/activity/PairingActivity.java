@@ -575,7 +575,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             DISABLE_DEVICE_LIST = true;
 
         if (isPortraitMode() && (disableListView())) {
-            // mPrevDeviceView.setVisibility(View.GONE); TODO debug
+            //
         } else {
             populateConnectedDeviceList(true);
             mConnectDeviceView.setVisibility(View.VISIBLE);
@@ -583,6 +583,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         switch (gotoState) {
             case PAIRING_STATE_CONNECT_BUTTON:
+                break;
+
             case PAIRING_STATE_ERROR:
                 //   mPairButtonView.setVisibility(View.VISIBLE);// TODO debug - error case
                 lvConnectedDevice.setEnabled(true);
@@ -613,8 +615,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 findViewById(R.id.ok_name_button).setVisibility(View.GONE);
                 //     findViewById(R.id.nameNewButton).setVisibility(View.GONE); Temp disabling TODO - remove 'renaming microbit feature'
                 //    findViewById(R.id.nameNewEdit).setVisibility(View.GONE);
-
-
                 displayLedGrid();
                 break;
 

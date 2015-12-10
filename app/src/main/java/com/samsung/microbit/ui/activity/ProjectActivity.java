@@ -398,7 +398,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         getString(R.string.init_connection),
                         "",
                         R.drawable.flash_face, R.drawable.blue_btn,
-                        PopUp.TYPE_SPINNER,
+                        PopUp.TYPE_PROGRESS_NOT_CANCELABLE,
                         null, null);
 
                 IPCService.getInstance().bleConnect();

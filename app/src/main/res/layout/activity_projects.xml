@@ -28,7 +28,7 @@
             android:layout_height="@dimen/header_title_height"
             android:layout_toEndOf="@id/backBtn"
             android:gravity="center"
-            android:text="@string/projects" />
+            android:text="@string/flash" />
 
         <RelativeLayout
             android:layout_width="wrap_content"

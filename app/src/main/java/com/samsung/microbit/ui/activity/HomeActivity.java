@@ -469,7 +469,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             break;
             case R.id.share_statistics_status: {
                 // Store checked value to indicate whether stats should be saved
-                prefs.edit().putBoolean("share_stats", shareStatsCheckBox.isChecked()).apply();
+                prefs.edit().putBoolean(getString(R.string.prefs_share_stats_status), shareStatsCheckBox.isChecked()).apply();
             }
             break;
 
