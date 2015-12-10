@@ -71,7 +71,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         FLASH_STATE_WAIT_DEVICE_REBOOT,
         FLASH_STATE_INIT_DEVICE,
         FLASH_STATE_PROGRESS
-    };
+    }
 
 	protected void logi(String message) {
 		if (debug) {

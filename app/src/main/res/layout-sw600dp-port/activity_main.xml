@@ -1,142 +1,102 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
+    android:id="@+id/connectBarView"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     android:background="@drawable/bg"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior" tools:showIn="@layout/app_bar_main"
-    tools:context=".HomeActivity">
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".HomeActivity"
+    tools:showIn="@layout/app_bar_main">
 
-    <LinearLayout
-        android:id="@+id/connectBarView"
+    <ImageView
+        android:id="@+id/homeScreenIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/drawer_layout"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/content_margin"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/white_bg">
+        android:layout_gravity="center"
+        android:layout_weight="3"
+        android:src="@drawable/bbc_microbit_vertical" />
 
-        <TextView
-            style="@style/h1"
-            android:id="@+id/title"
-            android:layout_width="@dimen/home_connect_title_width"
-            android:layout_height="wrap_content"
-            android:text="@string/connect"
-            android:layout_margin="@dimen/widget_margin"/>
+    <!-- Connect -->
+    <Button
+        android:id="@+id/addDeviceEmpty"
+        style="@style/p1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="1"
+        android:background="@drawable/white_btn"
+        android:drawableEnd="@drawable/connect_device"
+        android:elevation="@dimen/elevation"
+        android:ellipsize="end"
+        android:gravity="center_vertical|start"
+        android:lines="1"
+        android:onClick="onClick"
+        android:scrollHorizontally="true"
+        android:text="@string/connect_device"
+        android:textColor="@color/gray_color"
+        android:visibility="visible" />
 
-        <Button
-            style="@style/p1"
-            android:id="@+id/addDeviceEmpty"
-            android:layout_width="@dimen/home_device_name_empty_width"
-            android:layout_height="@dimen/home_button_height"
-            android:layout_margin="@dimen/widget_margin"
-            android:textColor="@color/gray_color"
-            android:background="@drawable/white_btn"
-            android:layout_below="@id/title"
-            android:drawableRight="@drawable/connect_device"
-            android:gravity="left|center_vertical"
-            android:onClick="onClick"
-            android:visibility="visible"
-            android:elevation="@dimen/elevation"/>
+    <!-- Flash -->
+    <Button
+        android:id="@+id/flashMicrobit"
+        style="@style/p1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="1"
+        android:background="@drawable/white_btn"
+        android:drawableEnd="@drawable/connect_device"
+        android:elevation="@dimen/elevation"
+        android:ellipsize="end"
+        android:gravity="start|center_vertical"
+        android:lines="1"
+        android:onClick="onClick"
+        android:scrollHorizontally="true"
+        android:text="@string/flash_microbit"
+        android:textColor="@color/gray_color"
+        android:visibility="visible" />
 
-        <Button
-            style="@style/p1"
-            android:id="@+id/addDevice"
-            android:layout_width="@dimen/home_device_name_width"
-            android:layout_height="@dimen/home_button_height"
-            android:layout_margin="@dimen/widget_margin"
-            android:background="@drawable/white_btn"
-            android:layout_below="@id/title"
-            android:textColor="@color/blue_button_up"
-            android:gravity="left|center_vertical"
-            android:drawableRight="@drawable/add_device"
-            android:onClick="onClick"
-            android:visibility="gone"
-            android:elevation="@dimen/elevation"/>
+    <!-- create code -->
+    <Button
+        android:id="@+id/startNewProject"
+        style="@style/p1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="1"
+        android:background="@drawable/white_btn"
+        android:drawableEnd="@drawable/connect_device"
+        android:elevation="@dimen/elevation"
+        android:ellipsize="end"
+        android:gravity="start|center_vertical"
+        android:lines="1"
+        android:onClick="onClick"
+        android:scrollHorizontally="true"
+        android:text="@string/create_code"
+        android:textColor="@color/gray_color"
+        android:visibility="visible" />
 
-        <ImageButton
-            style="@style/p1"
-            android:id="@+id/connectBtn"
-            android:layout_width="@dimen/button_size"
-            android:layout_height="@dimen/home_button_height"
-            android:src="@drawable/device_connected"
-            android:layout_margin="@dimen/widget_margin"
-            android:onClick="onClick"
-            android:background="@drawable/white_btn"
-            android:layout_below="@id/title"
-            android:layout_toRightOf="@id/addDevice"
-            android:visibility="gone"
-            android:elevation="@dimen/elevation"/>
-
-    </LinearLayout>
-
-    <RelativeLayout
-        android:id="@+id/projectBarView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/content_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_below="@id/connectBarView"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/white_bg">
-
-        <TextView
-            style="@style/h1"
-            android:id="@+id/projects"
-            android:layout_width="@dimen/home_project_title_width"
-            android:layout_height="wrap_content"
-            android:text="@string/your_projects"
-            android:layout_margin="@dimen/widget_margin" />
-
-        <RelativeLayout
-            android:layout_width="@dimen/home_no_project_btn_width"
-            android:layout_height="@dimen/home_button_height"
-            android:id="@+id/numOfProjectsHolder"
-            android:layout_below="@id/projects"
-            android:layout_margin="@dimen/widget_margin"
-            android:layout_centerVertical="true"
-            android:background="@drawable/white_btn"
-            android:onClick="onClick"
-            android:elevation="@dimen/elevation">
-                <TextView
-                    android:id="@+id/numOfProjects"
-                    style="@style/h3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:gravity="center_vertical"/>
-                <TextView
-                    style="@style/p1"
-                    android:layout_marginLeft="@dimen/content_margin"
-                    android:layout_toRightOf="@id/numOfProjects"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:gravity="center_vertical"
-                    android:text="@string/saved_projects" />
-        </RelativeLayout>
-        <Button
-            style="@style/p1"
-            android:id="@+id/startNewProject"
-            android:layout_width="@dimen/home_start_btn_width"
-            android:layout_height="@dimen/home_button_height"
-            android:layout_margin="@dimen/widget_margin"
-            android:background="@drawable/white_btn"
-            android:text="@string/create_new_project"
-            android:layout_toRightOf="@id/numOfProjectsHolder"
-            android:drawableRight="@drawable/encouragement_emojio"
-            android:layout_below="@id/projects"
-            android:onClick="onClick"
-            android:gravity="left|center"
-            android:elevation="@dimen/elevation"/>
-
-    </RelativeLayout>
-
-
-</RelativeLayout>
-
-
+    <!-- Discover -->
+    <Button
+        android:id="@+id/discover"
+        style="@style/p1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="1"
+        android:background="@drawable/white_btn"
+        android:drawableEnd="@drawable/connect_device"
+        android:elevation="@dimen/elevation"
+        android:ellipsize="end"
+        android:gravity="start|center_vertical"
+        android:lines="1"
+        android:onClick="onClick"
+        android:scrollHorizontally="true"
+        android:text="@string/discover"
+        android:textColor="@color/gray_color"
+        android:visibility="visible" />
+</LinearLayout>

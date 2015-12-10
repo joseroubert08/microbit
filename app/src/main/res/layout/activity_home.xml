@@ -24,6 +24,7 @@
             layout="@layout/custom_nav_header_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+        <!-- TODO - Refactor hack for Nav draw after (Build 2)-->
         <!--app:headerLayout="@layout/custom_nav_header_main">-->
         <!--app:menu="@menu/activity_main_drawer" />-->
 

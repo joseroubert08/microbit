@@ -135,7 +135,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         STATE_ENABLE_BT_FOR_PAIRING,
     }
 
-    ;
+
     private static ACTIVITY_STATE mActivityState = ACTIVITY_STATE.STATE_IDLE;
     private int selectedDeviceForConnect = 0;
 
