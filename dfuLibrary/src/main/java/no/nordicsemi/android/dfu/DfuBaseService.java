@@ -1427,12 +1427,12 @@ public abstract class DfuBaseService extends IntentService {
         mDeviceName = intent.getStringExtra(EXTRA_DEVICE_NAME);
         mDevicePairingCode = intent.getIntExtra(EXTRA_DEVICE_PAIR_CODE, 0);
 
-        if (mDevicePairingCode == 0) {
+/*        if (mDevicePairingCode == 0) {
             logi("Upload aborted");
             sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
             terminateConnection(gatt, PROGRESS_VALIDATION_FAILED);
             return 6;
-        }
+        }*/
 
         sendLogBroadcast(LOG_LEVEL_VERBOSE, "Connecting to DFU target 2...");
         if (!makeGattConnection(mDeviceAddress))
@@ -1471,30 +1471,8 @@ public abstract class DfuBaseService extends IntentService {
             return 6;
         }
 
-        //Write the flashing code if Known
-        logi("Finding PAIRING_CODE ....");
-        final BluetoothGattCharacteristic sfpc = fps.getCharacteristic(PAIRING_CODE);
-        if (sfpc == null) {
-            logi("Error Cannot find the PAIRING_CODE");
-            sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
-            terminateConnection(gatt, PROGRESS_ABORTED);
-            return 6;
-        }
-
-        sfpc.setValue(mDevicePairingCode , BluetoothGattCharacteristic.FORMAT_UINT32, 0);
-
-        try {
-            logi("Writing PAIRING_CODE ....");
-            writeCharacteristic(gatt, sfpc);
-            rc = 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        //Add Complete
 		final BluetoothGattCharacteristic sfpc1 = fps.getCharacteristic(PAIRING_CONTROL);
-        if (sfpc == null) {
+        if (sfpc1 == null) {
 			logi("Error Cannot find PAIRING_CONTROL");
             sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
             terminateConnection(gatt, PROGRESS_ABORTED);
