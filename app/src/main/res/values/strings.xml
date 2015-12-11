@@ -73,10 +73,10 @@
     <string name="pattern_to_flash">Enter the pattern displayed on your micro:bit to flash</string>
     <string name="pattern_to_pair">Enter the pattern displayed on your micro:bit to pair</string>
 
-    <string name="pairing_failed_message">Cannot connect to the micro:bit.\n Please try again.</string>
-    <string name="pairing_failed_title">Connecting unsuccessful</string>
-    <string name="pairing_success_message_1">You have successfully linked with micro:bit </string>
-    <string name="pairing_success_title">micro:bit found</string>
+    <string name="pairing_failed_message">Cannot pair with the micro:bit.\n Please try again.</string>
+    <string name="pairing_failed_title">Pairing unsuccessful</string>
+    <string name="pairing_success_message_1">You have successfully paired with micro:bit </string>
+    <string name="pairing_success_title">micro:bit paired</string>
     <string name="run_code_button_name">Continue to Flash</string>
     <string name="flashing_failed_not_found">Flashing Failed!Cannot read the file</string>
     <string name="flashing_failed_io_error">Flashing Failed! Cannot find the file</string>
