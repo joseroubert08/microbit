@@ -18,6 +18,8 @@
             android:layout_width="@dimen/header_btn_size"
             android:layout_height="@dimen/header_btn_size"
             android:background="@android:color/transparent"
+            android:contentDescription="Back to Menu"
+            android:nextFocusDown="@id/titleTxt"
             android:onClick="onClick"
             android:src="@drawable/back" />
 
@@ -27,15 +29,20 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/header_title_height"
             android:layout_toEndOf="@id/backBtn"
+            android:contentDescription="Flash"
             android:gravity="center"
+            android:nextFocusDown="@id/connectedIndicatorIcon"
             android:text="@string/flash" />
 
         <RelativeLayout
+            android:id="@+id/ll_tooolbar_indicator"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/header_btn_size"
             android:layout_alignParentEnd="true"
             android:layout_marginBottom="0dp"
             android:layout_marginRight="@dimen/header_right_margin"
+            android:contentDescription="Allans MB (VUVUVU)"
+            android:nextFocusDown="@id/appNameButton"
             android:layout_marginTop="0dp"
             android:background="@drawable/project_text_box">
 
@@ -83,6 +90,8 @@
                 android:layout_height="@dimen/header_btn_size"
                 android:layout_toRightOf="@id/connectedIndicatorText"
                 android:background="@drawable/project_connect_btn"
+                android:contentDescription="Micro:bit connected?"
+                android:nextFocusDown="@+id/ll_tooolbar_indicator"
                 android:onClick="onClick"
                 android:src="@drawable/device_connected" />
 

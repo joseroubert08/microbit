@@ -242,4 +242,6 @@
         ]]>
     </string>
     <string name="prefs_share_stats_status">share_stats</string>
+    <string name="content_description_toolbar_home">Open Menu</string>
+    <string name="content_description_toolbar_logo">BBC Micro:bit</string>
 </resources>

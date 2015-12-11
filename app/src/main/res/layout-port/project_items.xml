@@ -6,6 +6,7 @@
     android:background="@drawable/white_btn"
     android:orientation="horizontal">
 
+    <!-- TODO - dynamic allocation of text at runtime in projects class -->
     <Button
         android:id="@+id/appNameButton"
         android:layout_width="match_parent"
@@ -14,8 +15,7 @@
         android:drawableEnd="@drawable/down_arrow"
         android:gravity="start|center_vertical"
         android:longClickable="true"
-        android:textColor="@color/black_color"
-        />
+        android:textColor="@color/black_color" />
 
     <com.samsung.microbit.ui.control.ExtendedEditText
         android:id="@+id/appNameEdit"
@@ -45,13 +45,13 @@
             style="@style/p1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:background="@drawable/blue_btn"
             android:drawableEnd="@drawable/flash_face"
-            android:gravity="start|center_vertical"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:drawablePadding="8dp"
+            android:gravity="start|center_vertical"
             android:text="@string/flash" />
 
         <ImageButton
