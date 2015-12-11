@@ -12,9 +12,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-/**
- * Created by kkulendiran on 26/06/15.
- */
 public class DownloadManager {
 
 	volatile boolean cancelled = false;

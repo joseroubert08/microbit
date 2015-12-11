@@ -1,8 +1,5 @@
 package com.samsung.microbit.model;
 
-/**
- * Created by kkulendiran on 10/05/2015.
- */
 public class CmdArg {
 
 	private int cmd;

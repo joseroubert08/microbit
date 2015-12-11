@@ -1,91 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="wrap_content"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/newDeviceView"
-    android:layout_below="@id/headerBar"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black_color"
+    android:orientation="vertical"
     android:visibility="gone">
 
+    <!-- New Device title -->
     <TextView
-        style="@style/h1"
         android:id="@+id/newDeviceTxt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/h1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center|top"
+        android:layout_weight="1"
+        android:gravity="center"
         android:text="@string/new_devices_pattern_null"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/activity_top_margin"/>
+        android:textColor="@color/white_color" />
 
-    <RelativeLayout
-        android:id="@+id/gridViewArea"
+    <!-- Grid to enter pattern -->
+    <GridView
+        android:id="@+id/gridview"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="16dp"
+        android:layout_weight="2.5"
+        android:cacheColorHint="@color/cancel_button_up"
+        android:horizontalSpacing="@dimen/led_gap"
+        android:numColumns="5"
+        android:verticalSpacing="@dimen/led_gap" />
+
+    <!--<Button-->
+    <!--android:id="@+id/nameNewButton"-->
+    <!--style="@style/p1"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:background="@drawable/white_bg"-->
+    <!--android:clickable="true"-->
+    <!--android:drawableEnd="@drawable/rename"-->
+    <!--android:textColor="@color/black_color"-->
+    <!--android:visibility="gone" />-->
+
+    <!--<EditText-->
+    <!--android:id="@+id/nameNewEdit"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:background="@drawable/edit_box"-->
+    <!--android:inputType="textVisiblePassword|textNoSuggestions"-->
+    <!--android:lines="3"-->
+    <!--android:visibility="gone" />-->
+
+    <!--  instructions -->
+    <LinearLayout
+        android:id="@+id/pairingPatternTipView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/pairingPatternTip"
+            style="@style/p1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
+            android:layout_margin="16dp"
+            android:gravity="start|center_vertical"
+            android:lines="3"
+            android:maxLines="3"
+            android:text="@string/enterPatternTipText"
+            android:textColor="@color/white_color" />
+    </LinearLayout>
+
+    <!-- Pairing confirmation buttons-->
+    <LinearLayout
+        android:id="@+id/enterPatternConfirmationView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:layout_below="@id/newDeviceTxt"
-        android:layout_marginTop="@dimen/activity_top_margin">
-
-        <GridView
-            android:id="@+id/gridview"
-            android:layout_width="@dimen/led_grid_width"
-            android:layout_height="@dimen/led_grid_width"
-            android:numColumns="5"
-            android:verticalSpacing="@dimen/led_gap"
-            android:horizontalSpacing="@dimen/led_gap"
-            android:gravity="center"
-            android:layout_marginLeft="@dimen/content_margin"
-            android:layout_marginRight="@dimen/content_margin"
-            android:layout_centerHorizontal="true" />
+        android:layout_gravity="bottom"
+        android:divider="?android:dividerHorizontal"
+        android:dividerPadding="16dp"
+        android:orientation="horizontal"
+        android:showDividers="end">
 
         <Button
-            android:id="@+id/nameNewButton"
-            android:layout_width="@dimen/led_grid_width"
-            android:layout_height="wrap_content"
-            android:drawableRight="@drawable/rename"
-            android:background="@drawable/white_bg"
-            android:clickable="true"
-            android:textColor="@color/black_color"
-            android:textSize="12pt"
-            android:layout_below="@id/gridview"
-            android:layout_marginTop="@dimen/widget_margin"
-            android:layout_centerInParent="true"
-            android:visibility="invisible"/>
-        <EditText
-            android:id="@+id/nameNewEdit"
-            android:layout_width="@dimen/led_grid_width"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/gridview"
-            android:lines="3"
-            android:background="@drawable/edit_box"
-            android:layout_marginTop="@dimen/widget_margin"
-            android:inputType="textVisiblePassword|textNoSuggestions"
-            android:layout_centerInParent="true"
-            android:visibility="invisible"/>
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_top_margin"
-        android:layout_below="@id/gridViewArea"
-        android:layout_centerInParent="true">
-
-        <ImageButton
             android:id="@+id/cancel_name_button"
-            android:layout_width="@dimen/button_size"
-            android:layout_height="@dimen/button_size"
-            android:src="@drawable/white_cross"
-            android:background="@drawable/popup_cancel_button"
-            android:visibility="invisible"
-            android:layout_marginRight="@dimen/button_gap_margin"/>
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"
+            android:background="@color/cancel_button_up"
+            android:drawableEnd="@drawable/add_device"
+            android:gravity="center_vertical|start"
+            android:padding="8dp"
+            android:text="Cancel"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:visibility="invisible" />
 
-        <ImageButton
+        <Button
             android:id="@+id/ok_name_button"
-            android:layout_width="@dimen/button_size"
-            android:layout_height="@dimen/button_size"
-            android:src="@drawable/white_tick"
-            android:background="@drawable/popup_ok_button"
-            android:layout_toRightOf="@id/cancel_name_button"
-            android:visibility="invisible"/>
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"
+            android:background="@drawable/green_btn"
+            android:drawableEnd="@drawable/add_device"
+            android:gravity="center_vertical|start"
+            android:padding="8dp"
+            android:text="Pair"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:visibility="invisible" />
+    </LinearLayout>
 
-    </RelativeLayout>
-
-</RelativeLayout>
+</LinearLayout>

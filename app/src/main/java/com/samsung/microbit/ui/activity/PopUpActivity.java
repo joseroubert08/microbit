@@ -19,9 +19,6 @@ import android.widget.TextView;
 import com.samsung.microbit.R;
 import com.samsung.microbit.ui.PopUp;
 
-/**
- * Created by fma on 28/07/15.
- */
 public class PopUpActivity extends Activity implements View.OnClickListener{
 
     //intent from PopUpActivity to PopUp
@@ -57,6 +54,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener{
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(INTENT_ACTION_CLOSE)) {
+                Log.d("PopUpActivity", "BroadcastReceiver.INTENT_ACTION_CLOSE" );
                 finish();
             }
             else if (intent.getAction().equals(INTENT_ACTION_UPDATE_PROGRESS)) {
@@ -69,6 +67,8 @@ public class PopUpActivity extends Activity implements View.OnClickListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.d("PopUpActivity", "onCreate()");
 
         setContentView(R.layout.activity_popup);
 
@@ -152,7 +152,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        Log.d("PopUpActivity", "onDestroy()");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
     }
 

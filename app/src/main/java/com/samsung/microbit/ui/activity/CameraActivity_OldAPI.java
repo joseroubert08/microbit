@@ -53,9 +53,6 @@ import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.view.CameraPreview;
 
-/**
- * Created by t.maestri on 09/06/2015.
- */
 public class CameraActivity_OldAPI extends Activity {
 
 	private static boolean mInstanceActive = false;

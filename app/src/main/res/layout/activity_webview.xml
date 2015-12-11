@@ -36,6 +36,14 @@
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
             android:layout_marginRight="@dimen/activity_horizontal_margin" />
+        <!-- Only used for testing. Will be removed from production -->
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner"
+            android:layout_toLeftOf="@id/refreshBtn"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/backBtn" />
 
     </RelativeLayout>
 

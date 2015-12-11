@@ -123,7 +123,7 @@ public class IPCService extends Service {
 
 	public void sendtoBLEService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
 
-		if (debug) logi("sendtoBLEService()");
+		if (debug) logi("sendtoBLEService() --> " + functionCode);
 		Class destService = BLEService.class;
 		sendIPCMessge(destService, mbsService, functionCode, cmd, args);
 	}

@@ -4,9 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.TextureView;
 
-/**
- * Created by t.maestri on 19/05/2015.
- */
 
 public class CameraView extends TextureView {
 

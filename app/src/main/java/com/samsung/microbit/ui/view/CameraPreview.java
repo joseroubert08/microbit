@@ -12,9 +12,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
 
-/**
- * Created by t.maestri on 09/06/2015.
- */
 public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 
     private static final String TAG = "CameraPreview";

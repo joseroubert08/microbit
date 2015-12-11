@@ -12,9 +12,6 @@ import android.view.View;
 import com.samsung.microbit.ui.activity.PopUpActivity;
 import com.samsung.microbit.ui.activity.PopUpHolderActivity;
 
-/**
- * Created by frederic.ma on 23/06/2015.
- */
 /*
 How to use:
 
@@ -81,8 +78,10 @@ public class PopUp {
 
     public static void hide()
     {
-        if (current_type == TYPE_MAX)
+        if (current_type == TYPE_MAX) {
+            Log.e("Popup","Nothing to hide");
             return;
+        }
 
         LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(new Intent(PopUpActivity.INTENT_ACTION_CLOSE));
         current_type = TYPE_MAX;// reset current type to none
@@ -130,8 +129,10 @@ public class PopUp {
         }
         ctx = context;
         //if blocking popup is already displayed, do not show another popup
-        if (isBlockingPopUpDisplayed())
+        if (isBlockingPopUpDisplayed()) {
+            Log.e("PopUp","Cannot show popup because blocking pop-up is displayed");
             return false;
+        }
 
         PopUp.hide();
 

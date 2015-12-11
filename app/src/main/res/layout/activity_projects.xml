@@ -1,118 +1,116 @@
-<RelativeLayout
-	android:id="@+id/layout"
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="fill_parent"
-	android:layout_height="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@drawable/bg"
-	tools:context=".MainActivity">
+    tools:context=".MainActivity">
 
-	<RelativeLayout
-		android:id="@+id/headerBar"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:background="#ffffff"
-		android:elevation="@dimen/activity_vertical_margin">
+    <RelativeLayout
+        android:id="@+id/headerBar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:elevation="@dimen/activity_vertical_margin">
 
-		<ImageButton
-			android:id="@+id/backBtn"
-			android:layout_width="@dimen/header_btn_size"
-			android:layout_height="@dimen/header_btn_size"
-			android:background="@android:color/transparent"
-			android:onClick="onClick"
-			android:src="@drawable/back"/>
+        <ImageButton
+            android:id="@+id/backBtn"
+            android:layout_width="@dimen/header_btn_size"
+            android:layout_height="@dimen/header_btn_size"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:src="@drawable/back" />
 
-	<!--	<TextView
-			style="@style/h2"
-			android:id="@+id/titleTxt"
-			android:layout_width="wrap_content"
-			android:layout_height="@dimen/header_title_height"
-			android:layout_toRightOf="@id/backBtn"
-			android:gravity="center"
-			android:text="@string/projects"/>-->
+        <TextView
+            android:id="@+id/titleTxt"
+            style="@style/h2"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/header_title_height"
+            android:layout_toEndOf="@id/backBtn"
+            android:gravity="center"
+            android:text="@string/flash" />
 
-		<RelativeLayout
-			android:layout_width="wrap_content"
-			android:layout_height="@dimen/header_btn_size"
-			android:layout_alignParentEnd="true"
-			android:layout_marginBottom="0dp"
-			android:layout_marginRight="@dimen/header_right_margin"
-            android:background="@drawable/project_text_box"
-			android:layout_marginTop="0dp">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/header_btn_size"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="0dp"
+            android:layout_marginRight="@dimen/header_right_margin"
+            android:layout_marginTop="0dp"
+            android:background="@drawable/project_text_box">
 
-			<TextView
-                style="@style/p2"
-				android:id="@+id/connectedIndicatorText"
-				android:layout_width="@dimen/header_title_width"
-                android:layout_marginTop="@dimen/header_right_margin"
-                android:layout_marginLeft="@dimen/header_right_margin"
-				android:layout_height="wrap_content"
-				android:editable="false"
-				android:gravity="top"
-				android:maxWidth="@dimen/header_device_name_max"
-				android:minWidth="@dimen/header_device_name_min"/>
             <TextView
+                android:id="@+id/connectedIndicatorText"
                 style="@style/p2"
+                android:layout_width="@dimen/header_title_width"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/header_right_margin"
+                android:layout_marginTop="@dimen/header_right_margin"
+                android:editable="false"
+                android:gravity="top"
+                android:maxWidth="@dimen/header_device_name_max"
+                android:minWidth="@dimen/header_device_name_min" />
+
+            <TextView
                 android:id="@+id/deviceName"
+                style="@style/p2"
                 android:layout_width="@dimen/header_title_width"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/connectedIndicatorText"
                 android:layout_marginLeft="@dimen/header_right_margin"
-                android:textColor="@color/blue_button_up"
                 android:editable="false"
                 android:gravity="top"
                 android:maxWidth="@dimen/header_device_name_max"
-                android:minWidth="@dimen/header_device_name_min"/>
+                android:minWidth="@dimen/header_device_name_min"
+                android:textColor="@color/blue_button_up" />
+
             <TextView
-                style="@style/p2"
                 android:id="@+id/deviceName2"
+                style="@style/p2"
                 android:layout_width="@dimen/header_title_width"
-                android:layout_marginLeft="@dimen/header_right_margin"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/deviceName"
-                android:textColor="@color/blue_button_up"
+                android:layout_marginLeft="@dimen/header_right_margin"
                 android:editable="false"
                 android:gravity="top"
                 android:maxWidth="@dimen/header_device_name_max"
-                android:minWidth="@dimen/header_device_name_min"/>
+                android:minWidth="@dimen/header_device_name_min"
+                android:textColor="@color/blue_button_up" />
 
-			<ImageButton
-				android:id="@+id/connectedIndicatorIcon"
-				android:layout_width="@dimen/header_btn_size"
-				android:layout_height="@dimen/header_btn_size"
-				android:layout_toRightOf="@id/connectedIndicatorText"
-				android:background="@drawable/project_connect_btn"
-				android:onClick="onClick"
-				android:src="@drawable/device_connected"/>
+            <ImageButton
+                android:id="@+id/connectedIndicatorIcon"
+                android:layout_width="@dimen/header_btn_size"
+                android:layout_height="@dimen/header_btn_size"
+                android:layout_toRightOf="@id/connectedIndicatorText"
+                android:background="@drawable/project_connect_btn"
+                android:onClick="onClick"
+                android:src="@drawable/device_connected" />
 
-		</RelativeLayout>
+        </RelativeLayout>
 
-	</RelativeLayout>
+    </RelativeLayout>
 
-	<RelativeLayout
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/headerBar"
-        android:layout_marginTop="@dimen/content_margin"
-		android:orientation="vertical"
-		android:paddingLeft="@dimen/activity_horizontal_margin"
-		android:paddingRight="@dimen/activity_horizontal_margin">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/headerBar"
+        android:orientation="vertical">
 
-		<include
-			android:id="@+id/createProjectC"
-			layout="@layout/create_project"/>
+        <include
+            android:id="@+id/createProjectC"
+            layout="@layout/create_project" />
 
-		<TextView
-			android:id="@android:id/empty"
-			style="@style/h1"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_below="@id/createProjectC"
-			android:layout_gravity="center"
-			android:backgroundTintMode="screen"
-			android:gravity="center"
-			android:text="@string/no_projects"/>
+        <TextView
+            android:id="@android:id/empty"
+            style="@style/h1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/createProjectC"
+            android:layout_gravity="center"
+            android:backgroundTintMode="screen"
+            android:gravity="center"
+            android:text="@string/no_projects" />
 
-	</RelativeLayout>
+    </RelativeLayout>
 
 </RelativeLayout>

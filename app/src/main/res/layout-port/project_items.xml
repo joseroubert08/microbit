@@ -1,67 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:orientation="horizontal"
-	android:background="@drawable/white_btn">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/white_btn"
+    android:orientation="horizontal">
+
+    <Button
+        android:id="@+id/appNameButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/white_bg"
+        android:drawableEnd="@drawable/down_arrow"
+        android:gravity="start|center_vertical"
+        android:longClickable="true"
+        android:textColor="@color/black_color"
+        />
+
+    <com.samsung.microbit.ui.control.ExtendedEditText
+        android:id="@+id/appNameEdit"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/white_bg"
+        android:editable="true"
+        android:enabled="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:gravity="start|center_vertical"
+        android:inputType="textNoSuggestions|textVisiblePassword"
+        android:textColor="@color/black_color"
+        android:visibility="invisible" />
 
 
-	<Button
-		android:id="@+id/appNameButton"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		android:drawableRight="@drawable/down_arrow"
-		android:background="@drawable/white_bg"
-		android:gravity="left|center_vertical"
-		android:longClickable="true"
-		android:textColor="@color/black_color"
-		android:textSize="12pt"/>
+    <LinearLayout
+        android:id="@+id/actionBarForProgram"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/appNameButton"
+        android:orientation="horizontal"
+        android:visibility="gone">
 
-	<com.samsung.microbit.ui.control.ExtendedEditText
-		android:id="@+id/appNameEdit"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		android:editable="true"
-		android:enabled="true"
-		android:focusable="true"
-		android:focusableInTouchMode="true"
-		android:background="@drawable/white_bg"
-		android:gravity="left|center_vertical"
-		android:inputType="textNoSuggestions|textVisiblePassword"
-		android:textColor="@color/black_color"
-		android:textSize="12pt"
-		android:visibility="invisible"/>
+        <Button
+            android:id="@+id/sendBtn"
+            style="@style/p1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/blue_btn"
+            android:drawableEnd="@drawable/flash_face"
+            android:gravity="start|center_vertical"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:drawablePadding="8dp"
+            android:text="@string/flash" />
 
+        <ImageButton
+            android:id="@+id/deleteBtn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:background="@drawable/red_btn"
+            android:src="@drawable/delete_project" />
 
-	<LinearLayout
-		android:id="@+id/actionBarForProgram"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="5dp"
-		android:layout_marginLeft="5dp"
-		android:layout_below="@id/appNameButton"
-		android:weightSum="5"
-		android:visibility="gone">
-
-		<ImageButton
-			android:id="@+id/deleteBtn"
-			android:layout_width="@dimen/lv_btn_width"
-			android:layout_height="@dimen/lv_item_height"
-			android:background="@drawable/red_btn"
-			android:src="@drawable/delete_project"/>
-
-		<Button
-			style="@style/p1"
-			android:id="@+id/sendBtn"
-			android:layout_width="@dimen/lv_txt_img_btn_width"
-			android:layout_height="@dimen/lv_item_height"
-			android:layout_marginLeft="@dimen/lv_item_margin"
-			android:layout_toRightOf="@id/deleteBtn"
-			android:background="@drawable/blue_btn"
-			android:drawableRight="@drawable/flash_face"
-			android:gravity="left|center_vertical"
-			android:text="@string/flash"/>
-
-	</LinearLayout>
+    </LinearLayout>
 </RelativeLayout>

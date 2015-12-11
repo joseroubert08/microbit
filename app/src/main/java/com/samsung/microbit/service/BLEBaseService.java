@@ -15,6 +15,7 @@ import android.util.Log;
 import com.samsung.microbit.core.BLEManager;
 import com.samsung.microbit.core.CharacteristicChangeListener;
 import com.samsung.microbit.core.UnexpectedConnectionEventListener;
+import com.samsung.microbit.core.Utils;
 
 import java.util.List;
 import java.util.UUID;
@@ -171,6 +172,7 @@ public abstract class BLEBaseService extends Service {
 					rc = 99;
 				}
 			} else {
+                actual_Error = 0;
 				rc &= 0x0ffff;
 				if ((rc & goodCode) != 0) {
 					rc = 0;
@@ -320,7 +322,6 @@ public abstract class BLEBaseService extends Service {
 			bleManager.writeCharacteristic(characteristic);
 			rc = interpretCode(rc);
 		}
-
 		return rc;
 	}
 

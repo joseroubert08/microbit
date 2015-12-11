@@ -1,80 +1,19 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="fill_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bottomPairButton"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:background="@drawable/bg">
+    android:background="@drawable/bg"
+    android:visibility="visible">
 
-    <RelativeLayout
-        android:id="@+id/headerBar"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="#ffffff"
-        android:elevation="@dimen/activity_bottom_margin">
+    <!-- Connecting microbit screen -->
+    <include layout="@layout/view_connect_microbit" />
+    <!-- device pairing tip screen -->
+    <include layout="@layout/view_pairing_tip" />
+    <!-- enter the pattern screen-->
+    <include layout="@layout/view_pairing_pattern" />
+    <!-- searching for microbit screen-->
+    <include layout="@layout/view_pairing_searching" />
+    <!-- enter pin screem -->
+    <include layout="@layout/view_enter_pin" />
+</LinearLayout>
 
-        <ImageButton
-            android:id="@+id/backBtn"
-            android:onClick="onClick"
-            android:layout_width="@dimen/header_btn_size"
-            android:layout_height="@dimen/header_btn_size"
-            android:src="@drawable/back"
-            android:background="@android:color/transparent"/>
-
-        <TextView
-            style="@style/h1"
-            android:id="@+id/titleTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/header_title_height"
-            android:text="@string/pair_my_device"
-            android:layout_toRightOf="@id/backBtn"
-            android:gravity="center"/>
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_height="wrap_content"
-        android:id="@+id/prevDeviceView"
-        android:layout_width="fill_parent"
-        android:layout_below="@id/headerBar"
-        android:layout_marginTop="@dimen/device_main_margin"
-        android:layout_marginBottom="@dimen/device_lv_bottom_margin"
-        android:paddingLeft="@dimen/device_main_margin"
-        android:paddingRight="@dimen/device_main_margin">
-
-        <TextView
-            style="@style/h1"
-            android:id="@+id/prevDeviceTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/previous_devices"
-            android:layout_marginBottom="@dimen/device_main_margin"/>
-
-        <ListView
-            android:id="@+id/connectedDeviceList"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:layout_below="@id/prevDeviceTxt"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="@dimen/connect_content_margin"
-            android:clickable="false"/>
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/bottomConnectButton"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/device_main_margin"
-        android:paddingRight="@dimen/device_main_margin"
-        android:layout_marginBottom="2dp"
-        android:layout_below="@id/headerBar"
-        android:visibility="visible">
-
-        <include layout="@layout/view_pairing_start"/>
-        <include layout="@layout/view_pairing_tip"/>
-        <include layout="@layout/view_pairing_pattern"/>
-        <include layout="@layout/view_pairing_searching"/>
-
-    </RelativeLayout>
-
-</RelativeLayout>

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    android:id="@+id/connectTipView"
+    android:id="@+id/pairTipView"
     android:layout_width="match_parent"
     android:layout_below="@id/headerBar"
     android:visibility="gone">
 
     <TextView
         style="@style/h1"
-        android:id="@+id/connectTipTitle"
+        android:id="@+id/pairTipTitle"
         android:layout_width="@dimen/tip_title_width"
         android:layout_height="wrap_content"
         android:text="@string/connectTipTitle"
@@ -21,17 +21,17 @@
         android:layout_width="@dimen/tip_text_width"
         android:layout_height="wrap_content"
         android:text="@string/connectTipText"
-        android:id="@+id/connectTipTextview"
+        android:id="@+id/pairTipTextview"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:textColor="@color/black_color"
-        android:layout_below="@id/connectTipTitle" />
+        android:layout_below="@id/pairTipTitle" />
 
     <RelativeLayout
         android:id="@+id/tipImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/connectTipTitle">
+        android:layout_toRightOf="@+id/pairTipTitle">
 
     <ImageView
         android:id="@+id/microbit_tip_image"
@@ -52,7 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/connect_tip_btn_margin_top"
-        android:layout_below="@id/connectTipTextview"
+        android:layout_below="@id/pairTipTextview"
         >
 
     <ImageButton
@@ -65,7 +65,7 @@
         android:layout_marginLeft="@dimen/content_margin"/>
 
     <ImageButton
-        android:id="@+id/ok_connect_button"
+        android:id="@+id/ok_pair_button"
         android:layout_toRightOf="@id/cancel_tip_button"
         android:layout_width="@dimen/header_btn_size"
         android:layout_height="@dimen/header_btn_size"

@@ -12,9 +12,6 @@ import android.view.View;
 import com.samsung.microbit.R;
 import com.samsung.microbit.ui.PopUp;
 
-/**
- * Created by fma on 01/08/15.
- */
 /*
    This class purpose is to show popup from within an activity context instead of a service context.
    This is needed because the internal state of the PopUp class needs to be maintained within

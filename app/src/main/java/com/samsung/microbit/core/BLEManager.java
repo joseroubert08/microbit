@@ -62,7 +62,7 @@ public class BLEManager {
 	protected UnexpectedConnectionEventListener unexpectedDisconnectionListener;
 
 	static final String TAG = "BLEManager";
-	private boolean debug = true;
+	private boolean debug = false;
 
 	void logi(String message) {
 		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
@@ -326,7 +326,7 @@ public class BLEManager {
 	}
 
 	public boolean isConnected() {
-		return (bleState == BLE_CONNECTED || bleState == BLE_SERVICES_DISCOVERED);
+		return (bleState == BLE_CONNECTED || bleState == BLE_SERVICES_DISCOVERED || bleState == (BLE_CONNECTED |BLE_SERVICES_DISCOVERED ) );
 	}
 
 	public int writeDescriptor(BluetoothGattDescriptor descriptor) {
@@ -411,7 +411,10 @@ public class BLEManager {
 						}
 
 						rc = error | bleState;
+					} else {
+						if (debug) logi("writeCharacteristic() :: failed");
 					}
+
 
 				} catch (InterruptedException e) {
 					e.printStackTrace();

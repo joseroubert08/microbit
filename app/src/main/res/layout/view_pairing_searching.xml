@@ -1,44 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_height="fill_parent"
-android:id="@+id/connectSearchView"
-android:layout_toRightOf="@id/prevDeviceView"
-android:layout_width="fill_parent"
-android:layout_below="@id/headerBar"
-android:visibility="gone">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pairSearchView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black_color"
+    android:orientation="vertical">
 
-<TextView
-    style="@style/h1"
-    android:id="@+id/connectSearchTitle"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/searchingTitle"
-    android:layout_marginTop="@dimen/activity_top_margin"
-    android:layout_centerHorizontal="true" />
+    <!-- pairing animation -->
+    <TextView
+        android:id="@+id/pairSearchTitle"
+        style="@style/h1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_margin="16dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/searchingTitle"
+        android:textColor="@color/white_color" />
 
+    <!--pairing animation-->
     <WebView
+        android:id="@+id/animationwebView"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:id="@+id/animationwebView"
-        android:layout_centerInParent="true"/>
-<RelativeLayout
-    android:layout_height="fill_parent"
-    android:layout_width="fill_parent"
-    android:id="@+id/connectSearchImage"
-    android:layout_below="@id/connectSearchTitle">
+        android:layout_gravity="center"
+        android:layout_margin="16dp"
+        android:layout_weight="4" />
 
+    <!--  instructions -->
+    <LinearLayout
+        android:id="@+id/searchingTipView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <ImageButton
-        android:id="@+id/cancel_search_button"
-        android:layout_width="@dimen/button_size"
-        android:layout_height="@dimen/button_size"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="@dimen/activity_bottom_margin"
-        android:background="@drawable/red_circle_btn"
-        android:src="@drawable/white_cross"
-        android:clickable="true"/>
+        <TextView
+            android:id="@+id/searchingTipText"
+            style="@style/p1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
+            android:layout_margin="16dp"
+            android:gravity="start|center_vertical"
+            android:lines="3"
+            android:maxLines="3"
+            android:text="@string/searchingTipText"
+            android:textColor="@color/white_color" />
+    </LinearLayout>
 
-</RelativeLayout>
+    <!-- Pairing Confirmation buttons -->
+    <LinearLayout
+        android:id="@+id/pairTipButtonView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:divider="?android:dividerHorizontal"
+        android:dividerPadding="16dp"
+        android:orientation="horizontal"
+        android:showDividers="end">
 
-</RelativeLayout>
+        <Button
+            android:id="@+id/cancel_search_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"
+            android:background="@color/cancel_button_up"
+            android:drawableEnd="@drawable/red_cross"
+            android:gravity="start|center_vertical"
+            android:padding="8dp"
+            android:text="Cancel"
+            android:textAppearance="?android:textAppearanceSmall" />
+    </LinearLayout>
+</LinearLayout>

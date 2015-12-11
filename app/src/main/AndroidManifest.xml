@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright 2012 The Android Open Source Project
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +16,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.samsung.microbit"
     android:versionCode="1"
-    android:versionName="1.3.1" >
+    android:versionName="1.3.6">
 
     <uses-sdk android:minSdkVersion="19" />
 
@@ -43,91 +42,115 @@
         android:required="false" />
 
     <application
+        android:name="com.samsung.microbit.MBApp"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme.NoActionBar">
         <activity
             android:name=".ui.activity.HomeActivity"
             android:configChanges="orientation"
-            android:launchMode="singleTop" >
-        </activity>
+            android:label="@string/home_activity_name"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"></activity>
+
         <activity
             android:name=".ui.activity.ProjectActivity"
             android:parentActivityName=".ui.activity.HomeActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
+            <!-- Register for the HEX file -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="microbit.co.uk"
+                    android:scheme="http" />
+                <data
+                    android:host="microbit.co.uk"
+                    android:scheme="https" />
+                <data
+                    android:host="*"
+                    android:scheme="content" />
+                <data
+                    android:host="*"
+                    android:scheme="file" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.hex" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".ui.activity.NotificationActivity"
-            android:label="@string/device_details" />
+            android:label="@string/device_details"
+            android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.activity.ConnectActivity"
+            android:name=".ui.activity.PairingActivity"
             android:label="@string/title_activity_connect"
             android:launchMode="singleTop"
             android:parentActivityName=".ui.activity.HomeActivity"
-            android:windowSoftInputMode="stateHidden|adjustPan" >
-        </activity>
-        <activity
-            android:name=".ui.activity.TouchDevActivity"
-            android:configChanges="orientation|screenSize"
-            android:parentActivityName=".ui.activity.HomeActivity"
-            android:windowSoftInputMode="adjustResize" >
-        </activity>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan"></activity>
         <activity
             android:name=".ui.activity.PopUpHolderActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" >
-        </activity>
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"></activity>
         <activity
             android:name=".ui.activity.PopUpActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/PopUpTheme"
-            android:windowSoftInputMode="adjustPan" >
-        </activity>
+            android:windowSoftInputMode="adjustPan"></activity>
         <activity
             android:name=".ui.activity.AudioRecorderActivity"
             android:configChanges="orientation|screenSize"
             android:label="Audio Recorder"
-            android:launchMode="singleTask" >
-        </activity>
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".ui.activity.CameraActivity_OldAPI"
             android:label="Camera Microbit"
             android:launchMode="singleTask"
-            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
-        </activity>
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"></activity>
         <activity
             android:name=".ui.activity.GeneralWebView"
             android:configChanges="orientation|screenSize"
             android:label="General Webview"
             android:parentActivityName=".ui.activity.HomeActivity"
-            android:windowSoftInputMode="adjustResize" >
-            >
-        </activity>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
+            ></activity>
 
         <service
             android:name=".service.DfuService"
             android:enabled="true" />
         <service
             android:name=".service.PluginService"
-            android:process=":PluginService" >
+            android:process=":PluginService">
             <intent-filter>
                 <action android:name="com.samsung.microbit.service.PluginService" />
             </intent-filter>
         </service>
         <service
             android:name=".service.BLEService"
-            android:process=":BLEService" >
+            android:process=":BLEService">
             <intent-filter>
                 <action android:name="com.samsung.microbit.service.BLEService" />
             </intent-filter>
         </service>
-        <service android:name=".service.IPCService" >
+        <service android:name=".service.IPCService">
             <intent-filter>
                 <action android:name="com.samsung.microbit.service.IPCService" />
             </intent-filter>
         </service>
 
         <activity
-            android:name=".ui.activity.SplashScreenActivity" >
+            android:name=".ui.activity.SplashScreenActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

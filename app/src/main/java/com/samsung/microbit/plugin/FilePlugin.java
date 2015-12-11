@@ -4,9 +4,6 @@ import android.content.Context;
 
 import com.samsung.microbit.model.CmdArg;
 
-/**
- * Created by kkulendiran on 10/05/2015.
- */
 public class FilePlugin {
 
 	private static Context mContext = null;
