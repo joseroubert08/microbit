@@ -60,6 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start|center_vertical"
             android:layout_margin="16dp"
+            android:contentDescription="@string/desc_connectTipText"
             android:gravity="start|center_vertical"
             android:lines="3"
             android:maxLines="3"

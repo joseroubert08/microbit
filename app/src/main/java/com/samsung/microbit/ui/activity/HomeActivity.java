@@ -146,11 +146,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private void setupDrawer() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         // TODO: Accessibility Notifications check
         toolbar.setNavigationContentDescription(R.string.content_description_toolbar_home);
         toolbar.setLogo(R.drawable.bbc_microbit);
         toolbar.setLogoDescription(R.string.content_description_toolbar_logo);
+        setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -203,7 +203,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.nav_help:
-                Toast.makeText(this, "help", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Help", Toast.LENGTH_LONG).show();
                 break;
             case R.id.nav_privacy: {
                 String url = RemoteConfig.getInstance().getPrivacyURL();

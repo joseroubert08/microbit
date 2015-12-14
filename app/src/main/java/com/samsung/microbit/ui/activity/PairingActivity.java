@@ -356,6 +356,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         }
         //mPrevDeviceArray = new ConnectedDevice[PREVIOUS_DEVICES_MAX];
         lvConnectedDevice = (ListView) findViewById(R.id.connectedDeviceList);
+       // TODO - empty listview
         populateConnectedDeviceList(false);
 
         mBottomPairButton = (LinearLayout) findViewById(R.id.bottomPairButton);

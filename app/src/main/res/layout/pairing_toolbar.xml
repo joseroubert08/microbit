@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?><!-- app bar-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/headerBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="top"
+    android:background="#ffffff"
+    android:elevation="@dimen/activity_bottom_margin"
+    android:orientation="horizontal"
+    tools:showIn="@layout/view_connect_microbit">
+
+    <ImageButton
+        android:id="@+id/backBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|start"
+        android:background="@android:color/transparent"
+        android:contentDescription="Back to Menu"
+        android:onClick="onClick"
+        android:padding="16dp"
+        android:src="@drawable/back" />
+    <!--android:nextFocusDown="@id/prevDeviceTxt"-->
+
+    <TextView
+        android:id="@+id/titleTxt"
+        style="@style/h1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|start"
+        android:contentDescription="Connect"
+        android:text="@string/pair_my_device" />
+
+</LinearLayout>

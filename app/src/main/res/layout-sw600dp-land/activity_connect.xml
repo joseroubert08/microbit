@@ -74,7 +74,7 @@
             android:background="@drawable/white_bg"
             android:layout_marginLeft="@dimen/divider_margin">
 
-            <include layout="@layout/view_pairing_start"/>
+            <include layout="@layout/pairing_start_pairing_devices"/>
             <include layout="@layout/view_pairing_tip"/>
             <include layout="@layout/view_pairing_pattern"/>
             <include layout="@layout/view_pairing_searching"/>

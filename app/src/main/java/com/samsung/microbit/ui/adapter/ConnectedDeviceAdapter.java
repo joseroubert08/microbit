@@ -24,15 +24,14 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
 
     public ConnectedDeviceAdapter(Context context, List<ConnectedDevice> list) {
         mListConnectedDevice = list;
-        parentActivity=context;
+        parentActivity = context;
     }
 
-    public void updateAdapter(List<ConnectedDevice> list)
-    {
+    public void updateAdapter(List<ConnectedDevice> list) {
         mListConnectedDevice = list;
-        notifyDataSetChanged();;
-
+        notifyDataSetChanged();
     }
+
     @Override
     public int getCount() {
         return mListConnectedDevice.size();
@@ -54,25 +53,24 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
         ConnectedDevice entry = mListConnectedDevice.get(pos);
 
         // inflating list view layout if null
-        if(convertView == null) {
+        if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(MBApp.getContext());
             convertView = inflater.inflate(R.layout.connected_device_item, null);
         }
 
-        Button deviceName = (Button)convertView.findViewById(R.id.deviceName);
-        ImageButton connectBtn = (ImageButton)convertView.findViewById(R.id.connectBtn);
-        ImageButton deleteBtn = (ImageButton)convertView.findViewById(R.id.deleteBtn);
+        Button deviceName = (Button) convertView.findViewById(R.id.deviceName);
+        ImageButton connectBtn = (ImageButton) convertView.findViewById(R.id.connectBtn);
+        ImageButton deleteBtn = (ImageButton) convertView.findViewById(R.id.deleteBtn);
 
         // set name and pattern
-        if(entry == null || entry.mPattern == null) {
+        if (entry == null || entry.mPattern == null) {
             deviceName.setEnabled(false);
             connectBtn.setEnabled(false);
             deleteBtn.setEnabled(false);
-        }
-        else {
+        } else {
             String styledText;
-            if(entry.mName !=null)
-            	styledText = entry.mName;
+            if (entry.mName != null)
+                styledText = entry.mName;
             else
                 styledText = entry.mPattern;
             deviceName.setText(styledText);
@@ -80,7 +78,7 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
             deviceName.setGravity(Gravity.LEFT);
             deviceName.setEnabled(false);
 
-            if(!entry.mStatus) {
+            if (!entry.mStatus) {
                 connectBtn.setImageResource(R.drawable.disconnect_device);
                 connectBtn.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.red_btn));
             } else {
@@ -91,7 +89,7 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
             connectBtn.setTag(pos);
             deleteBtn.setTag(pos);
 
-            if(PairingActivity.disableListView()) {
+            if (PairingActivity.disableListView()) {
                 connectBtn.setEnabled(false);
                 deleteBtn.setEnabled(false);
             } else {
