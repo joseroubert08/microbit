@@ -13,7 +13,7 @@
     <include layout="@layout/view_pairing_pattern" />
     <!-- searching for microbit screen-->
     <include layout="@layout/view_pairing_searching" />
-    <!-- enter pin screem -->
+    <!-- enter pin screen -->
     <include layout="@layout/view_enter_pin" />
 </LinearLayout>
 

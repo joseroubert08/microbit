@@ -60,8 +60,8 @@
                 style="@style/h1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/previous_devices"
-                android:nextFocusDown="@id/title_manage_microbit"
+                android:contentDescription="@string/desc_previous_devices"
+                android:nextFocusDown="@+id/title_manage_microbit"
                 android:text="@string/previous_devices" />
 
             <ListView
@@ -103,12 +103,12 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal|top"
                     android:layout_margin="16dp"
-                    android:contentDescription="How do i manage and remove paired micro:bits?"
+                    android:contentDescription="@string/desc_manage_and_remove_microbits_label"
                     android:gravity="center"
                     android:lines="2"
                     android:maxLines="2"
-                    android:nextFocusDown="@id/img_pair_microbit"
-                    android:text="How do i manage and remove paired micro:bits?"
+                    android:nextFocusDown="@+id/img_pair_microbit"
+                    android:text="@string/manage_and_remove_microbit"
                     android:textSize="16sp" />
 
                 <LinearLayout
@@ -123,19 +123,19 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
-                        android:contentDescription="Rename and remove paired micro:bis"
+                        android:contentDescription="@string/desc_manage_microbit_txt"
                         android:maxLines="5"
                         android:minLines="3"
                         android:nextFocusDown="@id/titleTxt"
-                        android:text="To manage and remove paired micro:bit devices,\ngo to your Bluetooth \nSettings on your device" />
+                        android:text="@string/manage_microbit_txt" />
 
                     <ImageView
                         android:id="@+id/img_pair_microbit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:contentDescription="To manage and remove paired micro:bit devices, go to your Bluetooth Settings on your device"
-                        android:nextFocusDown="@id/go_bluetooth_settings"
+                        android:contentDescription="@string/desc_manage_microbits"
+                        android:nextFocusDown="@+id/go_bluetooth_settings"
                         android:padding="16dp"
                         android:src="@drawable/flash_face" />
                 </LinearLayout>
@@ -151,7 +151,7 @@
                         android:layout_height="wrap_content"
                         android:contentDescription="Go to bluetooth settings"
                         android:drawableEnd="@drawable/bluetooth"
-                        android:nextFocusDown="@id/pairButton"
+                        android:nextFocusDown="@+id/pairButton"
                         android:text="Go to bluetooth settings" />
                 </LinearLayout>
             </LinearLayout>

@@ -30,6 +30,7 @@
         android:background="@drawable/yellow_btn"
         android:drawableEnd="@drawable/new_project"
         android:gravity="center_vertical|start"
+        android:contentDescription="My Scripts"
         android:onClick="onClick"
         android:text="@string/my_scripts"
         android:textAppearance="?android:textAppearanceSmall" />

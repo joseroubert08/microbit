@@ -131,6 +131,7 @@
 
     <!-- Connect Activity -->
     <string name="previous_devices">Previously paired micro:bit(s)</string>
+    <string name="desc_previous_devices">No previously paired micro:bits</string>
     <string name="new_devices_pattern_null">Enter the pattern</string>
     <string name="new_devices">Connect to a new device</string>
     <string name="name_device">Name device</string>
@@ -180,7 +181,8 @@
     <string name="download_failed_msg">Try again later</string>
     <string name="download_failed_title">Try again later</string>
     <string name="projects">Projects</string>
-    <string name="pair_my_device">Pair your micro:bit</string>
+    <string name="pair_my_device">Connect</string>
+    <string name="connect_my_device">Connect</string>
     <string name="flash">Flash</string>
     <string name="view">View</string>
     <string name="no_projects">No projects found!</string>
@@ -244,4 +246,16 @@
     <string name="prefs_share_stats_status">share_stats</string>
     <string name="content_description_toolbar_home">Open Menu</string>
     <string name="content_description_toolbar_logo">BBC Micro:bit</string>
+    <string name="manage_microbit_txt">To manage and remove paired micro:bit devices,\ngo to your Bluetooth \nSettings on your device</string>
+    <string name="desc_manage_microbit_txt">Rename and remove paired micro:bits</string>
+    <string name="desc_manage_microbits">To manage and remove paired micro:bit devices, go to your Bluetooth Settings on your device</string>
+    <string name="desc_manage_and_remove_microbits_label">How do i manage and remove paired micro:bits?</string>
+    <string name="manage_and_remove_microbit">How do i manage and remove paired micro:bits?</string>
+    <string name="desc_homescreen_logo_img">Hello</string>
+    <string name="desc_connect_btn">Connect</string>
+    <string name="desc_flash_btn">Flash</string>
+    <string name="desc_create_code">Create Code</string>
+    <string name="desc_discover">Discover</string>
+    <string name="desc_back_to_home_from_flash_btn">Back to Menu</string>
+    <string name="desc_flash_toolbar_header">Flash</string>
 </resources>

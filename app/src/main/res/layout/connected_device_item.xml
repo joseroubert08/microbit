@@ -4,8 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/white_btn"
+    android:contentDescription="@null"
     android:orientation="horizontal">
 
+    <!-- Microbit name-->
     <Button
         android:id="@+id/deviceName"
         style="@style/p1"

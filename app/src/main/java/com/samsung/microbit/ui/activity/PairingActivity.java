@@ -364,7 +364,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         mConnectDeviceView = (LinearLayout) findViewById(R.id.connectDeviceView); // Connect device view
         mNewDeviceView = (LinearLayout) findViewById(R.id.newDeviceView);
         mPairSearchView = (LinearLayout) findViewById(R.id.pairSearchView);
-        mEnterPinView = (LinearLayout) findViewById(R.id.enterPinView); // pin view
+        mEnterPinView = (LinearLayout) findViewById(R.id.enterPinView);
+
+        // pin view
         displayConnectScreen(mState);
         findViewById(R.id.pairButton).setOnClickListener(this);
         findViewById(R.id.cancel_tip_button).setOnClickListener(this);
@@ -373,6 +375,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.cancel_search_button).setOnClickListener(this);
         findViewById(R.id.go_bluetooth_settings).setOnClickListener(this);
         findViewById(R.id.cancel_enter_button).setOnClickListener(this);
+
         // TODO - change animation
         // Animation
         WebView animation = (WebView) findViewById(R.id.animationwebView);
