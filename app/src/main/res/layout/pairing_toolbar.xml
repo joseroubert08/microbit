@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/headerBar"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="?attr/actionBarSize"
     android:layout_gravity="top"
     android:background="#ffffff"
     android:elevation="@dimen/activity_bottom_margin"
@@ -16,11 +16,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center|start"
         android:background="@android:color/transparent"
-        android:contentDescription="Back to Menu"
+        android:contentDescription="@string/desc_connect_back_to_home_btn"
+        android:nextFocusDown="@layout/pairing_device_state"
+        android:nextFocusRight="@layout/pairing_device_state"
         android:onClick="onClick"
         android:padding="16dp"
         android:src="@drawable/back" />
-    <!--android:nextFocusDown="@id/prevDeviceTxt"-->
 
     <TextView
         android:id="@+id/titleTxt"
@@ -28,7 +29,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|start"
-        android:contentDescription="Connect"
+        android:layout_margin="4dp"
+        android:contentDescription="@string/connect"
+        android:nextFocusDown="@id/backBtn"
+        android:nextFocusRight="@id/backBtn"
         android:text="@string/pair_my_device" />
 
 </LinearLayout>

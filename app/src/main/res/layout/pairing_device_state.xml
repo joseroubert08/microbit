@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="top"
+    android:contentDescription="@null"
     android:orientation="vertical"
     android:padding="16dp"
     tools:showIn="@layout/view_connect_microbit">
@@ -36,6 +37,7 @@
                 android:layout_height="wrap_content">
 
                 <ListView
+                    android:contentDescription="@null"
                     android:id="@+id/connectedDeviceList"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
