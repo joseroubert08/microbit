@@ -11,7 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:clipToPadding="true"
         android:divider="@android:color/transparent"
         android:dividerHeight="@dimen/widget_margin" />
 
@@ -28,9 +27,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/yellow_btn"
+        android:contentDescription="My Scripts"
         android:drawableEnd="@drawable/new_project"
         android:gravity="center_vertical|start"
-        android:contentDescription="My Scripts"
         android:onClick="onClick"
         android:text="@string/my_scripts"
         android:textAppearance="?android:textAppearanceSmall" />

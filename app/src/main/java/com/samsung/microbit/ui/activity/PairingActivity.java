@@ -356,6 +356,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         }
         //mPrevDeviceArray = new ConnectedDevice[PREVIOUS_DEVICES_MAX];
         lvConnectedDevice = (ListView) findViewById(R.id.connectedDeviceList);
+        TextView emptyText = (TextView) findViewById(android.R.id.empty);
+        lvConnectedDevice.setEmptyView(emptyText);
        // TODO - empty listview
         populateConnectedDeviceList(false);
 

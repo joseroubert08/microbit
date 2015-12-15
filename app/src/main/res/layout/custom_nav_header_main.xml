@@ -27,25 +27,25 @@
         android:layout_height="0.25dp"
         android:background="@color/gray_color" />
 
-    <!-- Explore-->
-    <Button
-        android:id="@+id/btn_explore"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#212121"
-        android:gravity="center_vertical|start"
-        android:paddingBottom="23dp"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp"
-        android:paddingTop="20dp"
-        android:text="Explore"
-        android:textAppearance="?textAppearanceListItem"
-        android:textColor="@color/white_color" />
+    <!--&lt;!&ndash; Explore&ndash;&gt;-->
+    <!--<Button-->
+    <!--android:id="@+id/btn_explore"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:background="#212121"-->
+    <!--android:gravity="center_vertical|start"-->
+    <!--android:paddingBottom="23dp"-->
+    <!--android:paddingEnd="16dp"-->
+    <!--android:paddingStart="16dp"-->
+    <!--android:paddingTop="20dp"-->
+    <!--android:text="Explore"-->
+    <!--android:textAppearance="?textAppearanceListItem"-->
+    <!--android:textColor="@color/white_color" />-->
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.25dp"
-        android:background="@color/gray_color" />
+    <!--<View-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="0.25dp"-->
+    <!--android:background="@color/gray_color" />-->
 
     <!-- About-->
     <Button
@@ -98,7 +98,7 @@
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
         android:paddingTop="20dp"
-        android:text="Privacy and Cookies"
+        android:text="Privacy &amp; Cookies"
         android:textAppearance="?textAppearanceListItem"
         android:textColor="@color/white_color" />
 
@@ -118,7 +118,7 @@
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
         android:paddingTop="20dp"
-        android:text="Terms and Conditions"
+        android:text="Terms &amp; Conditions"
         android:textAppearance="?textAppearanceListItem"
         android:textColor="@color/white_color" />
 
@@ -176,8 +176,8 @@
             android:checked="false"
             android:enabled="true"
             android:gravity="center_vertical|end"
-            android:paddingStart="16dp"
             android:paddingBottom="8dp"
+            android:paddingStart="16dp"
             android:paddingTop="8dp"
             android:saveEnabled="true"
             android:textColorHint="@color/white_color" />

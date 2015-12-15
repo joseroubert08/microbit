@@ -166,7 +166,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         * NavigationView items for selection by user using
         * onClick listener instead of overriding onNavigationItemSelected*/
         findViewById(R.id.btn_nav_menu).setOnClickListener(this);
-        findViewById(R.id.btn_explore).setOnClickListener(this);
+     //   findViewById(R.id.btn_explore).setOnClickListener(this);
         findViewById(R.id.btn_about).setOnClickListener(this);
         findViewById(R.id.btn_help).setOnClickListener(this);
         findViewById(R.id.btn_privacy_cookies).setOnClickListener(this);
@@ -188,9 +188,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.nav_menu:
                 Toast.makeText(this, "Menu ", Toast.LENGTH_LONG).show();
                 break;
-            case R.id.nav_explore:
-                Toast.makeText(this, "Explore ", Toast.LENGTH_LONG).show();
-                break;
+//            case R.id.nav_explore:
+//                Toast.makeText(this, "Explore ", Toast.LENGTH_LONG).show();
+//                break;
             case R.id.nav_about: {
                 String url = RemoteConfig.getInstance().getAboutURL();
                 if (url.isEmpty()) {
@@ -396,12 +396,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 drawer.closeDrawer(GravityCompat.START);
             }
             break;
-            case R.id.btn_explore: {
-                Toast.makeText(this, "Explore ", Toast.LENGTH_LONG).show();
-                // Close drawer
-                drawer.closeDrawer(GravityCompat.START);
-            }
-            break;
+//            case R.id.btn_explore: {
+//                Toast.makeText(this, "Explore ", Toast.LENGTH_LONG).show();
+//                // Close drawer
+//                drawer.closeDrawer(GravityCompat.START);
+//            }
+//            break;
             case R.id.btn_about: {
                 String url = RemoteConfig.getInstance().getAboutURL();
                 if (url.isEmpty()) {

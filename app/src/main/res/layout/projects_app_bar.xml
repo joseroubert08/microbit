@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/headerBar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="#ffffff"
+    android:elevation="@dimen/activity_vertical_margin"
+    android:orientation="horizontal"
+    tools:showIn="@layout/activity_projects">
+
+    <!-- back button-->
+    <ImageButton
+        android:id="@+id/backBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/desc_back_to_home_from_flash_btn"
+        android:nextFocusDown="@id/titleTxt"
+        android:onClick="onClick"
+        android:padding="16dp"
+        android:src="@drawable/back" />
+
+    <!-- App bar title-->
+    <TextView
+        android:id="@+id/titleTxt"
+        style="@style/h2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:contentDescription="@string/desc_flash_toolbar_header"
+        android:gravity="center"
+        android:nextFocusDown="@+id/connectedIndicatorIcon"
+        android:text="@string/flash" />
+
+    <!-- Connected device  -->
+    <LinearLayout
+        android:id="@+id/ll_toolbar_indicator"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/project_text_box"
+        android:gravity="center_vertical"
+        android:nextFocusDown="@+id/appNameButton"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/connectedIndicatorText"
+            style="@style/p2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top|center" />
+
+        <TextView
+            android:id="@+id/deviceName"
+            style="@style/p2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top|center"
+            android:textColor="@color/blue_button_up" />
+
+        <TextView
+            android:id="@+id/deviceName2"
+            style="@style/p2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top|center"
+            android:textColor="@color/blue_button_up" />
+    </LinearLayout>
+
+    <!-- connected device status -->
+    <ImageButton
+        android:id="@+id/connectedIndicatorIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/project_connect_btn"
+        android:nextFocusDown="@+id/ll_toolbar_indicator"
+        android:onClick="onClick"
+        android:padding="16dp"
+        android:src="@drawable/device_connected" />
+</LinearLayout>
