@@ -41,10 +41,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start|center_vertical"
             android:layout_margin="16dp"
+            android:contentDescription="@string/desc_searching_tip_text"
             android:gravity="start|center_vertical"
             android:lines="3"
             android:maxLines="3"
-            android:text="@string/searchingTipText"
+            android:text="@string/searching_tip_text"
             android:textColor="@color/white_color" />
     </LinearLayout>
 

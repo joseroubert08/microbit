@@ -68,6 +68,7 @@
             android:gravity="start|center_vertical"
             android:lines="3"
             android:maxLines="3"
+            android:contentDescription="@string/desc_connectTipText"
             android:text="@string/enterPatternTipText"
             android:textColor="@color/white_color" />
     </LinearLayout>

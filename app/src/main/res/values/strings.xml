@@ -140,13 +140,17 @@
     <string name="gamepad">Gamepad</string>
     <string name="connectNew">Pair a new micro:bit</string>
     <string name="connectTipTitle">How to pair your micro:bit</string>
-    <string name="connectTipText">Step 1 \nHold the A buttons,\nthen PRESS RESET</string>
+    <string name="connectTipText">Step 1 \nHold the A and B buttons,\nthen PRESS RESET</string>
     <string name="desc_connectTipText">Hold the A and B buttons, then PRESS RESET</string>
     <string name="enterPatternTipText">Step 2 \nCopy the pattern from your\ndevice and PRESS OK</string>
-    <string name="searchingTipText">Step 3 \nCurrently searching for\nmicro:bit, please wait...</string>
+    <string name="desc_enterPatternTipText">Copy the pattern from your device and PRESS OK</string>
+    <string name="searching_tip_text">Step 3 \nCurrently searching for\nmicro:bit, please wait...</string>
+    <string name="desc_searching_tip_text">Currently searching for micro:bit, please wait...</string>
     <string name="enterPinToPairText">Step 4 \nPress button A, and\nenter the 6 digit PIN</string>
+    <string name="desc_enterPinToPairText">Press button A, and enter the 6 digit PIN</string>
     <!--<string name="connectTipText">To know the pattern of your micro:bit :- \nPlease hold A and B buttons down and then press RESET on your micro:bit</string>-->
     <string name="connectSearchingTitle">Connecting...</string>
+    <string name="desc_connectSearchingTitle">Connecting...</string>
     <string name="searchingTitle">Searching for micro:bit</string>
     <string name="pairing_msg_1">Found micro:bit. \n \nInitiating pairing...</string>
 

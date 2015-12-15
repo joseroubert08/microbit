@@ -35,5 +35,4 @@
         android:text="@string/my_scripts"
         android:textAppearance="?android:textAppearanceSmall" />
 
-
 </LinearLayout>

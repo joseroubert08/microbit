@@ -59,8 +59,11 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
         }
 
         Button deviceName = (Button) convertView.findViewById(R.id.deviceName);
+        deviceName.setContentDescription(deviceName.getText());// TODO - test this
         ImageButton connectBtn = (ImageButton) convertView.findViewById(R.id.connectBtn);
+        connectBtn.setContentDescription("connect to " + deviceName.getText()); // TODO test this
         ImageButton deleteBtn = (ImageButton) convertView.findViewById(R.id.deleteBtn);
+        deleteBtn.setContentDescription("delete " + deviceName.getText()); // TODO test this
 
         // set name and pattern
         if (entry == null || entry.mPattern == null) {

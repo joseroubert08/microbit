@@ -15,8 +15,8 @@
         android:layout_gravity="center|top"
         android:layout_margin="16dp"
         android:layout_weight="1"
-        android:lines="2"
         android:gravity="center"
+        android:lines="2"
         android:text="@string/pairing_phase2_msg_New"
         android:textColor="@color/white_color" />
 
@@ -43,6 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start|center_vertical"
             android:layout_margin="16dp"
+            android:contentDescription="@string/desc_enterPinToPairText"
             android:gravity="start|center_vertical"
             android:lines="3"
             android:maxLines="3"
