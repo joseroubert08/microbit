@@ -6,32 +6,6 @@
     android:padding="16dp"
     android:visibility="visible">
 
-    <ListView
-        android:id="@+id/projectListView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="@dimen/widget_margin" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:background="@color/gray_color" />
-
-    <Button
-        android:id="@+id/createProject"
-        style="@style/p1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/yellow_btn"
-        android:contentDescription="My Scripts"
-        android:drawableEnd="@drawable/new_project"
-        android:gravity="center_vertical|start"
-        android:onClick="onClick"
-        android:text="@string/my_scripts"
-        android:textAppearance="?android:textAppearanceSmall" />
 
 </LinearLayout>

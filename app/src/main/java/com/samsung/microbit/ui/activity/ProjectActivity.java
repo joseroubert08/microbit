@@ -257,6 +257,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             connectedIndicatorIcon.setImageResource(R.drawable.device_connected);
             connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_connect_btn));
             connectedIndicatorText.setText(getString(R.string.connected_to));
+
             return;
         }
         int startIndex = 0;

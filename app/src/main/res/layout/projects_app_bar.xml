@@ -31,6 +31,8 @@
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:contentDescription="@string/desc_flash_toolbar_header"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:gravity="center"
         android:nextFocusDown="@+id/connectedIndicatorIcon"
         android:text="@string/flash" />
@@ -77,6 +79,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:background="@drawable/project_connect_btn"
+        android:contentDescription="Micro:Bit connection status"
+        android:importantForAccessibility="yes"
         android:nextFocusDown="@+id/ll_toolbar_indicator"
         android:onClick="onClick"
         android:padding="16dp"
