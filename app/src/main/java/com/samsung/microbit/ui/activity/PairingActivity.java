@@ -361,7 +361,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
        // TODO - empty listview
         populateConnectedDeviceList(false);
 
-        mBottomPairButton = (LinearLayout) findViewById(R.id.bottomPairButton);
+        mBottomPairButton = (LinearLayout) findViewById(R.id.ll_pairing_activity_screen);
         mPairButtonView = (LinearLayout) findViewById(R.id.pairButtonView);
         mPairTipView = (LinearLayout) findViewById(R.id.pairTipView);
         mConnectDeviceView = (LinearLayout) findViewById(R.id.connectDeviceView); // Connect device view

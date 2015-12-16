@@ -4,6 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/white_btn"
+    android:contentDescription="@null"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:importantForAccessibility="yes"
     android:orientation="horizontal">
 
     <!-- Microbit name-->
@@ -15,7 +19,11 @@
         android:layout_gravity="center_vertical|start"
         android:layout_weight="1"
         android:background="@drawable/white_btn"
+        android:contentDescription="@null"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:gravity="center_vertical|start"
+        android:importantForAccessibility="yes"
         android:textColor="@color/black_color" />
 
     <!--  Delete -->
@@ -23,10 +31,14 @@
         android:id="@+id/deleteBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_marginEnd="4dp"
         android:layout_marginStart="4dp"
-        android:layout_gravity="center_vertical"
         android:background="@drawable/red_btn"
+        android:contentDescription="@null"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:importantForAccessibility="yes"
         android:src="@drawable/delete_project" />
 
     <!-- Connect Micro:bit -->
@@ -34,9 +46,13 @@
         android:id="@+id/connectBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_marginEnd="4dp"
         android:layout_marginStart="4dp"
-        android:layout_gravity="center_vertical"
         android:background="@drawable/red_btn"
+        android:contentDescription="@null"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:importantForAccessibility="yes"
         android:src="@drawable/disconnect_device" />
 </LinearLayout>

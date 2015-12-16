@@ -58,12 +58,19 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.connected_device_item, null);
         }
 
+        // Accessibility changes // TODO - test for Build 3
         Button deviceName = (Button) convertView.findViewById(R.id.deviceName);
-        deviceName.setContentDescription(deviceName.getText());// TODO - test this
+        deviceName.setFocusable(false);
+        deviceName.setFocusableInTouchMode(false);
+        deviceName.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         ImageButton connectBtn = (ImageButton) convertView.findViewById(R.id.connectBtn);
-        connectBtn.setContentDescription("connect to " + deviceName.getText()); // TODO test this
+        connectBtn.setFocusable(false);
+        connectBtn.setFocusableInTouchMode(false);
+        connectBtn.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         ImageButton deleteBtn = (ImageButton) convertView.findViewById(R.id.deleteBtn);
-        deleteBtn.setContentDescription("delete " + deviceName.getText()); // TODO test this
+        deleteBtn.setFocusable(false);
+        deleteBtn.setFocusableInTouchMode(false);
+        deleteBtn.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
 
         // set name and pattern
         if (entry == null || entry.mPattern == null) {

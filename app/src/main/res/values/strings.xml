@@ -266,4 +266,11 @@
     <string name="desc_go_to_bluetooth_settings">Go to bluetooth settings</string>
     <string name="tv_go_to_bluetooth_Settings">Go to bluetooth settings</string>
     <string name="desc_connect_back_to_home_btn">Back to Menu</string>
+    <string name="nav_draw_menu">Menu</string>
+    <string name="nav_draw_about">About</string>
+    <string name="nav_draw_help">Help</string>
+    <string name="nav_draw_privacy_cookies"><![CDATA[Privacy & Cookies]]></string>
+    <string name="nav_draw_terms_conditions"><![CDATA[Terms & Conditions]]></string>
+    <string name="nav_draw_send_feedback">Send us your feedback</string>
+    <string name="nav_draw_share_statistics">Share Statistics</string>
 </resources>

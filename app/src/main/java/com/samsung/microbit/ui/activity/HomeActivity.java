@@ -155,8 +155,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        // toggle.setDrawerIndicatorEnabled(false); // TODO: Change to the word 'Menu'
+         //TODO focusable view
         drawer.setDrawerListener(toggle);
+
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -166,7 +167,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         * NavigationView items for selection by user using
         * onClick listener instead of overriding onNavigationItemSelected*/
         findViewById(R.id.btn_nav_menu).setOnClickListener(this);
-     //   findViewById(R.id.btn_explore).setOnClickListener(this);
+        //   findViewById(R.id.btn_explore).setOnClickListener(this);
         findViewById(R.id.btn_about).setOnClickListener(this);
         findViewById(R.id.btn_help).setOnClickListener(this);
         findViewById(R.id.btn_privacy_cookies).setOnClickListener(this);
