@@ -2,6 +2,7 @@ package com.samsung.microbit;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -14,12 +15,17 @@ public class MBApp extends Application {
 
     private static Context mContext;
     private EchoClient echo;
+    private Typeface typeface;
 
     private static MBApp app = null;
     @Override
     public void onCreate() {
         super.onCreate();
         app = this;
+    }
+
+    public Typeface getTypeface(){
+        return Typeface.createFromAsset(getAssets(), "fonts/GT-Walsheim.otf");
     }
 
     public static Context getContext() { return MBApp.mContext; }

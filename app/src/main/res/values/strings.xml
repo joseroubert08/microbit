@@ -276,4 +276,6 @@
     <string name="txt_my_scripts_btn">My Scripts</string>
     <string name="desc_nav_drawer_menu">Close Menu</string>
     <string name="desc_share_statistics_description">The BBC will only use this\ninformation to analyse and improve\nthe services offered through this app.\nFor information, see our privacy policy.</string>
+    <string name="txt_pair_btn">Pair</string>
+    <string name="txt_cancel_btn">Cancel</string>
 </resources>

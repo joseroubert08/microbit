@@ -96,7 +96,7 @@
             android:drawableEnd="@drawable/add_device"
             android:gravity="center_vertical|start"
             android:padding="8dp"
-            android:text="Cancel"
+            android:text="@string/txt_cancel_btn"
             android:textAppearance="?android:textAppearanceSmall"
             android:visibility="invisible" />
 
@@ -113,7 +113,7 @@
             android:drawableEnd="@drawable/add_device"
             android:gravity="center_vertical|start"
             android:padding="8dp"
-            android:text="Pair"
+            android:text="@string/txt_pair_btn"
             android:textAppearance="?android:textAppearanceSmall"
             android:visibility="invisible" />
     </LinearLayout>

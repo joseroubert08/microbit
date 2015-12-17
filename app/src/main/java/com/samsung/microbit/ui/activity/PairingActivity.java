@@ -358,7 +358,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         lvConnectedDevice = (ListView) findViewById(R.id.connectedDeviceList);
         TextView emptyText = (TextView) findViewById(android.R.id.empty);
         lvConnectedDevice.setEmptyView(emptyText);
-       // TODO - empty listview
+        // TODO - empty listview
         populateConnectedDeviceList(false);
 
         mBottomPairButton = (LinearLayout) findViewById(R.id.ll_pairing_activity_screen);
@@ -378,6 +378,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.cancel_search_button).setOnClickListener(this);
         findViewById(R.id.go_bluetooth_settings).setOnClickListener(this);
         findViewById(R.id.cancel_enter_button).setOnClickListener(this);
+
+        // TODO - Font family
+        TextView txtView = (TextView) findViewById(R.id.titleTxt);
+        txtView.setTypeface(MBApp.getApp().getTypeface());
 
         // TODO - change animation
         // Animation
