@@ -42,6 +42,7 @@
         android:onClick="onClick"
         android:scrollHorizontally="true"
         android:text="@string/connect_device"
+        android:textAppearance="?android:textAppearanceMedium"
         android:textColor="@color/white_color"
         android:visibility="visible" />
 
@@ -63,6 +64,7 @@
         android:onClick="onClick"
         android:scrollHorizontally="true"
         android:text="@string/flash_microbit"
+        android:textAppearance="?android:textAppearanceMedium"
         android:textColor="@color/white_color"
         android:visibility="visible" />
 
@@ -84,6 +86,7 @@
         android:onClick="onClick"
         android:scrollHorizontally="true"
         android:text="@string/create_code"
+        android:textAppearance="?android:textAppearanceMedium"
         android:textColor="@color/white_color"
         android:visibility="visible" />
 
@@ -104,6 +107,7 @@
         android:onClick="onClick"
         android:scrollHorizontally="true"
         android:text="@string/discover"
+        android:textAppearance="?android:textAppearanceMedium"
         android:textColor="@color/white_color"
         android:visibility="visible" />
 </LinearLayout>

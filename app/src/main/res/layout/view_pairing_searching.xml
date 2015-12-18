@@ -69,11 +69,12 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_weight="1"
-            android:background="@color/cancel_button_up"
+            android:background="@drawable/cancel_btn"
             android:drawableEnd="@drawable/red_cross"
             android:gravity="start|center_vertical"
             android:padding="8dp"
             android:text="Cancel"
-            android:textAppearance="?android:textAppearanceSmall" />
+            android:textColor="@color/black_color"
+            android:textAppearance="?android:textAppearanceMedium" />
     </LinearLayout>
 </LinearLayout>

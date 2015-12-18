@@ -92,12 +92,13 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_weight="1"
-            android:background="@color/cancel_button_up"
+            android:background="@drawable/cancel_btn"
             android:drawableEnd="@drawable/add_device"
             android:gravity="center_vertical|start"
             android:padding="8dp"
             android:text="@string/txt_cancel_btn"
-            android:textAppearance="?android:textAppearanceSmall"
+            android:textColor="@color/black_color"
+            android:textAppearance="?android:textAppearanceMedium"
             android:visibility="invisible" />
 
         <Button
@@ -114,7 +115,8 @@
             android:gravity="center_vertical|start"
             android:padding="8dp"
             android:text="@string/txt_pair_btn"
-            android:textAppearance="?android:textAppearanceSmall"
+            android:textColor="@color/black_color"
+            android:textAppearance="?android:textAppearanceMedium"
             android:visibility="invisible" />
     </LinearLayout>
 

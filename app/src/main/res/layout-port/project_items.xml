@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/white_btn"
+    android:background="@drawable/grey_btn"
     android:orientation="horizontal">
 
     <!-- TODO - dynamic allocation of text at runtime in projects class -->
@@ -11,17 +11,17 @@
         android:id="@+id/appNameButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/white_bg"
+        android:background="@drawable/grey_bg"
         android:drawableEnd="@drawable/down_arrow"
         android:gravity="start|center_vertical"
         android:longClickable="true"
-        android:textColor="@color/black_color" />
+        android:textColor="@color/white_color" />
 
     <com.samsung.microbit.ui.control.ExtendedEditText
         android:id="@+id/appNameEdit"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/white_bg"
+        android:layout_height="wrap_content"
+        android:background="@drawable/grey_bg"
         android:editable="true"
         android:enabled="true"
         android:focusable="true"
@@ -60,8 +60,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="4"
-            android:contentDescription="Delete code"
             android:background="@drawable/red_btn"
+            android:contentDescription="Delete code"
             android:src="@drawable/delete_project" />
 
     </LinearLayout>

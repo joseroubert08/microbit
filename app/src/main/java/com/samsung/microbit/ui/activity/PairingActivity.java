@@ -379,9 +379,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.go_bluetooth_settings).setOnClickListener(this);
         findViewById(R.id.cancel_enter_button).setOnClickListener(this);
 
-        // TODO - Font family
+        // TODO - set Font family
         TextView txtView = (TextView) findViewById(R.id.titleTxt);
-        txtView.setTypeface(MBApp.getApp().getTypeface());
+     //   txtView.setTypeface(MBApp.getApp().getTypeface());
+//        txtView.setTextSize(22f);
 
         // TODO - change animation
         // Animation

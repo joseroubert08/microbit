@@ -13,9 +13,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:layout_weight="1"
-        android:clipToPadding="false"
         android:orientation="vertical">
 
         <ListView
@@ -57,5 +59,6 @@
         android:gravity="center_vertical|start"
         android:onClick="onClick"
         android:text="@string/my_scripts"
-        android:textAppearance="?android:textAppearanceSmall" />
+        android:textColor="@color/black_color"
+        android:textAppearance="?android:textAppearance" />
 </LinearLayout>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:layout_gravity="top"
-    android:background="#ffffff"
+    android:background="@color/main_gray_color"
     android:elevation="@dimen/activity_bottom_margin"
     android:orientation="horizontal"
     tools:showIn="@layout/view_connect_microbit">
@@ -25,7 +25,6 @@
 
     <TextView
         android:id="@+id/titleTxt"
-        style="@style/h1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|start"
@@ -33,6 +32,8 @@
         android:contentDescription="@string/connect"
         android:nextFocusDown="@id/backBtn"
         android:nextFocusRight="@id/backBtn"
-        android:text="@string/pair_my_device" />
+        android:text="@string/pair_my_device"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="@color/white_color" />
 
 </LinearLayout>

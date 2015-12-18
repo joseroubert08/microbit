@@ -11,7 +11,6 @@
     <!-- Visible-->
     <Button
         android:id="@+id/pairButton"
-        style="@style/h2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
@@ -20,5 +19,6 @@
         android:drawableEnd="@drawable/add_device"
         android:gravity="center_vertical|start"
         android:text="@string/connectNew"
-        android:textAppearance="?android:textAppearanceSmall" />
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@color/black_color" />
 </LinearLayout>

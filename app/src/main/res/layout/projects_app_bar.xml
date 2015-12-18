@@ -4,7 +4,7 @@
     android:id="@+id/headerBar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="#383838"
+    android:background="@color/main_gray_color"
     android:elevation="@dimen/activity_vertical_margin"
     android:orientation="horizontal"
     tools:showIn="@layout/activity_projects">
@@ -25,7 +25,6 @@
     <!-- App bar title-->
     <TextView
         android:id="@+id/titleTxt"
-        style="@style/h2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -35,7 +34,9 @@
         android:focusableInTouchMode="true"
         android:gravity="center"
         android:nextFocusDown="@+id/connectedIndicatorIcon"
-        android:text="@string/flash" />
+        android:text="@string/flash"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="@color/white_color" />
 
     <!-- Connected device  -->
     <LinearLayout
@@ -43,7 +44,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="@drawable/project_text_box"
         android:gravity="center_vertical"
         android:nextFocusDown="@+id/appNameButton"
         android:orientation="vertical">
@@ -53,7 +53,9 @@
             style="@style/p2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="top|center" />
+            android:gravity="top|center"
+            android:textAppearance="?android:textAppearance"
+            android:textColor="@color/white_color" />
 
         <TextView
             android:id="@+id/deviceName"
@@ -61,7 +63,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="top|center"
-            android:textColor="@color/blue_button_up" />
+            android:textAppearance="?android:textAppearance"
+            android:textColor="@color/white_color" />
 
         <TextView
             android:id="@+id/deviceName2"
@@ -69,7 +72,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="top|center"
-            android:textColor="@color/blue_button_up" />
+            android:textAppearance="?android:textAppearance"
+            android:textColor="@color/white_color" />
     </LinearLayout>
 
     <!-- connected device status -->
@@ -78,7 +82,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:background="@drawable/project_connect_btn"
         android:contentDescription="Micro:Bit connection status"
         android:importantForAccessibility="yes"
         android:nextFocusDown="@+id/ll_toolbar_indicator"
