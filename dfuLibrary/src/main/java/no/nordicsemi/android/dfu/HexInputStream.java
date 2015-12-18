@@ -144,7 +144,7 @@ public class HexInputStream extends FilterInputStream {
                     case 0x00:
                         // data type line
                         lastAddress = lastBaseAddress + offset;
-                        if (lastAddress >= DfuSettingsConstants.APP_CODE_BASE_START && lastAddress <= DfuSettingsConstants.APP_CODE_BASE_END)
+                        if (lastAddress >= DfuSettingsConstants.APP_CODE_BASE_START && lastAddress < DfuSettingsConstants.APP_CODE_BASE_END)
                         {
                             //Log.d("HexInputStrem", "Found FOTA Start address");
                             binSize += lineSize;
@@ -349,7 +349,7 @@ public class HexInputStream extends FilterInputStream {
 				// data type
                 if (MBRSize == -1){ //This is for fixed address case
                     int fullAddress = lastAddress + offset ;
-                    if (fullAddress < DfuSettingsConstants.APP_CODE_BASE_START || fullAddress > DfuSettingsConstants.APP_CODE_BASE_END){ //Skip Non Fota
+                    if (fullAddress < DfuSettingsConstants.APP_CODE_BASE_START || fullAddress >= DfuSettingsConstants.APP_CODE_BASE_END){ //Skip Non Fota
                         type = -1; // some other than 0
                         pos += in.skip(lineSize * 2 /* 2 hex per one byte */ + 2 /* check sum */);
                     }
