@@ -3021,7 +3021,7 @@ public abstract class DfuBaseService extends IntentService {
 		try {
 			final int size = inputStream.read(buffer);
 			sendLogBroadcast(LOG_LEVEL_VERBOSE, "Sending firmware to characteristic " + packetCharacteristic.getUuid() + "...");
-			writePacket(gatt, packetCharacteristic, buffer, size);
+            writePacket(gatt, packetCharacteristic, buffer, size);
 		} catch (final HexFileValidationException e) {
 			throw new DfuException("HEX file not valid", ERROR_FILE_INVALID);
 		} catch (final IOException e) {
@@ -3063,6 +3063,12 @@ public abstract class DfuBaseService extends IntentService {
 			locBuffer = new byte[size];
 			System.arraycopy(buffer, 0, locBuffer, 0, size);
 		}
+
+        String logString = "";
+        for(byte c : locBuffer) {
+            logString = logString.concat(String.format("%x", c));
+        }
+        logi("Sending Packet - " + logString);
 
 		characteristic.setValue(locBuffer);
 		gatt.writeCharacteristic(characteristic);
