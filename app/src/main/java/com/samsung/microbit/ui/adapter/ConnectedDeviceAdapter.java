@@ -2,7 +2,6 @@ package com.samsung.microbit.ui.adapter;
 
 
 import android.content.Context;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,13 +83,13 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
             else
                 styledText = entry.mPattern;
             deviceName.setText(styledText);
-            deviceName.setTextAppearance(parentActivity, R.style.p1);
-            deviceName.setGravity(Gravity.LEFT);
+           // deviceName.setTextAppearance(parentActivity, R.style.p1);
+        //    deviceName.setGravity(Gravity.LEFT);
             deviceName.setEnabled(false);
 
             if (!entry.mStatus) {
                 connectBtn.setImageResource(R.drawable.disconnect_device);
-                connectBtn.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.red_btn));
+              //  connectBtn.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.red_btn));
             } else {
                 connectBtn.setImageResource(R.drawable.device_connected);
                 connectBtn.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.green_btn));
