@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Environment;
 import android.util.Log;
 
@@ -45,7 +47,14 @@ public class Utils {
 	private static ConnectedDevice pairedDevice = new ConnectedDevice();
 
 	private static final Object lock = new Object();
-	private static Utils instance;
+
+    private static AudioManager mAudioManager = null ;
+    private static int originalRingerMode = -1 ;
+
+    private static Utils instance;
+
+
+
 
 	//private volatile SharedPreferences preferences;
 
@@ -65,6 +74,7 @@ public class Utils {
 				if (instance == null) {
 					Utils u = new Utils();
 					pairedDevice = new ConnectedDevice();
+                    mAudioManager = (AudioManager) MBApp.getContext().getSystemService(MBApp.getContext().AUDIO_SERVICE);
 					instance = u;
 				}
 			}
@@ -146,6 +156,58 @@ public class Utils {
 			f.mkdirs();
 		}
 	}
+
+	public static String getLaunchCameraAudio()
+	{
+		return Constants.LAUNCH_CAMERA_AUDIO;
+	}
+
+    public static String getPictureTakenAudio()
+    {
+        return Constants.PHOTO_TAKEN_AUDIO;
+    }
+
+
+    public static void playAudio(String filename, final MediaPlayer.OnCompletionListener callBack )
+    {
+        Resources resources = MBApp.getApp().getApplicationContext().getResources();
+        int resID = resources.getIdentifier(filename, "raw", MBApp.getApp().getApplicationContext().getPackageName());
+        Utils.preparePhoneToPlayAudio();
+
+
+        MediaPlayer mediaPlayer= MediaPlayer.create(MBApp.getApp().getApplicationContext(), resID);
+        //Set a callback for completion
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                restoreAudioMode();
+                if (callBack != null )
+                    callBack.onCompletion(mp);
+            }
+        });
+        mediaPlayer.start();
+    }
+
+    private static void preparePhoneToPlayAudio()
+    {
+        if (mAudioManager == null)
+        {
+            mAudioManager = (AudioManager) MBApp.getApp().getApplicationContext().getSystemService(MBApp.getApp().getApplicationContext().AUDIO_SERVICE);
+        }
+        originalRingerMode = mAudioManager.getRingerMode();
+        if (originalRingerMode == AudioManager.RINGER_MODE_SILENT) {
+            mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+        }
+    }
+
+    private static void restoreAudioMode()
+    {
+        if (mAudioManager == null)
+        {
+            mAudioManager = (AudioManager) MBApp.getApp().getApplicationContext().getSystemService(MBApp.getApp().getApplicationContext().AUDIO_SERVICE);
+        }
+        mAudioManager.setRingerMode(originalRingerMode);
+    }
 
 	public static boolean installSamples() {
 		try {
