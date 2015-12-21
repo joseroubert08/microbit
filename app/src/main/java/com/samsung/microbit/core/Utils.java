@@ -166,7 +166,10 @@ public class Utils {
     {
         return Constants.PHOTO_TAKEN_AUDIO;
     }
-
+    public static String getRecordingVideoAudio()
+    {
+        return Constants.RECORDING_VIDEO_AUDIO;
+    }
 
     public static void playAudio(String filename, final MediaPlayer.OnCompletionListener callBack )
     {

@@ -51,7 +51,8 @@ public class CameraPlugin {
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE:
-                recVideoStart();
+                m_NextState = Constants.SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE ;
+                Utils.playAudio(Utils.getRecordingVideoAudio(), m_OnCompletionListener);
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_STOP_VIDEO_CAPTURE:
@@ -99,6 +100,10 @@ public class CameraPlugin {
             case Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO:
                 takePic();
                 break;
+            case Constants.SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE:
+                recVideoStart();
+                break;
+
         }
     }
 	//This function should trigger an Activity that would be responsible of starting the camera app to take a picture.
