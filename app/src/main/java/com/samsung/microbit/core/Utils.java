@@ -1,6 +1,7 @@
 package com.samsung.microbit.core;
 
 import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
@@ -119,6 +120,25 @@ public class Utils {
 		return totalPrograms;
 	}
 
+    public static String parse(final BluetoothGattCharacteristic characteristic) {
+        final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+        final byte[] data = characteristic.getValue();
+        if (data == null)
+            return "";
+        final int length = data.length;
+        if (length == 0)
+            return "";
+
+        final char[] out = new char[length * 3 - 1];
+        for (int j = 0; j < length; j++) {
+            int v = data[j] & 0xFF;
+            out[j * 3] = HEX_ARRAY[v >>> 4];
+            out[j * 3 + 1] = HEX_ARRAY[v & 0x0F];
+            if (j != length - 1)
+                out[j * 3 + 2] = '-';
+        }
+        return new String(out);
+    }
 	private static void dirChecker(String dir) {
 		File f = new File(android.os.Environment.DIRECTORY_DOWNLOADS + dir);
 

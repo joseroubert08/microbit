@@ -175,16 +175,12 @@ public class BLEService extends BLEBaseService {
             <0,0> which means give me all the events from everything.
             writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), 0, BluetoothGattCharacteristic.FORMAT_UINT32);
             */
-            if (BuildConfig.DEBUG) {
-                logi("Constants.SAMSUNG_REMOTE_CONTROL_IDF = " + Integer.toHexString(Constants.SAMSUNG_REMOTE_CONTROL_IDF));
-                logi("Constants.SAMSUNG_CAMERA_IDF = " + Integer.toHexString(Constants.SAMSUNG_CAMERA_IDF));
-                logi("Constants.SAMSUNG_ALERTS_IDF = " + Integer.toHexString(Constants.SAMSUNG_ALERTS_IDF));
-            }
+           writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_REMOTE_CONTROL_ID, BluetoothGattCharacteristic.FORMAT_UINT32);
+           writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_CAMERA_ID, BluetoothGattCharacteristic.FORMAT_UINT32);
+			/*Removed Audio as this is now removed from requirements */
+           //writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_AUDIO_RECORDER_IDF, BluetoothGattCharacteristic.FORMAT_UINT32);
+           writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_ALERTS_ID, BluetoothGattCharacteristic.FORMAT_UINT32);
 
-            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_REMOTE_CONTROL_IDF, BluetoothGattCharacteristic.FORMAT_UINT32);
-            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_CAMERA_IDF, BluetoothGattCharacteristic.FORMAT_UINT32);
-            //writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_AUDIO_RECORDER_IDF, BluetoothGattCharacteristic.FORMAT_UINT32);
-            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_ALERTS_IDF, BluetoothGattCharacteristic.FORMAT_UINT32);
         }
     }
 
@@ -383,7 +379,7 @@ public class BLEService extends BLEBaseService {
 
 	public void startIPCListener() {
 
-		logi("startIPCListener()");
+        logi("startIPCListener()");
 		if (IPCMessageManager.getInstance() == null) {
 
 
@@ -411,7 +407,7 @@ public class BLEService extends BLEBaseService {
 
 		logi("sendtoIPCService()");
 		Class destService = IPCService.class;
-		sendIPCMessge(destService, mbsService, functionCode, cmd, args);
+        sendIPCMessge(destService, mbsService, functionCode, cmd, args);
     }
 
     public void sendIPCMessge(Class destService, int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
@@ -436,8 +432,8 @@ public class BLEService extends BLEBaseService {
 		if (args != null) {
 			for (int i = 0; i < args.length; i++) {
 				bundle.putSerializable(args[i].getName(), args[i].getValue());
-			}
-		}
+            }
+        }
 
 		msg.setData(bundle);
         try {
