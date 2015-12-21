@@ -397,7 +397,7 @@ public class BLEManager {
 		if (debug) logi("writeCharacteristic() :: start");
 		int rc = BLE_ERROR_NOOP;
 		synchronized (locker) {
-			if (gatt != null && inBleOp > OP_NOOP) {
+			if (gatt != null && inBleOp == OP_NOOP) {
 
 				inBleOp = OP_WRITE_CHARACTERISTIC;
 				lastCharacteristic = null;
@@ -421,6 +421,8 @@ public class BLEManager {
 				}
 
 				inBleOp = OP_NOOP;
+			} else {
+                logi("Couldn't write to characteristic");
 			}
 
 		}

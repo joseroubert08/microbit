@@ -3,8 +3,6 @@ package com.samsung.microbit.model;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Environment;
 
-import com.samsung.microbit.MBApp;
-
 import java.io.File;
 import java.util.UUID;
 
@@ -29,8 +27,7 @@ public class Constants {
 	 * Events that Samsung devices respond to:
 	 */
 	public static final int SAMSUNG_REMOTE_CONTROL_ID = 1001; //0x03E9
-	public static final int SAMSUNG_REMOTE_CONTROL_IDF = 0xE903 << 16; //Little Endian
-	public static final int SAMSUNG_REMOTE_CONTROL_EVT_PLAY = 0;
+		public static final int SAMSUNG_REMOTE_CONTROL_EVT_PLAY = 0;
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_PAUSE = 1;
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_STOP = 2;
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK = 3;
@@ -41,7 +38,6 @@ public class Constants {
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN = 8;
 
 	public static final int SAMSUNG_CAMERA_ID = 1002;//0x03EA
-	public static final int SAMSUNG_CAMERA_IDF = 0xEA03 << 16;
 	public static final int SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE = 0;
 	public static final int SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE = 1;
 	public static final int SAMSUNG_CAMERA_EVT_TAKE_PHOTO = 2;
@@ -52,14 +48,12 @@ public class Constants {
 	public static final int SAMSUNG_CAMERA_EVT_TOGGLE_FRONT_REAR = 7;
 
 	public static final int SAMSUNG_AUDIO_RECORDER_ID = 1003; //0x03EB
-	public static final int SAMSUNG_AUDIO_RECORDER_IDF = 0xEB03 << 16;
 	public static final int SAMSUNG_AUDIO_RECORDER_EVT_LAUNCH = 0;
 	public static final int SAMSUNG_AUDIO_RECORDER_EVT_START_CAPTURE = 1;
 	public static final int SAMSUNG_AUDIO_RECORDER_EVT_STOP_CAPTURE = 2;
 	public static final int SAMSUNG_AUDIO_RECORDER_EVT_STOP = 3;
 
 	public static final int SAMSUNG_ALERTS_ID = 1004; //0x03EC
-	public static final int SAMSUNG_ALERTS_IDF = 0xEC03 << 16;
 	public static final int SAMSUNG_ALERT_EVT_DISPLAY_TOAST = 0;
 	public static final int SAMSUNG_ALERT_EVT_VIBRATE = 1;
 	public static final int SAMSUNG_ALERT_EVT_PLAY_SOUND = 2;
