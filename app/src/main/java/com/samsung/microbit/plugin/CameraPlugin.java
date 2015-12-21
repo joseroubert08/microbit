@@ -47,7 +47,7 @@ public class CameraPlugin {
 
 			case Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO:
                 m_NextState = Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO ;
-                Utils.playAudio(Utils.getPictureTakenAudio(), m_OnCompletionListener);
+                Utils.playAudio(Utils.geTakingPhotoAudio(), m_OnCompletionListener);
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE:

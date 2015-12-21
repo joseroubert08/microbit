@@ -50,6 +50,7 @@ public class Utils {
 
     private static AudioManager mAudioManager = null ;
     private static int originalRingerMode = -1 ;
+    private static int originalRingerVolume = -1 ;
 
     private static Utils instance;
 
@@ -162,9 +163,9 @@ public class Utils {
 		return Constants.LAUNCH_CAMERA_AUDIO;
 	}
 
-    public static String getPictureTakenAudio()
+    public static String geTakingPhotoAudio()
     {
-        return Constants.PHOTO_TAKEN_AUDIO;
+        return Constants.TAKING_PHOTO_AUDIO;
     }
     public static String getRecordingVideoAudio()
     {
@@ -198,9 +199,11 @@ public class Utils {
             mAudioManager = (AudioManager) MBApp.getApp().getApplicationContext().getSystemService(MBApp.getApp().getApplicationContext().AUDIO_SERVICE);
         }
         originalRingerMode = mAudioManager.getRingerMode();
+        originalRingerVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         if (originalRingerMode == AudioManager.RINGER_MODE_SILENT) {
             mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
         }
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
     }
 
     private static void restoreAudioMode()
@@ -210,6 +213,7 @@ public class Utils {
             mAudioManager = (AudioManager) MBApp.getApp().getApplicationContext().getSystemService(MBApp.getApp().getApplicationContext().AUDIO_SERVICE);
         }
         mAudioManager.setRingerMode(originalRingerMode);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, originalRingerVolume, 0);
     }
 
 	public static boolean installSamples() {
