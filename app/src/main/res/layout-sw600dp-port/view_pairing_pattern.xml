@@ -68,7 +68,7 @@
             android:gravity="start|center_vertical"
             android:lines="3"
             android:maxLines="3"
-            android:text="@string/enterPatternTipText"
+            android:text="@string/enter_pattern_tip_text"
             android:textColor="@color/white_color" />
     </LinearLayout>
 

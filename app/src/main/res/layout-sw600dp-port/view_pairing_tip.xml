@@ -16,7 +16,7 @@
         android:layout_gravity="center"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="@string/connectTipTitle"
+        android:text="@string/connect_tip_title"
         android:textColor="@color/white_color" />
 
     <!-- Images -->
@@ -26,7 +26,6 @@
         android:layout_height="0dp"
         android:layout_weight="2"
         android:gravity="center_vertical"
-
         android:orientation="horizontal">
 
         <ImageView
@@ -63,7 +62,7 @@
             android:gravity="start|center_vertical"
             android:lines="3"
             android:maxLines="3"
-            android:text="@string/connectTipText"
+            android:text="@string/connect_tip_text"
             android:textColor="@color/white_color" />
     </LinearLayout>
 

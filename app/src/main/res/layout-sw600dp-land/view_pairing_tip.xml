@@ -11,7 +11,7 @@
         android:id="@+id/pairTipTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/connectTipTitle"
+        android:text="@string/connect_tip_title"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/activity_top_margin"/>
 
@@ -19,7 +19,7 @@
         style="@style/p1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/connectTipText"
+        android:text="@string/connect_tip_text"
         android:id="@+id/pairTipTextview"
         android:layout_marginTop="@dimen/content_margin"
         android:layout_below="@id/pairTipTitle"

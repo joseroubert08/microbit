@@ -3,7 +3,7 @@
     android:id="@+id/pairTipView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black_color"
+    android:background="@drawable/bg"
     android:orientation="vertical">
 
     <!-- Title -->
@@ -15,7 +15,7 @@
         android:layout_gravity="center"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="@string/connectTipTitle"
+        android:text="@string/connect_tip_title"
         android:textColor="@color/white_color" />
 
     <!-- Images -->
@@ -23,7 +23,7 @@
         android:id="@+id/tipImageView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"
+        android:layout_weight="3"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -35,90 +35,8 @@
 
     </LinearLayout>
 
-    <!--  instructions -->
-    <RelativeLayout
-        android:id="@+id/pairTipButtonText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+    <include layout="@layout/pair_microbit_step" />
 
-        <TextView
-            android:id="@+id/pair_tip_step_1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:contentDescription="@string/desc_connectTipText"
-            android:paddingStart="16dp"
-            android:text="Step 1"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:textColor="@color/white_color" />
+    <include layout="@layout/pairing_tip_action_buttons" />
 
-        <TextView
-            android:id="@+id/pairTipTextviewInstructions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/lets_do_this_emoji"
-            android:contentDescription="@string/desc_connectTipText"
-            android:lines="3"
-            android:maxLines="3"
-            android:paddingStart="16dp"
-            android:text="@string/connectTipText"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@color/white_color" />
-
-        <ImageView
-            android:id="@+id/lets_do_this_emoji"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:paddingBottom="16dp"
-            android:paddingEnd="16dp"
-            android:src="@drawable/lets_do_this_emoji" />
-    </RelativeLayout>
-
-    <!-- Pairing Confirmation buttons -->
-    <LinearLayout
-        android:id="@+id/pairTipButtonView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@color/black_color"
-        android:divider="?android:dividerHorizontal"
-        android:dividerPadding="16dp"
-        android:orientation="horizontal"
-        android:showDividers="end">
-
-        <Button
-            android:id="@+id/cancel_tip_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_weight="1"
-            android:background="@drawable/cancel_btn"
-            android:drawableEnd="@drawable/add_device"
-            android:gravity="center_vertical|start"
-            android:padding="8dp"
-            android:text="Cancel"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@color/black_color" />
-
-        <Button
-            android:id="@+id/ok_pair_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_weight="1"
-            android:background="@drawable/green_btn"
-            android:drawableEnd="@drawable/add_device"
-            android:gravity="center_vertical|start"
-            android:padding="8dp"
-            android:text="Pair"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@color/black_color" />
-    </LinearLayout>
 </LinearLayout>
