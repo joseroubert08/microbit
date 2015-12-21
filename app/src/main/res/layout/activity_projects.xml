@@ -45,6 +45,7 @@
         android:layout_height="1dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
+        android:alpha="0.5"
         android:background="@color/gray_color" />
 
     <Button
@@ -55,10 +56,10 @@
         android:layout_margin="16dp"
         android:background="@drawable/yellow_btn"
         android:contentDescription="@string/txt_my_scripts_btn"
-        android:drawableEnd="@drawable/new_project"
+        android:drawableEnd="@drawable/my_scripts"
         android:gravity="center_vertical|start"
         android:onClick="onClick"
         android:text="@string/my_scripts"
-        android:textColor="@color/black_color"
-        android:textAppearance="?android:textAppearance" />
+        android:textAppearance="?android:textAppearance"
+        android:textColor="@color/black_color" />
 </LinearLayout>

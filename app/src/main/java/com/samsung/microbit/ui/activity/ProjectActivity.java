@@ -20,7 +20,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -241,7 +241,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         deviceName1.setContentDescription(deviceName1.getText()); // TODO - check
         TextView deviceName2 = (TextView) findViewById(R.id.deviceName2);
         deviceName2.setContentDescription(deviceName2.getText()); // TODO - check
-        ImageButton connectedIndicatorIcon = (ImageButton) findViewById(R.id.connectedIndicatorIcon);
+        ImageView connectedIndicatorIcon = (ImageView) findViewById(R.id.connectedIndicatorIcon);
 
         if (connectedIndicatorIcon == null || connectedIndicatorText == null)
             return;
@@ -255,7 +255,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
                 ) {
             connectedIndicatorIcon.setImageResource(R.drawable.device_connected);
-            connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_connect_btn));
             connectedIndicatorText.setText(getString(R.string.connected_to));
 
             return;
@@ -264,8 +263,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         Spannable span = null;
         ConnectedDevice device = Utils.getPairedMicrobit(this);
         if (!device.mStatus) {
-            connectedIndicatorIcon.setImageResource(R.drawable.disconnect_device);
-            connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_disconnect_btn));
+            connectedIndicatorIcon.setImageResource(R.drawable.device_status_disconnected);
             connectedIndicatorText.setText(getString(R.string.not_connected));
             if (deviceName1 != null && deviceName2 != null) {
                 //Mobile Device.. 2 lines of display
@@ -279,7 +277,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             }
         } else {
             connectedIndicatorIcon.setImageResource(R.drawable.device_connected);
-            connectedIndicatorIcon.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.project_connect_btn));
             connectedIndicatorText.setText(getString(R.string.connected_to));
             if (deviceName1 != null && deviceName2 != null) {
                 //Mobile Device.. 2 lines of display
@@ -312,7 +309,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                     break;
 
                 case 3:
-                    message = "Rename opertaion failed.";
+                    message = "Rename operation failed.";
                     break;
             }
 

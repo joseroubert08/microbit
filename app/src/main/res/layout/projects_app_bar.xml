@@ -77,15 +77,15 @@
     </LinearLayout>
 
     <!-- connected device status -->
-    <ImageButton
+    <ImageView
         android:id="@+id/connectedIndicatorIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:contentDescription="Micro:Bit connection status"
+        android:contentDescription="@string/desc_connection_status_flash_text"
         android:importantForAccessibility="yes"
         android:nextFocusDown="@+id/ll_toolbar_indicator"
         android:onClick="onClick"
-        android:padding="16dp"
+        android:padding="8dp"
         android:src="@drawable/device_connected" />
 </LinearLayout>

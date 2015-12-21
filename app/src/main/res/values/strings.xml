@@ -280,4 +280,7 @@
     <string name="desc_share_statistics_description">The BBC will only use this\ninformation to analyse and improve\nthe services offered through this app.\nFor information, see our privacy policy.</string>
     <string name="txt_pair_btn">Pair</string>
     <string name="txt_cancel_btn">Cancel</string>
+    <string name="desc_connection_status_flash_text">Micro:Bit connection status</string>
+    <string name="desc_send_project_btn">Flash code to your Micro:bit</string>
+    <string name="desc_delete_project_btn">Delete code</string>
 </resources>

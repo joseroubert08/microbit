@@ -29,42 +29,42 @@ import java.util.List;
 
 public class ProjectAdapter extends BaseAdapter {
 
-	private List<Project> projects;
-	private ProjectActivity projectActivity;
-	int currentEditableRow = -1;
+    private List<Project> projects;
+    private ProjectActivity projectActivity;
+    int currentEditableRow = -1;
 
-	protected String TAG = "ProjectAdapter";
-	protected boolean debug = true;
+    protected String TAG = "ProjectAdapter";
+    protected boolean debug = true;
 
-	protected void logi(String message) {
-		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
-	}
+    protected void logi(String message) {
+        Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+    }
 
-	private TextView.OnEditorActionListener editorOnActionListener = new TextView.OnEditorActionListener() {
+    private TextView.OnEditorActionListener editorOnActionListener = new TextView.OnEditorActionListener() {
 
-		@Override
-		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        @Override
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-			logi("onEditorAction() :: currentEditableRow=" + currentEditableRow);
-			boolean handled = true;
-			int pos = (int) v.getTag(R.id.positionId);
-			Project project = projects.get(pos);
-			project.inEditMode = false;
-			currentEditableRow = -1;
+            logi("onEditorAction() :: currentEditableRow=" + currentEditableRow);
+            boolean handled = true;
+            int pos = (int) v.getTag(R.id.positionId);
+            Project project = projects.get(pos);
+            project.inEditMode = false;
+            currentEditableRow = -1;
 
-			if (actionId == EditorInfo.IME_ACTION_DONE) {
-				dismissKeyBoard(v, true, true);
-			} else if (actionId == -1) {
-				dismissKeyBoard(v, true, false);
-			}
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                dismissKeyBoard(v, true, true);
+            } else if (actionId == -1) {
+                dismissKeyBoard(v, true, false);
+            }
 
-			return handled;
-		}
-	};
+            return handled;
+        }
+    };
 
-	private View.OnClickListener appNameClickListener = new View.OnClickListener() {
-		@Override
-		public void onClick(View v) {
+    private View.OnClickListener appNameClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
 
             logi("OnClickListener() :: " + v.getClass().getName());
 
@@ -76,8 +76,7 @@ public class ProjectAdapter extends BaseAdapter {
 
             if (expandProjectItem) {
                 changeActionBar(v);
-            }
-            else{
+            } else {
                 if (currentEditableRow != -1) {
                     int i = (Integer) v.getTag(R.id.positionId);
                     if (i != currentEditableRow) {
@@ -88,7 +87,7 @@ public class ProjectAdapter extends BaseAdapter {
                 }
             }
             /*
-			logi("OnClickListener() :: " + v.getClass().getName());
+            logi("OnClickListener() :: " + v.getClass().getName());
 			if (v.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 				changeActionBar(v);
 			} else if (v.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -101,257 +100,256 @@ public class ProjectAdapter extends BaseAdapter {
 					renameProject(v);
 				}
 			}*/
-		}
-	};
+        }
+    };
 
-	private View.OnLongClickListener appNameLongClickListener = new View.OnLongClickListener() {
-		@Override
-		public boolean onLongClick(View v) {
+    private View.OnLongClickListener appNameLongClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
 
-			logi("OnLongClickListener() :: " + v.getClass().getName());
-			boolean rc = false;
-			//if (v.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-				renameProject(v);
-				rc = true;
-			//}
+            logi("OnLongClickListener() :: " + v.getClass().getName());
+            boolean rc = false;
+            //if (v.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            renameProject(v);
+            rc = true;
+            //}
 
-			return rc;
-		}
-	};
+            return rc;
+        }
+    };
 
-    private void HideEditTextView( View v) {
+    private void HideEditTextView(View v) {
         Button bt = (Button) v.getTag(R.id.editbutton);
         bt.setVisibility(View.VISIBLE);
         v.setVisibility(View.INVISIBLE);
     }
 
-    private void ShowEditTextView( View v) {
+    private void ShowEditTextView(View v) {
         Button bt = (Button) v.getTag(R.id.editbutton);
         bt.setVisibility(View.INVISIBLE);
         v.setVisibility(View.VISIBLE);
     }
 
-	private void dismissKeyBoard(View v, boolean hide,boolean done) {
+    private void dismissKeyBoard(View v, boolean hide, boolean done) {
 
-		logi("dismissKeyBoard() :: ");
-		int pos = (Integer) v.getTag(R.id.positionId);
-		logi("dismissKeyBoard() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
+        logi("dismissKeyBoard() :: ");
+        int pos = (Integer) v.getTag(R.id.positionId);
+        logi("dismissKeyBoard() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
 
 
-		InputMethodManager imm = (InputMethodManager) projectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
+        InputMethodManager imm = (InputMethodManager) projectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
 
-		if(hide) {
+        if (hide) {
             HideEditTextView(v);
-			//v.setVisibility(View.INVISIBLE);
-		}
+            //v.setVisibility(View.INVISIBLE);
+        }
 
-		if (done) {
-			EditText ed = (EditText) v;
-			pos = (int) ed.getTag(R.id.positionId);
-			String newName = ed.getText().toString();
-			Project p = projects.get(pos);
-			if (newName != null && newName.length() > 0) {
-				if (p.name.compareToIgnoreCase(newName) != 0) {
-					projectActivity.renameFile(p.filePath, newName);
-				}
-			}
-		}
-	}
+        if (done) {
+            EditText ed = (EditText) v;
+            pos = (int) ed.getTag(R.id.positionId);
+            String newName = ed.getText().toString();
+            Project p = projects.get(pos);
+            if (newName != null && newName.length() > 0) {
+                if (p.name.compareToIgnoreCase(newName) != 0) {
+                    projectActivity.renameFile(p.filePath, newName);
+                }
+            }
+        }
+    }
 
-	private void showKeyBoard(final View v) {
+    private void showKeyBoard(final View v) {
 
         logi("showKeyBoard() :: " + v.getClass().getName());
-		int pos = (Integer) v.getTag(R.id.positionId);
+        int pos = (Integer) v.getTag(R.id.positionId);
         logi("showKeyBoard() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
 
         //v.setVisibility(View.VISIBLE);
         ShowEditTextView(v);
 
-		final InputMethodManager imm = (InputMethodManager) projectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-		v.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				imm.showSoftInput(v, 0);
-				v.requestFocus();
-			}
-		}, 100);
-	}
+        final InputMethodManager imm = (InputMethodManager) projectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        v.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                imm.showSoftInput(v, 0);
+                v.requestFocus();
+            }
+        }, 100);
+    }
 
-	private void changeActionBar(View v) {
+    private void changeActionBar(View v) {
 
-		logi("changeActionBar() :: ");
+        logi("changeActionBar() :: ");
 
-		int pos = (int) v.getTag(R.id.positionId);
-		logi("changeActionBar() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
+        int pos = (int) v.getTag(R.id.positionId);
+        logi("changeActionBar() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
 
-		Project project = projects.get(pos);
-		project.actionBarExpanded = (project.actionBarExpanded) ? false : true;
-		if (currentEditableRow != -1) {
-			project = projects.get(currentEditableRow);
-			project.inEditMode = false;
-			currentEditableRow = -1;
-			dismissKeyBoard(v, false, false);
-		}
+        Project project = projects.get(pos);
+        project.actionBarExpanded = (project.actionBarExpanded) ? false : true;
+        if (currentEditableRow != -1) {
+            project = projects.get(currentEditableRow);
+            project.inEditMode = false;
+            currentEditableRow = -1;
+            dismissKeyBoard(v, false, false);
+        }
 
-		notifyDataSetChanged();
-	}
+        notifyDataSetChanged();
+    }
 
-	private void renameProject(View v) {
+    private void renameProject(View v) {
 
-		logi("renameProject() :: ");
+        logi("renameProject() :: ");
 
-		int pos = (int) v.getTag(R.id.positionId);
-		logi("renameProject() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
+        int pos = (int) v.getTag(R.id.positionId);
+        logi("renameProject() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
 
-		Project project;
-		if (currentEditableRow != -1) {
-			project = projects.get(currentEditableRow);
-			project.inEditMode = false;
-			currentEditableRow = -1;
-		}
+        Project project;
+        if (currentEditableRow != -1) {
+            project = projects.get(currentEditableRow);
+            project.inEditMode = false;
+            currentEditableRow = -1;
+        }
 
-		project = projects.get(pos);
-		project.inEditMode = (project.inEditMode) ? false : true;
-		currentEditableRow = pos;
-		View ev = (View) v.getTag(R.id.textEdit);
-		showKeyBoard(ev);
-		notifyDataSetChanged();
-	}
+        project = projects.get(pos);
+        project.inEditMode = (project.inEditMode) ? false : true;
+        currentEditableRow = pos;
+        View ev = (View) v.getTag(R.id.textEdit);
+        showKeyBoard(ev);
+        notifyDataSetChanged();
+    }
 
-	private View.OnClickListener sendBtnClickListener = new View.OnClickListener() {
+    private View.OnClickListener sendBtnClickListener = new View.OnClickListener() {
 
-		@Override
-		public void onClick(View v) {
-			logi("sendBtnClickListener() :: ");
-			((View.OnClickListener) projectActivity).onClick(v);
+        @Override
+        public void onClick(View v) {
+            logi("sendBtnClickListener() :: ");
+            ((View.OnClickListener) projectActivity).onClick(v);
 
-		}
-	};
+        }
+    };
 
-	private View.OnClickListener deleteBtnClickListener = new View.OnClickListener() {
-		@Override
-		public void onClick(View v) {
+    private View.OnClickListener deleteBtnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
 
-			logi("deleteBtnClickListener() :: ");
-			final int pos = (int) v.getTag();
+            logi("deleteBtnClickListener() :: ");
+            final int pos = (int) v.getTag();
             //Update Stats
-            if (MBApp.getApp().getEcho()!= null) {
+            if (MBApp.getApp().getEcho() != null) {
                 MBApp.getApp().getEcho().userActionEvent("click", "DeleteProject", null);
             }
             PopUp.show(MBApp.getContext(),
-				MBApp.getContext().getString(R.string.delete_project_message),
-				MBApp.getContext().getString(R.string.delete_project_title),
-				R.drawable.delete_project, R.drawable.red_btn,
-				PopUp.TYPE_CHOICE,
-				new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						PopUp.hide();
-						Project proj = projects.get(pos);
-						if (Utils.deleteFile(proj.filePath)) {
-							projects.remove(pos);
-							notifyDataSetChanged();
-						}
-					}
-				}, null);
-		}
-	};
+                    MBApp.getContext().getString(R.string.delete_project_message),
+                    MBApp.getContext().getString(R.string.delete_project_title),
+                    R.drawable.delete_project, R.drawable.red_btn,
+                    PopUp.TYPE_CHOICE,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            PopUp.hide();
+                            Project proj = projects.get(pos);
+                            if (Utils.deleteFile(proj.filePath)) {
+                                projects.remove(pos);
+                                notifyDataSetChanged();
+                            }
+                        }
+                    }, null);
+        }
+    };
 
-	public ProjectAdapter(ProjectActivity projectActivity, List<Project> list) {
+    public ProjectAdapter(ProjectActivity projectActivity, List<Project> list) {
 
-		this.projectActivity = projectActivity;
-		projects = list;
-	}
+        this.projectActivity = projectActivity;
+        projects = list;
+    }
 
-	@Override
-	public int getCount() {
+    @Override
+    public int getCount() {
 
-		return projects.size();
-	}
+        return projects.size();
+    }
 
-	@Override
-	public Object getItem(int position) {
+    @Override
+    public Object getItem(int position) {
 
-		return projects.get(position);
-	}
+        return projects.get(position);
+    }
 
-	@Override
-	public long getItemId(int position) {
+    @Override
+    public long getItemId(int position) {
 
-		return position;
-	}
+        return position;
+    }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
 
-		Project project = projects.get(position);
-		if (convertView == null) {
-			LayoutInflater inflater = LayoutInflater.from(MBApp.getContext());
-			convertView = inflater.inflate(R.layout.project_items, null);
-		}
+        Project project = projects.get(position);
+        if (convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(MBApp.getContext());
+            convertView = inflater.inflate(R.layout.project_items, null);
+        }
 
-		Button appNameButton = (Button) convertView.findViewById(R.id.appNameButton);
-		ExtendedEditText appNameEdit = (ExtendedEditText) convertView.findViewById(R.id.appNameEdit);
+        Button appNameButton = (Button) convertView.findViewById(R.id.appNameButton);
+        ExtendedEditText appNameEdit = (ExtendedEditText) convertView.findViewById(R.id.appNameEdit);
 
-		LinearLayout actionBarLayout = (LinearLayout) convertView.findViewById(R.id.actionBarForProgram);
-		if (actionBarLayout != null) {
-			if (project.actionBarExpanded) {
-				actionBarLayout.setVisibility(View.VISIBLE);
-				appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getContext(),R.drawable.up_arrow), null);
-			}
-			else {
-				actionBarLayout.setVisibility(View.GONE);
-				appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getContext(),R.drawable.down_arrow), null);
-			}
-		}
+        LinearLayout actionBarLayout = (LinearLayout) convertView.findViewById(R.id.actionBarForProgram);
+        if (actionBarLayout != null) {
+            if (project.actionBarExpanded) {
+                actionBarLayout.setVisibility(View.VISIBLE);
+                appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getContext(), R.drawable.down_arrow), null);
+            } else {
+                actionBarLayout.setVisibility(View.GONE);
+                appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getContext(), R.drawable.side_arrow), null);
+            }
+        }
 
-		appNameButton.setText(project.name);
-		appNameButton.setTag(R.id.positionId, position);
-		appNameButton.setTag(R.id.textEdit, appNameEdit);
-		appNameButton.setOnClickListener(appNameClickListener);
-		appNameButton.setOnLongClickListener(appNameLongClickListener);
+        appNameButton.setText(project.name);
+        appNameButton.setTag(R.id.positionId, position);
+        appNameButton.setTag(R.id.textEdit, appNameEdit);
+        appNameButton.setOnClickListener(appNameClickListener);
+        appNameButton.setOnLongClickListener(appNameLongClickListener);
 
-		appNameEdit.setTag(R.id.positionId, position);
-		appNameEdit.setTag(R.id.editbutton, appNameButton);
-		appNameEdit.setOnEditorActionListener(editorOnActionListener);
+        appNameEdit.setTag(R.id.positionId, position);
+        appNameEdit.setTag(R.id.editbutton, appNameButton);
+        appNameEdit.setOnEditorActionListener(editorOnActionListener);
 
-		if (project.inEditMode) {
-			appNameEdit.setVisibility(View.VISIBLE);
+        if (project.inEditMode) {
+            appNameEdit.setVisibility(View.VISIBLE);
 
-			appNameEdit.setText(project.name);
-			appNameEdit.setSelection(project.name.length());
-			appNameEdit.requestFocus();
+            appNameEdit.setText(project.name);
+            appNameEdit.setSelection(project.name.length());
+            appNameEdit.requestFocus();
             appNameButton.setVisibility(View.INVISIBLE);
 
-		} else {
-			appNameEdit.setVisibility(View.INVISIBLE);
+        } else {
+            appNameEdit.setVisibility(View.INVISIBLE);
             appNameButton.setVisibility(View.VISIBLE);
-			//dismissKeyBoard(appNameEdit, false);
-		}
+            //dismissKeyBoard(appNameEdit, false);
+        }
 
-		//appNameEdit.setOnClickListener(appNameClickListener);
+        //appNameEdit.setOnClickListener(appNameClickListener);
 
-		Button sendBtn = (Button) convertView.findViewById(R.id.sendBtn);
-		sendBtn.setTag(position);
-		sendBtn.setOnClickListener(sendBtnClickListener);
+        Button sendBtn = (Button) convertView.findViewById(R.id.sendBtn);
+        sendBtn.setTag(position);
+        sendBtn.setOnClickListener(sendBtnClickListener);
 
-		ImageButton deleteBtn = (ImageButton) convertView.findViewById(R.id.deleteBtn);
-		deleteBtn.setTag(position);
-		deleteBtn.setOnClickListener(deleteBtnClickListener);
-		deleteBtn.setEnabled(true);
+        ImageButton deleteBtn = (ImageButton) convertView.findViewById(R.id.deleteBtn);
+        deleteBtn.setTag(position);
+        deleteBtn.setOnClickListener(deleteBtnClickListener);
+        deleteBtn.setEnabled(true);
 
-		if (project.runStatus) {
-			sendBtn.setText("");
-			Drawable myIcon = convertView.getResources().getDrawable(R.drawable.green_btn);
-			sendBtn.setBackground(myIcon);
-		} else {
-			sendBtn.setText(R.string.flash);
-			Drawable myIcon = convertView.getResources().getDrawable(R.drawable.blue_btn);
-			sendBtn.setBackground(myIcon);
-		}
+        if (project.runStatus) {
+            sendBtn.setText("");
+            Drawable myIcon = convertView.getResources().getDrawable(R.drawable.green_btn);
+            sendBtn.setBackground(myIcon);
+        } else {
+            sendBtn.setText(R.string.flash);
+            Drawable myIcon = convertView.getResources().getDrawable(R.drawable.blue_btn);
+            sendBtn.setBackground(myIcon);
+        }
 
-		sendBtn.setClickable(true);
-		return convertView;
-	}
+        sendBtn.setClickable(true);
+        return convertView;
+    }
 }
