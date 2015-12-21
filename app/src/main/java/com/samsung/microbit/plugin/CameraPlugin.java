@@ -4,10 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.Toast;
 
+import com.samsung.microbit.MBApp;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.Constants;
@@ -98,7 +102,23 @@ public class CameraPlugin {
                 launchCameraForVideo();
                 break;
             case Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO:
-                takePic();
+                final Toast toast = Toast.makeText(MBApp.getApp().getApplicationContext(),"bbb", Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+
+                new CountDownTimer(5000, 1000) {
+
+                    public void onTick(long millisUntilFinished) {
+                        toast.setText("Ready in... " + millisUntilFinished / 1000);
+                        toast.show();
+                    }
+
+                    public void onFinish() {
+                        toast.setText("Ready");
+                        toast.show();
+                        takePic();
+
+                    }
+                }.start();
                 break;
             case Constants.SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE:
                 recVideoStart();
