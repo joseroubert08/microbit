@@ -255,6 +255,7 @@ public class Constants {
 
     public static String TAKING_PHOTO_AUDIO = "raw/en_gb_emma_taking_photo";
     public static String RECORDING_VIDEO_AUDIO = "raw/en_gb_emma_recording_video_30sec";
+    public static String PICTURE_TAKEN_AUDIO = "raw/en_gb_emma_photo_taken";
 
 
 }

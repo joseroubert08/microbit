@@ -172,6 +172,12 @@ public class Utils {
         return Constants.RECORDING_VIDEO_AUDIO;
     }
 
+    public static String getPictureTakenAudio()
+    {
+        return Constants.PICTURE_TAKEN_AUDIO;
+    }
+
+
     public static void playAudio(String filename, final MediaPlayer.OnCompletionListener callBack )
     {
         Resources resources = MBApp.getApp().getApplicationContext().getResources();
