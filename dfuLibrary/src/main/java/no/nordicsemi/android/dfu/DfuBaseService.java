@@ -51,6 +51,7 @@ import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.samsung.dfulibrary.BuildConfig;
 import com.samsung.dfulibrary.R;
 
 import java.io.ByteArrayInputStream;
@@ -1077,11 +1078,13 @@ public abstract class DfuBaseService extends IntentService {
 			if (FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_OLD.equals(characteristic.getUuid())
                     || FLASH_PAIRING_CODE_CHARACTERISTIC_UUID_NEW.equals(characteristic.getUuid())) {
 				// Possible press of button A after a 2 has been written to FLASH_PAIRING_CONTROL_CHARACTERISTIC_UUID_OLD
-				logi("FLashing code written notification");
+				logi("Flashing code written notification");
                 int responseType = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
                 int pairingCode = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
-                String valueString = parse(characteristic);
-                logi("-----------> Rohit - Value = " + pairingCode + " Value String = " + valueString) ;
+                if (BuildConfig.DEBUG) {
+                    String valueString = parse(characteristic);
+                    logi("-----------> Pairing code: Value = " + pairingCode + " Value String = " + valueString);
+                }
                 Bundle b=new Bundle();
                 b.putInt("pairing_code", pairingCode);
 				if (resultReceiver != null){

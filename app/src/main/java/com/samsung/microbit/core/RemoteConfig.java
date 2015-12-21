@@ -8,6 +8,7 @@ import android.net.http.HttpResponseCache;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 
@@ -155,13 +156,19 @@ public class RemoteConfig
         @Override
         protected Result doInBackground(String... urls) {
             String version = "0.1.0" ;
-            PackageManager manager = MBApp.getContext().getPackageManager();
-            PackageInfo info = null;
-            try {
-                info = manager.getPackageInfo(MBApp.getContext().getPackageName(), 0);
-                version = info.versionName;
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
+            if (BuildConfig.DEBUG) {
+                //Hardcoding the version for Debug builds
+                version = "1.3.6" ;
+                Log.d("RemoteConfig", "Using config file for version :  " + version);
+            }else{
+                PackageManager manager = MBApp.getContext().getPackageManager();
+                PackageInfo info = null;
+                try {
+                    info = manager.getPackageInfo(MBApp.getContext().getPackageName(), 0);
+                    version = info.versionName;
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
             //Get the new config file
             String urlString =  String.format(MBApp.getContext().getResources().getString(R.string.remote_config_url), version);
