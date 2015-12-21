@@ -31,7 +31,6 @@
         android:textColor="@color/black_color"
         android:visibility="invisible" />
 
-
     <LinearLayout
         android:id="@+id/actionBarForProgram"
         android:layout_width="match_parent"

@@ -3,8 +3,9 @@
     android:id="@+id/pairTipView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg"
-    android:orientation="vertical">
+    android:background="@color/black_color"
+    android:orientation="vertical"
+    android:visibility="gone">
 
     <!-- Title -->
     <TextView
@@ -36,6 +37,15 @@
     </LinearLayout>
 
     <include layout="@layout/pair_microbit_step" />
+
+    <!-- Line -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:alpha="0.5"
+        android:background="@color/gray_color" />
 
     <include layout="@layout/pairing_tip_action_buttons" />
 
