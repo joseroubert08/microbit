@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black_color"
-    android:orientation="vertical"
-    android:visibility="gone">
+    android:orientation="vertical">
 
     <!-- Title -->
     <TextView
@@ -37,26 +36,44 @@
     </LinearLayout>
 
     <!--  instructions -->
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/pairTipButtonText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/black_color">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/pairTipTextview"
-            style="@style/p1"
-            android:layout_width="wrap_content"
+            android:id="@+id/pair_tip_step_1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical"
-            android:layout_margin="16dp"
+            android:layout_centerVertical="true"
             android:contentDescription="@string/desc_connectTipText"
-            android:gravity="start|center_vertical"
+            android:paddingStart="16dp"
+            android:text="Step 1"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:textColor="@color/white_color" />
+
+        <TextView
+            android:id="@+id/pairTipTextviewInstructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/lets_do_this_emoji"
+            android:contentDescription="@string/desc_connectTipText"
             android:lines="3"
             android:maxLines="3"
+            android:paddingStart="16dp"
             android:text="@string/connectTipText"
+            android:textAppearance="?android:textAppearanceMedium"
             android:textColor="@color/white_color" />
-    </LinearLayout>
+
+        <ImageView
+            android:id="@+id/lets_do_this_emoji"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:paddingBottom="16dp"
+            android:paddingEnd="16dp"
+            android:src="@drawable/lets_do_this_emoji" />
+    </RelativeLayout>
 
     <!-- Pairing Confirmation buttons -->
     <LinearLayout
