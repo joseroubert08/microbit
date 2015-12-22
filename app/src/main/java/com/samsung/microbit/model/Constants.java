@@ -256,6 +256,11 @@ public class Constants {
     public static String TAKING_PHOTO_AUDIO = "raw/en_gb_emma_taking_photo";
     public static String RECORDING_VIDEO_AUDIO = "raw/en_gb_emma_recording_video_30sec";
     public static String PICTURE_TAKEN_AUDIO = "raw/en_gb_emma_photo_taken";
+    public static String MAX_VIDEO_RECORDED = "raw/en_gb_emma_max_video";
 
 
+    public static int MAX_VIDEO_RECORDING_TIME = 30 * 1000 ; //Duration in ms
+    public static int MAX_VIDEO_FILE_SIZE = 100 * 1024 * 1024 ; //Size in bytes
+
+    public static String MEDIA_OUTPUT_FOLDER = "bbc-microbit";
 }

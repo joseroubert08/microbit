@@ -177,6 +177,10 @@ public class Utils {
         return Constants.PICTURE_TAKEN_AUDIO;
     }
 
+    public static String getMaxVideoRecordedAudio()
+    {
+        return Constants.MAX_VIDEO_RECORDED;
+    }
 
     public static void playAudio(String filename, final MediaPlayer.OnCompletionListener callBack )
     {
