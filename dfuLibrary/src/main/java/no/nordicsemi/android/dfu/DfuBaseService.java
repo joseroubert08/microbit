@@ -3052,6 +3052,17 @@ public abstract class DfuBaseService extends IntentService {
 		return mReceivedData;
 	}
 
+    //Duplicate of String parse(final byte[] data)
+    //TODO Remove this
+    public static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for ( int j = 0; j < bytes.length; j++ ) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = HEX_ARRAY[v >> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
 	/**
 	 * Writes the buffer to the characteristic. The maximum size of the buffer is 20 bytes. This method is ASYNCHRONOUS and returns immediately after adding the data to TX queue.
 	 *
@@ -3067,12 +3078,7 @@ public abstract class DfuBaseService extends IntentService {
 			System.arraycopy(buffer, 0, locBuffer, 0, size);
 		}
 
-        String logString = "";
-        for(byte c : locBuffer) {
-            logString = logString.concat(String.format("%20X", c));
-        }
-        logi("Sending Packet - " + logString);
-
+        logi("Sending Packet - " + bytesToHex(locBuffer));
 		characteristic.setValue(locBuffer);
 		gatt.writeCharacteristic(characteristic);
 		// FIXME BLE buffer overflow
