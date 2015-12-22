@@ -2,12 +2,14 @@ package com.samsung.microbit.ui.adapter;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
@@ -57,6 +59,7 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.connected_device_item, null);
         }
 
+        LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.connected_device_adapter_item);
         // Accessibility changes // TODO - test for Build 3
         Button deviceName = (Button) convertView.findViewById(R.id.deviceName);
         deviceName.setFocusable(false);
@@ -83,21 +86,24 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
             else
                 styledText = entry.mPattern;
             deviceName.setText(styledText);
-           // deviceName.setTextAppearance(parentActivity, R.style.p1);
-        //    deviceName.setGravity(Gravity.LEFT);
+            // deviceName.setTextAppearance(parentActivity, R.style.p1);
+            //    deviceName.setGravity(Gravity.LEFT);
             deviceName.setEnabled(false);
 
             if (!entry.mStatus) {
-                connectBtn.setImageResource(R.drawable.disconnect_device);
-              //  connectBtn.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.red_btn));
+                connectBtn.setImageResource(R.drawable.device_status_disconnected);
+                itemLayout.setBackgroundColor(Color.MAGENTA);
+                deviceName.setTextColor(Color.WHITE);
             } else {
                 connectBtn.setImageResource(R.drawable.device_connected);
-                connectBtn.setBackground(MBApp.getContext().getResources().getDrawable(R.drawable.green_btn));
+                itemLayout.setBackgroundColor(Color.WHITE);
+                deviceName.setTextColor(Color.BLACK);
             }
             deviceName.setTag(pos);
             connectBtn.setTag(pos);
             deleteBtn.setTag(pos);
 
+            // disabled state
             if (PairingActivity.disableListView()) {
                 connectBtn.setEnabled(false);
                 deleteBtn.setEnabled(false);

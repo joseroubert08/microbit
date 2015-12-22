@@ -67,7 +67,7 @@
             android:layout_alignParentEnd="true"
             android:paddingBottom="16dp"
             android:paddingEnd="16dp"
-            android:src="@drawable/ooh_pretty_emoji" />
+            android:src="@drawable/where_are_you_emoji" />
     </RelativeLayout>
 
     <!-- Line -->

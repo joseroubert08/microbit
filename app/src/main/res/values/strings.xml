@@ -148,7 +148,8 @@
     <string name="desc_enter_pattern_tip_text">Copy the pattern from your device and PRESS OK</string>
     <string name="searching_tip_text">Currently searching for\nmicro:bit, please wait...</string>
     <string name="desc_searching_tip_text">Currently searching for micro:bit, please wait...</string>
-    <string name="enterPinToPairText">Step 4 \nPress button A, and\nenter the 6 digit PIN</string>
+    <string name="enter_pin_to_pair_text">Press button A, and\nenter the 6 digit PIN</string>
+    <string name="step_enter_pin_to_pair_text">Step 4</string>
     <string name="desc_enterPinToPairText">Press button A, and enter the 6 digit PIN</string>
     <!--<string name="connectTipText">To know the pattern of your micro:bit :- \nPlease hold A and B buttons down and then press RESET on your micro:bit</string>-->
     <string name="connectSearchingTitle">Connecting...</string>
@@ -284,4 +285,5 @@
     <string name="desc_send_project_btn">Flash code to your Micro:bit</string>
     <string name="desc_delete_project_btn">Delete code</string>
     <string name="searching_tip_step_text">Step 3</string>
+    <string name="desc_connect_pair_micro_bit">Pair a new micro:bit</string>
 </resources>
