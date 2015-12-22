@@ -189,7 +189,7 @@
     <string name="download_failed_msg">Try again later</string>
     <string name="download_failed_title">Try again later</string>
     <string name="projects">Projects</string>
-    <string name="pair_my_device">Connect</string>
+    <string name="pair_my_device">Connections</string>
     <string name="connect_my_device">Connect</string>
     <string name="flash">Flash</string>
     <string name="view">View</string>
@@ -236,7 +236,7 @@
     <string name="navigation_drawer_close">Close Menu</string>
     <string name="create_code">Create Code</string>
     <string name="flash_microbit">Flash</string>
-    <string name="connect_device">Connect</string>
+    <string name="connect_device">Connections</string>
     <string name="discover">Discover</string>
 
     <string name="email_body" formatted="false">

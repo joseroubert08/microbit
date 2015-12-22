@@ -22,6 +22,15 @@
         android:padding="16dp"
         android:src="@drawable/back" />
 
+    <!-- View my scripts -->
+    <View
+        android:layout_width="0.5dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        android:alpha="0.5"
+        android:background="@color/white_color" />
+
     <!-- App bar title-->
     <TextView
         android:id="@+id/titleTxt"
@@ -37,6 +46,13 @@
         android:text="@string/flash"
         android:textAppearance="?android:textAppearanceLarge"
         android:textColor="@color/white_color" />
+
+    <!-- View my scripts -->
+    <View
+        android:layout_width="0.5dp"
+        android:layout_height="match_parent"
+        android:alpha="0.5"
+        android:background="@color/white_color" />
 
     <!-- Connected device  -->
     <LinearLayout
@@ -75,6 +91,15 @@
             android:textAppearance="?android:textAppearance"
             android:textColor="@color/white_color" />
     </LinearLayout>
+
+    <!-- View my scripts -->
+    <View
+        android:layout_width="0.5dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        android:alpha="0.5"
+        android:background="@color/white_color" />
 
     <!-- connected device status -->
     <ImageView

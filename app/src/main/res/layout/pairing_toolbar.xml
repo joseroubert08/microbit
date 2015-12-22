@@ -23,12 +23,21 @@
         android:padding="16dp"
         android:src="@drawable/back" />
 
+    <!-- View my scripts -->
+    <View
+        android:layout_width="0.5dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        android:alpha="0.5"
+        android:background="@color/white_color" />
+
+
     <TextView
         android:id="@+id/titleTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|start"
-        android:layout_margin="4dp"
+        android:layout_gravity="center_vertical"
         android:contentDescription="@string/connect"
         android:nextFocusDown="@id/backBtn"
         android:nextFocusRight="@id/backBtn"

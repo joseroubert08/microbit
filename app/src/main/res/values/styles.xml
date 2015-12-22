@@ -83,4 +83,10 @@
         <item name="android:textSize">44sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
+
+    <style name="appbar_divider">
+        <item name="android:layout_width">2dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">?android:dividerVertical</item>
+    </style>
 </resources>
