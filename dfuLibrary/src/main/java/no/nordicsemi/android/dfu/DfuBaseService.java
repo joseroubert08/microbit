@@ -3069,7 +3069,7 @@ public abstract class DfuBaseService extends IntentService {
 
         String logString = "";
         for(byte c : locBuffer) {
-            logString = logString.concat(String.format("%x", c));
+            logString = logString.concat(String.format("%20X", c));
         }
         logi("Sending Packet - " + logString);
 

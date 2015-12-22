@@ -27,15 +27,17 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
+    <uses-permission android:name="android.permission.FLASHLIGHT"/>
+    <uses-feature android:name="android.hardware.camera.flash" />
 
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!--TODO - check bluetooth permissions issue on Nexus 5 (Android 6.0) -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
