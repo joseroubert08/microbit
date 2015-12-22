@@ -620,10 +620,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 findViewById(R.id.newDeviceTxt).setVisibility(View.VISIBLE);
 
                 // test
-                //     findViewById(R.id.gridview).setVisibility(View.VISIBLE);
-                //     findViewById(R.id.pairingPatternTipView).setVisibility(View.VISIBLE);
-                //     findViewById(R.id.enterPatternConfirmationView).setVisibility(View.VISIBLE);
-                //
                 findViewById(R.id.ok_name_button).setVisibility(View.GONE);
                 //     findViewById(R.id.nameNewButton).setVisibility(View.GONE); Temp disabling TODO - remove 'renaming microbit feature'
                 //    findViewById(R.id.nameNewEdit).setVisibility(View.GONE);

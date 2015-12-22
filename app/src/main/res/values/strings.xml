@@ -130,7 +130,7 @@
     <string name="alert">Alert...</string>
 
     <!-- Connect Activity -->
-    <string name="previous_devices">Previously paired micro:bit(s)</string>
+    <string name="previous_devices">Connect previously paired micro:bit</string>
     <string name="desc_previous_devices">No previously paired micro:bits</string>
     <string name="new_devices_pattern_null">Enter the pattern</string>
     <string name="new_devices">Connect to a new device</string>
@@ -286,4 +286,6 @@
     <string name="desc_delete_project_btn">Delete code</string>
     <string name="searching_tip_step_text">Step 3</string>
     <string name="desc_connect_pair_micro_bit">Pair a new micro:bit</string>
+    <string name="most_recent_device_status">Most recently used micro:bit</string>
+    <string name="device_connected_device_status">Currently connected micro:bit</string>
 </resources>
