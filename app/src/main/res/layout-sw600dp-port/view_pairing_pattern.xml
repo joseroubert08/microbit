@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black_color"
-    android:orientation="vertical"
-    android:visibility="gone">
+    android:orientation="vertical">
 
     <!-- New Device title -->
     <TextView
@@ -25,8 +24,9 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
-        android:layout_margin="16dp"
-        android:layout_weight="2.5"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_weight="3"
         android:cacheColorHint="@color/cancel_button_up"
         android:horizontalSpacing="@dimen/led_gap"
         android:numColumns="5"
@@ -51,26 +51,16 @@
     <!--android:inputType="textVisiblePassword|textNoSuggestions"-->
     <!--android:lines="3"-->
     <!--android:visibility="gone" />-->
+    <include layout="@layout/view_entering_pattern_step" />
 
-    <!--  instructions -->
-    <LinearLayout
-        android:id="@+id/pairingPatternTipView"
+    <!-- Line -->
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/pairingPatternTip"
-            style="@style/p1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical"
-            android:layout_margin="16dp"
-            android:gravity="start|center_vertical"
-            android:lines="3"
-            android:maxLines="3"
-            android:text="@string/enter_pattern_tip_text"
-            android:textColor="@color/white_color" />
-    </LinearLayout>
+        android:layout_height="1dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:alpha="0.5"
+        android:background="@color/gray_color" />
 
     <!-- Pairing confirmation buttons-->
     <LinearLayout
@@ -92,12 +82,13 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_weight="1"
-            android:background="@color/cancel_button_up"
-            android:drawableEnd="@drawable/add_device"
+            android:background="@drawable/cancel_btn"
+            android:drawableEnd="@drawable/cancel_step_pairing_btn"
             android:gravity="center_vertical|start"
             android:padding="8dp"
-            android:text="Cancel"
-            android:textAppearance="?android:textAppearanceSmall"
+            android:text="@string/txt_cancel_btn"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black_color"
             android:visibility="invisible" />
 
         <Button
@@ -110,11 +101,12 @@
             android:layout_marginTop="16dp"
             android:layout_weight="1"
             android:background="@drawable/green_btn"
-            android:drawableEnd="@drawable/add_device"
+            android:drawableEnd="@drawable/next_step_pairing_btn"
             android:gravity="center_vertical|start"
             android:padding="8dp"
-            android:text="Pair"
-            android:textAppearance="?android:textAppearanceSmall"
+            android:text="@string/txt_pair_btn"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black_color"
             android:visibility="invisible" />
     </LinearLayout>
 
