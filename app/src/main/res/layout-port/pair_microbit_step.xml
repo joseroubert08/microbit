@@ -14,6 +14,7 @@
         android:contentDescription="@string/desc_connect_tip_text"
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
+        android:paddingBottom="16dp"
         android:text="@string/step_connect_tip_text"
         android:textAppearance="?android:textAppearanceMedium"
         android:textColor="@color/white_color" />

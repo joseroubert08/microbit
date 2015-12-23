@@ -10,19 +10,20 @@
     tools:showIn="@layout/view_enter_pin">
 
     <TextView
-        android:id="@+id/enter_pin_tip_text_step"
+        android:id="@+id/enter_pin_step_4_step"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:contentDescription="@string/desc_enterPinToPairText"
+        android:paddingBottom="16dp"
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
-        android:textAppearance="?android:textAppearanceMedium"
         android:text="@string/step_enter_pin_to_pair_text"
+        android:textAppearance="?android:textAppearanceMedium"
         android:textColor="@color/white_color" />
 
     <TextView
-        android:id="@+id/enter_pin_tip_text"
+        android:id="@+id/enter_pin_step_4_instructions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/lets_do_this_emoji"

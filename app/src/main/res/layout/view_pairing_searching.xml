@@ -8,7 +8,7 @@
 
     <!-- pairing animation -->
     <TextView
-        android:id="@+id/pairSearchTitle"
+        android:id="@+id/search_microbit_step_3_title"
         style="@style/h1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -52,7 +52,7 @@
         android:showDividers="end">
 
         <Button
-            android:id="@+id/cancel_search_button"
+            android:id="@+id/cancel_search_microbit_step_3_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"

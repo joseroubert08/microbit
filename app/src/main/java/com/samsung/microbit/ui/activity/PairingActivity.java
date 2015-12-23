@@ -403,21 +403,57 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         Button nextPairButton = (Button) findViewById(R.id.ok_tip_step_1_btn);
         nextPairButton.setTypeface(MBApp.getApp().getTypeface());
 
-        // Step 2 -
-        
+        // Step 2 - Enter Pattern
+        TextView enterPatternTitle = (TextView) findViewById(R.id.enter_pattern_step_2_title);
+        enterPatternTitle.setTypeface(MBApp.getApp().getTypeface());
+
+        TextView stepTwoTitle = (TextView) findViewById(R.id.pair_enter_pattern_step_2);
+        stepTwoTitle.setTypeface(MBApp.getApp().getTypeface());
+
+        TextView stepTwoInstructions = (TextView) findViewById(R.id.pair_enter_pattern_step_2_instructions);
+        stepTwoInstructions.setTypeface(MBApp.getApp().getTypeface());
+
+        Button cancelEnterPattern = (Button) findViewById(R.id.cancel_enter_pattern_step_2_btn);
+        cancelEnterPattern.setTypeface(MBApp.getApp().getTypeface());
+
+        Button okEnterPatternButton = (Button) findViewById(R.id.ok_enter_pattern_step_2_btn);
+        okEnterPatternButton.setTypeface(MBApp.getApp().getTypeface());
+
+        // Step 3 - Searching for micro:bit
+        TextView searchMicrobitTitle = (TextView) findViewById(R.id.search_microbit_step_3_title);
+        searchMicrobitTitle.setTypeface(MBApp.getApp().getTypeface());
+
+        TextView stepThreeTitle = (TextView) findViewById(R.id.searching_microbit_step_3_step);
+        stepThreeTitle.setTypeface(MBApp.getApp().getTypeface());
+
+        TextView stepThreeInstructions = (TextView) findViewById(R.id.searching_microbit_step_3_instructions);
+        stepThreeInstructions.setTypeface(MBApp.getApp().getTypeface());
+
+        Button cancelSearchMicroBit = (Button) findViewById(R.id.cancel_search_microbit_step_3_btn);
+        cancelSearchMicroBit.setTypeface(MBApp.getApp().getTypeface());
+
+        // Step 4 - Enter Pin
+        TextView enterPinTitle = (TextView) findViewById(R.id.enter_pin_step_4_title);
+        enterPinTitle.setTypeface(MBApp.getApp().getTypeface());
+
+        TextView stepFourTitle = (TextView) findViewById(R.id.enter_pin_step_4_step);
+        stepFourTitle.setTypeface(MBApp.getApp().getTypeface());
+
+        TextView stepFourInstructions = (TextView) findViewById(R.id.enter_pin_step_4_instructions);
+        stepFourInstructions.setTypeface(MBApp.getApp().getTypeface());
+
+        Button cancelEnterPin = (Button) findViewById(R.id.cancel_enter_pin_step_4_btn);
+        cancelEnterPin.setTypeface(MBApp.getApp().getTypeface());
 
         // pin view
         displayConnectScreen(mState);
         findViewById(R.id.pairButton).setOnClickListener(this);
         findViewById(R.id.cancel_tip_step_1_btn).setOnClickListener(this);
-        findViewById(R.id.ok_name_button).setOnClickListener(this);
-        findViewById(R.id.cancel_name_button).setOnClickListener(this);
-        findViewById(R.id.cancel_search_button).setOnClickListener(this);
+        findViewById(R.id.ok_enter_pattern_step_2_btn).setOnClickListener(this);
+        findViewById(R.id.cancel_enter_pattern_step_2_btn).setOnClickListener(this);
+        findViewById(R.id.cancel_search_microbit_step_3_btn).setOnClickListener(this);
         findViewById(R.id.go_bluetooth_settings).setOnClickListener(this);
-        findViewById(R.id.cancel_enter_button).setOnClickListener(this);
-
-        // TODO - set Font family
-
+        findViewById(R.id.cancel_enter_pin_step_4_btn).setOnClickListener(this);
 
         // TODO - change animation
         // Animation
@@ -478,15 +514,15 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     }
 
     private void displayLedGrid() {
-        GridView gridview = (GridView) findViewById(R.id.gridview);
+        GridView gridview = (GridView) findViewById(R.id.enter_pattern_step_2_gridview);
         gridview.setAdapter(new LEDAdapter(this, deviceCodeArray));
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
                 if (mState != PAIRING_STATE.PAIRING_STATE_NEW_NAME) {
 
-                    if ((findViewById(R.id.ok_name_button).getVisibility() != View.VISIBLE)) {
-                        findViewById(R.id.ok_name_button).setVisibility(View.VISIBLE);
+                    if ((findViewById(R.id.ok_enter_pattern_step_2_btn).getVisibility() != View.VISIBLE)) {
+                        findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
                     }
 
                     boolean isOn = toggleLED((ImageView) v, position);
@@ -494,7 +530,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     //Toast.makeText(MBApp.getContext(), "LED Clicked: " + position, Toast.LENGTH_SHORT).show();
 
                     if (!Arrays.asList(deviceCodeArray).contains("1")) {
-                        findViewById(R.id.ok_name_button).setVisibility(View.INVISIBLE);
+                        findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.INVISIBLE);
                     }
                 }
                 //TODO KEEP TRACK OF ALL LED STATUS AND TOGGLE COLOR
@@ -503,9 +539,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         });
 
         if (!Arrays.asList(deviceCodeArray).contains("1")) {
-            findViewById(R.id.ok_name_button).setVisibility(View.INVISIBLE);
+            findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.INVISIBLE);
         } else
-            findViewById(R.id.ok_name_button).setVisibility(View.VISIBLE);
+            findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
     }
 
     private void generateName() {
@@ -636,7 +672,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 //   mPairButtonView.setVisibility(View.VISIBLE);// TODO debug - error case
                 lvConnectedDevice.setEnabled(true);
                 Arrays.fill(deviceCodeArray, "0");
-                findViewById(R.id.gridview).setEnabled(true);
+                findViewById(R.id.enter_pattern_step_2_gridview).setEnabled(true);
                 mNewDeviceName = "";
                 mNewDeviceCode = "";
                 break;
@@ -648,21 +684,21 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 break;
 
             case PAIRING_STATE_PATTERN_EMPTY:
-                findViewById(R.id.gridview).setEnabled(true);
+                findViewById(R.id.enter_pattern_step_2_gridview).setEnabled(true);
                 findViewById(R.id.connectedDeviceList).setClickable(true);
                 mNewDeviceView.setVisibility(View.VISIBLE);
-                findViewById(R.id.cancel_name_button).setVisibility(View.VISIBLE);
-                findViewById(R.id.newDeviceTxt).setVisibility(View.VISIBLE);
+                findViewById(R.id.cancel_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
+                findViewById(R.id.enter_pattern_step_2_title).setVisibility(View.VISIBLE);
 
                 // test
-                findViewById(R.id.ok_name_button).setVisibility(View.GONE);
+                findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.GONE);
                 //     findViewById(R.id.nameNewButton).setVisibility(View.GONE); Temp disabling TODO - remove 'renaming microbit feature'
                 //    findViewById(R.id.nameNewEdit).setVisibility(View.GONE);
                 displayLedGrid();
                 break;
 
             case PAIRING_STATE_NEW_NAME:
-                findViewById(R.id.gridview).setEnabled(false);
+                findViewById(R.id.enter_pattern_step_2_gridview).setEnabled(false);
                 findViewById(R.id.connectedDeviceList).setClickable(false);
                 mNewDeviceView.setVisibility(View.VISIBLE);
                 //  TODO - remove 'renaming microbit feature'
@@ -681,8 +717,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 }
                 //       newNameButton.setVisibility(View.VISIBLE);// Temp
                 //        newNameEdit.setVisibility(View.INVISIBLE);
-                findViewById(R.id.ok_name_button).setVisibility(View.VISIBLE);
-                findViewById(R.id.cancel_name_button).setVisibility(View.VISIBLE);
+                findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
+                findViewById(R.id.cancel_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
                 displayLedGrid();
                 break;
 
@@ -796,7 +832,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 displayConnectScreen(PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY);
                 break;
 
-            case R.id.ok_name_button:
+            case R.id.ok_enter_pattern_step_2_btn:
                 if (debug) logi("onClick() :: ok_name_button");
                 if (mState == PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY) {
                     generateName();
@@ -826,13 +862,13 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
                 break;
 
-            case R.id.cancel_name_button:
+            case R.id.cancel_enter_pattern_step_2_btn:
                 if (debug) logi("onClick() :: cancel_name_button");
                 cancelPairing();
                 displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
                 break;
 
-            case R.id.cancel_search_button:
+            case R.id.cancel_search_microbit_step_3_btn:
                 if (debug) logi("onClick() :: cancel_search_button");
                 scanLeDevice(false);
                 cancelPairing();
@@ -856,7 +892,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 pos = (Integer) v.getTag();
                 handleDeleteMicrobit(pos);
                 break;
-            case R.id.cancel_enter_button:
+            case R.id.cancel_enter_pin_step_4_btn:
                 displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
                 break;
             case R.id.backBtn:
@@ -1042,7 +1078,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 if (debug) logi("scanLeDevice ::   Searching For " + mNewDeviceName.toLowerCase());
                 // Stops scanning after a pre-defined scan period.
                 mScanning = true;
-                TextView textView = (TextView) findViewById(R.id.pairSearchTitle);
+                TextView textView = (TextView) findViewById(R.id.search_microbit_step_3_title);
                 if (textView != null)
                     textView.setText(getString(R.string.searchingTitle));
 
@@ -1169,7 +1205,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        TextView textView = (TextView) findViewById(R.id.pairSearchTitle);
+                        TextView textView = (TextView) findViewById(R.id.search_microbit_step_3_title);
                         if (textView != null)
                             textView.setText(getString(R.string.pairing_msg_1));
                         startPairing(mNewDeviceAddress);

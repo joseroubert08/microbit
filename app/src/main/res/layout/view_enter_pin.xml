@@ -8,7 +8,7 @@
 
     <!-- pin title -->
     <TextView
-        android:id="@+id/enterPinTitle"
+        android:id="@+id/enter_pin_step_4_title"
         style="@style/h1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -52,7 +52,7 @@
         android:showDividers="end">
 
         <Button
-            android:id="@+id/cancel_enter_button"
+            android:id="@+id/cancel_enter_pin_step_4_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"

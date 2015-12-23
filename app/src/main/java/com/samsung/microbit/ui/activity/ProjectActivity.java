@@ -460,7 +460,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 break;
         }
     }
-
+// TODO fonts on pop up
     private void adviceOnMicrobitState() {
         ConnectedDevice currentMicrobit = Utils.getPairedMicrobit(this);
 
@@ -770,7 +770,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         PopUp.show(MBApp.getContext(),
                                 MBApp.getContext().getString(R.string.flashing_progress_message),
                                 String.format(MBApp.getContext().getString(R.string.flashing_project), programToSend.name),
-                                R.drawable.flash_modal_emoji, R.drawable.blue_btn,
+                                R.drawable.flash_modal_emoji, R.drawable.transparent_btn,
                                 PopUp.TYPE_PROGRESS_NOT_CANCELABLE, null, null);
 
                         inProgress = true;

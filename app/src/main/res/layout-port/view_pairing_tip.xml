@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/black_color"
     android:orientation="vertical"
-   >
+    android:visibility="gone">
 
     <!-- Title -->
     <TextView
@@ -16,8 +16,8 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="@string/connect_tip_title"
-        android:textColor="@color/white_color"
-        android:textAppearance="?android:textAppearanceLarge"/>
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="@color/white_color" />
 
     <!-- Images -->
     <LinearLayout

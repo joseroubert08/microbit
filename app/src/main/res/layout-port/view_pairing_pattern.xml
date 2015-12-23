@@ -8,7 +8,7 @@
 
     <!-- New Device title -->
     <TextView
-        android:id="@+id/newDeviceTxt"
+        android:id="@+id/enter_pattern_step_2_title"
         style="@style/h1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -20,7 +20,7 @@
 
     <!-- Grid to enter pattern -->
     <GridView
-        android:id="@+id/gridview"
+        android:id="@+id/enter_pattern_step_2_gridview"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
@@ -74,7 +74,7 @@
         android:showDividers="end">
 
         <Button
-            android:id="@+id/cancel_name_button"
+            android:id="@+id/cancel_enter_pattern_step_2_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -92,7 +92,7 @@
             android:visibility="invisible" />
 
         <Button
-            android:id="@+id/ok_name_button"
+            android:id="@+id/ok_enter_pattern_step_2_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"

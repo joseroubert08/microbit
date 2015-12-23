@@ -25,6 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
@@ -177,15 +178,39 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         /* Todo [Hack]:
         * NavigationView items for selection by user using
         * onClick listener instead of overriding onNavigationItemSelected*/
+        Button menuNavBtn = (Button) findViewById(R.id.btn_nav_menu);
+        menuNavBtn.setTypeface(MBApp.getApp().getTypeface());
         findViewById(R.id.btn_nav_menu).setOnClickListener(this);
+
+        Button aboutNavBtn = (Button) findViewById(R.id.btn_about);
+        aboutNavBtn.setTypeface(MBApp.getApp().getTypeface());
         findViewById(R.id.btn_about).setOnClickListener(this);
+
+        Button helpNavBtn = (Button) findViewById(R.id.btn_help);
+        helpNavBtn.setTypeface(MBApp.getApp().getTypeface());
         findViewById(R.id.btn_help).setOnClickListener(this);
+
+        Button privacyNavBtn = (Button) findViewById(R.id.btn_privacy_cookies);
+        privacyNavBtn.setTypeface(MBApp.getApp().getTypeface());
         findViewById(R.id.btn_privacy_cookies).setOnClickListener(this);
+
+        Button termsNavBtn = (Button) findViewById(R.id.btn_terms_conditions);
+        termsNavBtn.setTypeface(MBApp.getApp().getTypeface());
         findViewById(R.id.btn_terms_conditions).setOnClickListener(this);
+
+        Button sendFeedbackNavbtn = (Button) findViewById(R.id.btn_send_feedback);
+        sendFeedbackNavbtn.setTypeface(MBApp.getApp().getTypeface());
         findViewById(R.id.btn_send_feedback).setOnClickListener(this);
+
         // Share stats checkbox
+        TextView shareStatsCheckTitle = (TextView) findViewById(R.id.share_statistics_title);
+        shareStatsCheckTitle.setTypeface(MBApp.getApp().getTypeface());
+        TextView shareStatsDescription = (TextView) findViewById(R.id.share_statistics_description);
+        shareStatsDescription.setTypeface(MBApp.getApp().getTypeface());
         shareStatsCheckBox = (CheckBox) findViewById(R.id.share_statistics_status);
         shareStatsCheckBox.setOnClickListener(this);
+
+
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
