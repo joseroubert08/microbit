@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -89,6 +90,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         LinearLayout connectBarView = (LinearLayout) findViewById(R.id.connectBarView);
         connectBarView.getBackground().setAlpha(128);
+
+        // Font Style for buttons
+        Button connectButton = (Button) findViewById(R.id.connect_device_btn);
+        connectButton.setTypeface(MBApp.getApp().getTypeface());
+        Button flashButton = (Button) findViewById(R.id.flash_microbit_btn);
+        flashButton.setTypeface(MBApp.getApp().getTypeface());
+        Button createCodeButton = (Button) findViewById(R.id.create_code_btn);
+        createCodeButton.setTypeface(MBApp.getApp().getTypeface());
+        Button discoverButton = (Button) findViewById(R.id.discover_btn);
+        discoverButton.setTypeface(MBApp.getApp().getTypeface());
 
         // Start the other services - local service to handle IPC in the main process
         Intent ipcIntent = new Intent(this, IPCService.class);
@@ -355,12 +366,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (v.getId()) {
             case R.id.addDevice:
-            case R.id.addDeviceEmpty: {
+            case R.id.connect_device_btn: {
                 Intent intent = new Intent(this, PairingActivity.class);
                 startActivity(intent);
             }
             break;
-            case R.id.startNewProject: {
+            case R.id.create_code_btn: {
                 //Update Stats
                 if (app != null && app.getEcho() != null) {
                     logi("User action test for delete project");
@@ -375,11 +386,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
             }
             break;
-            case R.id.flashMicrobit:
+            case R.id.flash_microbit_btn:
                 Intent i = new Intent(this, ProjectActivity.class);
                 startActivity(i);
                 break;
-            case R.id.discover:
+            case R.id.discover_btn:
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(getString(R.string.touchDevDiscoverURL)));
                 startActivity(intent);

@@ -23,7 +23,7 @@
 			android:src="@drawable/back"/>
 
 		<TextView
-			android:id="@+id/titleTxt"
+			android:id="@+id/flash_projects_title_txt"
 			style="@style/h1"
 			android:layout_width="wrap_content"
 			android:layout_height="@dimen/header_title_height"

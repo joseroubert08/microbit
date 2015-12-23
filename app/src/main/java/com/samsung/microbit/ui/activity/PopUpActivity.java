@@ -73,7 +73,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener{
         setContentView(R.layout.activity_popup);
 
         imageIcon = (ImageView)findViewById(R.id.imageIcon);
-        titleTxt = (TextView)findViewById(R.id.titleTxt);
+        titleTxt = (TextView)findViewById(R.id.flash_projects_title_txt);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         spinnerBar = (ProgressBar) findViewById(R.id.spinnerBar);
         messageTxt = (TextView)findViewById(R.id.messageTxt);

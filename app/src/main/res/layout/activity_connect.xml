@@ -5,13 +5,13 @@
     android:background="@drawable/bg"
     android:visibility="visible">
 
-    <!-- Connecting microbit screen -->
+    <!-- Connecting micro:bit screen -->
     <include layout="@layout/view_connect_microbit" />
     <!-- device pairing tip screen -->
     <include layout="@layout/view_pairing_tip" />
     <!-- enter the pattern screen-->
     <include layout="@layout/view_pairing_pattern" />
-    <!-- searching for microbit screen-->
+    <!-- searching for micro:bit screen-->
     <include layout="@layout/view_pairing_searching" />
     <!-- enter pin screen -->
     <include layout="@layout/view_enter_pin" />

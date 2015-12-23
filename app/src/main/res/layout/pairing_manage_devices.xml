@@ -55,7 +55,7 @@
                 android:focusable="true"
                 android:maxLines="5"
                 android:minLines="3"
-                android:nextFocusDown="@id/titleTxt"
+                android:nextFocusDown="@id/flash_projects_title_txt"
                 android:text="@string/manage_microbit_txt"
                 android:textSize="18sp" />
 

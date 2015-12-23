@@ -7,7 +7,7 @@
     tools:showIn="@layout/view_pairing_tip">
 
     <TextView
-        android:id="@+id/pair_tip_step_1"
+        android:id="@+id/pair_tip_step_1_step"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -19,7 +19,7 @@
         android:textColor="@color/white_color" />
 
     <TextView
-        android:id="@+id/pairTipTextviewInstructions"
+        android:id="@+id/pair_tip_step_1_instructions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/lets_do_this_emoji"

@@ -58,7 +58,7 @@
         android:layout_centerInParent="true">
 
         <ImageButton
-            android:id="@+id/cancel_tip_button"
+            android:id="@+id/cancel_tip_step_1_btn"
             android:layout_width="@dimen/header_btn_size"
             android:layout_height="@dimen/header_btn_size"
             android:src="@drawable/white_cross"
@@ -66,8 +66,8 @@
             android:layout_marginRight="@dimen/button_gap_margin"/>
 
         <ImageButton
-            android:id="@+id/ok_pair_button"
-            android:layout_toRightOf="@id/cancel_tip_button"
+            android:id="@+id/ok_tip_step_1_btn"
+            android:layout_toRightOf="@id/cancel_tip_step_1_btn"
             android:layout_width="@dimen/header_btn_size"
             android:layout_height="@dimen/header_btn_size"
             android:src="@drawable/white_tick"

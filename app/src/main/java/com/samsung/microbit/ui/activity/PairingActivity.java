@@ -32,6 +32,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -369,10 +370,46 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         mPairSearchView = (LinearLayout) findViewById(R.id.pairSearchView);
         mEnterPinView = (LinearLayout) findViewById(R.id.enterPinView);
 
+        /* Font type */
+        // Connect Screen
+        TextView appBarTitle = (TextView) findViewById(R.id.flash_projects_title_txt);
+        appBarTitle.setTypeface(MBApp.getApp().getTypeface());
+
+        TextView manageMicrobit = (TextView) findViewById(R.id.title_manage_microbit);
+        manageMicrobit.setTypeface(MBApp.getApp().getTypeface());
+
+        TextView descriptionManageMicrobit = (TextView) findViewById(R.id.description_manage_microbit);
+        descriptionManageMicrobit.setTypeface(MBApp.getApp().getTypeface());
+
+        Button bluetoothSettings = (Button) findViewById(R.id.go_bluetooth_settings);
+        bluetoothSettings.setTypeface(MBApp.getApp().getTypeface());
+
+        Button pairButton = (Button) findViewById(R.id.pairButton);
+        pairButton.setTypeface(MBApp.getApp().getTypeface());
+
+        // Step 1 - How to pair your micro:bit
+        TextView pairTipTitle = (TextView) findViewById(R.id.pairTipTitle);
+        pairTipTitle.setTypeface(MBApp.getApp().getTypeface());
+
+        TextView stepOneTitle = (TextView) findViewById(R.id.pair_tip_step_1_step);
+        stepOneTitle.setTypeface(MBApp.getApp().getTypeface());
+
+        TextView stepOneInstructions = (TextView) findViewById(R.id.pair_tip_step_1_instructions);
+        stepOneInstructions.setTypeface(MBApp.getApp().getTypeface());
+
+        Button cancelPairButton = (Button) findViewById(R.id.cancel_tip_step_1_btn);
+        cancelPairButton.setTypeface(MBApp.getApp().getTypeface());
+
+        Button nextPairButton = (Button) findViewById(R.id.ok_tip_step_1_btn);
+        nextPairButton.setTypeface(MBApp.getApp().getTypeface());
+
+        // Step 2 -
+        
+
         // pin view
         displayConnectScreen(mState);
         findViewById(R.id.pairButton).setOnClickListener(this);
-        findViewById(R.id.cancel_tip_button).setOnClickListener(this);
+        findViewById(R.id.cancel_tip_step_1_btn).setOnClickListener(this);
         findViewById(R.id.ok_name_button).setOnClickListener(this);
         findViewById(R.id.cancel_name_button).setOnClickListener(this);
         findViewById(R.id.cancel_search_button).setOnClickListener(this);
@@ -380,9 +417,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.cancel_enter_button).setOnClickListener(this);
 
         // TODO - set Font family
-        TextView txtView = (TextView) findViewById(R.id.titleTxt);
-     //   txtView.setTypeface(MBApp.getApp().getTypeface());
-//        txtView.setTextSize(22f);
+
 
         // TODO - change animation
         // Animation
@@ -609,7 +644,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             case PAIRING_STATE_TIP:
                 mPairTipView.setVisibility(View.VISIBLE);
                 mConnectDeviceView.setVisibility(View.GONE);
-                findViewById(R.id.ok_pair_button).setOnClickListener(this);
+                findViewById(R.id.ok_tip_step_1_btn).setOnClickListener(this);
                 break;
 
             case PAIRING_STATE_PATTERN_EMPTY:
@@ -756,7 +791,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 Intent goToBlueToothIntent = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
                 startActivity(goToBlueToothIntent);
                 break;
-            case R.id.ok_pair_button:
+            case R.id.ok_tip_step_1_btn:
                 if (debug) logi("onClick() :: ok_pair_button");
                 displayConnectScreen(PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY);
                 break;
@@ -786,7 +821,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 //     }
                 break;
 
-            case R.id.cancel_tip_button:
+            case R.id.cancel_tip_step_1_btn:
                 if (debug) logi("onClick() :: cancel_tip_button");
                 displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
                 break;

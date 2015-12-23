@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -195,6 +196,14 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             });
         }
 
+        // Title font
+        TextView flashProjectsTitle = (TextView) findViewById(R.id.flash_projects_title_txt);
+        flashProjectsTitle.setTypeface(MBApp.getApp().getTypeface());
+
+        // Create projects
+        Button createProject = (Button) findViewById(R.id.createProject);
+        createProject.setTypeface(MBApp.getApp().getTypeface());
+
         projectListView = (ListView) findViewById(R.id.projectListView);
         updateProjectsListSortOrder(true);
 
@@ -236,11 +245,14 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
     private void setConnectedDeviceText() {
 
         TextView connectedIndicatorText = (TextView) findViewById(R.id.connectedIndicatorText);
-        connectedIndicatorText.setText(connectedIndicatorText.getText()); // TODO - check
+        connectedIndicatorText.setText(connectedIndicatorText.getText());
+        connectedIndicatorText.setTypeface(MBApp.getApp().getTypeface());    // TODO - check
         TextView deviceName1 = (TextView) findViewById(R.id.deviceName);
         deviceName1.setContentDescription(deviceName1.getText()); // TODO - check
+        deviceName1.setTypeface(MBApp.getApp().getTypeface());
         TextView deviceName2 = (TextView) findViewById(R.id.deviceName2);
         deviceName2.setContentDescription(deviceName2.getText()); // TODO - check
+        deviceName2.setTypeface(MBApp.getApp().getTypeface());
         ImageView connectedIndicatorIcon = (ImageView) findViewById(R.id.connectedIndicatorIcon);
 
         if (connectedIndicatorIcon == null || connectedIndicatorText == null)
@@ -405,6 +417,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         }
     }
 
+    @Override
     public void onClick(final View v) {
 
         int pos;

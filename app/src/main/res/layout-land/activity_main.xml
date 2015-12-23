@@ -35,7 +35,7 @@
 
         <Button
             style="@style/p1"
-            android:id="@+id/addDeviceEmpty"
+            android:id="@+id/connect_device_btn"
             android:layout_width="@dimen/home_device_name_empty_width"
             android:layout_height="@dimen/home_button_height"
             android:layout_margin="@dimen/widget_margin"
@@ -137,7 +137,7 @@
         </RelativeLayout>
 
         <ImageButton
-            android:id="@+id/startNewProject"
+            android:id="@+id/create_code_btn"
             android:layout_width="@dimen/home_start_btn_width"
             android:layout_height="@dimen/home_button_height"
             android:layout_margin="@dimen/widget_margin"

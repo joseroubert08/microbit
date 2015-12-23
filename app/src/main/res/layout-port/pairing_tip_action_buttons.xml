@@ -12,7 +12,7 @@
     tools:showIn="@layout/view_pairing_tip">
 
     <Button
-        android:id="@+id/cancel_tip_button"
+        android:id="@+id/cancel_tip_step_1_btn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
@@ -29,7 +29,7 @@
         android:textColor="@color/black_color" />
 
     <Button
-        android:id="@+id/ok_pair_button"
+        android:id="@+id/ok_tip_step_1_btn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"

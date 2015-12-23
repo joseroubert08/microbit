@@ -22,7 +22,7 @@
 
     <!-- Connect -->
     <Button
-        android:id="@+id/addDeviceEmpty"
+        android:id="@+id/connect_device_btn"
         style="@style/p1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -42,7 +42,7 @@
 
     <!-- Flash -->
     <Button
-        android:id="@+id/flashMicrobit"
+        android:id="@+id/flash_microbit_btn"
         style="@style/p1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -62,7 +62,7 @@
 
     <!-- create code -->
     <Button
-        android:id="@+id/startNewProject"
+        android:id="@+id/create_code_btn"
         style="@style/p1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -82,7 +82,7 @@
 
     <!-- Discover -->
     <Button
-        android:id="@+id/discover"
+        android:id="@+id/discover_btn"
         style="@style/p1"
         android:layout_width="match_parent"
         android:layout_height="0dp"

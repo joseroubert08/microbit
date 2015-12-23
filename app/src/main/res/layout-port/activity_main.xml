@@ -21,12 +21,12 @@
         android:layout_weight="1"
         android:contentDescription="@string/desc_homescreen_logo_img"
         android:labelFor="@drawable/bbc_microbit_vertical"
-        android:nextFocusDown="@+id/addDeviceEmpty"
+        android:nextFocusDown="@+id/connect_device_btn"
         android:src="@drawable/hello_emoji" />
 
     <!-- Connect -->
     <Button
-        android:id="@+id/addDeviceEmpty"
+        android:id="@+id/connect_device_btn"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
@@ -38,7 +38,7 @@
         android:ellipsize="end"
         android:gravity="center_vertical|start"
         android:lines="1"
-        android:nextFocusDown="@+id/flashMicrobit"
+        android:nextFocusDown="@+id/flash_microbit_btn"
         android:onClick="onClick"
         android:scrollHorizontally="true"
         android:text="@string/connect_device"
@@ -48,7 +48,7 @@
 
     <!-- Flash -->
     <Button
-        android:id="@+id/flashMicrobit"
+        android:id="@+id/flash_microbit_btn"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
@@ -60,7 +60,7 @@
         android:ellipsize="end"
         android:gravity="start|center_vertical"
         android:lines="1"
-        android:nextFocusDown="@+id/startNewProject"
+        android:nextFocusDown="@+id/create_code_btn"
         android:onClick="onClick"
         android:scrollHorizontally="true"
         android:text="@string/flash_microbit"
@@ -70,7 +70,7 @@
 
     <!-- create code -->
     <Button
-        android:id="@+id/startNewProject"
+        android:id="@+id/create_code_btn"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
@@ -82,7 +82,7 @@
         android:ellipsize="end"
         android:gravity="start|center_vertical"
         android:lines="1"
-        android:nextFocusDown="@+id/discover"
+        android:nextFocusDown="@+id/discover_btn"
         android:onClick="onClick"
         android:scrollHorizontally="true"
         android:text="@string/create_code"
@@ -92,7 +92,7 @@
 
     <!-- Discover -->
     <Button
-        android:id="@+id/discover"
+        android:id="@+id/discover_btn"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"

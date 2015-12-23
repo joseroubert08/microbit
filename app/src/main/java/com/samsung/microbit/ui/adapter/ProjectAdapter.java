@@ -291,7 +291,10 @@ public class ProjectAdapter extends BaseAdapter {
         }
 
         Button appNameButton = (Button) convertView.findViewById(R.id.appNameButton);
+        appNameButton.setTypeface(MBApp.getApp().getTypeface());
+
         ExtendedEditText appNameEdit = (ExtendedEditText) convertView.findViewById(R.id.appNameEdit);
+        appNameEdit.setTypeface(MBApp.getApp().getTypeface());
 
         LinearLayout actionBarLayout = (LinearLayout) convertView.findViewById(R.id.actionBarForProgram);
         if (actionBarLayout != null) {
@@ -331,6 +334,7 @@ public class ProjectAdapter extends BaseAdapter {
         //appNameEdit.setOnClickListener(appNameClickListener);
 
         Button sendBtn = (Button) convertView.findViewById(R.id.sendBtn);
+        sendBtn.setTypeface(MBApp.getApp().getTypeface());
         sendBtn.setTag(position);
         sendBtn.setOnClickListener(sendBtnClickListener);
 
