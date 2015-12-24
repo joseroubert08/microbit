@@ -7,4 +7,4 @@
     android:contentDescription="@string/desc_previous_devices"
     android:gravity="center|top"
     android:text="@string/previous_devices"
-    android:textAppearance="?android:textAppearanceMedium" /><!--android:nextFocusDown="@+id/title_manage_microbit"-->
+    android:textAppearance="?android:textAppearanceMedium" />

@@ -18,13 +18,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
-
 import android.util.Log;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.samsung.microbit.R;
@@ -57,13 +55,12 @@ public class AudioRecorderActivity extends Activity {
     private static boolean mIsRecording = false;
     private static boolean mLaunchActivity = false;
 
-    private void create(String action)
-    {
+    private void create(String action) {
         setContentView(R.layout.activity_audio_recorder);
-        layout = (LinearLayout)findViewById(R.id.layout);
-        filenameTxt = (TextView)findViewById(R.id.filenameTxt);
-        chronometer = (Chronometer)findViewById(R.id.chronometer);
-        imageMic = (ImageView)findViewById(R.id.imageMic);
+        layout = (LinearLayout) findViewById(R.id.layout);
+        filenameTxt = (TextView) findViewById(R.id.filenameTxt);
+        chronometer = (Chronometer) findViewById(R.id.chronometer);
+        imageMic = (ImageView) findViewById(R.id.imageMic);
 
         //preallocate to avoid memory leak
         drawable_mic_off = getResources().getDrawable(R.drawable.recording_off);
@@ -75,9 +72,9 @@ public class AudioRecorderActivity extends Activity {
         notificationLargeIconBitmapRecordingOff = BitmapFactory.decodeResource(getResources(), R.drawable.recording_off);
 
         mBuilder = new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setLargeIcon(notificationLargeIconBitmapRecordingOff)
-                        .setTicker(getString(R.string.audio_recorder_notification))
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setLargeIcon(notificationLargeIconBitmapRecordingOff)
+                .setTicker(getString(R.string.audio_recorder_notification))
                 .setContentTitle(getString(R.string.audio_recorder_notification));
 
         Drawable d = getResources().getDrawable(R.drawable.bg);
@@ -88,7 +85,7 @@ public class AudioRecorderActivity extends Activity {
         processIntent(action);
     }
 
-    private boolean showPopup(final String action){
+    private boolean showPopup(final String action) {
         return PopUp.show(this,
                 "",
                 getString(R.string.record_audio),
@@ -168,20 +165,18 @@ public class AudioRecorderActivity extends Activity {
             processIntent(intent.getAction());
         else {
             PopUp.hide();//Needed to fix case when activity is brought to foreground but no showing popup activity anymore
-                        //this will reset the flag PopUp.current_type so another PopUp can be shown
+            //this will reset the flag PopUp.current_type so another PopUp can be shown
             showPopup(intent.getAction());
         }
     }
 
-    private void processIntent(String action)
-    {
+    private void processIntent(String action) {
         if (action == null)
             return;
 
         if (action.equals(AudioPlugin.INTENT_ACTION_START_RECORD)) {
             startRecording();
-        }
-        else if (action.equals(AudioPlugin.INTENT_ACTION_STOP_RECORD)) {
+        } else if (action.equals(AudioPlugin.INTENT_ACTION_STOP_RECORD)) {
             stopRecording();
         } else if (action.equals(AudioPlugin.INTENT_ACTION_STOP)) {
             if (mIsRecording)
@@ -214,8 +209,7 @@ public class AudioRecorderActivity extends Activity {
         //otherwise exit activity
         if (mIsRecording) {
             stopRecording();
-        }
-        else {
+        } else {
             super.onBackPressed();
             backPressed = true;
         }

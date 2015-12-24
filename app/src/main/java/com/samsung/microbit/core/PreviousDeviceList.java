@@ -8,14 +8,13 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.service.IPCService;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class PreviousDeviceList{
+public class PreviousDeviceList {
 
     private final String PREFERENCES_PREVDEV_PREFNAME = "PreviousDevices";
     private final String PREFERENCES_PREVDEV_KEY = "PreviousDevicesKey";
@@ -42,20 +41,17 @@ public class PreviousDeviceList{
 
         if ((prevDeviceArray != null) && (prevDeviceArray[0] != null)) {
 
-            if((currentDevice.mPattern != null) && currentDevice.mPattern.equals(prevDeviceArray[0].mPattern))
-            {
+            if ((currentDevice.mPattern != null) && currentDevice.mPattern.equals(prevDeviceArray[0].mPattern)) {
                 // Update existing
-                if(currentDevice.mStatus != prevDeviceArray[0].mStatus)
-                {
+                if (currentDevice.mStatus != prevDeviceArray[0].mStatus) {
                     // Status has changed
-                    if(currentDevice.mStatus)
+                    if (currentDevice.mStatus)
                         disconnectBluetooth();
                     else
                         connectBluetoothDevice();
                 }
                 Utils.setPairedMicrobit(MBApp.getContext(), prevDeviceArray[0]);
-            } else
-            {
+            } else {
                 // device changed, disconnect previous and connect new
                 disconnectBluetooth();
                 Utils.setPairedMicrobit(MBApp.getContext(), prevDeviceArray[0]);
@@ -63,7 +59,7 @@ public class PreviousDeviceList{
             }
         } else {
             //Disconnect existing Gatt connection
-            if(currentDevice.mPattern != null)
+            if (currentDevice.mPattern != null)
                 disconnectBluetooth();
 
             // Remove existing Microbit
@@ -79,12 +75,12 @@ public class PreviousDeviceList{
         IPCService.getInstance().bleDisconnect();
     }
 
-    public int size()
-    {
-        if(prevMicrobitList == null)
+    public int size() {
+        if (prevMicrobitList == null)
             return 0;
         return prevMicrobitList.size();
     }
+
     /* Microbit list management */
     public ConnectedDevice[] storeMicrobits(ArrayList prevDevList) {
         // used for store arrayList in json format
@@ -94,7 +90,7 @@ public class PreviousDeviceList{
         editor = settings.edit();
         Gson gson = new Gson();
         int totalnum = prevDevList.size();
-        if(totalnum > 0 ) {
+        if (totalnum > 0) {
             prevDeviceArray = (ConnectedDevice[]) prevDevList.toArray(new ConnectedDevice[totalnum]);
             String jsonPrevDevices = gson.toJson(prevDeviceArray, ConnectedDevice[].class);
             editor.putString(PREFERENCES_PREVDEV_KEY, jsonPrevDevices);
@@ -110,7 +106,7 @@ public class PreviousDeviceList{
         // used for retrieving arraylist from json formatted string
         SharedPreferences settings;
         List prevMicrobitTemp;
-        prevMicrobitList=null;
+        prevMicrobitList = null;
         settings = context.getSharedPreferences(PREFERENCES_PREVDEV_PREFNAME, Context.MODE_PRIVATE);
         if (settings.contains(PREFERENCES_PREVDEV_KEY)) {
             String prevDevicesStr = settings.getString(PREFERENCES_PREVDEV_KEY, null);
@@ -124,9 +120,8 @@ public class PreviousDeviceList{
         }
 
         ConnectedDevice current = Utils.getPairedMicrobit(context);
-        if( (prevDeviceArray !=null) && ((current.mPattern != null) && current.mPattern.equals(prevDeviceArray[0].mPattern)))
-        {
-            if(current.mStatus != prevDeviceArray[0].mStatus)
+        if ((prevDeviceArray != null) && ((current.mPattern != null) && current.mPattern.equals(prevDeviceArray[0].mPattern))) {
+            if (current.mStatus != prevDeviceArray[0].mStatus)
                 prevDeviceArray[0].mStatus = current.mStatus;
         }
         return prevDeviceArray;
@@ -186,7 +181,7 @@ public class PreviousDeviceList{
         for (Iterator<ConnectedDevice> it = prevMicrobitList.iterator(); it.hasNext(); ) {
             ConnectedDevice st = it.next();
             if (isTurnedOn && (ind != index) && (prevDeviceArray[ind] != null)) {
-                if(prevDeviceArray[ind].mStatus) {
+                if (prevDeviceArray[ind].mStatus) {
                     //disconnectBluetooth();
                     prevDeviceArray[ind].mStatus = false; // toggle previously connected BT OFF
                 }
@@ -195,7 +190,7 @@ public class PreviousDeviceList{
         }
 
         storeMicrobits(prevMicrobitList);
-        if(!frombroadcast)
+        if (!frombroadcast)
             updateGlobalPairedDevice();
     }
 

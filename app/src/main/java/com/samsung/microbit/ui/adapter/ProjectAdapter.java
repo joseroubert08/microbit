@@ -223,7 +223,7 @@ public class ProjectAdapter extends BaseAdapter {
         @Override
         public void onClick(View v) {
             logi("sendBtnClickListener() :: ");
-            ((View.OnClickListener) projectActivity).onClick(v);
+            projectActivity.onClick(v);
 
         }
     };

@@ -64,7 +64,6 @@ public class ConnectedDeviceAdapter extends BaseAdapter {
         deviceConnectionStatus.setTypeface(MBApp.getApp().getTypeface());
 
         LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.connected_device_adapter_item);
-        // Accessibility changes // TODO - test for Build 3
         Button deviceName = (Button) convertView.findViewById(R.id.deviceName);
         deviceName.setTypeface(MBApp.getApp().getTypeface());
         deviceName.setFocusable(false);

@@ -170,7 +170,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             showSortMenu = getResources().getBoolean(R.bool.showSortMenu);
         } catch (Exception e) {
         }
-//TODO - KEEP sort functionality
+// TODO - KEEP sort functionality
 //        Spinner sortList = (Spinner) findViewById(R.id.sortProjects);
 //        if (showSortMenu) {
 //
@@ -255,7 +255,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         if (connectedIndicatorIcon == null || connectedIndicatorText == null)
             return;
 
-        //Override the connection Icon incse of active flashing
+        //Override the connection Icon in case of active flashing
         if (mActivityState == ACTIVITY_STATE.FLASH_STATE_FIND_DEVICE
                 || mActivityState == ACTIVITY_STATE.FLASH_STATE_VERIFY_DEVICE
                 || mActivityState == ACTIVITY_STATE.FLASH_STATE_WAIT_DEVICE_REBOOT

@@ -158,7 +158,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private void setupDrawer() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        // TODO: Accessibility Notifications check
         toolbar.setNavigationContentDescription(R.string.content_description_toolbar_home);
         toolbar.setLogo(R.drawable.bbc_microbit);
         toolbar.setLogoDescription(R.string.content_description_toolbar_logo);

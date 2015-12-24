@@ -6,7 +6,6 @@
     android:background="@drawable/grey_btn"
     android:orientation="horizontal">
 
-    <!-- TODO - dynamic allocation of text at runtime in projects class -->
     <Button
         android:id="@+id/appNameButton"
         android:layout_width="match_parent"
