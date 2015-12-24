@@ -18,12 +18,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
@@ -173,28 +170,28 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             showSortMenu = getResources().getBoolean(R.bool.showSortMenu);
         } catch (Exception e) {
         }
-
-        Spinner sortList = (Spinner) findViewById(R.id.sortProjects);
-        if (showSortMenu) {
-
-            sortList.setPrompt("Sort by");
-            ArrayAdapter<CharSequence> sortAdapter = ArrayAdapter.createFromResource(this, R.array.projectListSortOrder,
-                    android.R.layout.simple_spinner_item);
-
-            sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            sortList.setAdapter(sortAdapter);
-            sortList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    projectListSortOrder = position;
-                    projectListSortOrderChanged();
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-                }
-            });
-        }
+//TODO - KEEP sort functionality
+//        Spinner sortList = (Spinner) findViewById(R.id.sortProjects);
+//        if (showSortMenu) {
+//
+//            sortList.setPrompt("Sort by");
+//            ArrayAdapter<CharSequence> sortAdapter = ArrayAdapter.createFromResource(this, R.array.projectListSortOrder,
+//                    android.R.layout.simple_spinner_item);
+//
+//            sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//            sortList.setAdapter(sortAdapter);
+//            sortList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//                @Override
+//                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                    projectListSortOrder = position;
+//                    projectListSortOrderChanged();
+//                }
+//
+//                @Override
+//                public void onNothingSelected(AdapterView<?> parent) {
+//                }
+//            });
+//        }
 
         // Title font
         TextView flashProjectsTitle = (TextView) findViewById(R.id.flash_projects_title_txt);
@@ -460,7 +457,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 break;
         }
     }
-// TODO fonts on pop up
+
+    // TODO fonts on pop up
     private void adviceOnMicrobitState() {
         ConnectedDevice currentMicrobit = Utils.getPairedMicrobit(this);
 
