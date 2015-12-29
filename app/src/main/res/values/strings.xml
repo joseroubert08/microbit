@@ -155,7 +155,7 @@
     <string name="connectSearchingTitle">Connecting...</string>
     <string name="desc_connectSearchingTitle">Connecting...</string>
     <string name="searchingTitle">Searching for micro:bit</string>
-    <string name="pairing_msg_1">Found micro:bit. \n \nInitiating pairing...</string>
+    <string name="pairing_msg_1">Found micro:bit</string>
 
     <!--Connect Popup messages -->
     <string name="pairingErrorTitle">Error</string>
@@ -278,7 +278,7 @@
     <string name="nav_draw_share_statistics">Share Statistics</string>
     <string name="txt_my_scripts_btn">My Scripts</string>
     <string name="desc_nav_drawer_menu">Close Menu</string>
-    <string name="desc_share_statistics_description">The BBC will only use this information to analyse and improve the services offered through this app. For information, see our privacy policy.</string>
+    <string name="desc_share_statistics_description">The BBC will only use this information to analyse and improve the services offered through this app. For information, see our privacy policy </string>
     <string name="txt_pair_btn">Pair</string>
     <string name="txt_cancel_btn">Cancel</string>
     <string name="desc_connection_status_flash_text">Micro:Bit connection status</string>

@@ -1040,6 +1040,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     mBluetoothAdapter.startLeScan((BluetoothAdapter.LeScanCallback) getBlueToothCallBack());
                 } else {
                     List<ScanFilter> filters = new ArrayList<ScanFilter>();
+                    // TODO: play with ScanSettings further to ensure the Kit kat devices connect with higher success rate
                     ScanSettings settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
                     mLEScanner.startScan(filters, settings, (ScanCallback) getBlueToothCallBack());
                 }
@@ -1089,7 +1090,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                         Log.i("callbackType = ", String.valueOf(callbackType));
                         Log.i("result = ", result.toString());
                         BluetoothDevice btDevice = result.getDevice();
-                        PairingActivity.instance.onLeScan(result.getDevice(), result.getRssi(), result.getScanRecord().getBytes());
+                        PairingActivity.instance.onLeScan(btDevice, result.getRssi(), result.getScanRecord().getBytes());
                     }
 
                     @Override
@@ -1105,6 +1106,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                         super.onScanFailed(errorCode);
                         Log.i("Scan failed", "Error Code : " + errorCode);
                     }
+
                 };
 
                 return (mBluetoothScanCallBack);
