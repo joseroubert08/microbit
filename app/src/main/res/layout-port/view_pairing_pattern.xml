@@ -32,25 +32,6 @@
         android:numColumns="5"
         android:verticalSpacing="@dimen/led_gap" />
 
-    <!--<Button-->
-    <!--android:id="@+id/nameNewButton"-->
-    <!--style="@style/p1"-->
-    <!--android:layout_width="fill_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:background="@drawable/white_bg"-->
-    <!--android:clickable="true"-->
-    <!--android:drawableEnd="@drawable/rename"-->
-    <!--android:textColor="@color/black_color"-->
-    <!--android:visibility="gone" />-->
-
-    <!--<EditText-->
-    <!--android:id="@+id/nameNewEdit"-->
-    <!--android:layout_width="fill_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:background="@drawable/edit_box"-->
-    <!--android:inputType="textVisiblePassword|textNoSuggestions"-->
-    <!--android:lines="3"-->
-    <!--android:visibility="gone" />-->
     <include layout="@layout/view_entering_pattern_step" />
 
     <!-- Line -->

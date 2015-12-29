@@ -692,8 +692,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
                 // test
                 findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.GONE);
-                //     findViewById(R.id.nameNewButton).setVisibility(View.GONE); Temp disabling TODO - remove 'renaming microbit feature'
-                //    findViewById(R.id.nameNewEdit).setVisibility(View.GONE);
+
                 displayLedGrid();
                 break;
 
@@ -701,22 +700,13 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 findViewById(R.id.enter_pattern_step_2_gridview).setEnabled(false);
                 findViewById(R.id.connectedDeviceList).setClickable(false);
                 mNewDeviceView.setVisibility(View.VISIBLE);
-                //  TODO - remove 'renaming microbit feature'
-                //        Button newNameButton = (Button) findViewById(R.id.nameNewButton); // temp disabling
-                //     EditText newNameEdit = (EditText) findViewById(R.id.nameNewEdit);
-                //        newNameButton.setTag(R.id.textEdit, newNameEdit);              // temp disabling
-                //       newNameButton.setOnClickListener(microbitRenameClickListener); //temp disabling
-                //     newNameEdit.setTag(R.id.editbutton, newNameButton);               // temp disabling
-                // newNameEdit.setOnEditorActionListener(editorOnActionListener);
+
                 if ((mPrevDeviceArray == null) || (mPrevDeviceArray[0].mName == null) || (mPrevDeviceArray[0].mName.equals(""))) {
-                    //          newNameButton.setText(mNewDeviceCode); // temp
-                    //           newNameEdit.setText(mNewDeviceCode);
+
                 } else {
-                    //              newNameButton.setText(mPrevDeviceArray[0].mName);// temp
-                    //            newNameEdit.setText(mPrevDeviceArray[0].mName);
+
                 }
-                //       newNameButton.setVisibility(View.VISIBLE);// Temp
-                //        newNameEdit.setVisibility(View.INVISIBLE);
+
                 findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
                 findViewById(R.id.cancel_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
                 displayLedGrid();
@@ -753,28 +743,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 mPrevDeviceArray[0].mName = newName;
                 mPrevDevList.changeMicrobitName(0, mPrevDeviceArray[0]);
                 populateConnectedDeviceList(true);
-                //        Button newNameButton = (Button) findViewById(R.id.nameNewButton); // temp disabling
-                // newNameButton.setText(newName); // Temp disabling
-                // newNameButton.setVisibility(View.VISIBLE); // Temp disabling
                 ed.setVisibility(View.INVISIBLE);
             }
         }
     }
-
-    // TODO - remove microbit rename
-    private View.OnClickListener microbitRenameClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            //    Button newNameButton = (Button) findViewById(R.id.nameNewButton); //
-            //       EditText newNameEdit = (EditText) findViewById(R.id.nameNewEdit);
-            //     newNameEdit.setVisibility(View.VISIBLE);
-            //     newNameButton.setVisibility(View.INVISIBLE); // temp disabling of newname
-            //    newNameEdit.setText(mNewDeviceCode);
-            //     newNameEdit.setSelection(mNewDeviceCode.length());
-            //     newNameEdit.requestFocus();
-            showKeyboard();
-        }
-    };
 
     private void startBluetooth() {
         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -807,7 +779,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             mPrevDevList.changeMicrobitState(pos, mPrevDeviceArray[pos], false, false);
             populateConnectedDeviceList(true);
         }
-
     }
 
     public void onClick(final View v) {
@@ -843,18 +814,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     displayConnectScreen(PAIRING_STATE.PAIRING_STATE_SEARCHING);
                     break;
                 }
-
-                //     EditText editText = (EditText) findViewById(R.id.nameNewEdit); temp disabled
-                //     String newname = editText.getText().toString().trim();
-                //        if (newname.isEmpty()) {
-                //         editText.setText("");
-                //         editText.setError(getString(R.string.name_empty_error));
-                //     } else {
-//                    hideKeyboard(editText);
-//                    mPrevDeviceArray[0].mName = newname;
-                //         mPrevDevList.changeMicrobitName(0, mPrevDeviceArray[0]);
-                //        displayConnectScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
-                //     }
                 break;
 
             case R.id.cancel_tip_step_1_btn:
@@ -912,11 +871,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
     }
 
-    public void showKeyboard() {
-        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-    }
-
     private void handleDeleteMicrobit(final int pos) {
         PopUp.show(this,
                 getString(R.string.deleteMicrobitMessage), //message
@@ -932,7 +886,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     }
                 },//override click listener for ok button
                 null);//pass null to use default listener
-
     }
 
     private void handleResetAll() {

@@ -42,7 +42,7 @@
 
     <!-- Pairing Confirmation buttons -->
     <LinearLayout
-        android:id="@+id/pairTipButtonView"
+        android:id="@+id/cancel_search_microbit_step_3_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
