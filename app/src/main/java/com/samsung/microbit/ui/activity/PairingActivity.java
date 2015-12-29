@@ -140,9 +140,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private static ACTIVITY_STATE mActivityState = ACTIVITY_STATE.STATE_IDLE;
     private int selectedDeviceForConnect = 0;
 
-
-
-
 	/*
      * =================================================================
 	 */
@@ -359,7 +356,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         lvConnectedDevice = (ListView) findViewById(R.id.connectedDeviceList);
         TextView emptyText = (TextView) findViewById(android.R.id.empty);
         lvConnectedDevice.setEmptyView(emptyText);
-        // TODO - empty listview
         populateConnectedDeviceList(false);
 
         mBottomPairButton = (LinearLayout) findViewById(R.id.ll_pairing_activity_screen);
