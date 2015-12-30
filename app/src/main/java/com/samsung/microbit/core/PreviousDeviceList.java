@@ -121,11 +121,11 @@ public class PreviousDeviceList {
 
         ConnectedDevice current = Utils.getPairedMicrobit(context);
         if ((prevDeviceArray != null) && ((current.mPattern != null) && current.mPattern.equals(prevDeviceArray[0].mPattern))) {
-            if (current.mStatus != prevDeviceArray[0].mStatus)
+            if (current.mStatus != prevDeviceArray[0].mStatus) {
                 prevDeviceArray[0].mStatus = current.mStatus;
+            }
         }
         return prevDeviceArray;
-
     }
 
     public int checkDuplicateMicrobit(ConnectedDevice newMicrobit) {

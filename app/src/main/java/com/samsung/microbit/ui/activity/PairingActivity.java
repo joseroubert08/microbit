@@ -14,6 +14,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -69,6 +70,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     PreviousDeviceList mPrevDevList;
     ConnectedDevice mCurrentDevice;
 
+    SharedPreferences prefs = null; // TODO - shared prefs for storing the connected microbit
+    String IS_DEVICE_PAIRED_PREF = "isDevicePaired";
 
     private enum PAIRING_STATE {
         PAIRING_STATE_CONNECT_BUTTON,
@@ -242,20 +245,21 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         }
     };
 
+
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-            if (Constants.BLE_DISCONNECTED_FOR_FLASH == v) {
+            int bundleErrorCode = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+            if (Constants.BLE_DISCONNECTED_FOR_FLASH == bundleErrorCode) {
                 logi("Bluetooth disconnected for flashing. No need to display pop-up");
                 handleBLENotification(context, intent, false);
                 return;
             }
             handleBLENotification(context, intent, true);
-            if (v != 0) {
-                logi("broadcastReceiver Error code =" + v);
+            if (bundleErrorCode != 0) {
+                logi("broadcastReceiver Error code =" + bundleErrorCode);
                 String message = intent.getStringExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
                 logi("broadcastReceiver Error message = " + message);
                 if (message == null)
@@ -348,14 +352,23 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_connect);
 
         mHandler = new Handler(Looper.getMainLooper());
+        // TODO - remove previous list of devices
         if (mPrevDevList == null) {
             mPrevDevList = PreviousDeviceList.getInstance(this);
             mPrevDeviceArray = mPrevDevList.loadPrevMicrobits();
+
+            if (mPrevDeviceArray.length == 0) {
+                prefs.edit().putBoolean(IS_DEVICE_PAIRED_PREF, false).apply();
+            }
         }
+
+        //  TODO - SharedPreferences the list of microbits
+        //prefs
+
         //mPrevDeviceArray = new ConnectedDevice[PREVIOUS_DEVICES_MAX];
-        lvConnectedDevice = (ListView) findViewById(R.id.connectedDeviceList);
-        TextView emptyText = (TextView) findViewById(android.R.id.empty);
-        lvConnectedDevice.setEmptyView(emptyText);
+        lvConnectedDevice = (ListView) findViewById(R.id.connectedDeviceList); // TODO - Remove list reference
+        TextView emptyText = (TextView) findViewById(android.R.id.empty); // TODO - remove
+        lvConnectedDevice.setEmptyView(emptyText); // TODO remove reference
         populateConnectedDeviceList(false);
 
         mBottomPairButton = (LinearLayout) findViewById(R.id.ll_pairing_activity_screen);
@@ -463,24 +476,29 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         }
     }
 
+    // Get the Bluetooth Adapter
     boolean setupBleController() {
-        boolean retvalue = true;
+        boolean isBLEScannerReady = true;
 
+        final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        mBluetoothAdapter = bluetoothManager.getAdapter();
 
         if (mBluetoothAdapter == null) {
-            final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-            mBluetoothAdapter = bluetoothManager.getAdapter();
-        }
-        if (mBluetoothAdapter == null) {
-            retvalue = false;
-        }
+            // Bluetooth not supported on this device
+            isBLEScannerReady = false;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mLEScanner == null) {
-            mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
-            if (mLEScanner == null)
-                retvalue = false;
+        } else {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (mLEScanner == null) {
+                    mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
+                }
+                if (mLEScanner == null) {
+                    isBLEScannerReady = false;
+                }
+            }
         }
-        return retvalue;
+        return isBLEScannerReady;
     }
 
     @Override
@@ -620,8 +638,38 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             connectedDeviceList.add(new ConnectedDevice(null, null, false, null, 0));
         }
 
-
         if (isupdate) {
+            connectedDeviceAdapter.updateAdapter(connectedDeviceList);
+
+        } else {
+            connectedDeviceAdapter = new ConnectedDeviceAdapter(this, connectedDeviceList);
+            lvConnectedDevice.setAdapter(connectedDeviceAdapter);
+        }
+
+    }
+
+    private void populateConnectedDevicesList(boolean isUpdatingDeviceList) {
+        connectedDeviceList.clear();
+        int numOfPreviousItems = 0;
+        /* Get Previous connected devices */
+        mPrevDeviceArray = mPrevDevList.loadPrevMicrobits();
+        if (mPrevDevList != null)
+            numOfPreviousItems = mPrevDevList.size();
+
+        if ((numOfPreviousItems > 0) && (mCurrentDevice != null) &&
+                (mPrevDeviceArray[0].mPattern.equals(mCurrentDevice.mPattern))) {
+            mPrevDeviceArray[0].mStatus = mCurrentDevice.mStatus;
+        }
+
+        for (int i = 0; i < numOfPreviousItems; i++) {
+            connectedDeviceList.add(mPrevDeviceArray[i]);
+        }
+        for (int i = numOfPreviousItems; i < 1; i++) {
+            connectedDeviceList.add(new ConnectedDevice(null, null, false, null, 0));
+        }
+
+
+        if (isUpdatingDeviceList) {
             connectedDeviceAdapter.updateAdapter(connectedDeviceList);
 
         } else {
@@ -769,7 +817,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     PopUp.TYPE_SPINNER,
                     null, null);
             mPrevDevList.changeMicrobitState(pos, mPrevDeviceArray[pos], true, false);
+            setupBleController();// TODO -  Check for devices before connecting
             IPCService.getInstance().bleConnect();
+
         } else {
             mPrevDeviceArray[pos].mStatus = !currentState;
             mPrevDevList.changeMicrobitState(pos, mPrevDeviceArray[pos], false, false);
@@ -788,6 +838,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     startBluetooth();
                     return;
                 }
+                checkPreviouslyPairedDevices();
                 startWithPairing();
                 break;
             case R.id.go_bluetooth_settings: //Bluetooth
@@ -861,6 +912,33 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         }
     }
+
+    public void checkPreviouslyPairedDevices() {
+
+     //   boolean isDeviceAlreadyPaired = prefs.getBoolean(IS_DEVICE_PAIRED_PREF, );
+        //if(checkPrefs)
+
+        PopUp.show(MBApp.getContext(),
+                MBApp.getContext().getString(R.string.bluetooth_turn_on_guide),
+                MBApp.getContext().getString(R.string.turn_on_bluetooth),
+                R.drawable.bluetooth, R.drawable.blue_btn,
+                PopUp.TYPE_CHOICE,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PopUp.hide();
+                        mBluetoothAdapter.enable();
+                    }
+                }, null);
+    }
+
+    public boolean isPreviousDevicePaired() {
+        boolean devicePaired = false;
+
+
+        return devicePaired;
+    }
+
 
     public void hideKeyboard(View v) {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -1028,11 +1106,11 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 // Stops scanning after a pre-defined scan period.
                 mScanning = true;
                 TextView textView = (TextView) findViewById(R.id.search_microbit_step_3_title);
-                if (textView != null)
+                if (textView != null) {
                     textView.setText(getString(R.string.searchingTitle));
-
+                }
                 mHandler.postDelayed(scanTimedOut, SCAN_PERIOD);
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) { //Lollipop
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) { // Lollipop
                     mBluetoothAdapter.startLeScan((BluetoothAdapter.LeScanCallback) getBlueToothCallBack());
                 } else {
                     List<ScanFilter> filters = new ArrayList<ScanFilter>();
@@ -1157,8 +1235,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     @Override
                     public void run() {
                         TextView textView = (TextView) findViewById(R.id.search_microbit_step_3_title);
-                        if (textView != null)
-                            textView.setText(getString(R.string.pairing_msg_1));
+                        if (textView != null) {
+                            textView.setText(getString(R.string.pairing_msg_1) + "\n " + device.getName()); // TODO - remove before build 4 Testing
+                        }
                         startPairing(mNewDeviceAddress);
                     }
                 });
