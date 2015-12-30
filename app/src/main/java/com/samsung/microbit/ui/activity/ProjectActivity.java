@@ -161,6 +161,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         logi("onCreate() :: ");
         MBApp.setContext(this);
 
+        // Make sure to call this before any other userActionEvent is sent
+        if (MBApp.getApp().getEcho() != null) {
+            logi("Page View test for ProjectActivity");
+            MBApp.getApp().getEcho().viewEvent("com.samsung.microbit.ui.activity.projectactivity.page", null);
+        }
         //Remove title bar
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_projects);
@@ -232,10 +237,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             } else {
                 adviceOnMicrobitState();
             }
-        }
-        if (MBApp.getApp().getEcho() != null) {
-            logi("Page View test for ProjectActivity");
-            MBApp.getApp().getEcho().viewEvent("com.samsung.microbit.ui.activity.projectactivity.page", null);
         }
     }
 
