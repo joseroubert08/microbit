@@ -288,4 +288,6 @@
     <string name="desc_connect_pair_micro_bit">Pair a new micro:bit</string>
     <string name="most_recent_device_status">Most recently used micro:bit</string>
     <string name="device_connected_device_status">Currently connected micro:bit</string>
+    <string name="pair_new_device_dialog_title">Pair a new Device?</string>
+    <string name="pair_new_device_dialog_message">Pairing with a new device will remove any previously paired Mircobits.</string>
 </resources>

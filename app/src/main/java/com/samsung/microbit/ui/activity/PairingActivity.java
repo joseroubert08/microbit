@@ -357,13 +357,14 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             mPrevDevList = PreviousDeviceList.getInstance(this);
             mPrevDeviceArray = mPrevDevList.loadPrevMicrobits();
 
+            // Check if there are paired devices
             if (mPrevDeviceArray.length == 0) {
+                prefs = MBApp.getContext().getSharedPreferences("pairing_activity_shared_prefs", MODE_PRIVATE);
                 prefs.edit().putBoolean(IS_DEVICE_PAIRED_PREF, false).apply();
             }
         }
 
         //  TODO - SharedPreferences the list of microbits
-        //prefs
 
         //mPrevDeviceArray = new ConnectedDevice[PREVIOUS_DEVICES_MAX];
         lvConnectedDevice = (ListView) findViewById(R.id.connectedDeviceList); // TODO - Remove list reference
@@ -797,13 +798,47 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         startActivityForResult(enableBtIntent, Constants.REQUEST_ENABLE_BT);
     }
 
+    private void startBluetoothWithWait() {
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        startActivityForResult(enableBtIntent, 1232143);
+    }
+
     public void startWithPairing() {
-        if (mBottomPairButton != null) {
-            mConnectDeviceView.setVisibility(View.GONE);
+        if (isPreviousDevicePaired()) {
+            if (mBottomPairButton != null) {
+                mConnectDeviceView.setVisibility(View.GONE);
+            }
+
+            if (mPairButtonView != null) {
+                displayConnectScreen(PAIRING_STATE.PAIRING_STATE_TIP);
+            }
+        } else {
+            PopUp.show(MBApp.getContext(),
+                    MBApp.getContext().getString((R.string.pair_new_device_dialog_message)),
+                    MBApp.getContext().getString((R.string.pair_new_device_dialog_title)),
+                    R.drawable.bluetooth, R.drawable.blue_btn,
+                    PopUp.TYPE_CHOICE,
+                    /* User selects Ok */
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (mBottomPairButton != null) {
+                                mConnectDeviceView.setVisibility(View.GONE);
+                            }
+
+                            if (mPairButtonView != null) {
+                                displayConnectScreen(PAIRING_STATE.PAIRING_STATE_TIP);
+                            }
+                        }
+                    }, /* Pass 'null' as last parameter if user selects cancel
+                        * - PopUp is dismissed by default */
+                    null
+            );
         }
 
-        if (mPairButtonView != null) {
-            displayConnectScreen(PAIRING_STATE.PAIRING_STATE_TIP);
+
+        if ((checkPreviouslyPairedDevices())) {
+
         }
     }
 
@@ -817,7 +852,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     PopUp.TYPE_SPINNER,
                     null, null);
             mPrevDevList.changeMicrobitState(pos, mPrevDeviceArray[pos], true, false);
-            setupBleController();// TODO -  Check for devices before connecting
+            setupBleController();// TODO - Check for devices before connecting
             IPCService.getInstance().bleConnect();
 
         } else {
@@ -838,8 +873,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     startBluetooth();
                     return;
                 }
-                checkPreviouslyPairedDevices();
+                //   checkBluetooth();
+                mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_PAIRING;
                 startWithPairing();
+
                 break;
             case R.id.go_bluetooth_settings: //Bluetooth
                 Intent goToBlueToothIntent = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
@@ -913,32 +950,52 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    public void checkPreviouslyPairedDevices() {
+    // Let the user know pair a new micro:bit will remove any previously paired devices
+    public boolean checkPreviouslyPairedDevices() {
 
-     //   boolean isDeviceAlreadyPaired = prefs.getBoolean(IS_DEVICE_PAIRED_PREF, );
-        //if(checkPrefs)
-
-        PopUp.show(MBApp.getContext(),
-                MBApp.getContext().getString(R.string.bluetooth_turn_on_guide),
-                MBApp.getContext().getString(R.string.turn_on_bluetooth),
-                R.drawable.bluetooth, R.drawable.blue_btn,
-                PopUp.TYPE_CHOICE,
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        PopUp.hide();
-                        mBluetoothAdapter.enable();
-                    }
-                }, null);
+        if (isPreviousDevicePaired()) {
+            return true;
+        } else {
+            PopUp.show(MBApp.getContext(),
+                    MBApp.getContext().getString((R.string.pair_new_device_dialog_message)),
+                    MBApp.getContext().getString((R.string.pair_new_device_dialog_title)),
+                    R.drawable.bluetooth, R.drawable.blue_btn,
+                    PopUp.TYPE_CHOICE,
+                    /* User selects Ok */
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (!isBluetoothOn()) {
+                                //   startBluetoothWithWait();
+                            } else {
+                                //   startWithPairing();
+                            }
+                        }
+                    }, /* Pass 'null' as last parameter if user selects cancel
+                        * - PopUp is dismissed by default */
+                    null
+            );
+            return true;
+        }
     }
 
+    // Check bluetooth status
+    public boolean isBluetoothOn() {
+        if (BluetoothSwitch.getInstance().isBluetoothON()) {
+            return true;
+        } else {
+            mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_PAIRING;
+            startBluetooth();
+            return true;
+        }
+    }
+
+    // Check if there is a device already paired from shared preferences
     public boolean isPreviousDevicePaired() {
-        boolean devicePaired = false;
-
-
-        return devicePaired;
+        // TODO - Returned from system list of bluetooth devices
+        prefs = MBApp.getContext().getSharedPreferences("pairing_activity_shared_prefs", MODE_PRIVATE);
+        return prefs.getBoolean(IS_DEVICE_PAIRED_PREF, false);
     }
-
 
     public void hideKeyboard(View v) {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
