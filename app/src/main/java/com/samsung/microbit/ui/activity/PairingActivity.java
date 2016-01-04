@@ -1140,7 +1140,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         if ((mNewDeviceName.isEmpty()) || (device.getName() == null)) {
             if (debug)
-                logi("mLeScanCallback.onLeScan() ::   Cannot Compare " + device.getAddress() + " " + rssi + " " + scanRecord.toString());
+                logi("mLeScanCallback.onLeScan() ::   Cannot Compare " + device.getAddress() + " " + rssi + " " + Arrays.toString(scanRecord));
         } else {
             String s = device.getName().toLowerCase();
             //Replace all : to blank - Fix for #64
