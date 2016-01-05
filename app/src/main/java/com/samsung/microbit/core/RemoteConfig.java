@@ -253,8 +253,6 @@ public class RemoteConfig
 
     public boolean isAppStatusOn()
     {
-        return false;
-        /*
         getStoredValues(MBApp.getContext());
         m_AppStatus = mPreferences.getString(RC_APPSTATUS_KEY,"On");
         //Get extended message if needed
@@ -263,7 +261,7 @@ public class RemoteConfig
             Log.e("RemoteConfig", "isAppStatusOn: OFF");
             return false;
         }
-        return true;*/
+        return true;
     }
     class RetrieveConfigFile extends AsyncTask<String, Void, Result> {
 
