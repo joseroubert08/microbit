@@ -35,6 +35,7 @@ import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.service.PluginService;
+import com.samsung.microbit.ui.PopUp;
 
 import java.util.HashMap;
 import java.util.List;
@@ -63,12 +64,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private String emailBodyString = null;
 
+
+
     protected void logi(String message) {
         if (debug) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         //handle orientation change to prevent re-creation of activity.
@@ -79,9 +81,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         logi("onCreate() :: ");
         MBApp.setContext(this);
+
+        RemoteConfig.getInstance().init();
 
         setContentView(R.layout.activity_home);
         setupDrawer();
@@ -125,11 +128,22 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (item != null) {
             item.setChecked(true);
         }
-        /* Debug code ends*/
-        RemoteConfig.getInstance().init();
+
+        if (!RemoteConfig.getInstance().isAppStatusOn())
+        {
+            finish();
+            //Cannot proceed with the application. Shutdown NOW
+            PopUp.show(MBApp.getContext(),
+                    RemoteConfig.getInstance().getExceptionMsg(),
+                    RemoteConfig.getInstance().getExceptionTitle(),
+                    R.drawable.error_face,//image icon res id
+                    R.drawable.red_btn,
+                    PopUp.TYPE_ALERT, //type of popup.
+                    null,
+                    null);
+
+        }
     }
-
-
     private void setupEcho() {
         // Echo Config
         app = (MBApp) MBApp.getApp().getApplicationContext();
@@ -249,21 +263,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        urlToOpen = RemoteConfig.getInstance().getCreateCodeURL();
         switch (id) {
             case R.id.live:
                 item.setChecked(true);
-                urlToOpen = getString(R.string.touchDevLiveURL);
                 break;
             case R.id.stage:
                 item.setChecked(true);
-                urlToOpen = getString(R.string.touchDevStageURL);
+                urlToOpen = urlToOpen.replace("www","stage");
                 break;
             case R.id.test:
                 item.setChecked(true);
-                urlToOpen = getString(R.string.touchDevTestURL);
+                urlToOpen = urlToOpen.replace("www", "test");
                 break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -329,9 +342,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     logi("User action test for delete project");
                     app.getEcho().userActionEvent("click", "CreateCode", null);
                 }
-                //Debug feature to be added. Start Browser with live, stage or test URL
-                if (urlToOpen == null) {
-                    urlToOpen = getString(R.string.touchDevLiveURL);
+                if (urlToOpen == null)
+                {
+                    urlToOpen = RemoteConfig.getInstance().getCreateCodeURL();
                 }
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(urlToOpen));
@@ -344,7 +357,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.discover_btn:
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(getString(R.string.touchDevDiscoverURL)));
+                intent.setData(Uri.parse(RemoteConfig.getInstance().getDiscoverURL()));
                 startActivity(intent);
                 break;
 
@@ -358,10 +371,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             break;
             case R.id.btn_about: {
                 String url = RemoteConfig.getInstance().getAboutURL();
-                if (url.isEmpty()) {
-                    Log.d(TAG, "Failed to get the about url from remoteConfig");
-                    url = getString(R.string.terms_of_use_url);
-                }
                 Intent aboutIntent = new Intent(Intent.ACTION_VIEW);
                 aboutIntent.setData(Uri.parse(url));
                 startActivity(aboutIntent);
@@ -377,10 +386,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             break;
             case R.id.btn_privacy_cookies: {
                 String url = RemoteConfig.getInstance().getPrivacyURL();
-                if (url.isEmpty()) {
-                    Log.d(TAG, "Failed to get the privacy url from remoteConfig");
-                    url = getString(R.string.privacy_policy_url);
-                }
                 Intent privacyIntent = new Intent(Intent.ACTION_VIEW);
                 privacyIntent.setData(Uri.parse(url));
                 startActivity(privacyIntent);
@@ -390,14 +395,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             break;
             case R.id.btn_terms_conditions: {
                 String url = RemoteConfig.getInstance().getTermsOfUseURL();
-                if (url.isEmpty()) {
-                    Log.d(TAG, "Failed to get the terms of use url from remoteConfig");
-                    url = getString(R.string.terms_of_use_url);
-                }
                 Intent termsIntent = new Intent(Intent.ACTION_VIEW);
                 termsIntent.setData(Uri.parse(url));
                 startActivity(termsIntent);
-
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
 
@@ -446,7 +446,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void onResume() {
         if (debug) logi("onResume() :: ");
         super.onResume();
-
         /* TODO Remove this code in commercial build*/
         if (mPrefs.getBoolean("firstrun", true)) {
             //First Run. Install the Sample applications

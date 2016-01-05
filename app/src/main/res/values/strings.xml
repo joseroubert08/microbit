@@ -21,14 +21,16 @@
     <string name="poweredBy">Powered by\r\n SAMSUNG</string>
     <string name="copyright">Copyright © 1995-2015 SAMSUNG</string>
 
-    <string name="touchDevLiveURL">https://www.microbit.co.uk/create-code</string>
-    <string name="touchDevDiscoverURL">https://www.microbit.co.uk/</string>
-    <string name="touchDevTestURL">https://test.microbit.co.uk/create-code</string>
-    <string name="touchDevStageURL">https://stage.microbit.co.uk/create-code</string>
-    <string name="touchDevURLMyScripts">https://www.microbit.co.uk/</string>
-    <string name="myScriptsURL">https://www.microbit.co.uk/app/#</string>
-    <string name="privacy_policy_url">https://www.microbit.co.uk/privacy</string>
-    <string name="terms_of_use_url">https://www.microbit.co.uk/terms-of-use</string>
+    <string name="createCodeURL">https://www.microbit.co.uk/</string>
+
+    <string name="discoverURL">https://www.microbit.co.uk/</string>
+    <string name="myScriptsURL">https://www.microbit.co.uk/</string>
+
+    <string name="privacy_policy_url">https://www.microbit.co.uk/</string>
+    <string name="terms_of_use_url">https://www.microbit.co.uk/</string>
+    <string name="about_url">https://www.microbit.co.uk/</string>
+    <string name="feedback_email_address">learning.makeitdigital@bbc.co.uk</string>
+
     <string name="remote_config_url">https://files.microbit.co.uk/appconfig/microbit/android/%s/config.json</string>
 
 
@@ -253,8 +255,7 @@
     </string>
     <string name="prefs_share_stats_status">share_stats</string>
     <string name="content_description_toolbar_home">Open Menu</string>
-    <string name="content_description_toolbar_logo">BBC Micro:bit</string>&
-    
+    <string name="content_description_toolbar_logo">BBC Micro:bit</string>
     <string name="manage_microbit_txt">To manage paired micro:bits, go to your \nBluetooth Settings on your device</string>
     <string name="desc_manage_microbit_txt">Rename and remove paired micro:bits</string>
     <string name="desc_manage_microbits">To manage paired micro:bits, go to your Bluetooth Settings on your device</string>
@@ -289,4 +290,7 @@
     <string name="desc_connect_pair_micro_bit">Pair a new micro:bit</string>
     <string name="most_recent_device_status">Most recently used micro:bit</string>
     <string name="device_connected_device_status">Currently connected micro:bit</string>
+
+    <string name="general_error_title">Error</string>
+    <string name="general_error_msg">Application error. Please contact developer</string>
 </resources>

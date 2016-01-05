@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.IPCMessageManager;
+import com.samsung.microbit.core.RemoteConfig;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
@@ -161,6 +162,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         logi("onCreate() :: ");
         MBApp.setContext(this);
 
+        RemoteConfig.getInstance().init();
+
         // Make sure to call this before any other userActionEvent is sent
         if (MBApp.getApp().getEcho() != null) {
             logi("Page View test for ProjectActivity");
@@ -238,6 +241,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 adviceOnMicrobitState();
             }
         }
+
     }
 
     private void setConnectedDeviceText() {
@@ -425,7 +429,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 if (MBApp.getApp().getEcho() != null) {
                     MBApp.getApp().getEcho().userActionEvent("onClick", "myScripts", null);
                 }
-                String url = getString(R.string.myScriptsURL);
+                String url = RemoteConfig.getInstance().getMyScriptsURL();
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(url));
                 startActivity(intent);
