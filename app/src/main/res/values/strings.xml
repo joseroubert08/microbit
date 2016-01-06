@@ -73,7 +73,7 @@
     <string name="pattern_to_flash">Enter the pattern displayed on your micro:bit to flash</string>
     <string name="pattern_to_pair">Enter the pattern displayed on your micro:bit to pair</string>
 
-    <string name="pairing_failed_message">Cannot pair with the micro:bit.\n Please try again.</string>
+    <string name="pairing_failed_message">Cannot pair with the micro:bit.\n Retry?</string>
     <string name="pairing_failed_title">Pairing unsuccessful</string>
     <string name="pairing_success_message_1">You have successfully paired with micro:bit </string>
     <string name="pairing_success_title">micro:bit paired</string>
@@ -162,7 +162,7 @@
     <!--Connect Popup messages -->
     <string name="pairingErrorTitle">Error</string>
     <string name="timeOut">Timeout</string>
-    <string name="pairingErrorMessage">We cannot find that micro:bit\nPlease try again</string>
+    <string name="pairingErrorMessage">We cannot find that micro:bit\nRetry?</string>
     <string name="deleteMicrobitTitle">Delete micro:bit?</string>
     <string name="deleteMicrobitMessage">Are you sure you want to remove this device?</string>
 
