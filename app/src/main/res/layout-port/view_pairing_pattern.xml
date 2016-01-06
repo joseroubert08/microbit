@@ -19,18 +19,26 @@
         android:textColor="@color/white_color" />
 
     <!-- Grid to enter pattern -->
-    <GridView
-        android:id="@+id/enter_pattern_step_2_gridview"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginEnd="16dp"
+        android:layout_gravity="center"
         android:layout_marginStart="16dp"
-        android:layout_weight="3"
-        android:cacheColorHint="@color/cancel_button_up"
-        android:horizontalSpacing="@dimen/led_gap"
-        android:numColumns="5"
-        android:verticalSpacing="@dimen/led_gap" />
+        android:layout_marginEnd="16dp"
+        android:layout_weight="3">
+
+        <GridView
+            android:id="@+id/enter_pattern_step_2_gridview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cacheColorHint="@color/cancel_button_up"
+            android:gravity="center"
+            android:horizontalSpacing="@dimen/led_gap"
+            android:numColumns="5"
+            android:stretchMode="spacingWidthUniform"
+            android:verticalSpacing="@dimen/led_gap" />
+    </LinearLayout>
+
 
     <include layout="@layout/view_entering_pattern_step" />
 

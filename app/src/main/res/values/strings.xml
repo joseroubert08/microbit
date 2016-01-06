@@ -293,4 +293,7 @@
 
     <string name="general_error_title">Error</string>
     <string name="general_error_msg">Application error. Please contact developer</string>
+    <string name="pair_new_device_dialog_title">Pair a new Device?</string>
+    <string name="pair_new_device_dialog_message">Pairing with a new device will remove any previously paired Mircobits.</string>
+
 </resources>

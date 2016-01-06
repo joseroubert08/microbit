@@ -69,12 +69,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="top|center"
-            android:textAppearance="?android:textAppearance"
             android:textColor="@color/white_color" />
 
         <TextView
             android:id="@+id/deviceName"
-            style="@style/p2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="top|center"
@@ -82,7 +80,6 @@
 
         <TextView
             android:id="@+id/deviceName2"
-            style="@style/p2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="top|center"

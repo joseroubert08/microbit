@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -50,6 +52,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     SharedPreferences mPrefs = null;
     StableArrayAdapter adapter = null;
     private AppCompatDelegate delegate;
+    // Hello animation
+    private WebView animation;
 
     boolean connectionInitiated = false;
 
@@ -143,6 +147,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     null);
 
         }
+        // animation for loading hello .giff
+        animation = (WebView) findViewById(R.id.homeHelloAnimationWebView);
+        animation.setBackgroundColor(Color.TRANSPARENT);
+        animation.loadUrl("file:///android_asset/htmls/hello_home_animation.html");
     }
     private void setupEcho() {
         // Echo Config
