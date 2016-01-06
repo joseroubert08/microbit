@@ -437,10 +437,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         logi("onActivityResult");
-        if (requestCode == Constants.REQUEST_ENABLE_BT) {/*        if (mPrevDevList == null) {
-            mPrevDevList = PreviousDeviceList.getInstance(this);
-            mPrevDeviceArray = mPrevDevList.loadPrevMicrobits();
-        }*/
+        if (requestCode == Constants.REQUEST_ENABLE_BT) {
             if (resultCode == Activity.RESULT_OK) {
                 if (mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_FOR_PAIRING) {
                     startWithPairing();
