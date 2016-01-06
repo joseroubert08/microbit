@@ -357,11 +357,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             mPrevDevList = PreviousDeviceList.getInstance(this);
             mPrevDeviceArray = mPrevDevList.loadPrevMicrobits();
 
-            // Check if there are paired devices
-            if (mPrevDeviceArray.length == 0) {
-                prefs = MBApp.getContext().getSharedPreferences("pairing_activity_shared_prefs", MODE_PRIVATE);
-                prefs.edit().putBoolean(IS_DEVICE_PAIRED_PREF, false).apply();
-            }
         }
 
         //  TODO - SharedPreferences the list of microbits
