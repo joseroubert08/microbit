@@ -1,5 +1,7 @@
 package com.samsung.microbit.core;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Context;
@@ -24,6 +26,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -349,10 +352,32 @@ public class Utils {
 		}
 
 		if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
+            boolean pairedInDeviceList = false;
 			String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
 			Gson gson = new Gson();
 			pairedDevice = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
-		} else {
+			//Check if the microbit is still paired with our mobile
+            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+            for (BluetoothDevice bt : pairedDevices) {
+                if (bt.getAddress().equals(pairedDevice.mAddress)) {
+                    pairedInDeviceList = true;
+                    break;
+                }
+            }
+
+            if (!pairedInDeviceList){
+                Log.e("Utils","The last paired microbit is no longer in the system list. Hence removing it");
+                //Return a NULL device & update preferences
+                pairedDevice.mPattern = null;
+                pairedDevice.mName = null;
+                pairedDevice.mStatus = false;
+                pairedDevice.mAddress = null;
+                pairedDevice.mPairingCode = 0;
+                setPairedMicrobit(ctx,null);
+            }
+
+        } else {
 			pairedDevice.mPattern = null;
 			pairedDevice.mName = null;
 		}
