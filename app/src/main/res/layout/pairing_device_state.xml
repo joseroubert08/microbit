@@ -13,18 +13,17 @@
     <include layout="@layout/pairing_activity_connection_status" />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/connected_device_adapter_item"
+        android:id="@+id/connected_device_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:alpha="0.25"
         android:background="@drawable/grey_btn"
         android:contentDescription="@null"
         android:focusable="false"
+        android:alpha="0.25"
         android:focusableInTouchMode="false"
         android:importantForAccessibility="yes"
         android:orientation="horizontal"
         android:padding="8dp">
-
 
         <!-- Microbit name-->
         <TextView
@@ -42,7 +41,7 @@
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="@color/white_color" />
 
-        <!--  Delete -->
+        <!--  Delete micro:bit -->
         <ImageButton
             android:id="@+id/deleteBtn"
             android:layout_width="wrap_content"

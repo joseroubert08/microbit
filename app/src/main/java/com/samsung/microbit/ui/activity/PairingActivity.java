@@ -96,7 +96,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     LinearLayout mPairSearchView;
     LinearLayout mBottomPairButton;
     LinearLayout mEnterPinView; // pin view
-    private TextView mConnectedDeviceName ;
+    private LinearLayout itemSelectorLayout;
+    private TextView mConnectedDeviceName;
     private TextView mdeviceConnectionStatus;
     private ImageButton mconnectBtn;
     private ImageButton mdeleteBtn;
@@ -108,7 +109,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private static PairingActivity instance;
     private static BluetoothAdapter mBluetoothAdapter = null;
     private static volatile boolean mScanning = false;
-        //private Runnable scanFailedCallback;
+    //private Runnable scanFailedCallback;
     private static BluetoothLeScanner mLEScanner = null;
 
 
@@ -123,7 +124,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private int selectedDeviceForConnect = 0;
 
 
-    private  View.OnClickListener mSuccessFulPairingHandler = new View.OnClickListener() {
+    private View.OnClickListener mSuccessFulPairingHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             logi("======mSuccessFulPairingHandler======");
@@ -132,7 +133,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         }
     };
 
-    private  View.OnClickListener mFailedPairingHandler = new View.OnClickListener() {
+    private View.OnClickListener mFailedPairingHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             logi("======mFailedPairingHandler======");
@@ -140,7 +141,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             displayScreen(PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY);
         }
     };
-    private  View.OnClickListener mRetryPairing = new View.OnClickListener() {
+    private View.OnClickListener mRetryPairing = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             logi("======mRetryPairing======");
@@ -154,30 +155,30 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             String action = intent.getAction();
 
             if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
-                final int state        = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
-                final int prevState    = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
+                final int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
+                final int prevState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
 
                 logi(" mPairReceiver - state = " + state + " prevState = " + prevState);
                 if (state == BluetoothDevice.BOND_BONDED && prevState == BluetoothDevice.BOND_BONDING) {
                     ConnectedDevice newDev = new ConnectedDevice(mNewDeviceCode.toUpperCase(), mNewDeviceCode.toUpperCase(), false, mNewDeviceAddress, 0 /*No pair code*/);
                     handlePairingSuccessful(newDev);
                     return;
-                } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDING){
+                } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDING) {
                     scanLeDevice(false);
                     PopUp.show(MBApp.getContext(),
-                                getString(R.string.pairing_failed_message), //message
-                                getString(R.string.pairing_failed_title), //title
-                                R.drawable.error_face, //image icon res id
-                                R.drawable.red_btn,
-                                PopUp.TYPE_CHOICE, //type of popup.
-                                null,//override click listener for ok button
-                                new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        PopUp.hide();
-                                        displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
-                                    }
-                                });
+                            getString(R.string.pairing_failed_message), //message
+                            getString(R.string.pairing_failed_title), //title
+                            R.drawable.error_face, //image icon res id
+                            R.drawable.red_btn,
+                            PopUp.TYPE_CHOICE, //type of popup.
+                            null,//override click listener for ok button
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    PopUp.hide();
+                                    displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                                }
+                            });
                 }
 
             }
@@ -188,7 +189,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-        int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+            int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
 
             if (Constants.BLE_DISCONNECTED_FOR_FLASH == v) {
                 logi("Bluetooth disconnected for flashing. No need to display pop-up");
@@ -220,7 +221,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
     private void handleBLENotification(Context context, Intent intent, boolean popupHide) {
 
-        logi("handleBLENotification() " );
+        logi("handleBLENotification() ");
         updatePairedDeviceCard();
         if (popupHide)
             PopUp.hide();
@@ -288,28 +289,34 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         mHandler = new Handler(Looper.getMainLooper());
 
+        //Layout status indicator
+        itemSelectorLayout = (LinearLayout) findViewById(R.id.connected_device_item);
+
+        // Device connection status
+        mdeviceConnectionStatus = (TextView) findViewById(R.id.device_status_txt);
+        mdeviceConnectionStatus.setTypeface(MBApp.getApp().getTypeface());
+
+        // Name fo the device currently paired or connected
         mConnectedDeviceName = (TextView) findViewById(R.id.pairedDeviceName);
         mConnectedDeviceName.setTypeface(MBApp.getApp().getTypeface());
         mConnectedDeviceName.setFocusable(false);
         mConnectedDeviceName.setFocusableInTouchMode(false);
         mConnectedDeviceName.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
 
-
+        // Connect the device
         mconnectBtn = (ImageButton) findViewById(R.id.connectBtn);
         mconnectBtn.setFocusable(false);
         mconnectBtn.setFocusableInTouchMode(false);
         mconnectBtn.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
 
+        // Delete the device
         mdeleteBtn = (ImageButton) findViewById(R.id.deleteBtn);
         mdeleteBtn.setFocusable(false);
         mdeleteBtn.setFocusableInTouchMode(false);
         mdeleteBtn.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
 
-
         mconnectBtn.setOnClickListener(this);
         mdeleteBtn.setOnClickListener(this);
-
-        mdeviceConnectionStatus = (TextView) findViewById(R.id.device_status_txt);
 
         updatePairedDeviceCard();
 
@@ -545,34 +552,40 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         return isOn;
     }
 
-    private void updateConnectionStatus()
-    {
+    private void updateConnectionStatus() {
         ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
+
         if (!connectedDevice.mStatus) {
+            // Device is not connected
             mconnectBtn.setImageResource(R.drawable.device_status_disconnected);
-            //itemLayout.setBackgroundResource(R.drawable.grey_btn);
-            //itemLayout.setAlpha(1.0f);
+            itemSelectorLayout.setBackgroundResource(R.drawable.grey_btn);
+            itemSelectorLayout.setAlpha(1.0f);
             mConnectedDeviceName.setTextColor(Color.WHITE);
             mdeviceConnectionStatus.setText(R.string.most_recent_device_status);
             mdeviceConnectionStatus.setAlpha(1.0f);
         } else {
+            // Device is connected
             mconnectBtn.setImageResource(R.drawable.device_connected);
-            //itemLayout.setBackgroundResource(R.drawable.white_btn);
-            //itemLayout.setAlpha(1.0f);
+            itemSelectorLayout.setBackgroundResource(R.drawable.white_btn);
+            itemSelectorLayout.setAlpha(1.0f);
             mConnectedDeviceName.setTextColor(Color.BLACK);
             mdeviceConnectionStatus.setText(R.string.device_connected_device_status);
             mdeviceConnectionStatus.setAlpha(1.0f);
         }
 
     }
+
     private void updatePairedDeviceCard() {
         ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
         if (connectedDevice.mName == null) {
             //No device is Paired
-            mConnectedDeviceName.setText("-");
-            mConnectedDeviceName.setEnabled(false);
             mconnectBtn.setVisibility(View.INVISIBLE);
             mdeleteBtn.setVisibility(View.INVISIBLE);
+            itemSelectorLayout.setBackgroundResource(R.drawable.grey_btn);
+            itemSelectorLayout.setAlpha(0.25f);
+            mConnectedDeviceName.setText("-");
+            mConnectedDeviceName.setEnabled(false);
+            mdeviceConnectionStatus.setAlpha(0.25f);
         } else {
             mConnectedDeviceName.setText(connectedDevice.mName);
             mconnectBtn.setVisibility(View.VISIBLE);
@@ -664,8 +677,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
     public void toggleConnection() {
         ConnectedDevice currentDevice = Utils.getPairedMicrobit(this);
-        if (currentDevice.mAddress != null)
-        {
+        if (currentDevice.mAddress != null) {
             boolean currentState = currentDevice.mStatus;
             if (!currentState) {
                 PopUp.show(MBApp.getContext(),
@@ -793,7 +805,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
     private void unpairDeivce(int pos) {
         ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
-        String addressToDelete = connectedDevice.mAddress ;
+        String addressToDelete = connectedDevice.mAddress;
         // Get the paired devices and put them in a Set
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
@@ -804,7 +816,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 try {
                     Method m = bt.getClass().getMethod("removeBond", (Class[]) null);
                     m.invoke(bt, (Object[]) null);
-                } catch (Exception e) { Log.e(TAG, e.getMessage()); }
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
             }
         }
     }
@@ -1016,7 +1030,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private void startPairingSecureBle(BluetoothDevice device) {
         logi("###>>>>>>>>>>>>>>>>>>>>> startPairingSecureBle");
         //Check if the device is already bonded
-        if (device.getBondState() == BluetoothDevice.BOND_BONDED){
+        if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
             logi("Device is already bonded.");
             cancelPairing();
             //Get device name from the System settings if present and add to our list
