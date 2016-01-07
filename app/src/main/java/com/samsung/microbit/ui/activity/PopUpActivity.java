@@ -9,11 +9,13 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.samsung.microbit.R;
@@ -37,17 +39,18 @@ public class PopUpActivity extends Activity implements View.OnClickListener{
     static public final String INTENT_EXTRA_PROGRESS = "progress";
     static public final String INTENT_EXTRA_CANCELABLE = "cancelable";
 
+    private WebView animationWebview = null;
     private ImageView imageIcon = null;
     private TextView titleTxt = null;
     private ProgressBar progressBar = null;
     private ProgressBar spinnerBar = null;
     private TextView messageTxt = null;
     private EditText inputText = null;
-    private ImageButton okButton = null;
-    private ImageButton cancelButton = null;
+    private Button okButton = null;
+    private Button cancelButton = null;
     private ImageButton button = null;
 
-    private RelativeLayout layoutBottom = null;
+    private LinearLayout layoutBottom = null;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
@@ -72,17 +75,18 @@ public class PopUpActivity extends Activity implements View.OnClickListener{
 
         setContentView(R.layout.activity_popup);
 
-        imageIcon = (ImageView)findViewById(R.id.imageIcon);
+        animationWebview = (WebView)findViewById(R.id.error_animation_webview);//TODO - change this to load when error occurs
+    //    imageIcon = (ImageView)findViewById(R.id.image_icon);
         titleTxt = (TextView)findViewById(R.id.flash_projects_title_txt);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         spinnerBar = (ProgressBar) findViewById(R.id.spinnerBar);
         messageTxt = (TextView)findViewById(R.id.messageTxt);
         inputText = (EditText) findViewById(R.id.inputText);
 
-        layoutBottom = (RelativeLayout) findViewById(R.id.bottomLayout);
+        layoutBottom = (LinearLayout) findViewById(R.id.bottomLayout); // TODO RelativeLayout
 
-        okButton = (ImageButton) findViewById(R.id.imageButtonOk);
-        cancelButton = (ImageButton) findViewById(R.id.imageButtonCancel);
+        okButton = (Button) findViewById(R.id.imageButtonOk);
+        cancelButton = (Button) findViewById(R.id.imageButtonCancel);
         button = (ImageButton) findViewById(R.id.imageButton);
 
         setLayout(getIntent());
