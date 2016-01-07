@@ -17,7 +17,7 @@
         android:gravity="center"
         android:text="@string/searchingTitle"
         android:textColor="@color/white_color"
-        android:textAppearance="?titleTextAppearance"/>
+        android:textAppearance="?android:textAppearanceMedium"/>
 
     <!--pairing animation-->
     <WebView
