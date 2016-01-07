@@ -794,22 +794,20 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     public void onClick(View v) {
                         PopUp.hide();
                         //Unpair the device for secure BLE
-                        //unpairDeivce(pos);
+                        unpairDeivce();
                         Utils.setPairedMicrobit(MBApp.getContext(), null);
-                        //mPrevDevList.removeMicrobit(pos);
                         updatePairedDeviceCard();
                     }
                 },//override click listener for ok button
                 null);//pass null to use default listener
     }
 
-    private void unpairDeivce(int pos) {
+    private void unpairDeivce() {
         ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
         String addressToDelete = connectedDevice.mAddress;
         // Get the paired devices and put them in a Set
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-
         for (BluetoothDevice bt : pairedDevices) {
             logi("Paired device " + bt.getName());
             if (bt.getAddress().equals(addressToDelete)) {
