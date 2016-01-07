@@ -204,7 +204,7 @@
     <string name="flashing_error_msg">micro:bit not in correct state</string>
     <string name="flashing_phase1_msg">Finding the device..</string>
     <string name="pairing_phase2_msg">Press button "A" on micro:bit to pair successfully. \n\n Waiting for the secret key</string>
-    <string name="pairing_phase2_msg_New">Enter Pin</string>
+    <string name="pairing_phase2_msg_New">Enter PIN</string>
 
     <string name="web_view_demo">Web View Demo</string>
     <string name="flashing_project">Flashing \'%s\'</string>
