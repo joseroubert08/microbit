@@ -12,16 +12,16 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.ui.PopUp;
 
-public class PopUpActivity extends Activity implements View.OnClickListener{
+public class PopUpActivity extends Activity implements View.OnClickListener {
 
     //intent from PopUpActivity to PopUp
     static public final String INTENT_ACTION_OK_PRESSED = "PopUpActivity.OK_PRESSED";
@@ -48,7 +48,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener{
     private EditText inputText = null;
     private Button okButton = null;
     private Button cancelButton = null;
-    private ImageButton button = null;
+    private Button affirmationOKButton = null;
 
     private LinearLayout layoutBottom = null;
 
@@ -57,12 +57,11 @@ public class PopUpActivity extends Activity implements View.OnClickListener{
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(INTENT_ACTION_CLOSE)) {
-                Log.d("PopUpActivity", "BroadcastReceiver.INTENT_ACTION_CLOSE" );
+                Log.d("PopUpActivity", "BroadcastReceiver.INTENT_ACTION_CLOSE");
                 finish();
-            }
-            else if (intent.getAction().equals(INTENT_ACTION_UPDATE_PROGRESS)) {
+            } else if (intent.getAction().equals(INTENT_ACTION_UPDATE_PROGRESS)) {
                 if (progressBar != null)
-                    progressBar.setProgress(intent.getIntExtra(INTENT_EXTRA_PROGRESS,0));
+                    progressBar.setProgress(intent.getIntExtra(INTENT_EXTRA_PROGRESS, 0));
             }
         }
     };
@@ -75,19 +74,23 @@ public class PopUpActivity extends Activity implements View.OnClickListener{
 
         setContentView(R.layout.activity_popup);
 
-        animationWebview = (WebView)findViewById(R.id.error_animation_webview);//TODO - change this to load when error occurs
-    //    imageIcon = (ImageView)findViewById(R.id.image_icon);
-        titleTxt = (TextView)findViewById(R.id.flash_projects_title_txt);
+//        animationWebview = (WebView) findViewById(R.id.error_animation_webview);//TODO - change this to load when error occurs
+//        animationWebview.loadUrl("file:///android_asset/htmls/animation.html");
+        imageIcon = (ImageView) findViewById(R.id.image_icon);
+        titleTxt = (TextView) findViewById(R.id.flash_projects_title_txt);
+        titleTxt.setTypeface(MBApp.getApp().getTypeface());
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         spinnerBar = (ProgressBar) findViewById(R.id.spinnerBar);
-        messageTxt = (TextView)findViewById(R.id.messageTxt);
+        messageTxt = (TextView) findViewById(R.id.messageTxt);
+        messageTxt.setTypeface(MBApp.getApp().getTypeface());
         inputText = (EditText) findViewById(R.id.inputText);
 
         layoutBottom = (LinearLayout) findViewById(R.id.bottomLayout); // TODO RelativeLayout
 
         okButton = (Button) findViewById(R.id.imageButtonOk);
         cancelButton = (Button) findViewById(R.id.imageButtonCancel);
-        button = (ImageButton) findViewById(R.id.imageButton);
+        affirmationOKButton = (Button) findViewById(R.id.affirmationOKBtn);
+        affirmationOKButton.setTypeface(MBApp.getApp().getTypeface());
 
         setLayout(getIntent());
         //listen for close or update progress request
@@ -95,8 +98,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener{
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(INTENT_ACTION_UPDATE_PROGRESS));
     }
 
-    private void setLayout(Intent intent)
-    {
+    private void setLayout(Intent intent) {
         String title = intent.getStringExtra(INTENT_EXTRA_TITLE);
 
         if (!title.isEmpty()) {
@@ -117,9 +119,11 @@ public class PopUpActivity extends Activity implements View.OnClickListener{
         int imageBackgroundResId = intent.getIntExtra(INTENT_EXTRA_ICONBG, 0);
         if (imageResId != 0) {
             imageIcon.setImageResource(imageResId);
+//            animationWebview.setBackgroundColor(imageResId);
         }
         if (imageBackgroundResId != 0) {
             imageIcon.setBackgroundResource(imageBackgroundResId);
+//            animationWebview.setBackgroundColor(imageBackgroundResId);
         }
 
         switch (intent.getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_MAX)) {
@@ -130,7 +134,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener{
                 break;
             case PopUp.TYPE_ALERT:
                 layoutBottom.setVisibility(View.VISIBLE);
-                button.setVisibility(View.VISIBLE);
+                affirmationOKButton.setVisibility(View.VISIBLE);
                 break;
             case PopUp.TYPE_PROGRESS:
             case PopUp.TYPE_PROGRESS_NOT_CANCELABLE:
@@ -185,7 +189,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener{
                 break;
 
             case R.id.imageButtonCancel:
-            case R.id.imageButton:
+            case R.id.affirmationOKBtn:
                 intent.setAction(INTENT_ACTION_CANCEL_PRESSED);
                 break;
         }
