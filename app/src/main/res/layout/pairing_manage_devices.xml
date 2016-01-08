@@ -78,8 +78,10 @@
                 android:id="@+id/go_bluetooth_settings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/grey_btn"
                 android:contentDescription="@string/desc_go_to_bluetooth_settings"
-                android:drawableEnd="@drawable/bluetooth"
+                android:drawableEnd="@drawable/ic_bluetooth_white_48dp"
+                android:gravity="center|start"
                 android:nextFocusDown="@+id/pairButton"
                 android:text="@string/tv_go_to_bluetooth_Settings" />
         </LinearLayout>

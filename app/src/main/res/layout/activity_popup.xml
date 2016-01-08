@@ -157,9 +157,7 @@
             android:text="@string/ok_button_label"
             android:textAppearance="?android:textAppearanceLarge"
             android:visibility="gone" />
-
     </LinearLayout>
-
 </RelativeLayout>
 
 
