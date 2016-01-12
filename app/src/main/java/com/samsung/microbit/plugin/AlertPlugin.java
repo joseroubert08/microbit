@@ -2,12 +2,14 @@ package com.samsung.microbit.plugin;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Vibrator;
+import android.util.Log;
 
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
@@ -104,17 +106,36 @@ public class AlertPlugin {
 			case Constants.SAMSUNG_ALERT_EVT_FIND_MY_PHONE:
 				findPhone();
 				break;
-
+			case Constants.SAMSUNG_ALERT_EVT_ALARM1:
+            case Constants.SAMSUNG_ALERT_EVT_ALARM2:
+            case Constants.SAMSUNG_ALERT_EVT_ALARM3:
+            case Constants.SAMSUNG_ALERT_EVT_ALARM4:
+            case Constants.SAMSUNG_ALERT_EVT_ALARM5:
+            case Constants.SAMSUNG_ALERT_EVT_ALARM6:
+            case Constants.SAMSUNG_ALERT_EVT_ALARM7:
+                playAlarm(cmd.getCMD());
 			default:
 				break;
 		}
 	}
 
-	//TODO: needed?
-	private static void playAlarm() {
+	private static void playAlarm(int alarmId) {
 		showDialog(context.getString(R.string.sound_via_microbit));
-		Uri alarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-		playSound(alarm, 10000, false, false);
+        Uri alarm = null ;
+        RingtoneManager ringtoneMgr = new RingtoneManager(context);
+        ringtoneMgr.setType(RingtoneManager.TYPE_ALARM);
+        Cursor alarms = ringtoneMgr.getCursor();
+        int alarmsCount = alarms.getCount();
+        Log.i("Alerts Plugin", "playAlarm: total alarms = " + alarms.getCount());
+
+        alarms.moveToPosition(alarmId-4);
+        alarm = ringtoneMgr.getRingtoneUri(alarms.getPosition());
+        if (alarm == null){
+            Log.i("Alerts Plugin", "Cannot play nth Alarm. Playing default");
+            alarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        }
+
+        playSound(alarm, 10000, false, false);
 	}
 
 	private static void playRingTone() {

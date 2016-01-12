@@ -213,7 +213,7 @@
     <string name="flashing_project">Flashing \'%s\'</string>
     <string name="sending_project">Flashing project</string>
     <string name="send_project">Flashing code to micro:bit</string>
-    <string name="validating_microbit">Verifying the pairing code</string>
+    <string name="validating_microbit">Verifying services needed for flashing</string>
     <string name="waiting_reboot">Waiting for micro:bit to reboot</string>
     <string name="init_connection">Connecting to micro:bit</string>
     <string name="dfu_status_starting_msg">Initializing flashing process&#8230;</string>

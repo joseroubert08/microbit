@@ -1965,7 +1965,7 @@ public abstract class DfuBaseService extends IntentService {
 					// During the update the bonding information on the target device may have been removed.
 					// To create bond with the new application set the EXTRA_RESTORE_BOND extra to true.
 					// In case the bond information is copied to the new application the new bonding is not required.
-					if (gatt.getDevice().getBondState() == BluetoothDevice.BOND_BONDED) {
+					/*if (gatt.getDevice().getBondState() == BluetoothDevice.BOND_BONDED) {
 						final boolean restoreBond = intent.getBooleanExtra(EXTRA_RESTORE_BOND, false);
 
 						if (restoreBond || !keepBond || (fileType & TYPE_SOFT_DEVICE) > 0) {
@@ -1986,7 +1986,7 @@ public abstract class DfuBaseService extends IntentService {
 							// Restore pairing when application was updated.
 							createBond(gatt.getDevice());
 						}
-					}
+					}*/
 
 					/*
 					 * We need to send PROGRESS_COMPLETED message only when all files has been transmitted.

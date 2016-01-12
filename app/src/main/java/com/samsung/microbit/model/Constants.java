@@ -65,6 +65,7 @@ public class Constants {
 	public static final int SAMSUNG_ALERT_EVT_ALARM4 = 8;
 	public static final int SAMSUNG_ALERT_EVT_ALARM5 = 9;
 	public static final int SAMSUNG_ALERT_EVT_ALARM6 = 10;
+	public static final int SAMSUNG_ALERT_EVT_ALARM7 = 11;
 
 	/*
 	 * Events that Samsung devices generate:
