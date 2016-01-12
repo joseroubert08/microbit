@@ -160,6 +160,7 @@ public class BLEService extends BLEBaseService {
         }
 
         registerForSignalStrength(enable);
+        registerForDeviceInfo(enable);
 
         logi("registerMicrobitRequirements() :: found Constants.ES_MICROBIT_REQUIREMENTS ");
         enableCharacteristicNotification(microbit_requirements, microbit_requirementsDescriptor, enable);
@@ -398,6 +399,36 @@ public class BLEService extends BLEBaseService {
         sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_SIGNAL_STRENGTH_ID, cmd, null);
     }
 
+    void registerForDeviceInfo(boolean register)
+    {
+        logi("registerForDeviceInfo() -- " + register);
+        //Device Orientation
+        CmdArg cmd = register? new CmdArg(Constants.REG_DEVICEORIENTATION, "On") : new CmdArg(Constants.REG_DEVICEORIENTATION, "Off");
+        sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_DEVICE_INFO_ID, cmd, null);
+
+        //Device Gesture
+        CmdArg cmd1 = register? new CmdArg(Constants.REG_DEVICEGESTURE, "On") : new CmdArg(Constants.REG_DEVICEGESTURE, "Off");
+        sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_DEVICE_INFO_ID, cmd1, null);
+
+
+        //Device Battery Strength
+        CmdArg cmd2 = register? new CmdArg(Constants.REG_BATTERYSTRENGTH, "On") : new CmdArg(Constants.REG_BATTERYSTRENGTH, "Off");
+        sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_DEVICE_INFO_ID, cmd2, null);
+
+        //Device Temperature
+        CmdArg cmd3 = register? new CmdArg(Constants.REG_TEMPERATURE, "On") : new CmdArg(Constants.REG_TEMPERATURE, "Off");
+        sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_DEVICE_INFO_ID, cmd3, null);
+
+
+        //Register Telephony
+        CmdArg cmd4 = register? new CmdArg(Constants.REG_TELEPHONY, "On") : new CmdArg(Constants.REG_TELEPHONY, "Off");
+        sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_TELEPHONY_ID, cmd4, null);
+
+        //Register Messaging
+        CmdArg cmd5 = register? new CmdArg(Constants.REG_MESSAGING, "On") : new CmdArg(Constants.REG_MESSAGING, "Off");
+        sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_TELEPHONY_ID, cmd5, null);
+
+    }
 	/*
 	 * IPC Messenger handling
 	 */

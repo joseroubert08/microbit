@@ -19,6 +19,7 @@ import com.samsung.microbit.plugin.AudioPlugin;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.plugin.InformationPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
+import com.samsung.microbit.plugin.TelephonyPlugin;
 
 public class PluginService extends Service {
 
@@ -91,7 +92,12 @@ public class PluginService extends Service {
 				InformationPlugin.pluginEntry(PluginService.this, cmd);
 				break;
 
-			default:
+            case Constants.SAMSUNG_TELEPHONY_ID:
+                if (debug) logi("handleMessage() ##  SAMSUNG_TELEPHONY_ID");
+                TelephonyPlugin.pluginEntry(PluginService.this, cmd);
+                break;
+
+            default:
 				break;
 		}
 	}
