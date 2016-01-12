@@ -23,7 +23,6 @@
         android:layout_centerHorizontal="true"
         android:layout_gravity="top"
         android:layout_marginTop="@dimen/popup_header_section_marginTop"
-        android:background="@drawable/blue_btn"
         android:scaleType="center"
         android:src="@drawable/overwrite_face" />
 

@@ -252,6 +252,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         TextView deviceName1 = (TextView) findViewById(R.id.deviceName);
         deviceName1.setContentDescription(deviceName1.getText()); // TODO - check
         deviceName1.setTypeface(MBApp.getApp().getTypeface());
+        deviceName1.setOnClickListener(this);
         ImageView connectedIndicatorIcon = (ImageView) findViewById(R.id.connectedIndicatorIcon);
 
         if (connectedIndicatorIcon == null || connectedIndicatorText == null)
@@ -453,6 +454,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                     toggleConnection();
                 }
                 break;
+            case R.id.deviceName:
+                // Toast.makeText(this, "Back to connect screen", Toast.LENGTH_SHORT).show(); // - TODO - check navigation flow
+                Intent intent = new Intent(this, PairingActivity.class);
+                startActivity(intent);
+                break;
+
         }
     }
 
@@ -766,7 +773,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         PopUp.show(MBApp.getContext(),
                                 MBApp.getContext().getString(R.string.flashing_progress_message),
                                 String.format(MBApp.getContext().getString(R.string.flashing_project), programToSend.name),
-                                R.drawable.flash_modal_emoji, R.drawable.transparent_btn,
+                                R.drawable.flash_modal_emoji, 0,
                                 PopUp.TYPE_PROGRESS_NOT_CANCELABLE, null, null);
 
                         inProgress = true;
