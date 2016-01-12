@@ -60,7 +60,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="center_vertical"
+        android:layout_gravity="center_vertical"
         android:nextFocusDown="@+id/appNameButton"
         android:orientation="vertical">
 
@@ -68,22 +68,16 @@
             android:id="@+id/connectedIndicatorText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="top|center"
+            android:gravity="center"
             android:textColor="@color/white_color" />
 
         <TextView
             android:id="@+id/deviceName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="top|center"
+            android:gravity="center"
             android:textColor="@color/white_color" />
 
-        <TextView
-            android:id="@+id/deviceName2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="top|center"
-            android:textColor="@color/white_color" />
     </LinearLayout>
 
     <!-- View my scripts -->
