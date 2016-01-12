@@ -252,9 +252,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         TextView deviceName1 = (TextView) findViewById(R.id.deviceName);
         deviceName1.setContentDescription(deviceName1.getText()); // TODO - check
         deviceName1.setTypeface(MBApp.getApp().getTypeface());
-        TextView deviceName2 = (TextView) findViewById(R.id.deviceName2);
-        deviceName2.setContentDescription(deviceName2.getText()); // TODO - check
-        deviceName2.setTypeface(MBApp.getApp().getTypeface());
         ImageView connectedIndicatorIcon = (ImageView) findViewById(R.id.connectedIndicatorIcon);
 
         if (connectedIndicatorIcon == null || connectedIndicatorText == null)
@@ -279,12 +276,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         if (!device.mStatus) {
             connectedIndicatorIcon.setImageResource(R.drawable.device_status_disconnected);
             connectedIndicatorText.setText(getString(R.string.not_connected));
-            if (deviceName1 != null && deviceName2 != null) {
+            if (deviceName1 != null) {
                 //Mobile Device.. 2 lines of display
                 if (device.mName != null)
                     deviceName1.setText(device.mName);
-                if (device.mPattern != null)
-                    deviceName2.setText("(" + device.mPattern + ")");
             } else if (deviceName1 != null) {
                 if (device.mName != null)
                     deviceName1.setText(device.mName + " (" + device.mPattern + ")");
@@ -292,12 +287,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         } else {
             connectedIndicatorIcon.setImageResource(R.drawable.device_connected);
             connectedIndicatorText.setText(getString(R.string.connected_to));
-            if (deviceName1 != null && deviceName2 != null) {
+            if (deviceName1 != null) {
                 //Mobile Device.. 2 lines of display
                 if (device.mName != null)
                     deviceName1.setText(device.mName);
-                if (device.mPattern != null)
-                    deviceName2.setText("(" + device.mPattern + ")");
             } else if (deviceName1 != null) {
                 if (device.mName != null)
                     deviceName1.setText(device.mName + " (" + device.mPattern + ")");

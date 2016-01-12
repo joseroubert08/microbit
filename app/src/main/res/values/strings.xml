@@ -144,12 +144,15 @@
     <string name="connect_tip_title">How to pair your micro:bit</string>
     <string name="step_connect_tip_text">Step 1</string>
     <string name="connect_tip_text">Hold the A and B buttons,\nthen PRESS RESET</string>
+    <string name="desc_connect_tip_text_step">Step one</string>
     <string name="desc_connect_tip_text">Hold the A and B buttons, then PRESS RESET</string>
     <string name="step_enter_pattern_tip_text">Step 2</string>
     <string name="enter_pattern_tip_text">Copy the pattern from your\ndevice and PRESS OK</string>
+    <string name="desc_enter_pattern_tip_step_two">Step two</string>
     <string name="desc_enter_pattern_tip_text">Copy the pattern from your device and PRESS OK</string>
     <string name="searching_tip_text">Currently searching for\nmicro:bit, please wait...</string>
-    <string name="desc_searching_tip_text">Currently searching for micro:bit, please wait...</string>
+    <string name="desc_searching_tip_text">Currently searching for micro:bit, please wait</string>
+    <string name="desc_searching_tip_step_three">Step three</string>
     <string name="enter_pin_to_pair_text">Press button A, and\nenter the 6 digit PIN</string>
     <string name="step_enter_pin_to_pair_text">Step 4</string>
     <string name="desc_enterPinToPairText">Press button A, and enter the 6 digit PIN</string>
