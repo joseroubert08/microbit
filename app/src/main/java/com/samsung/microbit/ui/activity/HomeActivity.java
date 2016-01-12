@@ -69,12 +69,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private String emailBodyString = null;
 
 
-
     protected void logi(String message) {
         if (debug) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         //handle orientation change to prevent re-creation of activity.
@@ -120,7 +120,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         startService(intent);
 
 
-
         if (app.getEcho() != null) {
             logi("Page View test for HomeActivity");
             //Page view test
@@ -133,8 +132,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             item.setChecked(true);
         }
 
-        if (!RemoteConfig.getInstance().isAppStatusOn())
-        {
+        if (!RemoteConfig.getInstance().isAppStatusOn()) {
             finish();
             //Cannot proceed with the application. Shutdown NOW
             PopUp.show(MBApp.getContext(),
@@ -152,6 +150,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         animation.setBackgroundColor(Color.TRANSPARENT);
         animation.loadUrl("file:///android_asset/htmls/hello_home_animation.html");
     }
+
     private void setupEcho() {
         // Echo Config
         app = (MBApp) MBApp.getApp().getApplicationContext();
@@ -175,15 +174,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationContentDescription(R.string.content_description_toolbar_home);
         toolbar.setLogo(R.drawable.bbc_microbit);
+        toolbar.setNavigationIcon(R.drawable.white_red_led_btn);
         toolbar.setLogoDescription(R.string.content_description_toolbar_logo);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.setDrawerTitle(GravityCompat.START, "Menu"); // TODO - Accessibility for touching the drawer
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
 
-        boolean shareStats = false ;
+        boolean shareStats = false;
         mPrefs = getSharedPreferences("com.samsung.microbit", MODE_PRIVATE);
         if (mPrefs != null) {
             shareStats = mPrefs.getBoolean(getString(R.string.prefs_share_stats_status), true);
@@ -278,7 +279,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.stage:
                 item.setChecked(true);
-                urlToOpen = urlToOpen.replace("www","stage");
+                urlToOpen = urlToOpen.replace("www", "stage");
                 break;
             case R.id.test:
                 item.setChecked(true);
@@ -350,8 +351,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     logi("User action test for delete project");
                     app.getEcho().userActionEvent("click", "CreateCode", null);
                 }
-                if (urlToOpen == null)
-                {
+                if (urlToOpen == null) {
                     urlToOpen = RemoteConfig.getInstance().getCreateCodeURL();
                 }
                 Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -438,18 +438,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    private void toggleShareStatistics()
-    {
-        if (mShareStatsCheckBox == null)
-        {
+    private void toggleShareStatistics() {
+        if (mShareStatsCheckBox == null) {
             return;
         }
-        boolean shareStatistics = false ;
-        shareStatistics =  mShareStatsCheckBox.isChecked() ;
-        mPrefs.edit().putBoolean(getString(R.string.prefs_share_stats_status),shareStatistics ).apply();
+        boolean shareStatistics = false;
+        shareStatistics = mShareStatsCheckBox.isChecked();
+        mPrefs.edit().putBoolean(getString(R.string.prefs_share_stats_status), shareStatistics).apply();
         logi("shareStatistics = " + shareStatistics);
         MBApp.setSharingStats(shareStatistics);
     }
+
     @Override
     public void onResume() {
         if (debug) logi("onResume() :: ");

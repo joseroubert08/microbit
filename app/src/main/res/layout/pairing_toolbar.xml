@@ -38,10 +38,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
-        android:contentDescription="@string/connect"
+        android:contentDescription="@string/desc_connect_btn"
         android:nextFocusDown="@id/backBtn"
         android:nextFocusRight="@id/backBtn"
-        android:text="@string/pair_my_device"
+        android:text="@string/connect_device"
         android:textAppearance="?android:textAppearanceLarge"
         android:textColor="@color/white_color" />
 

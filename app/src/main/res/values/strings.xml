@@ -238,7 +238,7 @@
     <string name="navigation_drawer_close">Close Menu</string>
     <string name="create_code">Create Code</string>
     <string name="flash_microbit">Flash</string>
-    <string name="connect_device">Connect</string>
+    <string name="connect_device">Connections</string>
     <string name="discover">Discover</string>
 
     <string name="email_body" formatted="false">
@@ -262,7 +262,7 @@
     <string name="desc_manage_and_remove_microbits_label">How do i manage and remove paired micro:bits?</string>
     <string name="manage_and_remove_microbit">How do i manage and remove paired micro:bits?</string>
     <string name="desc_homescreen_logo_img">Hello</string>
-    <string name="desc_connect_btn">Connect</string>
+    <string name="desc_connect_btn">Connections</string>
     <string name="desc_flash_btn">Flash</string>
     <string name="desc_create_code">Create Code</string>
     <string name="desc_discover">Discover</string>
@@ -296,5 +296,6 @@
     <string name="pair_new_device_dialog_title">Pair a new Device?</string>
     <string name="pair_new_device_dialog_message">Pairing with a new device will remove any previously paired Mircobits.</string>
     <string name="ok_button_label">OK</string>
+    <string name="toolbar_title">Menu</string>
 
 </resources>
