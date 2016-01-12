@@ -64,6 +64,7 @@ public class CameraActivity_OldAPI extends Activity {
 	private ImageButton mButtonClick, mButtonBack_portrait, mButtonBack_landscape;
 	private Camera mCamera;
 	private int mCameraIdx;
+    private static boolean mfrontCamera = true ;
 	private BroadcastReceiver mMessageReceiver;
 	private boolean mVideo = false;
 	private boolean mIsRecording = false;
@@ -106,15 +107,20 @@ public class CameraActivity_OldAPI extends Activity {
 		}
 	}
 
-	private int getFrontFacingCamera() {
+	private int getCurrentCamera() {
 		int cameraCount = 0;
 		Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
 		cameraCount = Camera.getNumberOfCameras();
 		for (int camIdx = 0; camIdx < cameraCount; camIdx++) {
 			Camera.getCameraInfo(camIdx, cameraInfo);
-			if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-				return camIdx;
-			}
+            if (mfrontCamera && cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT){
+                    logi("returning front camera");
+                    return camIdx;
+            } else if (!mfrontCamera && cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK){
+                    logi("returning back camera");
+                    return camIdx;
+            }
+
 		}
 		return -1;
 	}
@@ -481,8 +487,12 @@ public class CameraActivity_OldAPI extends Activity {
 					finish();
 				}
 				else if(!mVideo && intent.getAction().equals("TAKE_PIC")) {
+                    mfrontCamera = true;
 					mButtonClick.callOnClick();
 				}
+                else if (!mVideo && intent.getAction().equals("TOGGLE_CAMERA")){
+                    toggleCamera();
+                }
 				else if(mVideo && !mIsRecording && intent.getAction().equals("START_VIDEO")) {
 					mButtonClick.callOnClick();
 				}
@@ -501,6 +511,15 @@ public class CameraActivity_OldAPI extends Activity {
 		logi("onCreate() :: Done");
 	}
 
+    private void toggleCamera()
+    {
+        if (mCamera == null) {
+            logi("Camera not open yet.");
+            return;
+        }
+        mfrontCamera = !mfrontCamera ;
+        recreate();
+    }
 	@Override
 	protected void onResume() {
 		logi("onCreate() :: onResume");
@@ -516,7 +535,7 @@ public class CameraActivity_OldAPI extends Activity {
             logi("DetectOrientation Disabled");
         }
 		this.registerReceiver(mMessageReceiver, new IntentFilter("CLOSE"));
-		mCameraIdx = getFrontFacingCamera();
+		mCameraIdx = getCurrentCamera();
 		try {
 			mCamera = Camera.open(mCameraIdx);
             if(mCamera==null) {
@@ -552,6 +571,7 @@ public class CameraActivity_OldAPI extends Activity {
 			}
 			else {
 				this.registerReceiver(mMessageReceiver, new IntentFilter("TAKE_PIC"));
+                this.registerReceiver(mMessageReceiver, new IntentFilter("TOGGLE_CAMERA"));
 			}
 
             mPreview.restartCameraPreview();

@@ -69,6 +69,8 @@ public class CameraPlugin {
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_TOGGLE_FRONT_REAR:
+                toggleCamera();
+				break;
 			default:
 				break;
 		}
@@ -139,6 +141,11 @@ public class CameraPlugin {
 		Intent intent = new Intent("TAKE_PIC");
 		context.sendBroadcast(intent);
 	}
+
+    private static void toggleCamera(){
+        Intent intent = new Intent("TOGGLE_CAMERA");
+        context.sendBroadcast(intent);
+    }
 
 	private static void launchCameraForVideo() {
 		Intent mIntent = new Intent(context, CameraActivity_OldAPI.class);

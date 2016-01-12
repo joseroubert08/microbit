@@ -137,9 +137,6 @@ public class InformationPlugin {
         }
 
         PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_SIGNAL_STRENGTH_ID, level));
-
-        //CmdArg cmd = new CmdArg(InformationPlugin.SIGNAL, "SignalStrength " + level);
-        //InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
     static private int getCdmaLevel() {
@@ -228,10 +225,12 @@ public class InformationPlugin {
                         //notify BLE client
                         CmdArg cmd = new CmdArg(InformationPlugin.SHAKE, "Device Shaked");
                         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
+                        PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID, Constants.SAMSUNG_DEVICE_GESTURE_DEVICE_SHAKEN));
                         mSwingCount = 0;
                     }
                 } else {
                     mSwingCount = 0;
+                    //PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID, Constants.SAMSUNG_DEVICE_GESTURE_NONE));
                 }
 
                 lastX = x;
@@ -291,12 +290,7 @@ public class InformationPlugin {
 
                     if (mPreviousOrientation != orientation) {
 
-                        //notify BLE client
-                        //CmdArg cmd = new CmdArg(InformationPlugin.ORIENTATION, "Device orientation " + orientation);
-                        //InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
-
                         PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID, (orientation & 0x01)));
-
                         mPreviousOrientation = orientation;
                     }
                 }
@@ -305,9 +299,6 @@ public class InformationPlugin {
 
         if (mOrientationListener.canDetectOrientation() == true) {
             mOrientationListener.enable();
-
-            //CmdArg cmd = new CmdArg(0, "Registered Orientation.");
-            //InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
         } else {
             mOrientationListener.disable();
         }

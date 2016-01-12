@@ -66,8 +66,7 @@ public class TelephonyPlugin
             switch (state)
             {
                 case TelephonyManager.CALL_STATE_RINGING:
-                    //TODO: fix ble calls
-                    //PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_TELEPHONY_ID,Constants.SAMSUNG_INCOMING_CALL));
+                    PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_TELEPHONY_ID,Constants.SAMSUNG_INCOMING_CALL));
                     break;
             }
         }
@@ -78,8 +77,7 @@ public class TelephonyPlugin
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Telephony.Sms.Intents.SMS_RECEIVED_ACTION)) {
-                //TODO: fix ble calls
-                //PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_TELEPHONY_ID, Constants.SAMSUNG_INCOMING_SMS));
+                PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_TELEPHONY_ID, Constants.SAMSUNG_INCOMING_SMS));
             }
         }
     }
