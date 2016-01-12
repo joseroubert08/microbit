@@ -1260,50 +1260,6 @@ public abstract class DfuBaseService extends IntentService {
 		return true;
 	}
 
-
-	public boolean registerNotificationsForPairCode(UUID pairingServiceUUID, UUID pairingCodeCharacteristicUUID, boolean enable) {
-
-		BluetoothGattService fps = gatt.getService(pairingServiceUUID);
-		if (fps == null) {
-			logi("registerNotificationsForPairCode() :: not found service " + pairingServiceUUID.toString());
-			return false;
-		}
-
-		BluetoothGattCharacteristic fpsc = fps.getCharacteristic(pairingCodeCharacteristicUUID);
-		if (fpsc == null) {
-			logi("registerNotificationsForPairCode() :: not found Characteristic " + pairingCodeCharacteristicUUID.toString());
-			return false;
-		}
-
-		BluetoothGattDescriptor fpsd = fpsc.getDescriptor(CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR);
-		if (fpsd == null) {
-			logi("registerNotificationsForPairCode() :: not found descriptor " + CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR.toString());
-			return false;
-		}
-
-		boolean rc;
-		if (enable) {
-			rc = gatt.setCharacteristicNotification(fpsc, enable);
-			fpsd.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-		} else {
-			rc = gatt.setCharacteristicNotification(fpsc, false);
-			fpsd.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
-		}
-
-		if (rc == false) {
-			logi("gatt.setCharacteristicNotification [toEnable ? " + enable + "] failed " + rc);
-			return false;
-		}
-
-		rc = gatt.writeDescriptor(fpsd);
-		if (rc == false) {
-			logi("gatt.writeDescriptor failed " + rc);
-			return false;
-		} else
-			logi("Registered notification " + enable);
-		return true;
-	}
-
 	private int flashingWithPairCode(Intent intent) {
 
         mDeviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);

@@ -13,6 +13,7 @@ import android.os.BatteryManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.Display;
 import android.view.OrientationEventListener;
 import android.view.WindowManager;
@@ -111,6 +112,7 @@ public class InformationPlugin {
     static PhoneStateListener mPhoneListener = new PhoneStateListener() {
         @Override
         public void onSignalStrengthsChanged(SignalStrength signalStrength) {
+            Log.i("InformationPlugin", "onSignalStrengthsChanged: ");
             mSignalStrength = signalStrength;
             updateSignalStrength();
         }
@@ -118,6 +120,7 @@ public class InformationPlugin {
 
     static private final void updateSignalStrength() {
         int level = 0;
+        Log.i("InformationPlugin", "updateSignalStrength: ");
         if (!isCdma()) {
             int asu = mSignalStrength.getGsmSignalStrength();
             // ASU ranges from 0 to 31 - TS 27.007 Sec 8.5
@@ -329,10 +332,11 @@ public class InformationPlugin {
      * registerSignalStrength
      */
     public static void registerSignalStrength() {
+        Log.i("Information Plugin", "registerSignalStrength 1 ");
         if (mTelephonyManager != null) {
             return;
         }
-
+        Log.i("Information Plugin", "registerSignalStrength 2 ");
         mTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         mTelephonyManager.listen(mPhoneListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
         CmdArg cmd = new CmdArg(0, "Registered Signal Strength.");

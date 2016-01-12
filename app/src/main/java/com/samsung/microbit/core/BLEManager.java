@@ -436,7 +436,7 @@ public class BLEManager {
 		if (debug) logi("readCharacteristic() :: start");
 		int rc = BLE_ERROR_NOOP;
 		synchronized (locker) {
-			if (gatt != null && inBleOp > OP_NOOP) {
+			if (gatt != null && inBleOp == OP_NOOP) {
 
 				inBleOp = OP_READ_CHARACTERISTIC;
 				lastCharacteristic = null;

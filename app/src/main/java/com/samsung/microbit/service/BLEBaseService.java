@@ -57,6 +57,7 @@ public abstract class BLEBaseService extends Service {
 	protected boolean reset() {
 		boolean rc = false;
 		if (bleManager != null) {
+            disconnectAll();
 			rc = bleManager.reset();
 			if (rc) {
 				bleManager = null;
@@ -132,6 +133,8 @@ public abstract class BLEBaseService extends Service {
 	}
 
 	protected abstract void startupConnection();
+
+	protected abstract void disconnectAll();
 
 	protected abstract String getDeviceAddress();
 

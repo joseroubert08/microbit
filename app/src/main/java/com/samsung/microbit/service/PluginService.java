@@ -108,18 +108,23 @@ public class PluginService extends Service {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-
+                /*
 				if (debug) logi("onStartCommand().run() ::  Starting Constants.REG_SIGNALSTRENGTH");
-				Message msg = Message.obtain(null, Constants.SAMSUNG_DEVICE_INFO_ID);
-				msg.arg1 = Constants.SAMSUNG_DEVICE_INFO_ID;
+				Message msg = Message.obtain(null, Constants.REG_SIGNALSTRENGTH);
+				msg.arg1 = Constants.SAMSUNG_SIGNAL_STRENGTH_ID;
 				Bundle bundle = new Bundle();
-				bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DEVICEORIENTATION);
-				//bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DEVICEGESTURE);
-				//bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DISPLAY);
-
+				bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_SIGNALSTRENGTH);
 				bundle.putString(IPCMessageManager.BUNDLE_VALUE, "on");
 				msg.setData(bundle);
 				handleMessage(msg);
+				*/
+
+
+				//bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DEVICEORIENTATION);
+				//bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DEVICEGESTURE);
+				//bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DISPLAY);
+
+
 			}
 		}).run();
 

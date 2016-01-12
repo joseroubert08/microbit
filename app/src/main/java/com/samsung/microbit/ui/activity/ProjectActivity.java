@@ -557,7 +557,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         service.putExtra(DfuService.EXTRA_DEVICE_PAIR_CODE, currentMicrobit.mPairingCode);
         service.putExtra(DfuService.EXTRA_FILE_MIME_TYPE, DfuService.MIME_TYPE_OCTET_STREAM);
         service.putExtra(DfuService.EXTRA_FILE_PATH, programToSend.filePath); // a path or URI must be provided.
-        service.putExtra(DfuService.EXTRA_KEEP_BOND, false);
+        service.putExtra(DfuService.EXTRA_KEEP_BOND, true);
         service.putExtra(DfuService.INTENT_RESULT_RECEIVER, resultReceiver);
         service.putExtra(DfuService.INTENT_REQUESTED_PHASE, 2);
         startService(service);
