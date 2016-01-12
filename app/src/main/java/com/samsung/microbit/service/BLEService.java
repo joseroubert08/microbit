@@ -152,6 +152,16 @@ public class BLEService extends BLEBaseService {
             return false;
         }
 
+
+        BluetoothGattCharacteristic characteristic = readCharacteristic(microbit_requirements);
+        while (characteristic !=null && characteristic.getValue() != null && characteristic.getValue().length != 0 ){
+            logi("microbit interested in  = " + Utils.parse(characteristic));
+            characteristic = readCharacteristic(microbit_requirements);
+        }
+
+        registerForSignalStrength(enable);
+
+        logi("registerMicrobitRequirements() :: found Constants.ES_MICROBIT_REQUIREMENTS ");
         enableCharacteristicNotification(microbit_requirements, microbit_requirementsDescriptor, enable);
         return true;
     }
@@ -177,9 +187,11 @@ public class BLEService extends BLEBaseService {
             */
            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_REMOTE_CONTROL_ID, BluetoothGattCharacteristic.FORMAT_UINT32);
            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_CAMERA_ID, BluetoothGattCharacteristic.FORMAT_UINT32);
-			/*Removed Audio as this is now removed from requirements */
-           //writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_AUDIO_RECORDER_IDF, BluetoothGattCharacteristic.FORMAT_UINT32);
            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_ALERTS_ID, BluetoothGattCharacteristic.FORMAT_UINT32);
+           writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_SIGNAL_STRENGTH_ID, BluetoothGattCharacteristic.FORMAT_UINT32);
+           writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_DEVICE_INFO_ID, BluetoothGattCharacteristic.FORMAT_UINT32);
+           writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_TELEPHONY_ID, BluetoothGattCharacteristic.FORMAT_UINT32);
+
 
         }
     }
@@ -200,25 +212,31 @@ public class BLEService extends BLEBaseService {
         enableCharacteristicNotification(microbit_requirements, microbit_requirementsDescriptor, enable);
         return true;
     }
+
+    public void disconnectAll()
+    {
+        logi("disconnectAll()");
+        registerNotifications(false);
+    }
 	public boolean registerNotifications(boolean enable) {
 
-		logi("registerNotifications()");
+		logi("registerNotifications() : " + enable  );
 		BluetoothGattService eventService = getService(Constants.EVENT_SERVICE);
 		if (eventService == null) {
 			logi("registerNotifications() :: not found service : Constants.EVENT_SERVICE");
 			return false;
 		}
-
-		logi("Constants.EVENT_SERVICE   = " + Constants.EVENT_SERVICE.toString());
-		logi("Constants.ES_MICROBIT_REQUIREMENTS   = " + Constants.ES_MICROBIT_REQUIREMENTS.toString());
-		logi("Constants.ES_CLIENT_EVENT   = " + Constants.ES_CLIENT_EVENT.toString());
-		logi("Constants.ES_MICROBIT_EVENT   = " + Constants.ES_MICROBIT_EVENT.toString());
-		logi("Constants.ES_CLIENT_REQUIREMENTS   = " + Constants.ES_CLIENT_REQUIREMENTS.toString());
+        if (BuildConfig.DEBUG) {
+            logi("Constants.EVENT_SERVICE   = " + Constants.EVENT_SERVICE.toString());
+            logi("Constants.ES_MICROBIT_REQUIREMENTS   = " + Constants.ES_MICROBIT_REQUIREMENTS.toString());
+            logi("Constants.ES_CLIENT_EVENT   = " + Constants.ES_CLIENT_EVENT.toString());
+            logi("Constants.ES_MICROBIT_EVENT   = " + Constants.ES_MICROBIT_EVENT.toString());
+            logi("Constants.ES_CLIENT_REQUIREMENTS   = " + Constants.ES_CLIENT_REQUIREMENTS.toString());
+        }
 
         if (!registerMicrobitRequirements(eventService, enable)){
             if (BuildConfig.DEBUG) {
                 logi("***************** Cannot Register Microbit Requirements.. Will continue ************** ");
-                logi("***************** Rectify Later ************** ");
             }
         }
 
@@ -228,7 +246,7 @@ public class BLEService extends BLEBaseService {
             logi("Failed to registerMicroBitEvents");
             return false;
         }
-		logi("registerNotificationsForPairCode() : done");
+		logi("registerNotifications() : done");
 		return true;
 	}
 
@@ -238,6 +256,11 @@ public class BLEService extends BLEBaseService {
 
         String UUID = characteristic.getUuid().toString();
 
+        if (characteristic == null)
+        {
+            logi("Null characteristic found");
+            return;
+        }
 		int value = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
 		int eventSrc = value & 0x0ffff;
 		if (eventSrc < 1001) {
@@ -347,7 +370,7 @@ public class BLEService extends BLEBaseService {
 
 	void sendMessage(int eventSrc, int event) {
 
-		logi("eventSrc" + eventSrc + "  event=" + event);
+		logi("Sending eventSrc " + eventSrc + "  event=" + event);
 		int msgService = 0;
 		CmdArg cmd = null;
 		switch (eventSrc) {
@@ -367,6 +390,13 @@ public class BLEService extends BLEBaseService {
 			sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, msgService, cmd, null);
 		}
 	}
+
+    void registerForSignalStrength(boolean register)
+    {
+        logi("registerForSignalStrength() -- " + register);
+        CmdArg cmd = register? new CmdArg(Constants.REG_SIGNALSTRENGTH, "On") : new CmdArg(Constants.REG_SIGNALSTRENGTH, "Off");
+        sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_SIGNAL_STRENGTH_ID, cmd, null);
+    }
 
 	/*
 	 * IPC Messenger handling

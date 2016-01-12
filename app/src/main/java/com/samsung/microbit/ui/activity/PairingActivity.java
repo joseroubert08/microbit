@@ -688,6 +688,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                         null, null);
                 IPCService.getInstance().bleConnect();
             } else {
+                IPCService.getInstance().bleDisconnect();
                 currentDevice.mStatus = !currentState;
                 Utils.setPairedMicrobit(this, currentDevice);
                 updatePairedDeviceCard();

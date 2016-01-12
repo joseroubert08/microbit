@@ -27,7 +27,7 @@ public class Constants {
 	 * Events that Samsung devices respond to:
 	 */
 	public static final int SAMSUNG_REMOTE_CONTROL_ID = 1001; //0x03E9
-		public static final int SAMSUNG_REMOTE_CONTROL_EVT_PLAY = 0;
+	public static final int SAMSUNG_REMOTE_CONTROL_EVT_PLAY = 0;
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_PAUSE = 1;
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_STOP = 2;
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK = 3;
@@ -70,7 +70,7 @@ public class Constants {
 	 * Events that Samsung devices generate:
 	 */
 
-	public static final int SAMSUNG_SIGNAL_STRENGTH_ID = 1101;
+	public static final int SAMSUNG_SIGNAL_STRENGTH_ID = 1101; //0x044D
 	//public static final int SAMSUNG_SIGNAL_STRENGTH_IDF = SAMSUNG_SIGNAL_STRENGTH_ID << 16;
 	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_NO_BAR = 0;
 	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_ONE_BAR = 1;
@@ -78,7 +78,7 @@ public class Constants {
 	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_THREE_BAR = 3;
 	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_FOUR_BAR = 4;
 
-	public static final int SAMSUNG_PLAY_CONTROLLER_ID = 1102;
+	public static final int SAMSUNG_PLAY_CONTROLLER_ID = 1102; //0x044E
 	//public static final int SAMSUNG_PLAY_CONTROLLER_IDF = SAMSUNG_PLAY_CONTROLLER_ID << 16;
 	public static final int SAMSUNG_BUTTON_UP = 0;
 	public static final int SAMSUNG_BUTTON_DOWN = 1;
@@ -89,7 +89,7 @@ public class Constants {
 	public static final int SAMSUNG_BUTTON_C = 6;
 	public static final int SAMSUNG_BUTTON_D = 7;
 
-	public static final int SAMSUNG_DEVICE_INFO_ID = 1103;
+	public static final int SAMSUNG_DEVICE_INFO_ID = 1103; //0x044F
 	//public static final int SAMSUNG_DEVICE_INFO_IDF = SAMSUNG_DEVICE_INFO_ID << 16;
 	public static final int SAMSUNG_DEVICE_ORIENTATION_LANDSCAPE = 0;
 	public static final int SAMSUNG_DEVICE_ORIENTATION_PORTRAIT = 1;
@@ -100,7 +100,7 @@ public class Constants {
 	public static final int SAMSUNG_DEVICE_BATTERY_STRENGTH = 6;
 
 
-	public static final int SAMSUNG_TELEPHONY_ID = 1104;
+	public static final int SAMSUNG_TELEPHONY_ID = 1104; //0X0450
 	public static final int SAMSUNG_INCOMING_SMS = 0;
 	public static final int SAMSUNG_INCOMING_CALL = 1;
 
