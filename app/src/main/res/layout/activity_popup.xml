@@ -136,13 +136,13 @@
             android:layout_marginTop="16dp"
             android:layout_weight="1"
             android:background="@drawable/green_btn"
-            android:drawableEnd="@drawable/white_tick"
+            android:drawableEnd="@drawable/ic_done_black"
             android:gravity="center_vertical|start"
             android:onClick="onClick"
             android:text="@string/ok_button_label"
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="@color/black_color"
-            android:visibility="gone" />
+             android:visibility="gone"/>
 
         <!-- User OK  -->
         <Button
