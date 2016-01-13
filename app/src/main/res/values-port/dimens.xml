@@ -71,7 +71,7 @@
 	<dimen name="popup_button_size">60dp</dimen>
 	<dimen name="popup_paddingLeft">20dp</dimen>
 	<dimen name="popup_paddingRight">20dp</dimen>
-	<dimen name="popup_icon_size">60dp</dimen>
+	<dimen name="popup_icon_size">80dp</dimen>
 	<dimen name="popup_body_view_paddingVertical">5dp</dimen> <!-- spacing top/bottom between each view inside body section -->
 	<dimen name="popup_progressbar_height">15dp</dimen>
 
