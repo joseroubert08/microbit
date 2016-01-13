@@ -536,34 +536,19 @@ public class CameraActivity_OldAPI extends Activity {
         }
 		this.registerReceiver(mMessageReceiver, new IntentFilter("CLOSE"));
 		mCameraIdx = getCurrentCamera();
+        logi("mCameraIdx = " + mCameraIdx);
 		try {
 			mCamera = Camera.open(mCameraIdx);
             if(mCamera==null) {
                 logi("Couldn't open the camera");
-/*                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        PopUp.show(MBApp.getContext(),
-                                null,
-                                MBApp.getContext().getString(R.string.internal_error_msg),
-                                R.drawable.error_face, R.drawable.red_btn,
-                                PopUp.TYPE_ALERT,
-                                new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        PopUp.hide();
-                                        finish();
-                                    }
-                                }, null);
-                    }
-                });
-                return;*/
             }
-
+            logi("Step 2");
+            /*
             if (mParameters == null && mCamera != null){
                 setParameters();
-            }
+            }*/
 			mPreview.setCamera(mCamera, mCameraIdx);
+            logi("Step 3");
 
 			if(mVideo){
 				this.registerReceiver(mMessageReceiver, new IntentFilter("START_VIDEO"));
@@ -574,12 +559,14 @@ public class CameraActivity_OldAPI extends Activity {
                 this.registerReceiver(mMessageReceiver, new IntentFilter("TOGGLE_CAMERA"));
 			}
 
+            logi("Step 3");
             mPreview.restartCameraPreview();
+            logi("Step 4");
             updateCameraRotation();
-
 			logi("onCreate() :: onResume # ");
 
 		} catch (RuntimeException ex) {
+            logi(ex.toString());
 			Toast.makeText(this, getString(R.string.camera_not_found), Toast.LENGTH_LONG).show();
 			sendCameraError();
 			finish();
