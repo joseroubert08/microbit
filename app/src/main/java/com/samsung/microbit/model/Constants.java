@@ -26,7 +26,7 @@ public class Constants {
 	/*
 	 * Events that Samsung devices respond to:
 	 */
-	// incremented
+
 	public static final int SAMSUNG_REMOTE_CONTROL_ID = 1001; //0x03E9
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_PLAY = 1;
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_PAUSE = 2;
@@ -38,7 +38,6 @@ public class Constants {
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEUP = 8;
 	public static final int SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN = 9;
 
-	// incremented
 	public static final int SAMSUNG_CAMERA_ID = 1002;//0x03EA
 	public static final int SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE = 1;
 	public static final int SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE = 2;
@@ -55,7 +54,6 @@ public class Constants {
 	public static final int SAMSUNG_AUDIO_RECORDER_EVT_STOP_CAPTURE = 2;
 	public static final int SAMSUNG_AUDIO_RECORDER_EVT_STOP = 3;
 
-	// incremented
 	public static final int SAMSUNG_ALERTS_ID = 1004; //0x03EC
 	public static final int SAMSUNG_ALERT_EVT_DISPLAY_TOAST = 1;
 	public static final int SAMSUNG_ALERT_EVT_VIBRATE = 2;
@@ -68,34 +66,20 @@ public class Constants {
 	public static final int SAMSUNG_ALERT_EVT_ALARM4 = 9;
 	public static final int SAMSUNG_ALERT_EVT_ALARM5 = 10;
 	public static final int SAMSUNG_ALERT_EVT_ALARM6 = 11;
-	public static final int SAMSUNG_ALERT_EVT_ALARM7 = 12; // TODO - Not specified in the email
 
 	/*
 	 * Events that Samsung devices generate:
 	 */
 	//incremented
 	public static final int SAMSUNG_SIGNAL_STRENGTH_ID = 1101; //0x044D
-	//public static final int SAMSUNG_SIGNAL_STRENGTH_IDF = SAMSUNG_SIGNAL_STRENGTH_ID << 16;
 	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_NO_BAR = 1;
 	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_ONE_BAR = 2;
 	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_TWO_BAR = 3;
 	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_THREE_BAR = 4;
 	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_FOUR_BAR = 5;
 
-	public static final int SAMSUNG_PLAY_CONTROLLER_ID = 1102; //0x044E
-	//public static final int SAMSUNG_PLAY_CONTROLLER_IDF = SAMSUNG_PLAY_CONTROLLER_ID << 16;
-	public static final int SAMSUNG_BUTTON_UP = 0;
-	public static final int SAMSUNG_BUTTON_DOWN = 1;
-	public static final int SAMSUNG_BUTTON_RIGHT = 2;
-	public static final int SAMSUNG_BUTTON_LEFT = 3;
-	public static final int SAMSUNG_BUTTON_A = 4;
-	public static final int SAMSUNG_BUTTON_B = 5;
-	public static final int SAMSUNG_BUTTON_C = 6;
-	public static final int SAMSUNG_BUTTON_D = 7;
 
-	//incremented
 	public static final int SAMSUNG_DEVICE_INFO_ID = 1103; //0x044F
-	//public static final int SAMSUNG_DEVICE_INFO_IDF = SAMSUNG_DEVICE_INFO_ID << 16;
 	public static final int SAMSUNG_DEVICE_ORIENTATION_LANDSCAPE = 1;
 	public static final int SAMSUNG_DEVICE_ORIENTATION_PORTRAIT = 2;
 	public static final int SAMSUNG_DEVICE_GESTURE_NONE = 3;
@@ -107,9 +91,7 @@ public class Constants {
 	public static final int SAMSUNG_DEVICE_BATTERY_STRENGTH = 9; // not specified
 
 
-	public static final int SAMSUNG_TELEPHONY_ID = 1104; //DO NOT DELETE. Used for internal registration
-//	public static final int SAMSUNG_INCOMING_CALL = 1;
-//	public static final int SAMSUNG_INCOMING_SMS = 0;
+	public static final int SAMSUNG_TELEPHONY_ID = 5555; //DO NOT DELETE. Used for internal registration
 
 
 	/*

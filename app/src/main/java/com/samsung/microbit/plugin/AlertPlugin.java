@@ -112,7 +112,6 @@ public class AlertPlugin {
             case Constants.SAMSUNG_ALERT_EVT_ALARM4:
             case Constants.SAMSUNG_ALERT_EVT_ALARM5:
             case Constants.SAMSUNG_ALERT_EVT_ALARM6:
-            case Constants.SAMSUNG_ALERT_EVT_ALARM7:
                 playAlarm(cmd.getCMD());
 			default:
 				break;
