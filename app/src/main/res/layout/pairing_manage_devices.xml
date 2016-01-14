@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?><!-- Manage micro:bits -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/manageDeviceView"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:paddingBottom="16dp"
+    android:paddingEnd="16dp"
+    android:paddingStart="16dp"
+    tools:showIn="@layout/view_connect_microbit">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:orientation="vertical"
+        android:paddingBottom="16dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp">
+
+        <TextView
+            android:id="@+id/title_manage_microbit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|top"
+            android:contentDescription="@string/desc_manage_and_remove_microbits_label"
+            android:gravity="start"
+            android:lines="2"
+            android:maxLines="2"
+            android:nextFocusDown="@+id/img_pair_microbit"
+            android:text="@string/manage_and_remove_microbit"
+            android:textAppearance="?android:textAppearanceMedium" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/description_manage_microbit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:contentDescription="@string/desc_manage_microbit_txt"
+                android:focusable="true"
+                android:maxLines="5"
+                android:minLines="3"
+                android:nextFocusDown="@id/flash_projects_title_txt"
+                android:text="@string/manage_microbit_txt"
+                android:textAppearance="?android:textAppearanceMedium" />
+
+            <ImageView
+                android:id="@+id/img_pair_microbit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:contentDescription="@string/desc_manage_microbits"
+                android:nextFocusDown="@+id/go_bluetooth_settings"
+                android:padding="16dp"
+                android:src="@drawable/connected_emoji" />
+        </LinearLayout>
+
+        <!-- Bluetooth settings -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/go_bluetooth_settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/grey_btn"
+                android:contentDescription="@string/desc_go_to_bluetooth_settings"
+                android:drawableEnd="@drawable/ic_bluetooth_white_btn"
+                android:gravity="center|start"
+                android:nextFocusDown="@+id/pairButton"
+                android:text="@string/tv_go_to_bluetooth_Settings" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
+
+    

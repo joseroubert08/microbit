@@ -1,8 +1,5 @@
 package com.samsung.microbit.core;
 
-import com.samsung.microbit.MBApp;
-import com.samsung.microbit.model.Constants;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,18 +11,18 @@ import java.net.URLConnection;
 
 public class DownloadManager {
 
-	volatile boolean cancelled = false;
+    volatile boolean cancelled = false;
 
     public DownloadManager() {
     }
 
-	public boolean isCancelled() {
-		return cancelled;
-	}
+    public boolean isCancelled() {
+        return cancelled;
+    }
 
-	public void setCancelled(boolean cancelled) {
-		this.cancelled = cancelled;
-	}
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
 
     public long download(String sourceUrl, String destinationFile) {
 

@@ -1,0 +1,24 @@
+<!-- Pairing button -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pairButtonView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:divider="?android:dividerHorizontal"
+    android:dividerPadding="16dp"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:showDividers="beginning">
+    <!-- Visible-->
+    <Button
+        android:id="@+id/pairButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/yellow_btn"
+        android:contentDescription="@string/desc_connect_pair_micro_bit"
+        android:drawableEnd="@drawable/pair_new_micro_bit"
+        android:gravity="center_vertical|start"
+        android:text="@string/connectNew"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@color/black_color" />
+</LinearLayout>

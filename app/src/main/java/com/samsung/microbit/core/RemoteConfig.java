@@ -8,6 +8,7 @@ import android.net.http.HttpResponseCache;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 
@@ -35,12 +36,52 @@ public class RemoteConfig
     private Context mContext;
 
 
+  /* Sample config file
+  Normal case
+  {
+	"status": {
+		"appStatus": "on"
+	},
+	"endpoints": {
+		"about": "https://www.microbit.co.uk/about",
+		"createCode": "https://www.microbit.co.uk/create-code",
+		"discover": "https://www.microbit.co.uk/#mainContent",
+		"myScripts": "https://www.microbit.co.uk/app/",
+		"termsOfUse": "https://www.microbit.co.uk/terms-of-use",
+		"privacyPolicy": "https://www.microbit.co.uk/privacy"
+	},
+	"config": {
+		"feedbackEmailAddress": "learning.makeitdigital@bbc.co.uk"
+	}
+  }
+  //Exceptional case
+  {
+    "status": {
+        "appStatus": "off",
+        "title": "Application unavailable",
+        "message": "A description of why the application is unavailable."
+    }
+  }
+
+    */
+
     public static final String REMOTE_CONFIG_PREFERENCE_KEY = "com.samsung.microbit.remote_config_preferences";
+
+
     public static final String RC_APPSTATUS_KEY = "com.samsung.microbit.appStatus";
+    public static final String RC_EXCEPTIONTITLE_KEY = "com.samsung.microbit.exceptiontitle";
+    public static final String RC_EXCEPTIONMSG_KEY = "com.samsung.microbit.exceptionMessage";
+
+
     public static final String RC_ENDPOINT_ABOUT = "com.samsung.microbit.about";
+    public static final String RC_ENDPOINT_CREATECODE = "com.samsung.microbit.createcode";
+    public static final String RC_ENDPOINT_DISCOVER = "com.samsung.microbit.discover";
+    public static final String RC_APPSTATUS_MYSCRIPTS = "com.samsung.microbit.myscripts";
+
     public static final String RC_ENDPOINT_TOU = "com.samsung.microbit.termsOfUse";
     public static final String RC_ENDPOINT_PP = "com.samsung.microbit.privacyPolicy";
     public static final String RC_CONFIG_EMAIL = "com.samsung.microbit.feedbackEmailAddress";
+
     public static final String RC_ETAG = "com.samsung.microbit.ETag";
     public static final String RC_LAST_MODIFIED_STRING = "com.samsung.microbit.lastmodifiedString";
     public static final String RC_LAST_QUERY = "com.samsung.microbit.lastQuery";
@@ -50,7 +91,12 @@ public class RemoteConfig
     private String blankValue = "";
 
     private String m_AppStatus = null ;
+    private String m_exceptionTitle = null ;
+    private String m_exceptionMsg = null ;
     private String m_aboutURL = null ;
+    private String m_createCodeURL = null ;
+    private String m_discoverURL = null ;
+    private String m_myScriptsURL = null ;
     private String m_TOUURL = null ;
     private String m_PPURL = null ;
     private String m_sendToEmail = null ;
@@ -70,6 +116,7 @@ public class RemoteConfig
                 }
             }
         }
+        instance.getStoredValues(MBApp.getContext());
         return instance;
     }
 
@@ -106,19 +153,25 @@ public class RemoteConfig
     private boolean getStoredValues(Context context)
     {
         //Get values previously stored in the sharedpreference
-        mPreferences = context.getSharedPreferences(REMOTE_CONFIG_PREFERENCE_KEY, Context.MODE_PRIVATE);
         if (mPreferences == null){
-            Log.d("RemoteConfig", "SharedPreferences is null. cannot get the config");
+            mPreferences = context.getSharedPreferences(REMOTE_CONFIG_PREFERENCE_KEY, Context.MODE_PRIVATE);
             return false;
         }
+        //Update unconditionally
         m_AppStatus = mPreferences.getString(RC_APPSTATUS_KEY,"Off");
         m_aboutURL = mPreferences.getString(RC_ENDPOINT_ABOUT,blankValue);
         m_TOUURL = mPreferences.getString(RC_ENDPOINT_TOU,blankValue);
         m_PPURL = mPreferences.getString(RC_ENDPOINT_PP,blankValue);
         m_sendToEmail = mPreferences.getString(RC_CONFIG_EMAIL,blankValue);
-        m_Etag = mPreferences.getString(RC_ETAG,blankValue);
+        m_Etag = mPreferences.getString(RC_ETAG, blankValue);
         m_LastQueryTime = mPreferences.getLong(RC_LAST_QUERY, 0);
         m_maxAge = mPreferences.getLong(RC_LAST_QUERY, 0);
+
+        m_exceptionTitle = mPreferences.getString(RC_EXCEPTIONTITLE_KEY, blankValue);
+        m_exceptionMsg = mPreferences.getString(RC_EXCEPTIONMSG_KEY,blankValue);
+        m_createCodeURL = mPreferences.getString(RC_ENDPOINT_CREATECODE,blankValue);
+        m_discoverURL = mPreferences.getString(RC_ENDPOINT_DISCOVER, blankValue);
+        m_myScriptsURL = mPreferences.getString(RC_APPSTATUS_MYSCRIPTS,blankValue);
         return true;
     }
 
@@ -136,32 +189,98 @@ public class RemoteConfig
     }
 
     public String getAboutURL() {
+        if (m_aboutURL.isEmpty()){
+            m_aboutURL = MBApp.getContext().getString(R.string.about_url);
+        }
         return m_aboutURL;
     }
 
     public String getTermsOfUseURL() {
+        if (m_TOUURL.isEmpty()){
+            m_TOUURL = MBApp.getContext().getString(R.string.terms_of_use_url);
+        }
         return m_TOUURL;
     }
 
     public String getPrivacyURL() {
+        if (m_PPURL.isEmpty()){
+            m_PPURL = MBApp.getContext().getString(R.string.privacy_policy_url);
+        }
         return m_PPURL;
     }
 
     public String getSendEmailAddress() {
+        if (m_sendToEmail.isEmpty()){
+            m_sendToEmail = MBApp.getContext().getString(R.string.feedback_email_address);
+        }
         return m_sendToEmail;
+    }
+
+    public String getExceptionTitle() {
+        if (m_exceptionTitle.isEmpty()){
+            m_exceptionTitle = MBApp.getContext().getString(R.string.general_error_title);
+        }
+        return m_exceptionTitle;
+    }
+
+    public String getExceptionMsg() {
+        if (m_exceptionMsg.isEmpty()){
+            m_exceptionMsg = MBApp.getContext().getString(R.string.general_error_msg);
+        }
+        return m_exceptionMsg;
+    }
+
+    public String getCreateCodeURL() {
+        if (m_createCodeURL.isEmpty()){
+            m_createCodeURL = MBApp.getContext().getString(R.string.createCodeURL);
+        }
+        return m_createCodeURL;
+    }
+
+    public String getDiscoverURL() {
+        if (m_discoverURL.isEmpty()){
+            m_discoverURL = MBApp.getContext().getString(R.string.discoverURL);
+        }
+        return m_discoverURL;
+    }
+
+    public String getMyScriptsURL() {
+        if (m_myScriptsURL.isEmpty()){
+            m_myScriptsURL = MBApp.getContext().getString(R.string.myScriptsURL);
+        }
+        return m_myScriptsURL;
+    }
+
+    public boolean isAppStatusOn()
+    {
+        getStoredValues(MBApp.getContext());
+        m_AppStatus = mPreferences.getString(RC_APPSTATUS_KEY,"On");
+        //Get extended message if needed
+        if (m_AppStatus.equalsIgnoreCase("OFF"))
+        {
+            Log.e("RemoteConfig", "isAppStatusOn: OFF");
+            return false;
+        }
+        return true;
     }
     class RetrieveConfigFile extends AsyncTask<String, Void, Result> {
 
         @Override
         protected Result doInBackground(String... urls) {
             String version = "0.1.0" ;
-            PackageManager manager = MBApp.getContext().getPackageManager();
-            PackageInfo info = null;
-            try {
-                info = manager.getPackageInfo(MBApp.getContext().getPackageName(), 0);
-                version = info.versionName;
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
+            if (BuildConfig.DEBUG) {
+                //Hardcoding the version for Debug builds
+                version = "1.3.6" ;
+                Log.d("RemoteConfig", "Using config file for version :  " + version);
+            }else{
+                PackageManager manager = MBApp.getContext().getPackageManager();
+                PackageInfo info = null;
+                try {
+                    info = manager.getPackageInfo(MBApp.getContext().getPackageName(), 0);
+                    version = info.versionName;
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
             //Get the new config file
             String urlString =  String.format(MBApp.getContext().getResources().getString(R.string.remote_config_url), version);
@@ -192,8 +311,9 @@ public class RemoteConfig
                         response.append(inputLine);
                     }
                     in.close();
-                    if (!response.toString().isEmpty())
+                    if (!response.toString().isEmpty()) {
                         readFromJsonAndStore(response.toString());
+                    }
 
                 } else if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_MODIFIED){
                     Log.d("RemoteConfig" , "Content not modified");
@@ -209,29 +329,74 @@ public class RemoteConfig
             return null;
         }
 
-        private void readFromJsonAndStore(String jsonFile) {
+        private void readAppStatus(JSONObject reader, SharedPreferences.Editor editor)
+        {
+            JSONObject status  = null;
             try {
-                SharedPreferences.Editor editor = mPreferences.edit();
-                JSONObject reader = new JSONObject(jsonFile);
-
-                JSONObject status  = reader.getJSONObject("status");
+                status = reader.getJSONObject("status");
                 String appStatus = status.getString("appStatus");
                 editor.putString(RC_APPSTATUS_KEY, appStatus).commit();
+                //Get extended message if needed
+                if (appStatus.equalsIgnoreCase("OFF"))
+                {
+                    String title = status.getString("title");
+                    String message = status.getString("message");
+                    editor.putString(RC_EXCEPTIONTITLE_KEY, title).commit();
+                    editor.putString(RC_EXCEPTIONMSG_KEY, message).commit();
+                }
+            } catch (JSONException e) {
+                Log.e("RemoteConfig", "readAppStatus: failed");
+                e.printStackTrace();
+            }
+        }
 
+        private void readEndPoints(JSONObject reader, SharedPreferences.Editor editor)
+        {
+            try {
                 JSONObject endpoints  = reader.getJSONObject("endpoints");
                 String about = endpoints.getString("about");
                 String tou = endpoints.getString("termsOfUse");
                 String pp = endpoints.getString("privacyPolicy");
+                String createcode = endpoints.getString("createCode");
+                String discover = endpoints.getString("discover");
+                String myscripts = endpoints.getString("myScripts");
 
                 editor.putString(RC_ENDPOINT_ABOUT , about).commit();
                 editor.putString(RC_ENDPOINT_TOU, tou).commit();
                 editor.putString(RC_ENDPOINT_PP, pp).commit();
+                editor.putString(RC_ENDPOINT_CREATECODE , createcode).commit();
+                editor.putString(RC_ENDPOINT_DISCOVER, discover).commit();
+                editor.putString(RC_APPSTATUS_MYSCRIPTS, myscripts).commit();
 
+            } catch (JSONException e) {
+                Log.e("RemoteConfig", "readEndPoints: failed");
+                e.printStackTrace();
+            }
+        }
+
+        private void readConfig(JSONObject reader, SharedPreferences.Editor editor)
+        {
+            try {
                 JSONObject config  = reader.getJSONObject("config");
                 String email = config.getString("feedbackEmailAddress");
-
                 editor.putString(RC_CONFIG_EMAIL, email).commit();
             } catch (JSONException e) {
+                Log.e("RemoteConfig", "readConfig: failed");
+                e.printStackTrace();
+            }
+        }
+        private void readFromJsonAndStore(String jsonFile) {
+            try {
+                SharedPreferences.Editor editor = mPreferences.edit();
+                JSONObject reader = new JSONObject(jsonFile);
+                //Read the application status
+                readAppStatus(reader, editor);
+                //Read end points
+                readEndPoints(reader, editor);
+                //Read end points
+                readConfig(reader, editor);
+            } catch (JSONException e) {
+                Log.i("RemoteConfig", "readFromJsonAndStore: failed");
                 e.printStackTrace();
             }
         }

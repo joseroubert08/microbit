@@ -22,7 +22,10 @@ public class TelephonyPlugin
 
     public static void pluginEntry(Context ctx, CmdArg cmd) {
         mContext = ctx;
-        boolean register = cmd.getValue().equals("on");
+        boolean register = false;
+        if (cmd.getValue() != null) {
+            register = cmd.getValue().toLowerCase().equals("on");
+        }
         switch (cmd.getCMD()) {
             case Constants.REG_TELEPHONY: {
                 if (register)
@@ -66,8 +69,8 @@ public class TelephonyPlugin
             switch (state)
             {
                 case TelephonyManager.CALL_STATE_RINGING:
-                    //TODO: fix ble calls
-                    //PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_TELEPHONY_ID,Constants.SAMSUNG_INCOMING_CALL));
+                    Log.i("TelephonyManager", "onCallStateChanged: " + state);
+                    PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID,Constants.SAMSUNG_INCOMING_CALL));
                     break;
             }
         }
@@ -78,8 +81,7 @@ public class TelephonyPlugin
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Telephony.Sms.Intents.SMS_RECEIVED_ACTION)) {
-                //TODO: fix ble calls
-                //PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_TELEPHONY_ID, Constants.SAMSUNG_INCOMING_SMS));
+                PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID, Constants.SAMSUNG_INCOMING_SMS));
             }
         }
     }
@@ -97,6 +99,7 @@ public class TelephonyPlugin
 
     public static void registerIncomingCall()
     {
+        Log.i("TelephonyPlugin", "registerIncomingCall: ");
         if (mTelephonyManager == null) {
             mTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         }
@@ -112,6 +115,7 @@ public class TelephonyPlugin
 
     public static void unregisterIncomingCall()
     {
+        Log.i("TelephonyPlugin", "unregisterIncomingCall: ");
         if (mTelephonyManager == null) {
             return;
         }
@@ -138,6 +142,7 @@ public class TelephonyPlugin
 
     public static void registerIncomingSMS()
     {
+        Log.i("TelephonyPlugin", "registerIncomingSMS: ");
         if (mTelephonyManager == null)
             mTelephonyManager = (TelephonyManager)mContext.getSystemService(Context.TELEPHONY_SERVICE);
 
@@ -153,6 +158,7 @@ public class TelephonyPlugin
 
     public static void unregisterIncomingSMS()
     {
+        Log.i("TelephonyPlugin", "unregisterIncomingSMS: ");
         if (mTelephonyManager == null)
             return;
 

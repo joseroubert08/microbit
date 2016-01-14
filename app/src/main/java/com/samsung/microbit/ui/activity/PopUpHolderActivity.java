@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 
-import com.samsung.microbit.R;
 import com.samsung.microbit.ui.PopUp;
 
 /*
@@ -21,7 +20,7 @@ import com.samsung.microbit.ui.PopUp;
    This class is used internally by the PopUp class interface.
    DO NOT call this activity directly, use the PopUp.showFromService function from a service context.
  */
-public class PopUpHolderActivity extends Activity{
+public class PopUpHolderActivity extends Activity {
 
     static public final String INTENT_EXTRA_POPUP_TYPE = "type";
     static public final String INTENT_EXTRA_POPUP_MESSAGE = "message";

@@ -21,14 +21,16 @@
     <string name="poweredBy">Powered by\r\n SAMSUNG</string>
     <string name="copyright">Copyright © 1995-2015 SAMSUNG</string>
 
-    <string name="touchDevLiveURL">https://www.microbit.co.uk/create-code</string>
-    <string name="touchDevDiscoverURL">https://www.microbit.co.uk/</string>
-    <string name="touchDevTestURL">https://test.microbit.co.uk/create-code</string>
-    <string name="touchDevStageURL">https://stage.microbit.co.uk/create-code</string>
-    <string name="touchDevURLMyScripts">https://www.microbit.co.uk/</string>
-    <string name="myScriptsURL">https://www.microbit.co.uk/app/#</string>
-    <string name="privacy_policy_url">https://www.microbit.co.uk/privacy</string>
-    <string name="terms_of_use_url">https://www.microbit.co.uk/terms-of-use</string>
+    <string name="createCodeURL">https://www.microbit.co.uk/</string>
+
+    <string name="discoverURL">https://www.microbit.co.uk/</string>
+    <string name="myScriptsURL">https://www.microbit.co.uk/</string>
+
+    <string name="privacy_policy_url">https://www.microbit.co.uk/</string>
+    <string name="terms_of_use_url">https://www.microbit.co.uk/</string>
+    <string name="about_url">https://www.microbit.co.uk/</string>
+    <string name="feedback_email_address">learning.makeitdigital@bbc.co.uk</string>
+
     <string name="remote_config_url">https://files.microbit.co.uk/appconfig/microbit/android/%s/config.json</string>
 
 
@@ -71,10 +73,10 @@
     <string name="pattern_to_flash">Enter the pattern displayed on your micro:bit to flash</string>
     <string name="pattern_to_pair">Enter the pattern displayed on your micro:bit to pair</string>
 
-    <string name="pairing_failed_message">Cannot connect to the micro:bit.\n Please try again.</string>
-    <string name="pairing_failed_title">Connecting unsuccessful</string>
-    <string name="pairing_success_message_1">You have successfully linked with micro:bit </string>
-    <string name="pairing_success_title">micro:bit found</string>
+    <string name="pairing_failed_message">Cannot pair with the micro:bit.\n Retry?</string>
+    <string name="pairing_failed_title">Pairing unsuccessful</string>
+    <string name="pairing_success_message_1">You have successfully paired with micro:bit </string>
+    <string name="pairing_success_title">micro:bit paired</string>
     <string name="run_code_button_name">Continue to Flash</string>
     <string name="flashing_failed_not_found">Flashing Failed!Cannot read the file</string>
     <string name="flashing_failed_io_error">Flashing Failed! Cannot find the file</string>
@@ -130,7 +132,8 @@
     <string name="alert">Alert...</string>
 
     <!-- Connect Activity -->
-    <string name="previous_devices">Previously paired micro:bit(s)</string>
+    <string name="previous_devices">Connect previously paired micro:bit</string>
+    <string name="desc_previous_devices">No previously paired micro:bits</string>
     <string name="new_devices_pattern_null">Enter the pattern</string>
     <string name="new_devices">Connect to a new device</string>
     <string name="name_device">Name device</string>
@@ -138,20 +141,31 @@
     <string name="connect">Connect</string>
     <string name="gamepad">Gamepad</string>
     <string name="connectNew">Pair a new micro:bit</string>
-    <string name="connectTipTitle">How to pair your micro:bit</string>
-    <string name="connectTipText">Step 1 \nHold the A buttons,\nthen PRESS RESET</string>
-    <string name="enterPatternTipText">Step 2 \nCopy the pattern from your\ndevice and PRESS OK</string>
-    <string name="searchingTipText">Step 3 \nCurrently searching for\nmicro:bit, please wait...</string>
-    <string name="enterPinToPairText">Step 4 \nPress button A, and\nenter the 6 digit PIN</string>
+    <string name="connect_tip_title">How to pair your micro:bit</string>
+    <string name="step_connect_tip_text">Step 1</string>
+    <string name="connect_tip_text">Hold the A and B buttons,\nthen PRESS RESET</string>
+    <string name="desc_connect_tip_text_step">Step one</string>
+    <string name="desc_connect_tip_text">Hold the A and B buttons, then PRESS RESET</string>
+    <string name="step_enter_pattern_tip_text">Step 2</string>
+    <string name="enter_pattern_tip_text">Copy the pattern from your\ndevice and PRESS OK</string>
+    <string name="desc_enter_pattern_tip_step_two">Step two</string>
+    <string name="desc_enter_pattern_tip_text">Copy the pattern from your device and PRESS OK</string>
+    <string name="searching_tip_text">Currently searching for\nmicro:bit, please wait...</string>
+    <string name="desc_searching_tip_text">Currently searching for micro:bit, please wait</string>
+    <string name="desc_searching_tip_step_three">Step three</string>
+    <string name="enter_pin_to_pair_text">Press button A, and\nenter the 6 digit PIN</string>
+    <string name="step_enter_pin_to_pair_text">Step 4</string>
+    <string name="desc_enterPinToPairText">Press button A, and enter the 6 digit PIN</string>
     <!--<string name="connectTipText">To know the pattern of your micro:bit :- \nPlease hold A and B buttons down and then press RESET on your micro:bit</string>-->
     <string name="connectSearchingTitle">Connecting...</string>
+    <string name="desc_connectSearchingTitle">Connecting...</string>
     <string name="searchingTitle">Searching for micro:bit</string>
-    <string name="pairing_msg_1">Found micro:bit. \n \nInitiating pairing...</string>
+    <string name="pairing_msg_1">Found micro:bit</string>
 
     <!--Connect Popup messages -->
     <string name="pairingErrorTitle">Error</string>
     <string name="timeOut">Timeout</string>
-    <string name="pairingErrorMessage">We cannot find that micro:bit\nPlease try again</string>
+    <string name="pairingErrorMessage">We cannot find that micro:bit\nRetry?</string>
     <string name="deleteMicrobitTitle">Delete micro:bit?</string>
     <string name="deleteMicrobitMessage">Are you sure you want to remove this device?</string>
 
@@ -180,7 +194,8 @@
     <string name="download_failed_msg">Try again later</string>
     <string name="download_failed_title">Try again later</string>
     <string name="projects">Projects</string>
-    <string name="pair_my_device">Pair your micro:bit</string>
+    <string name="pair_my_device">Connect</string>
+    <string name="connect_my_device">Connect</string>
     <string name="flash">Flash</string>
     <string name="view">View</string>
     <string name="no_projects">No projects found!</string>
@@ -192,13 +207,13 @@
     <string name="flashing_error_msg">micro:bit not in correct state</string>
     <string name="flashing_phase1_msg">Finding the device..</string>
     <string name="pairing_phase2_msg">Press button "A" on micro:bit to pair successfully. \n\n Waiting for the secret key</string>
-    <string name="pairing_phase2_msg_New">Enter Pin</string>
+    <string name="pairing_phase2_msg_New">Enter PIN</string>
 
     <string name="web_view_demo">Web View Demo</string>
     <string name="flashing_project">Flashing \'%s\'</string>
     <string name="sending_project">Flashing project</string>
     <string name="send_project">Flashing code to micro:bit</string>
-    <string name="validating_microbit">Verifying the pairing code</string>
+    <string name="validating_microbit">Verifying services needed for flashing</string>
     <string name="waiting_reboot">Waiting for micro:bit to reboot</string>
     <string name="init_connection">Connecting to micro:bit</string>
     <string name="dfu_status_starting_msg">Initializing flashing process&#8230;</string>
@@ -222,11 +237,11 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open">Open Menu</string>
+    <string name="navigation_drawer_close">Close Menu</string>
     <string name="create_code">Create Code</string>
     <string name="flash_microbit">Flash</string>
-    <string name="connect_device">Connect</string>
+    <string name="connect_device">Connections</string>
     <string name="discover">Discover</string>
 
     <string name="email_body" formatted="false">
@@ -242,4 +257,48 @@
         ]]>
     </string>
     <string name="prefs_share_stats_status">share_stats</string>
+    <string name="content_description_toolbar_home">Open Menu</string>
+    <string name="content_description_toolbar_logo">BBC Micro:bit</string>
+    <string name="manage_microbit_txt">To manage paired micro:bits, go to your \nBluetooth Settings on your device</string>
+    <string name="desc_manage_microbit_txt">Rename and remove paired micro:bits</string>
+    <string name="desc_manage_microbits">To manage paired micro:bits, go to your Bluetooth Settings on your device</string>
+    <string name="desc_manage_and_remove_microbits_label">How do i manage and remove paired micro:bits?</string>
+    <string name="manage_and_remove_microbit">How do i manage and remove paired micro:bits?</string>
+    <string name="desc_homescreen_logo_img">Hello</string>
+    <string name="desc_connect_btn">Connections</string>
+    <string name="desc_flash_btn">Flash</string>
+    <string name="desc_create_code">Create Code</string>
+    <string name="desc_discover">Discover</string>
+    <string name="desc_back_to_home_from_flash_btn">Back to Menu</string>
+    <string name="desc_flash_toolbar_header">Flash</string>
+    <string name="desc_go_to_bluetooth_settings">Go to bluetooth settings</string>
+    <string name="tv_go_to_bluetooth_Settings">Go to bluetooth settings</string>
+    <string name="desc_connect_back_to_home_btn">Back to Menu</string>
+    <string name="nav_draw_menu">Menu</string>
+    <string name="nav_draw_about">About</string>
+    <string name="nav_draw_help">Help</string>
+    <string name="nav_draw_privacy_cookies"><![CDATA[Privacy & Cookies]]></string>
+    <string name="nav_draw_terms_conditions"><![CDATA[Terms & Conditions]]></string>
+    <string name="nav_draw_send_feedback">Send us your feedback</string>
+    <string name="nav_draw_share_statistics">Share Statistics</string>
+    <string name="txt_my_scripts_btn">My Scripts</string>
+    <string name="desc_nav_drawer_menu">Close Menu</string>
+    <string name="desc_share_statistics_description">The BBC will only use this information to analyse and improve the services offered through this app. For information, see our privacy policy </string>
+    <string name="txt_pair_btn">Pair</string>
+    <string name="txt_cancel_btn">Cancel</string>
+    <string name="desc_connection_status_flash_text">Micro:Bit connection status</string>
+    <string name="desc_send_project_btn">Flash code to your Micro:bit</string>
+    <string name="desc_delete_project_btn">Delete code</string>
+    <string name="searching_tip_step_text">Step 3</string>
+    <string name="desc_connect_pair_micro_bit">Pair a new micro:bit</string>
+    <string name="most_recent_device_status">Most recently used micro:bit</string>
+    <string name="device_connected_device_status">Currently connected micro:bit</string>
+
+    <string name="general_error_title">Error</string>
+    <string name="general_error_msg">Application error. Please contact developer</string>
+    <string name="pair_new_device_dialog_title">Pair a new Device?</string>
+    <string name="pair_new_device_dialog_message">Pairing with a new device will remove any previously paired Mircobits.</string>
+    <string name="ok_button_label">OK</string>
+    <string name="toolbar_title">Menu</string>
+
 </resources>

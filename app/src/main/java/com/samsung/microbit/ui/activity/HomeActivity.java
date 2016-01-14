@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,9 +22,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
@@ -33,20 +37,23 @@ import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.service.PluginService;
+import com.samsung.microbit.ui.PopUp;
 
 import java.util.HashMap;
 import java.util.List;
 
 import uk.co.bbc.echo.EchoConfigKeys;
 
-public class HomeActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
     // share stats checkbox
-    private CheckBox shareStatsCheckBox;
+    private CheckBox mShareStatsCheckBox;
 
-    SharedPreferences prefs = null;
+    SharedPreferences mPrefs = null;
     StableArrayAdapter adapter = null;
     private AppCompatDelegate delegate;
+    // Hello animation
+    private WebView animation;
 
     boolean connectionInitiated = false;
 
@@ -60,6 +67,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private String emailBodyString = null;
+
 
     protected void logi(String message) {
         if (debug) {
@@ -77,9 +85,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         logi("onCreate() :: ");
         MBApp.setContext(this);
+
+        RemoteConfig.getInstance().init();
 
         setContentView(R.layout.activity_home);
         setupDrawer();
@@ -89,6 +98,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         LinearLayout connectBarView = (LinearLayout) findViewById(R.id.connectBarView);
         connectBarView.getBackground().setAlpha(128);
+
+        // Font Style for buttons
+        Button connectButton = (Button) findViewById(R.id.connect_device_btn);
+        connectButton.setTypeface(MBApp.getApp().getTypeface());
+        Button flashButton = (Button) findViewById(R.id.flash_microbit_btn);
+        flashButton.setTypeface(MBApp.getApp().getTypeface());
+        Button createCodeButton = (Button) findViewById(R.id.create_code_btn);
+        createCodeButton.setTypeface(MBApp.getApp().getTypeface());
+        Button discoverButton = (Button) findViewById(R.id.discover_btn);
+        discoverButton.setTypeface(MBApp.getApp().getTypeface());
 
         // Start the other services - local service to handle IPC in the main process
         Intent ipcIntent = new Intent(this, IPCService.class);
@@ -100,7 +119,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         final Intent intent = new Intent(this, PluginService.class);
         startService(intent);
 
-        prefs = getSharedPreferences("com.samsung.microbit", MODE_PRIVATE);
 
         if (app.getEcho() != null) {
             logi("Page View test for HomeActivity");
@@ -113,10 +131,25 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (item != null) {
             item.setChecked(true);
         }
-        /* Debug code ends*/
-        RemoteConfig.getInstance().init();
-    }
 
+        if (!RemoteConfig.getInstance().isAppStatusOn()) {
+            finish();
+            //Cannot proceed with the application. Shutdown NOW
+            PopUp.show(MBApp.getContext(),
+                    RemoteConfig.getInstance().getExceptionMsg(),
+                    RemoteConfig.getInstance().getExceptionTitle(),
+                    R.drawable.error_face,//image icon res id
+                    R.drawable.red_btn,
+                    PopUp.TYPE_ALERT, //type of popup.
+                    null,
+                    null);
+
+        }
+        // animation for loading hello .giff
+        animation = (WebView) findViewById(R.id.homeHelloAnimationWebView);
+        animation.setBackgroundColor(Color.TRANSPARENT);
+        animation.loadUrl("file:///android_asset/htmls/hello_home_animation.html");
+    }
 
     private void setupEcho() {
         // Echo Config
@@ -132,120 +165,73 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         config.put(EchoConfigKeys.COMSCORE_URL, "http://data.bbc.co.uk/v1/analytics-echo-chamber-inbound/comscore");
         //Enable debug mode
         config.put(EchoConfigKeys.ECHO_DEBUG, "1");
-        // Send RUM events to EchoChamber
-        //config.put(EchoConfigKeys.RUM_ENABLED, "true");
-        //config.put(EchoConfigKeys.RUM_URL, "http://data.bbc.co.uk/v1/analytics-echo-chamber-inbound/rum");
-
-        // Send BARB events
-        //config.put(EchoConfigKeys.BARB_ENABLED, "true");
-        //config.put(EchoConfigKeys.BARB_SITE_CODE, "bbcandroidtest");
-
         // Instantiate EchoClient
         app.initialiseEcho(config);
     }
 
     private void setupDrawer() {
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        toolbar.setNavigationContentDescription(R.string.content_description_toolbar_home);
         toolbar.setLogo(R.drawable.bbc_microbit);
+        toolbar.setNavigationIcon(R.drawable.white_red_led_btn);
+        toolbar.setLogoDescription(R.string.content_description_toolbar_logo);
+        setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.setDrawerTitle(GravityCompat.START, "Menu"); // TODO - Accessibility for touching the drawer
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-       // toggle.setDrawerIndicatorEnabled(false); // TODO: Change to the word 'Menu'
+
+
+        boolean shareStats = false;
+        mPrefs = getSharedPreferences("com.samsung.microbit", MODE_PRIVATE);
+        if (mPrefs != null) {
+            shareStats = mPrefs.getBoolean(getString(R.string.prefs_share_stats_status), true);
+            MBApp.setSharingStats(shareStats);
+        }
+        //TODO focusable view
         drawer.setDrawerListener(toggle);
+
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
 
         /* Todo [Hack]:
         * NavigationView items for selection by user using
         * onClick listener instead of overriding onNavigationItemSelected*/
+        Button menuNavBtn = (Button) findViewById(R.id.btn_nav_menu);
+        menuNavBtn.setTypeface(MBApp.getApp().getTypeface());
         findViewById(R.id.btn_nav_menu).setOnClickListener(this);
-        findViewById(R.id.btn_explore).setOnClickListener(this);
+
+        Button aboutNavBtn = (Button) findViewById(R.id.btn_about);
+        aboutNavBtn.setTypeface(MBApp.getApp().getTypeface());
         findViewById(R.id.btn_about).setOnClickListener(this);
+
+        Button helpNavBtn = (Button) findViewById(R.id.btn_help);
+        helpNavBtn.setTypeface(MBApp.getApp().getTypeface());
         findViewById(R.id.btn_help).setOnClickListener(this);
+
+        Button privacyNavBtn = (Button) findViewById(R.id.btn_privacy_cookies);
+        privacyNavBtn.setTypeface(MBApp.getApp().getTypeface());
         findViewById(R.id.btn_privacy_cookies).setOnClickListener(this);
+
+        Button termsNavBtn = (Button) findViewById(R.id.btn_terms_conditions);
+        termsNavBtn.setTypeface(MBApp.getApp().getTypeface());
         findViewById(R.id.btn_terms_conditions).setOnClickListener(this);
+
+        Button sendFeedbackNavbtn = (Button) findViewById(R.id.btn_send_feedback);
+        sendFeedbackNavbtn.setTypeface(MBApp.getApp().getTypeface());
         findViewById(R.id.btn_send_feedback).setOnClickListener(this);
+
         // Share stats checkbox
-        shareStatsCheckBox = (CheckBox) findViewById(R.id.share_statistics_status);
-        shareStatsCheckBox.setOnClickListener(this);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        switch (id) {
-
-            case R.id.nav_menu:
-                Toast.makeText(this, "Menu ", Toast.LENGTH_LONG).show();
-                break;
-            case R.id.nav_explore:
-                Toast.makeText(this, "Explore ", Toast.LENGTH_LONG).show();
-                break;
-            case R.id.nav_about: {
-                String url = RemoteConfig.getInstance().getAboutURL();
-                if (url.isEmpty()) {
-                    Log.d(TAG, "Failed to get the about url from remoteConfig");
-                    url = getString(R.string.terms_of_use_url);
-                }
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(url));
-                startActivity(intent);
-            }
-            break;
-            case R.id.nav_help:
-                Toast.makeText(this, "help", Toast.LENGTH_LONG).show();
-                break;
-            case R.id.nav_privacy: {
-                String url = RemoteConfig.getInstance().getPrivacyURL();
-                if (url.isEmpty()) {
-                    Log.d(TAG, "Failed to get the privacy url from remoteConfig");
-                    url = getString(R.string.privacy_policy_url);
-                }
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(url));
-                startActivity(intent);
-            }
-            break;
-            case R.id.nav_terms_conditions: {
-                String url = RemoteConfig.getInstance().getTermsOfUseURL();
-                if (url.isEmpty()) {
-                    Log.d(TAG, "Failed to get the terms of use url from remoteConfig");
-                    url = getString(R.string.terms_of_use_url);
-                }
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(url));
-                startActivity(intent);
-            }
-            break;
-
-            case R.id.nav_feedback: {
-                String emailAddress = RemoteConfig.getInstance().getSendEmailAddress();
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("message/rfc822");
-                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{emailAddress});
-                intent.putExtra(Intent.EXTRA_SUBJECT, "[User feedback] ");
-                //Prepare the body of email
-                String body = prepareEmailBody();
-                intent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(body));
-                Intent mailer = Intent.createChooser(intent, null);
-                startActivity(mailer);
-            }
-            break;
-            case R.id.nav_shareable:
-                Toast.makeText(this, "Stats are shareable ", Toast.LENGTH_LONG).show();
-                break;
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+        TextView shareStatsCheckTitle = (TextView) findViewById(R.id.share_statistics_title);
+        shareStatsCheckTitle.setTypeface(MBApp.getApp().getTypeface());
+        TextView shareStatsDescription = (TextView) findViewById(R.id.share_statistics_description);
+        shareStatsDescription.setTypeface(MBApp.getApp().getTypeface());
+        mShareStatsCheckBox = (CheckBox) findViewById(R.id.share_statistics_status);
+        mShareStatsCheckBox.setOnClickListener(this);
+        mShareStatsCheckBox.setChecked(shareStats);
     }
 
     private String prepareEmailBody() {
@@ -286,21 +272,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        urlToOpen = RemoteConfig.getInstance().getCreateCodeURL();
         switch (id) {
             case R.id.live:
                 item.setChecked(true);
-                urlToOpen = getString(R.string.touchDevLiveURL);
                 break;
             case R.id.stage:
                 item.setChecked(true);
-                urlToOpen = getString(R.string.touchDevStageURL);
+                urlToOpen = urlToOpen.replace("www", "stage");
                 break;
             case R.id.test:
                 item.setChecked(true);
-                urlToOpen = getString(R.string.touchDevTestURL);
+                urlToOpen = urlToOpen.replace("www", "test");
                 break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -355,56 +340,45 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (v.getId()) {
             case R.id.addDevice:
-            case R.id.addDeviceEmpty: {
+            case R.id.connect_device_btn: {
                 Intent intent = new Intent(this, PairingActivity.class);
                 startActivity(intent);
             }
             break;
-            case R.id.startNewProject: {
+            case R.id.create_code_btn: {
                 //Update Stats
                 if (app != null && app.getEcho() != null) {
                     logi("User action test for delete project");
                     app.getEcho().userActionEvent("click", "CreateCode", null);
                 }
-                //Debug feature to be added. Start Browser with live, stage or test URL
                 if (urlToOpen == null) {
-                    urlToOpen = getString(R.string.touchDevLiveURL);
+                    urlToOpen = RemoteConfig.getInstance().getCreateCodeURL();
                 }
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(urlToOpen));
                 startActivity(intent);
             }
             break;
-            case R.id.flashMicrobit:
+            case R.id.flash_microbit_btn:
                 Intent i = new Intent(this, ProjectActivity.class);
                 startActivity(i);
                 break;
-            case R.id.discover:
+            case R.id.discover_btn:
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(getString(R.string.touchDevDiscoverURL)));
+                intent.setData(Uri.parse(RemoteConfig.getInstance().getDiscoverURL()));
                 startActivity(intent);
                 break;
 
             // TODO: HACK - Navigation View items from drawer here instead of [onNavigationItemSelected]
             // NavigationView items
             case R.id.btn_nav_menu: {
-                Toast.makeText(this, "Menu...", Toast.LENGTH_LONG).show();
-                // Close drawer
-                drawer.closeDrawer(GravityCompat.START);
-            }
-            break;
-            case R.id.btn_explore: {
-                Toast.makeText(this, "Explore ", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Menu", Toast.LENGTH_LONG).show();
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
             }
             break;
             case R.id.btn_about: {
                 String url = RemoteConfig.getInstance().getAboutURL();
-                if (url.isEmpty()) {
-                    Log.d(TAG, "Failed to get the about url from remoteConfig");
-                    url = getString(R.string.terms_of_use_url);
-                }
                 Intent aboutIntent = new Intent(Intent.ACTION_VIEW);
                 aboutIntent.setData(Uri.parse(url));
                 startActivity(aboutIntent);
@@ -413,17 +387,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.btn_help: {
-                Toast.makeText(this, "help", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Help", Toast.LENGTH_LONG).show();
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
             }
             break;
             case R.id.btn_privacy_cookies: {
                 String url = RemoteConfig.getInstance().getPrivacyURL();
-                if (url.isEmpty()) {
-                    Log.d(TAG, "Failed to get the privacy url from remoteConfig");
-                    url = getString(R.string.privacy_policy_url);
-                }
                 Intent privacyIntent = new Intent(Intent.ACTION_VIEW);
                 privacyIntent.setData(Uri.parse(url));
                 startActivity(privacyIntent);
@@ -433,14 +403,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             break;
             case R.id.btn_terms_conditions: {
                 String url = RemoteConfig.getInstance().getTermsOfUseURL();
-                if (url.isEmpty()) {
-                    Log.d(TAG, "Failed to get the terms of use url from remoteConfig");
-                    url = getString(R.string.terms_of_use_url);
-                }
                 Intent termsIntent = new Intent(Intent.ACTION_VIEW);
                 termsIntent.setData(Uri.parse(url));
                 startActivity(termsIntent);
-
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
 
@@ -465,28 +430,38 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.share_statistics_status: {
-                // Store checked value to indicate whether stats should be saved
-                prefs.edit().putBoolean(getString(R.string.prefs_share_stats_status), shareStatsCheckBox.isChecked()).apply();
+                toggleShareStatistics();
             }
             break;
 
         }//Switch Ends
     }
 
+
+    private void toggleShareStatistics() {
+        if (mShareStatsCheckBox == null) {
+            return;
+        }
+        boolean shareStatistics = false;
+        shareStatistics = mShareStatsCheckBox.isChecked();
+        mPrefs.edit().putBoolean(getString(R.string.prefs_share_stats_status), shareStatistics).apply();
+        logi("shareStatistics = " + shareStatistics);
+        MBApp.setSharingStats(shareStatistics);
+    }
+
     @Override
     public void onResume() {
         if (debug) logi("onResume() :: ");
         super.onResume();
-
         /* TODO Remove this code in commercial build*/
-        if (prefs.getBoolean("firstrun", true)) {
+        if (mPrefs.getBoolean("firstrun", true)) {
             //First Run. Install the Sample applications
             Toast.makeText(MBApp.getContext(), "Installing Sample HEX files. The projects number will be updated in some time", Toast.LENGTH_LONG).show();
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     Utils.installSamples();
-                    prefs.edit().putBoolean("firstrun", false).commit();
+                    mPrefs.edit().putBoolean("firstrun", false).commit();
                 }
             }).start();
         } else {

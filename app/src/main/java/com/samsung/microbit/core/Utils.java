@@ -1,10 +1,15 @@
 package com.samsung.microbit.core;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Environment;
 import android.util.Log;
 
@@ -21,6 +26,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -44,7 +50,15 @@ public class Utils {
 	private static ConnectedDevice pairedDevice = new ConnectedDevice();
 
 	private static final Object lock = new Object();
-	private static Utils instance;
+
+    private static AudioManager mAudioManager = null ;
+    private static int originalRingerMode = -1 ;
+    private static int originalRingerVolume = -1 ;
+
+    private static Utils instance;
+
+
+
 
 	//private volatile SharedPreferences preferences;
 
@@ -64,6 +78,7 @@ public class Utils {
 				if (instance == null) {
 					Utils u = new Utils();
 					pairedDevice = new ConnectedDevice();
+                    mAudioManager = (AudioManager) MBApp.getContext().getSystemService(MBApp.getContext().AUDIO_SERVICE);
 					instance = u;
 				}
 			}
@@ -119,6 +134,25 @@ public class Utils {
 		return totalPrograms;
 	}
 
+    public static String parse(final BluetoothGattCharacteristic characteristic) {
+        final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+        final byte[] data = characteristic.getValue();
+        if (data == null)
+            return "";
+        final int length = data.length;
+        if (length == 0)
+            return "";
+
+        final char[] out = new char[length * 3 - 1];
+        for (int j = 0; j < length; j++) {
+            int v = data[j] & 0xFF;
+            out[j * 3] = HEX_ARRAY[v >>> 4];
+            out[j * 3 + 1] = HEX_ARRAY[v & 0x0F];
+            if (j != length - 1)
+                out[j * 3 + 2] = '-';
+        }
+        return new String(out);
+    }
 	private static void dirChecker(String dir) {
 		File f = new File(android.os.Environment.DIRECTORY_DOWNLOADS + dir);
 
@@ -126,6 +160,74 @@ public class Utils {
 			f.mkdirs();
 		}
 	}
+
+	public static String getLaunchCameraAudio()
+	{
+		return Constants.LAUNCH_CAMERA_AUDIO;
+	}
+
+    public static String geTakingPhotoAudio()
+    {
+        return Constants.TAKING_PHOTO_AUDIO;
+    }
+    public static String getRecordingVideoAudio()
+    {
+        return Constants.RECORDING_VIDEO_AUDIO;
+    }
+
+    public static String getPictureTakenAudio()
+    {
+        return Constants.PICTURE_TAKEN_AUDIO;
+    }
+
+    public static String getMaxVideoRecordedAudio()
+    {
+        return Constants.MAX_VIDEO_RECORDED;
+    }
+
+    public static void playAudio(String filename, final MediaPlayer.OnCompletionListener callBack )
+    {
+        Resources resources = MBApp.getApp().getApplicationContext().getResources();
+        int resID = resources.getIdentifier(filename, "raw", MBApp.getApp().getApplicationContext().getPackageName());
+        Utils.preparePhoneToPlayAudio();
+
+
+        MediaPlayer mediaPlayer= MediaPlayer.create(MBApp.getApp().getApplicationContext(), resID);
+        //Set a callback for completion
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                restoreAudioMode();
+                if (callBack != null )
+                    callBack.onCompletion(mp);
+            }
+        });
+        mediaPlayer.start();
+    }
+
+    private static void preparePhoneToPlayAudio()
+    {
+        if (mAudioManager == null)
+        {
+            mAudioManager = (AudioManager) MBApp.getApp().getApplicationContext().getSystemService(MBApp.getApp().getApplicationContext().AUDIO_SERVICE);
+        }
+        originalRingerMode = mAudioManager.getRingerMode();
+        originalRingerVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        if (originalRingerMode == AudioManager.RINGER_MODE_SILENT) {
+            mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+        }
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+    }
+
+    private static void restoreAudioMode()
+    {
+        if (mAudioManager == null)
+        {
+            mAudioManager = (AudioManager) MBApp.getApp().getApplicationContext().getSystemService(MBApp.getApp().getApplicationContext().AUDIO_SERVICE);
+        }
+        mAudioManager.setRingerMode(originalRingerMode);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, originalRingerVolume, 0);
+    }
 
 	public static boolean installSamples() {
 		try {
@@ -250,10 +352,32 @@ public class Utils {
 		}
 
 		if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
+            boolean pairedInDeviceList = false;
 			String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
 			Gson gson = new Gson();
 			pairedDevice = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
-		} else {
+			//Check if the microbit is still paired with our mobile
+            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+            for (BluetoothDevice bt : pairedDevices) {
+                if (bt.getAddress().equals(pairedDevice.mAddress)) {
+                    pairedInDeviceList = true;
+                    break;
+                }
+            }
+
+            if (!pairedInDeviceList){
+                Log.e("Utils","The last paired microbit is no longer in the system list. Hence removing it");
+                //Return a NULL device & update preferences
+                pairedDevice.mPattern = null;
+                pairedDevice.mName = null;
+                pairedDevice.mStatus = false;
+                pairedDevice.mAddress = null;
+                pairedDevice.mPairingCode = 0;
+                setPairedMicrobit(ctx,null);
+            }
+
+        } else {
 			pairedDevice.mPattern = null;
 			pairedDevice.mName = null;
 		}

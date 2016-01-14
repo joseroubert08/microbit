@@ -36,7 +36,10 @@ public abstract class BLEBaseService extends Service {
 	protected boolean debug = true;
 
 	protected void logi(String message) {
-		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+		if (debug)
+        {
+            Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+        }
 	}
 
 	@Override
@@ -54,6 +57,7 @@ public abstract class BLEBaseService extends Service {
 	protected boolean reset() {
 		boolean rc = false;
 		if (bleManager != null) {
+            disconnectAll();
 			rc = bleManager.reset();
 			if (rc) {
 				bleManager = null;
@@ -129,6 +133,8 @@ public abstract class BLEBaseService extends Service {
 	}
 
 	protected abstract void startupConnection();
+
+	protected abstract void disconnectAll();
 
 	protected abstract String getDeviceAddress();
 
@@ -319,8 +325,9 @@ public abstract class BLEBaseService extends Service {
 
 		int rc = 99;
 		if (bleManager != null) {
-			bleManager.writeCharacteristic(characteristic);
+			rc = bleManager.writeCharacteristic(characteristic);
 			rc = interpretCode(rc);
+            logi("Data written to " + characteristic.getUuid() + " value : (0x)" + Utils.parse(characteristic)  + " Return Value = 0x" + Integer.toHexString(rc));
 		}
 		return rc;
 	}

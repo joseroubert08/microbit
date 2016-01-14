@@ -3,14 +3,12 @@ package com.samsung.microbit.ui.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.TextView;
 
+import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.model.Constants;
 
 public class GeneralWebView extends Activity {
 
@@ -21,7 +19,8 @@ public class GeneralWebView extends Activity {
 
         setContentView(R.layout.activity_general_web_view);
         webView = (WebView) findViewById(R.id.generalView);
-        TextView title = (TextView) findViewById(R.id.titleTxt);
+        TextView title = (TextView) findViewById(R.id.flash_projects_title_txt);
+        title.setTypeface(MBApp.getApp().getTypeface());
 
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);

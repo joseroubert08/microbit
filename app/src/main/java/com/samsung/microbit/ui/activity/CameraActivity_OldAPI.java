@@ -1,57 +1,60 @@
 package com.samsung.microbit.ui.activity;
 
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.graphics.Point;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import 	android.os.SystemClock;
-
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.media.CamcorderProfile;
-import android.media.MediaRecorder;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
+import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
-import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.SensorManager;
-
+import android.media.CamcorderProfile;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.OrientationEventListener;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.SurfaceView;
-import android.view.OrientationEventListener;
-import android.widget.ImageButton;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.Toast;
 
-
+import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.CmdArg;
+import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.view.CameraPreview;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CameraActivity_OldAPI extends Activity {
 
@@ -61,6 +64,7 @@ public class CameraActivity_OldAPI extends Activity {
 	private ImageButton mButtonClick, mButtonBack_portrait, mButtonBack_landscape;
 	private Camera mCamera;
 	private int mCameraIdx;
+    private static boolean mfrontCamera = true ;
 	private BroadcastReceiver mMessageReceiver;
 	private boolean mVideo = false;
 	private boolean mIsRecording = false;
@@ -72,9 +76,30 @@ public class CameraActivity_OldAPI extends Activity {
     private int mOrientationOffset = 0;
     private int mCurrentIconIndex = 0;
     private ArrayList<Drawable> mTakePhoto, mStartRecord, mStopRecord, mCurrentIconList;
+    private Camera.Parameters mParameters = null;
 
 	private static final String TAG = "CameraActivity_OldAPI";
-	private boolean debug = false;
+	private boolean debug = true;
+
+
+    private MediaRecorder.OnInfoListener m_MediaInfoListner = new MediaRecorder.OnInfoListener(){
+
+        @Override
+        public void onInfo(MediaRecorder mr, int what, int extra) {
+            switch (what)
+            {
+                case MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED:
+                case MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED:
+                    Utils.playAudio(Utils.getMaxVideoRecordedAudio(),null);
+                    stopRecording();
+                    break;
+                case MediaRecorder.MEDIA_RECORDER_INFO_UNKNOWN:
+                    logi("Error in media recorder - What = " + what + " extra = " + extra);
+                    stopRecording();
+                    break;
+            }
+        }
+    };
 
 	void logi(String message) {
 		if (debug) {
@@ -82,15 +107,20 @@ public class CameraActivity_OldAPI extends Activity {
 		}
 	}
 
-	private int getFrontFacingCamera() {
+	private int getCurrentCamera() {
 		int cameraCount = 0;
 		Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
 		cameraCount = Camera.getNumberOfCameras();
 		for (int camIdx = 0; camIdx < cameraCount; camIdx++) {
 			Camera.getCameraInfo(camIdx, cameraInfo);
-			if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-				return camIdx;
-			}
+            if (mfrontCamera && cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT){
+                    logi("returning front camera");
+                    return camIdx;
+            } else if (!mfrontCamera && cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK){
+                    logi("returning back camera");
+                    return camIdx;
+            }
+
 		}
 		return -1;
 	}
@@ -210,28 +240,28 @@ public class CameraActivity_OldAPI extends Activity {
         mCurrentIconList = mTakePhoto;
         updateButtonClickIcon();
 		mButtonClick.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
+            public void onClick(View v) {
                 try {
                     mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
                 } catch (final Exception ex) {
                     sendCameraError();
-                    Log.e(TAG, "Error during take picture",ex);
+                    Log.e(TAG, "Error during take picture", ex);
                 }
-			}
-		});
+            }
+        });
 
 		mButtonClick.setOnLongClickListener(new OnLongClickListener() {
-			@Override
-			public boolean onLongClick(View arg0) {
-				mCamera.autoFocus(new AutoFocusCallback() {
-					@Override
-					public void onAutoFocus(boolean arg0, Camera arg1) {
-						//TODO Is there anything we have to do after autofocus?
-					}
-				});
-				return true;
-			}
-		});
+            @Override
+            public boolean onLongClick(View arg0) {
+                mCamera.autoFocus(new AutoFocusCallback() {
+                    @Override
+                    public void onAutoFocus(boolean arg0, Camera arg1) {
+                        //TODO Is there anything we have to do after autofocus?
+                    }
+                });
+                return true;
+            }
+        });
 
 	}
 
@@ -268,42 +298,85 @@ public class CameraActivity_OldAPI extends Activity {
         mCurrentIconList = mStartRecord;
         updateButtonClickIcon();
 		mButtonClick.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				if (mIsRecording) {
-					// stop recording and release mCamera
+            public void onClick(View v) {
+                if (mIsRecording) {
+                    // stop recording and release mCamera
                     stopRecording();
-				} else {
-					if (!prepareMediaRecorder()) {
-						sendCameraError();
-						Log.e(TAG,"Error preparing mediaRecorder");
-						finish();
-					}
+                } else {
+                    if (!prepareMediaRecorder()) {
+                        sendCameraError();
+                        Log.e(TAG, "Error preparing mediaRecorder");
+                        finish();
+                    }
 
                     mCurrentIconList = mStopRecord;
                     updateButtonClickIcon();
-
-					//TODO Check that is true
-					// work on UiThread for better performance
-					runOnUiThread(new Runnable() {
-						public void run() {
-							try {
-								mMediaRecorder.start();
-							} catch (final Exception ex) {
-								sendCameraError();
-								//TODO Check that can be used
-								Log.e(TAG, "Error during video recording",ex);
-								finish();
-							}
-						}
-					});
-
-					mIsRecording = true;
-				}
-			}
-		});
+                    indicateVideoRecording();
+                    //TODO Check that is true
+                    // work on UiThread for better performance
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            try {
+                                mMediaRecorder.start();
+                            } catch (final Exception ex) {
+                                sendCameraError();
+                                Log.e(TAG, "Error during video recording", ex);
+                                finish();
+                            }
+                        }
+                    });
+                    mIsRecording = true;
+                }
+            }
+        });
 	}
 
-	private void setPreviewForVideo() {
+    private void indicateVideoRecording() {
+        logi("indicateVideoRecording");
+        if (mParameters == null && mCamera != null){
+            setParameters();
+
+        }
+        new CountDownTimer(Constants.MAX_VIDEO_RECORDING_TIME, 1000) {
+            boolean flashON = false ;
+            public void onTick(long millisUntilFinished) {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        if (mIsRecording && mCamera != null){
+                            if (flashON) {
+                                logi("turning flash ON");
+                                mParameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+
+                            } else
+                            {
+                                logi("turning flash OFF");
+                                mParameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                            }
+                            mCamera.setParameters(mParameters);
+                            flashON = !flashON;
+                        }
+                    }
+                });
+            }
+
+            public void onFinish() {
+                //Do nothing
+            }
+        }.start();
+    }
+
+    private void setParameters() {
+        mParameters = mCamera.getParameters();
+
+        List<String> flashModes = mParameters.getSupportedFlashModes();
+        for (String flashmode : flashModes){
+            logi("Supported flash mode : " + flashmode);
+        }
+        mCamera.setParameters(mParameters);
+        mCamera.enableShutterSound(true);
+    }
+
+    private void setPreviewForVideo() {
 
 	}
 
@@ -414,8 +487,12 @@ public class CameraActivity_OldAPI extends Activity {
 					finish();
 				}
 				else if(!mVideo && intent.getAction().equals("TAKE_PIC")) {
+                    mfrontCamera = true;
 					mButtonClick.callOnClick();
 				}
+                else if (!mVideo && intent.getAction().equals("TOGGLE_CAMERA")){
+                    toggleCamera();
+                }
 				else if(mVideo && !mIsRecording && intent.getAction().equals("START_VIDEO")) {
 					mButtonClick.callOnClick();
 				}
@@ -434,6 +511,15 @@ public class CameraActivity_OldAPI extends Activity {
 		logi("onCreate() :: Done");
 	}
 
+    private void toggleCamera()
+    {
+        if (mCamera == null) {
+            logi("Camera not open yet.");
+            return;
+        }
+        mfrontCamera = !mfrontCamera ;
+        recreate();
+    }
 	@Override
 	protected void onResume() {
 		logi("onCreate() :: onResume");
@@ -449,12 +535,20 @@ public class CameraActivity_OldAPI extends Activity {
             logi("DetectOrientation Disabled");
         }
 		this.registerReceiver(mMessageReceiver, new IntentFilter("CLOSE"));
-		mCameraIdx = getFrontFacingCamera();
+		mCameraIdx = getCurrentCamera();
+        logi("mCameraIdx = " + mCameraIdx);
 		try {
 			mCamera = Camera.open(mCameraIdx);
-            if(mCamera==null)
+            if(mCamera==null) {
                 logi("Couldn't open the camera");
+            }
+            logi("Step 2");
+            /*
+            if (mParameters == null && mCamera != null){
+                setParameters();
+            }*/
 			mPreview.setCamera(mCamera, mCameraIdx);
+            logi("Step 3");
 
 			if(mVideo){
 				this.registerReceiver(mMessageReceiver, new IntentFilter("START_VIDEO"));
@@ -462,14 +556,17 @@ public class CameraActivity_OldAPI extends Activity {
 			}
 			else {
 				this.registerReceiver(mMessageReceiver, new IntentFilter("TAKE_PIC"));
+                this.registerReceiver(mMessageReceiver, new IntentFilter("TOGGLE_CAMERA"));
 			}
 
+            logi("Step 3");
             mPreview.restartCameraPreview();
+            logi("Step 4");
             updateCameraRotation();
-
 			logi("onCreate() :: onResume # ");
 
 		} catch (RuntimeException ex) {
+            logi(ex.toString());
 			Toast.makeText(this, getString(R.string.camera_not_found), Toast.LENGTH_LONG).show();
 			sendCameraError();
 			finish();
@@ -524,10 +621,14 @@ public class CameraActivity_OldAPI extends Activity {
 
 	PictureCallback rawCallback = new PictureCallback() {
 		public void onPictureTaken(byte[] data, Camera camera) {
-			//			 Log.d(TAG, "onPictureTaken - raw");
+			// Display toast here and play audio
+            Toast toast = Toast.makeText(MBApp.getApp().getApplicationContext(),"Photo taken", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+            Utils.playAudio(Utils.getPictureTakenAudio(),null);
+
 		}
 	};
-
 	PictureCallback jpegCallback = new PictureCallback() {
 		public void onPictureTaken(byte[] data, Camera camera) {
 			new SaveImageTask().execute(data);
@@ -570,10 +671,11 @@ public class CameraActivity_OldAPI extends Activity {
 
 			// Write to SD Card
 			try {
-				File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/Microbit/");
+				File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/" + Constants.MEDIA_OUTPUT_FOLDER);
 
-				if(!dir.exists())
-					dir.mkdirs();
+				if(!dir.exists()) {
+                    dir.mkdirs();
+                }
 
 				//TODO defining the file name
 				String fileName = String.format("%d.jpg", System.currentTimeMillis());
@@ -606,10 +708,11 @@ public class CameraActivity_OldAPI extends Activity {
 			mMediaRecorder.release(); // release the recorder object
 			mMediaRecorder = null;
 			mVideoFile = null;
-			//TODO Check that is not necessary
 			mCamera.lock(); // lock camera for later use
 		}
 	}
+
+
 
 	private boolean prepareMediaRecorder() {
 
@@ -618,16 +721,21 @@ public class CameraActivity_OldAPI extends Activity {
 
 		mMediaRecorder = new MediaRecorder();
 
+        mMediaRecorder.setOnInfoListener(m_MediaInfoListner);
+
 		mCamera.unlock();
 		mMediaRecorder.setCamera(mCamera);
-		mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+
+        //Rohit - Removed the audio source as BBC doesn't want sound in the recording
+        //mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+
 		mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
 		//TODO Check because depending on the quality on some devices the MediaRecorder doesn't work
-		if(CamcorderProfile.hasProfile(mCameraIdx,CamcorderProfile.QUALITY_HIGH))
-			mMediaRecorder.setProfile(CamcorderProfile.get(mCameraIdx,CamcorderProfile.QUALITY_HIGH));
-		else if(CamcorderProfile.hasProfile(mCameraIdx,CamcorderProfile.QUALITY_LOW))
-			mMediaRecorder.setProfile(CamcorderProfile.get(mCameraIdx,CamcorderProfile.QUALITY_LOW));
+		if(CamcorderProfile.hasProfile(mCameraIdx,CamcorderProfile.QUALITY_TIME_LAPSE_HIGH))
+			mMediaRecorder.setProfile(CamcorderProfile.get(mCameraIdx,CamcorderProfile.QUALITY_TIME_LAPSE_HIGH));
+		else if(CamcorderProfile.hasProfile(mCameraIdx,CamcorderProfile.QUALITY_TIME_LAPSE_LOW))
+			mMediaRecorder.setProfile(CamcorderProfile.get(mCameraIdx,CamcorderProfile.QUALITY_TIME_LAPSE_LOW));
 		else {
 			releaseMediaRecorder();
 			Log.e(TAG, "Error preparing media Recorder: no CamcorderProfile available");
@@ -635,19 +743,17 @@ public class CameraActivity_OldAPI extends Activity {
 		}
 
 		//Setting output file
-		//TODO defining the file name
-		File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/Microbit/");
-		if(!dir.exists())
-			dir.mkdirs();
-		//TODO defining the file name
+		File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/" +Constants.MEDIA_OUTPUT_FOLDER);
+		if(!dir.exists()) {
+            dir.mkdirs();
+        }
 		String fileName = String.format("%d.mp4", System.currentTimeMillis());
 		mVideoFile = new File(dir, fileName);
 		mMediaRecorder.setOutputFile(mVideoFile.getAbsolutePath());
 
-		//Setting fiel limits
-		//TODO Check File Limits
-		mMediaRecorder.setMaxDuration(600000); // Set max duration 60 sec.
-		mMediaRecorder.setMaxFileSize(50000000); // Set max file size 50M
+		//Setting limits
+		mMediaRecorder.setMaxDuration(Constants.MAX_VIDEO_RECORDING_TIME);
+		mMediaRecorder.setMaxFileSize(Constants.MAX_VIDEO_FILE_SIZE);
 
         int rotation = getRotationCameraCorrection(mCurrentRotation);
 		mMediaRecorder.setOrientationHint(rotation);

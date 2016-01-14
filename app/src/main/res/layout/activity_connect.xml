@@ -1,19 +1,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/bottomPairButton"
+    android:id="@+id/ll_pairing_activity_screen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg"
     android:visibility="visible">
 
-    <!-- Connecting microbit screen -->
+    <!-- Connecting micro:bit screen -->
     <include layout="@layout/view_connect_microbit" />
     <!-- device pairing tip screen -->
     <include layout="@layout/view_pairing_tip" />
     <!-- enter the pattern screen-->
     <include layout="@layout/view_pairing_pattern" />
-    <!-- searching for microbit screen-->
+    <!-- searching for micro:bit screen-->
     <include layout="@layout/view_pairing_searching" />
-    <!-- enter pin screem -->
+    <!-- enter pin screen -->
     <include layout="@layout/view_enter_pin" />
 </LinearLayout>
 

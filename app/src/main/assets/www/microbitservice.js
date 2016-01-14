@@ -38,6 +38,7 @@ var MicroBitService = (function () {
 
     return {
 
+    }
       command: function (service, action, value, callback) {
         console.log( "Requested service: " + service + " with action: " + action);
 

@@ -3,8 +3,6 @@ package com.samsung.microbit.model;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Environment;
 
-import com.samsung.microbit.MBApp;
-
 import java.io.File;
 import java.util.UUID;
 
@@ -28,87 +26,72 @@ public class Constants {
 	/*
 	 * Events that Samsung devices respond to:
 	 */
+
 	public static final int SAMSUNG_REMOTE_CONTROL_ID = 1001; //0x03E9
-	public static final int SAMSUNG_REMOTE_CONTROL_IDF = 0xE903 << 16; //Little Endian
-	public static final int SAMSUNG_REMOTE_CONTROL_EVT_PLAY = 0;
-	public static final int SAMSUNG_REMOTE_CONTROL_EVT_PAUSE = 1;
-	public static final int SAMSUNG_REMOTE_CONTROL_EVT_STOP = 2;
-	public static final int SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK = 3;
-	public static final int SAMSUNG_REMOTE_CONTROL_EVT_PREVTRACK = 4;
-	public static final int SAMSUNG_REMOTE_CONTROL_EVT_FORWARD = 5;
-	public static final int SAMSUNG_REMOTE_CONTROL_EVT_REWIND = 6;
-	public static final int SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEUP = 7;
-	public static final int SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN = 8;
+	public static final int SAMSUNG_REMOTE_CONTROL_EVT_PLAY = 1;
+	public static final int SAMSUNG_REMOTE_CONTROL_EVT_PAUSE = 2;
+	public static final int SAMSUNG_REMOTE_CONTROL_EVT_STOP = 3;
+	public static final int SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK = 4;
+	public static final int SAMSUNG_REMOTE_CONTROL_EVT_PREVTRACK = 5;
+	public static final int SAMSUNG_REMOTE_CONTROL_EVT_FORWARD = 6;
+	public static final int SAMSUNG_REMOTE_CONTROL_EVT_REWIND = 7;
+	public static final int SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEUP = 8;
+	public static final int SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN = 9;
 
 	public static final int SAMSUNG_CAMERA_ID = 1002;//0x03EA
-	public static final int SAMSUNG_CAMERA_IDF = 0xEA03 << 16;
-	public static final int SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE = 0;
-	public static final int SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE = 1;
-	public static final int SAMSUNG_CAMERA_EVT_TAKE_PHOTO = 2;
-	public static final int SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE = 3;
-	public static final int SAMSUNG_CAMERA_EVT_STOP_VIDEO_CAPTURE = 4;
-	public static final int SAMSUNG_CAMERA_EVT_STOP_PHOTO_MODE = 5;
-	public static final int SAMSUNG_CAMERA_EVT_STOP_VIDEO_MODE = 6;
-	public static final int SAMSUNG_CAMERA_EVT_TOGGLE_FRONT_REAR = 7;
+	public static final int SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE = 1;
+	public static final int SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE = 2;
+	public static final int SAMSUNG_CAMERA_EVT_TAKE_PHOTO = 3;
+	public static final int SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE = 4;
+	public static final int SAMSUNG_CAMERA_EVT_STOP_VIDEO_CAPTURE = 5;
+	public static final int SAMSUNG_CAMERA_EVT_STOP_PHOTO_MODE = 6;
+	public static final int SAMSUNG_CAMERA_EVT_STOP_VIDEO_MODE = 7;
+	public static final int SAMSUNG_CAMERA_EVT_TOGGLE_FRONT_REAR = 8;
 
 	public static final int SAMSUNG_AUDIO_RECORDER_ID = 1003; //0x03EB
-	public static final int SAMSUNG_AUDIO_RECORDER_IDF = 0xEB03 << 16;
 	public static final int SAMSUNG_AUDIO_RECORDER_EVT_LAUNCH = 0;
 	public static final int SAMSUNG_AUDIO_RECORDER_EVT_START_CAPTURE = 1;
 	public static final int SAMSUNG_AUDIO_RECORDER_EVT_STOP_CAPTURE = 2;
 	public static final int SAMSUNG_AUDIO_RECORDER_EVT_STOP = 3;
 
 	public static final int SAMSUNG_ALERTS_ID = 1004; //0x03EC
-	public static final int SAMSUNG_ALERTS_IDF = 0xEC03 << 16;
-	public static final int SAMSUNG_ALERT_EVT_DISPLAY_TOAST = 0;
-	public static final int SAMSUNG_ALERT_EVT_VIBRATE = 1;
-	public static final int SAMSUNG_ALERT_EVT_PLAY_SOUND = 2;
-	public static final int SAMSUNG_ALERT_EVT_PLAY_RINGTONE = 3;
-	public static final int SAMSUNG_ALERT_EVT_FIND_MY_PHONE = 4;
-	public static final int SAMSUNG_ALERT_EVT_ALARM1 = 5;
-	public static final int SAMSUNG_ALERT_EVT_ALARM2 = 6;
-	public static final int SAMSUNG_ALERT_EVT_ALARM3 = 7;
-	public static final int SAMSUNG_ALERT_EVT_ALARM4 = 8;
-	public static final int SAMSUNG_ALERT_EVT_ALARM5 = 9;
-	public static final int SAMSUNG_ALERT_EVT_ALARM6 = 10;
+	public static final int SAMSUNG_ALERT_EVT_DISPLAY_TOAST = 1;
+	public static final int SAMSUNG_ALERT_EVT_VIBRATE = 2;
+	public static final int SAMSUNG_ALERT_EVT_PLAY_SOUND = 3;
+	public static final int SAMSUNG_ALERT_EVT_PLAY_RINGTONE = 4;
+	public static final int SAMSUNG_ALERT_EVT_FIND_MY_PHONE = 5;
+	public static final int SAMSUNG_ALERT_EVT_ALARM1 = 6;
+	public static final int SAMSUNG_ALERT_EVT_ALARM2 = 7;
+	public static final int SAMSUNG_ALERT_EVT_ALARM3 = 8;
+	public static final int SAMSUNG_ALERT_EVT_ALARM4 = 9;
+	public static final int SAMSUNG_ALERT_EVT_ALARM5 = 10;
+	public static final int SAMSUNG_ALERT_EVT_ALARM6 = 11;
 
 	/*
 	 * Events that Samsung devices generate:
 	 */
-
-	public static final int SAMSUNG_SIGNAL_STRENGTH_ID = 1101;
-	//public static final int SAMSUNG_SIGNAL_STRENGTH_IDF = SAMSUNG_SIGNAL_STRENGTH_ID << 16;
-	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_NO_BAR = 0;
-	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_ONE_BAR = 1;
-	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_TWO_BAR = 2;
-	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_THREE_BAR = 3;
-	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_FOUR_BAR = 4;
-
-	public static final int SAMSUNG_PLAY_CONTROLLER_ID = 1102;
-	//public static final int SAMSUNG_PLAY_CONTROLLER_IDF = SAMSUNG_PLAY_CONTROLLER_ID << 16;
-	public static final int SAMSUNG_BUTTON_UP = 0;
-	public static final int SAMSUNG_BUTTON_DOWN = 1;
-	public static final int SAMSUNG_BUTTON_RIGHT = 2;
-	public static final int SAMSUNG_BUTTON_LEFT = 3;
-	public static final int SAMSUNG_BUTTON_A = 4;
-	public static final int SAMSUNG_BUTTON_B = 5;
-	public static final int SAMSUNG_BUTTON_C = 6;
-	public static final int SAMSUNG_BUTTON_D = 7;
-
-	public static final int SAMSUNG_DEVICE_INFO_ID = 1103;
-	//public static final int SAMSUNG_DEVICE_INFO_IDF = SAMSUNG_DEVICE_INFO_ID << 16;
-	public static final int SAMSUNG_DEVICE_ORIENTATION_LANDSCAPE = 0;
-	public static final int SAMSUNG_DEVICE_ORIENTATION_PORTRAIT = 1;
-	public static final int SAMSUNG_DEVICE_GESTURE_NONE = 2;
-	public static final int SAMSUNG_DEVICE_GESTURE_DEVICE_SHAKEN = 3;
-	public static final int SAMSUNG_DEVICE_DISPLAY_OFF = 4;
-	public static final int SAMSUNG_DEVICE_DISPLAY_ON = 5;
-	public static final int SAMSUNG_DEVICE_BATTERY_STRENGTH = 6;
+	//incremented
+	public static final int SAMSUNG_SIGNAL_STRENGTH_ID = 1101; //0x044D
+	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_NO_BAR = 1;
+	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_ONE_BAR = 2;
+	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_TWO_BAR = 3;
+	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_THREE_BAR = 4;
+	public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_FOUR_BAR = 5;
 
 
-	public static final int SAMSUNG_TELEPHONY_ID = 1104;
-	public static final int SAMSUNG_INCOMING_SMS = 0;
-	public static final int SAMSUNG_INCOMING_CALL = 1;
+	public static final int SAMSUNG_DEVICE_INFO_ID = 1103; //0x044F
+	public static final int SAMSUNG_DEVICE_ORIENTATION_LANDSCAPE = 1;
+	public static final int SAMSUNG_DEVICE_ORIENTATION_PORTRAIT = 2;
+	public static final int SAMSUNG_DEVICE_GESTURE_NONE = 3;
+	public static final int SAMSUNG_DEVICE_GESTURE_DEVICE_SHAKEN = 4;
+	public static final int SAMSUNG_DEVICE_DISPLAY_OFF = 5;
+	public static final int SAMSUNG_DEVICE_DISPLAY_ON = 6;
+	public static final int SAMSUNG_INCOMING_CALL = 7;
+ 	public static final int SAMSUNG_INCOMING_SMS = 8;
+	public static final int SAMSUNG_DEVICE_BATTERY_STRENGTH = 9; // not specified
+
+
+	public static final int SAMSUNG_TELEPHONY_ID = 5555; //DO NOT DELETE. Used for internal registration
 
 
 	/*
@@ -257,5 +240,16 @@ public class Constants {
 
     public static int REQUEST_ENABLE_BT = 12345 ; //Magic number
 
+	public static String LAUNCH_CAMERA_AUDIO = "raw/en_gb_emma_launching_camera";
 
+    public static String TAKING_PHOTO_AUDIO = "raw/en_gb_emma_taking_photo";
+    public static String RECORDING_VIDEO_AUDIO = "raw/en_gb_emma_recording_video_30sec";
+    public static String PICTURE_TAKEN_AUDIO = "raw/en_gb_emma_photo_taken";
+    public static String MAX_VIDEO_RECORDED = "raw/en_gb_emma_max_video";
+
+
+    public static int MAX_VIDEO_RECORDING_TIME = 30 * 1000 ; //Duration in ms
+    public static int MAX_VIDEO_FILE_SIZE = 100 * 1024 * 1024 ; //Size in bytes
+
+    public static String MEDIA_OUTPUT_FOLDER = "bbc-microbit";
 }

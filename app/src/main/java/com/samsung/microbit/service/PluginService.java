@@ -19,6 +19,7 @@ import com.samsung.microbit.plugin.AudioPlugin;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.plugin.InformationPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
+import com.samsung.microbit.plugin.TelephonyPlugin;
 
 public class PluginService extends Service {
 
@@ -91,7 +92,12 @@ public class PluginService extends Service {
 				InformationPlugin.pluginEntry(PluginService.this, cmd);
 				break;
 
-			default:
+            case Constants.SAMSUNG_TELEPHONY_ID:
+                if (debug) logi("handleMessage() ##  SAMSUNG_TELEPHONY_ID");
+                TelephonyPlugin.pluginEntry(PluginService.this, cmd);
+                break;
+
+            default:
 				break;
 		}
 	}
@@ -108,18 +114,23 @@ public class PluginService extends Service {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-
+                /*
 				if (debug) logi("onStartCommand().run() ::  Starting Constants.REG_SIGNALSTRENGTH");
-				Message msg = Message.obtain(null, Constants.SAMSUNG_DEVICE_INFO_ID);
-				msg.arg1 = Constants.SAMSUNG_DEVICE_INFO_ID;
+				Message msg = Message.obtain(null, Constants.REG_SIGNALSTRENGTH);
+				msg.arg1 = Constants.SAMSUNG_SIGNAL_STRENGTH_ID;
 				Bundle bundle = new Bundle();
-				bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DEVICEORIENTATION);
-				//bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DEVICEGESTURE);
-				//bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DISPLAY);
-
+				bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_SIGNALSTRENGTH);
 				bundle.putString(IPCMessageManager.BUNDLE_VALUE, "on");
 				msg.setData(bundle);
 				handleMessage(msg);
+				*/
+
+
+				//bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DEVICEORIENTATION);
+				//bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DEVICEGESTURE);
+				//bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DISPLAY);
+
+
 			}
 		}).run();
 

@@ -2,6 +2,7 @@ package com.samsung.microbit;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -13,13 +14,19 @@ import uk.co.bbc.echo.enumerations.ApplicationType;
 public class MBApp extends Application {
 
     private static Context mContext;
+    private static boolean mshareStat = false ;
     private EchoClient echo;
+    private Typeface typeface;
 
     private static MBApp app = null;
     @Override
     public void onCreate() {
         super.onCreate();
         app = this;
+    }
+
+    public Typeface getTypeface(){
+        return Typeface.createFromAsset(getAssets(), "fonts/GT-Walsheim.otf");
     }
 
     public static Context getContext() { return MBApp.mContext; }
@@ -44,7 +51,18 @@ public class MBApp extends Application {
         Log.d("Device ID", androidDeviceId);
     }
 
+    public static void setSharingStats(boolean shareStat)
+    {
+        mshareStat = shareStat ;
+    }
     public EchoClient getEcho() {
-        return echo;
+        if (mshareStat) {
+            Log.d("MBApp", "Sharing stats is enabled by user");
+            return echo;
+        }
+        else {
+            Log.d("MBApp", "Sharing of stats is disabled by user");
+            return null;
+        }
     }
 }

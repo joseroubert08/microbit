@@ -5,91 +5,97 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg"
-    android:gravity="center"
     android:orientation="vertical"
-    android:padding="@dimen/activity_vertical_margin"
+    android:padding="16dp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".HomeActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <ImageView
-        android:id="@+id/homeScreenIcon"
+    <!--pairing animation-->
+    <WebView
+        android:id="@+id/homeHelloAnimationWebView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="center"
+        android:layout_margin="16dp"
         android:layout_weight="3"
-        android:src="@drawable/bbc_microbit_vertical" />
+        android:contentDescription="@string/desc_homescreen_logo_img"
+        android:foregroundGravity="center"
+        android:labelFor="@drawable/bbc_microbit_vertical"
+        android:nextFocusDown="@+id/connect_device_btn"
+        android:scrollbars="none" />
 
     <!-- Connect -->
     <Button
-        android:id="@+id/addDeviceEmpty"
-        style="@style/p1"
+        android:id="@+id/connect_device_btn"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_weight="1"
-        android:background="@drawable/white_btn"
+        android:background="@drawable/grey_btn"
+        android:contentDescription="@string/desc_connect_btn"
         android:drawableEnd="@drawable/connect_device"
         android:elevation="@dimen/elevation"
         android:ellipsize="end"
         android:gravity="center_vertical|start"
         android:lines="1"
+        android:nextFocusDown="@+id/flash_microbit_btn"
         android:onClick="onClick"
         android:scrollHorizontally="true"
         android:text="@string/connect_device"
-        android:textColor="@color/gray_color"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@color/white_color"
         android:visibility="visible" />
 
     <!-- Flash -->
     <Button
-        android:id="@+id/flashMicrobit"
-        style="@style/p1"
+        android:id="@+id/flash_microbit_btn"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_weight="1"
-        android:background="@drawable/white_btn"
-        android:drawableEnd="@drawable/connect_device"
+        android:background="@drawable/grey_btn"
+        android:contentDescription="@string/desc_flash_btn"
+        android:drawableEnd="@drawable/flash_device"
         android:elevation="@dimen/elevation"
         android:ellipsize="end"
         android:gravity="start|center_vertical"
         android:lines="1"
+        android:nextFocusDown="@+id/create_code_btn"
         android:onClick="onClick"
         android:scrollHorizontally="true"
         android:text="@string/flash_microbit"
-        android:textColor="@color/gray_color"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@color/white_color"
         android:visibility="visible" />
 
     <!-- create code -->
     <Button
-        android:id="@+id/startNewProject"
-        style="@style/p1"
+        android:id="@+id/create_code_btn"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_weight="1"
-        android:background="@drawable/white_btn"
-        android:drawableEnd="@drawable/connect_device"
+        android:background="@drawable/grey_btn"
+        android:contentDescription="@string/desc_create_code"
+        android:drawableEnd="@drawable/create_code"
         android:elevation="@dimen/elevation"
         android:ellipsize="end"
         android:gravity="start|center_vertical"
         android:lines="1"
+        android:nextFocusDown="@+id/discover_btn"
         android:onClick="onClick"
         android:scrollHorizontally="true"
         android:text="@string/create_code"
-        android:textColor="@color/gray_color"
-        android:visibility="visible" />
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@color/white_color" />
 
     <!-- Discover -->
     <Button
-        android:id="@+id/discover"
-        style="@style/p1"
+        android:id="@+id/discover_btn"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_weight="1"
-        android:background="@drawable/white_btn"
-        android:drawableEnd="@drawable/connect_device"
+        android:background="@drawable/grey_btn"
+        android:contentDescription="@string/desc_discover"
+        android:drawableEnd="@drawable/discover"
         android:elevation="@dimen/elevation"
         android:ellipsize="end"
         android:gravity="start|center_vertical"
@@ -97,8 +103,6 @@
         android:onClick="onClick"
         android:scrollHorizontally="true"
         android:text="@string/discover"
-        android:textColor="@color/gray_color"
-        android:visibility="visible" />
-
-
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@color/white_color" />
 </LinearLayout>

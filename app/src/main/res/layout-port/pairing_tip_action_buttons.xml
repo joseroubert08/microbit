@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?><!-- Pairing Confirmation buttons -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/pairTipButtonView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:divider="?android:dividerHorizontal"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:showDividers="beginning"
+    tools:showIn="@layout/view_pairing_tip">
+
+    <Button
+        android:id="@+id/cancel_tip_step_1_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:background="@drawable/cancel_btn"
+        android:drawableEnd="@drawable/cancel_step_pairing_btn"
+        android:gravity="center_vertical|start"
+        android:padding="8dp"
+        android:text="@string/txt_cancel_btn"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@color/black_color" />
+
+    <Button
+        android:id="@+id/ok_tip_step_1_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:background="@drawable/green_btn"
+        android:drawableEnd="@drawable/next_step_pairing_btn"
+        android:gravity="center_vertical|start"
+        android:padding="8dp"
+        android:text="@string/txt_pair_btn"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@color/black_color" />
+</LinearLayout>

@@ -4,15 +4,10 @@ package com.samsung.microbit.ui;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-
-import java.util.concurrent.CountDownLatch;
 
 public class BluetoothSwitch {
 
@@ -29,8 +24,9 @@ public class BluetoothSwitch {
             mBluetoothAdapter = bluetoothManager.getAdapter();
         }
     }
+
     public static BluetoothSwitch getInstance() {
-        if ( instance == null) {
+        if (instance == null) {
             instance = new BluetoothSwitch();
         }
         return instance;
@@ -40,7 +36,7 @@ public class BluetoothSwitch {
         return mBluetoothAdapter.isEnabled();
     }
 
-    public boolean checkBluetoothAndStart(){
+    public boolean checkBluetoothAndStart() {
         if (!mBluetoothAdapter.isEnabled()) {
             PopUp.show(MBApp.getContext(),
                     MBApp.getContext().getString(R.string.bluetooth_turn_on_guide),

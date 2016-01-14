@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?><!-- Paired micro:bits -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/prevDeviceView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="top"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:showIn="@layout/view_connect_microbit">
+
+    <!-- Connection status-->
+    <include layout="@layout/pairing_activity_connection_status" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/connected_device_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/grey_btn"
+        android:contentDescription="@null"
+        android:focusable="false"
+        android:alpha="0.25"
+        android:focusableInTouchMode="false"
+        android:importantForAccessibility="yes"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <!-- Microbit name-->
+        <TextView
+            android:id="@+id/pairedDeviceName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|start"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="@null"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="center_vertical|start"
+            android:importantForAccessibility="yes"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/white_color" />
+
+        <!--  Delete micro:bit -->
+        <ImageButton
+            android:id="@+id/deleteBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="4dp"
+            android:layout_marginStart="4dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@null"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:importantForAccessibility="yes"
+            android:src="@drawable/delete_project" />
+
+        <!-- Connect Micro:bit -->
+        <ImageButton
+            android:id="@+id/connectBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="4dp"
+            android:layout_marginStart="4dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@null"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:importantForAccessibility="yes"
+            android:src="@drawable/device_status_disconnected" />
+    </LinearLayout>
+</LinearLayout>
