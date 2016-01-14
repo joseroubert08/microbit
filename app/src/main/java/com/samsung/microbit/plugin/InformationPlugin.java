@@ -390,14 +390,46 @@ public class InformationPlugin {
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
-    public static void registerDisplay()
-    {
-        //TODO Complete this
+    public static void registerDisplay() {
+        // TODO - complete this
+        Log.i("Information Plugin", "registerDisplay() ");
+        if (mPowerManager != null) {
+            return;
+        }
+        Log.i("Information Plugin", "registerSignalStrength ");
+
+        // retrieve status from receiver
+
+        // send to service
     }
 
-    public static void unregisterDisplay()
-    {
-        //TODO Complete this
+    public static void unregisterDisplay() {
+        // TODO - complete this
+        Log.i("Information Plugin", "registerDisplay() ");
+        if (mPowerManager != null) {
+            return;
+        }
+        Log.i("Information Plugin", "registerSignalStrength ");
+
+    }
+
+    // Listen for changes in screen state
+    public class ScreenReceiver extends BroadcastReceiver {
+        // Screen status
+        private boolean screenOff;
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+                screenOff = true;
+            } else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
+                screenOff = false;
+            }
+            // Start service with the value
+            Intent updateScreenStatus = new Intent(context,  PluginService.class);
+            updateScreenStatus.putExtra("screen_status", screenOff);
+            context.startService(updateScreenStatus);
+        }
     }
 
     public static boolean isTemperatureRegistered() {
