@@ -10,6 +10,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.BatteryManager;
+import android.os.PowerManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
@@ -79,6 +80,15 @@ public class InformationPlugin {
                     unregisterTemperature();
                 break;
             }
+
+            case Constants.REG_DISPLAY: {
+                if (register)
+                    registerDisplay();
+                else
+                    unregisterDisplay();
+                break;
+
+            }
         }
     }
 
@@ -109,6 +119,8 @@ public class InformationPlugin {
     //Signal strength code
     static TelephonyManager mTelephonyManager;
     static SignalStrength mSignalStrength;
+    static PowerManager mPowerManager;
+
     static PhoneStateListener mPhoneListener = new PhoneStateListener() {
         @Override
         public void onSignalStrengthsChanged(SignalStrength signalStrength) {
@@ -376,6 +388,16 @@ public class InformationPlugin {
 
         CmdArg cmd = new CmdArg(0, "Unregistered Temperature.");
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
+    }
+
+    public static void registerDisplay()
+    {
+        //TODO Complete this
+    }
+
+    public static void unregisterDisplay()
+    {
+        //TODO Complete this
     }
 
     public static boolean isTemperatureRegistered() {
