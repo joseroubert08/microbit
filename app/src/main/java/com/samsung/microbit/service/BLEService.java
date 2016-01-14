@@ -191,7 +191,7 @@ public class BLEService extends BLEBaseService {
            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_ALERTS_ID, BluetoothGattCharacteristic.FORMAT_UINT32);
            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_SIGNAL_STRENGTH_ID, BluetoothGattCharacteristic.FORMAT_UINT32);
            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_DEVICE_INFO_ID, BluetoothGattCharacteristic.FORMAT_UINT32);
-           writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_TELEPHONY_ID, BluetoothGattCharacteristic.FORMAT_UINT32);
+           //writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), Constants.SAMSUNG_TELEPHONY_ID, BluetoothGattCharacteristic.FORMAT_UINT32);
 
 
         }

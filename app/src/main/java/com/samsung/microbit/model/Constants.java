@@ -107,7 +107,7 @@ public class Constants {
 	public static final int SAMSUNG_DEVICE_BATTERY_STRENGTH = 9; // not specified
 
 
-	public static final int SAMSUNG_TELEPHONY_ID = 1104; //0X0450
+	public static final int SAMSUNG_TELEPHONY_ID = 1104; //DO NOT DELETE. Used for internal registration
 //	public static final int SAMSUNG_INCOMING_CALL = 1;
 //	public static final int SAMSUNG_INCOMING_SMS = 0;
 
