@@ -147,7 +147,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             logi("======mRetryPairing======");
             PopUp.hide();
             scanLeDevice(true);
-            displayScreen(PAIRING_STATE.PAIRING_STATE_SEARCHING);
+            displayScreen(PAIRING_STATE.PAIRING_STATE_TIP);
         }
     };
     private final BroadcastReceiver mPairReceiver = new BroadcastReceiver() {
