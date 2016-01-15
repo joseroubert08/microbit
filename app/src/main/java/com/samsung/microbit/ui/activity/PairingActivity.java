@@ -415,9 +415,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         // TODO - change animation
         // Animation
-        WebView animation = (WebView) findViewById(R.id.animationwebView);
-        animation.setBackgroundColor(Color.TRANSPARENT);
-        animation.loadUrl("file:///android_asset/htmls/animation.html");
+        WebView searchingMicrobitAnimation = (WebView) findViewById(R.id.searching_microbit_webview);
+        searchingMicrobitAnimation.setBackgroundColor(Color.TRANSPARENT);
+        searchingMicrobitAnimation.loadUrl("file:///android_asset/htmls/loading_search_microbit.html");
     }
 
     boolean setupBleController() {

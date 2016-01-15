@@ -16,14 +16,14 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="@string/searchingTitle"
-        android:textColor="@color/white_color"
-        android:textAppearance="?android:textAppearanceMedium"/>
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@color/white_color" />
 
     <!--pairing animation-->
     <WebView
-        android:id="@+id/animationwebView"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:id="@+id/searching_microbit_webview"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="center"
         android:layout_margin="16dp"
         android:layout_weight="3"
