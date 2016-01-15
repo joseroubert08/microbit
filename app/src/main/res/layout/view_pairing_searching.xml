@@ -22,12 +22,13 @@
     <!--pairing animation-->
     <WebView
         android:id="@+id/searching_microbit_webview"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center"
         android:layout_margin="16dp"
         android:layout_weight="3"
-        android:foregroundGravity="center" />
+        android:foregroundGravity="center"
+        android:scrollbars="none" />
 
     <include layout="@layout/view_pairing_searching_step" />
 
