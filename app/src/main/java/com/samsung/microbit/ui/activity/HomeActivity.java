@@ -470,6 +470,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         /* Code removal ends */
         MBApp.setContext(this);
+        // Reload Hello Emoji animation
         animation.loadUrl("file:///android_asset/htmls/hello_home_animation.html");
         animation.onResume();
     }
