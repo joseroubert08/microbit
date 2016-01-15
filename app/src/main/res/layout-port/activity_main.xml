@@ -14,7 +14,7 @@
     <!--pairing animation-->
     <WebView
         android:id="@+id/homeHelloAnimationWebView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center"
         android:layout_margin="16dp"
@@ -25,7 +25,7 @@
         android:nextFocusDown="@+id/connect_device_btn"
         android:scrollbars="none" />
 
-    <!-- Connect -->
+    <!-- Connections -->
     <Button
         android:id="@+id/connect_device_btn"
         android:layout_width="match_parent"

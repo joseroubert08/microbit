@@ -413,8 +413,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.go_bluetooth_settings).setOnClickListener(this);
         findViewById(R.id.cancel_enter_pin_step_4_btn).setOnClickListener(this);
 
-        // TODO - change animation
-        // Animation
         WebView searchingMicrobitAnimation = (WebView) findViewById(R.id.searching_microbit_webview);
         searchingMicrobitAnimation.setBackgroundColor(Color.TRANSPARENT);
         searchingMicrobitAnimation.loadUrl("file:///android_asset/htmls/loading_search_microbit.html");

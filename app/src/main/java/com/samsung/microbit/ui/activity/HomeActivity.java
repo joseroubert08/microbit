@@ -324,6 +324,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onStart() {
         super.onStart();
+
     }
 
     @Override
@@ -469,5 +470,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         /* Code removal ends */
         MBApp.setContext(this);
+        animation.loadUrl("file:///android_asset/htmls/hello_home_animation.html");
+        animation.onResume();
     }
 }
