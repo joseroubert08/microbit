@@ -220,21 +220,17 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(broadcastReceiver, broadcastIntentFilter);
         }
         setConnectedDeviceText();
-        String fileToDownload = getIntent().getStringExtra("download_file");
-        if (fileToDownload != null) {
+        String fullpathoffile = null ;
+        String fileName = null ;
+        if (getIntent() != null && getIntent().getData() != null && getIntent().getData().getEncodedPath() != null)
+        {
+            fullpathoffile = getIntent().getData().getEncodedPath();
+            String path[] =fullpathoffile.split("/");
+            fileName = path[path.length -1];
             setActivityState(ACTIVITY_STATE.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST);
         }
-        //TODO Refactor this code here!! There must be only 1 FLASH state. Not 2 as before once we start using external Browser
-        if (fileToDownload == null) {
-            //Request coming because of the intent-filter
-            if (getIntent() != null && getIntent().getData() != null && getIntent().getData().getEncodedPath() != null)
-                fileToDownload = getIntent().getData().getEncodedPath();
-            if (fileToDownload != null) {
-                setActivityState(ACTIVITY_STATE.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST);
-            }
-        }
-        if (fileToDownload != null) {
-            programToSend = new Project(fileToDownload, Constants.HEX_FILE_DIR + "/" + fileToDownload, 0, null, false);
+        if (fullpathoffile != null) {
+            programToSend = new Project(fileName, fullpathoffile, 0, null, false);
             if (!BluetoothSwitch.getInstance().isBluetoothON()) {
                 startBluetooth();
             } else {
@@ -520,12 +516,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             public void onClick(View v) {
                                 ConnectedDevice currentMicrobit = Utils.getPairedMicrobit(MBApp.getContext());
                                 PopUp.hide();
-                                if (currentMicrobit.mStatus == true) {
-                                    IPCService.getInstance().bleDisconnectForFlash();
-                                } else {
-                                    //Start flashing immediately if it is already disconnected
-                                    initiateFlashing();
-                                }
+                                initiateFlashing();
                             }
                         },//override click listener for ok button
                         new View.OnClickListener() {
@@ -535,12 +526,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             }
                         });//pass null to use default listeneronClick
             } else if (mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST) {
-                if (currentMicrobit.mStatus == true) {
-                    IPCService.getInstance().bleDisconnectForFlash();
-                } else {
-                    //Start flashing immediately if it is already disconnected
                     initiateFlashing();
-                }
             }
         }
     }
@@ -660,21 +646,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         case DfuService.PROGRESS_DISCONNECTING:
                             String error_message = "Error Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
                                     + "] \n Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]";
-
-/*                            if ((isCompleted == false) && (inProgress == false))// Disconnecting event because of error
-                            {
-                                logi(error_message);
-                                setActivityState(ACTIVITY_STATE.STATE_IDLE);
-                                PopUp.show(MBApp.getContext(),
-                                        error_message, //message
-                                        getString(R.string.flashing_failed_title), //title
-                                        R.drawable.error_face, R.drawable.red_btn,
-                                        PopUp.TYPE_ALERT, //type of popup.
-                                        popupOkHandler,//override click listener for ok button
-                                        popupOkHandler);//pass null to use default listener
-
-                                LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
-                            }*/
                             break;
 
                         case DfuService.PROGRESS_CONNECTING:

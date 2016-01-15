@@ -147,7 +147,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             logi("======mRetryPairing======");
             PopUp.hide();
             scanLeDevice(true);
-            displayScreen(PAIRING_STATE.PAIRING_STATE_TIP);
+            displayScreen(PAIRING_STATE.PAIRING_STATE_SEARCHING);
         }
     };
     private final BroadcastReceiver mPairReceiver = new BroadcastReceiver() {
@@ -171,7 +171,13 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                             R.drawable.error_face, //image icon res id
                             R.drawable.red_btn,
                             PopUp.TYPE_CHOICE, //type of popup.
-                            null,//override click listener for ok button
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    PopUp.hide();
+                                    displayScreen(PAIRING_STATE.PAIRING_STATE_TIP);
+                                }
+                            },//override click listener for ok button
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
