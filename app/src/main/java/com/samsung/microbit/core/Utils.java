@@ -352,21 +352,27 @@ public class Utils {
 		}
 
 		if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
-            boolean pairedInDeviceList = false;
+            boolean pairedMicrobitInSystemList = false;
 			String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
 			Gson gson = new Gson();
 			pairedDevice = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
 			//Check if the microbit is still paired with our mobile
             BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-            for (BluetoothDevice bt : pairedDevices) {
-                if (bt.getAddress().equals(pairedDevice.mAddress)) {
-                    pairedInDeviceList = true;
-                    break;
+            if (mBluetoothAdapter.isEnabled())
+            {
+                Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+                for (BluetoothDevice bt : pairedDevices) {
+                    if (bt.getAddress().equals(pairedDevice.mAddress)) {
+                        pairedMicrobitInSystemList = true;
+                        break;
+                    }
                 }
+            } else {
+                //Do not change the list until the Bluetooth is back ON again
+                pairedMicrobitInSystemList = true;
             }
 
-            if (!pairedInDeviceList){
+            if (!pairedMicrobitInSystemList){
                 Log.e("Utils","The last paired microbit is no longer in the system list. Hence removing it");
                 //Return a NULL device & update preferences
                 pairedDevice.mPattern = null;
