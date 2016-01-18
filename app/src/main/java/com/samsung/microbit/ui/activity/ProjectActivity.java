@@ -480,7 +480,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         null, null);
                 return;
             }
-            if (mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST) {
+            if (mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST ||
+                    mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST) {
                 //Check final device from user and start flashing
                 PopUp.show(MBApp.getContext(),
                         getString(R.string.flash_start_message, currentMicrobit.mName), //message
@@ -739,7 +740,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 setActivityState(ACTIVITY_STATE.STATE_IDLE);
                 LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
                 dfuResultReceiver = null;
-               //Update Stats
+                //Update Stats
                 if (MBApp.getApp().getEcho() != null) {
                     //TODO add more data action_location (app/web), hex_file_size, binary_size, firmware <Micro:bit firmware version >
                     MBApp.getApp().getEcho().userActionEvent("hex_file_flash", "fail", null);
