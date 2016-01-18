@@ -481,7 +481,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         null, null);
                 return;
             }
-            if (mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST) {
+            if (mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST ||
+                    mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST) {
                 //Check final device from user and start flashing
                 PopUp.show(MBApp.getContext(),
                         getString(R.string.flash_start_message, currentMicrobit.mName), //message
@@ -502,8 +503,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                 PopUp.hide();
                             }
                         });//pass null to use default listeneronClick
-            } else if (mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST) {
-                    initiateFlashing();
             }
         }
     }
