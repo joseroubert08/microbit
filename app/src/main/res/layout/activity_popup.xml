@@ -9,11 +9,13 @@
 
     <!--&lt;!&ndash; Webview for animated error emoji &ndash;&gt;-->
     <!--<WebView-->
-    <!--android:id="@+id/error_animation_webview"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_margin="16dp"-->
-    <!--android:scrollbars="none" />-->
+        <!--android:id="@+id/error_animation_webview"-->
+        <!--android:layout_width="120dp"-->
+        <!--android:layout_height="120dp"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_gravity="top"-->
+        <!--android:layout_margin="16dp"-->
+        <!--android:scrollbars="none" />-->
 
     <!--Non animated images for flashing-->
     <ImageView

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/black_color"
     android:orientation="vertical"
-    android:visibility="gone">
+    >
 
     <!-- Title -->
     <TextView
@@ -33,6 +33,18 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:src="@drawable/micro_bit_illustration" />
+
+        <!--&lt;!&ndash;pairing animation&ndash;&gt;-->
+        <!--<WebView-->
+            <!--android:id="@+id/how_to_pair_microbit_webview"-->
+            <!--android:layout_width="446dp"-->
+            <!--android:layout_height="320dp"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:layout_margin="16dp"-->
+            <!--android:foregroundGravity="center"-->
+            <!--android:background="@color/ok_button_down"-->
+            <!--android:scrollbars="none" />-->
+
 
     </LinearLayout>
 

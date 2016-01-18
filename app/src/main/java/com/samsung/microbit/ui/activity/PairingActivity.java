@@ -103,6 +103,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private ImageButton mdeleteBtn;
     private Handler mHandler;
 
+    // Animation webviews
+    WebView searchingMicrobitAnimation;
+
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 15000;
 
@@ -249,13 +252,16 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         super.onResume();
         MBApp.setContext(this);
         updatePairedDeviceCard();
+        // Searching for micro:bit
+        searchingMicrobitAnimation.onResume();
     }
 
     @Override
     public void onPause() {
         logi("onPause() ::");
         super.onPause();
-
+        // Stop searching for micro:bit animation
+        searchingMicrobitAnimation.onPause();
     }
 
     public PairingActivity() {
@@ -419,7 +425,13 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.go_bluetooth_settings).setOnClickListener(this);
         findViewById(R.id.cancel_enter_pin_step_4_btn).setOnClickListener(this);
 
-        WebView searchingMicrobitAnimation = (WebView) findViewById(R.id.searching_microbit_webview);
+        // Step 1: How to Pair (animation)
+//        WebView howToPairMicrobit = (WebView) findViewById(R.id.how_to_pair_microbit_webview);
+//        howToPairMicrobit.setBackgroundColor(Color.TRANSPARENT);
+//        howToPairMicrobit.loadUrl("file:///android_asset/htmls/how_to_pair_microbit.html");
+
+        // Step 3: Searching for Microbit (animation)
+        searchingMicrobitAnimation = (WebView) findViewById(R.id.searching_microbit_webview);
         searchingMicrobitAnimation.setBackgroundColor(Color.TRANSPARENT);
         searchingMicrobitAnimation.loadUrl("file:///android_asset/htmls/loading_search_microbit.html");
     }

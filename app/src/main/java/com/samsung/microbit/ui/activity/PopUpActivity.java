@@ -74,8 +74,8 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
 
         setContentView(R.layout.activity_popup);
 
-//        animationWebview = (WebView) findViewById(R.id.error_animation_webview);//TODO - change this to load when error occurs
-//        animationWebview.loadUrl("file:///android_asset/htmls/animation.html");
+     //   animationWebview = (WebView) findViewById(R.id.error_animation_webview);// TODO - change this to load when error occurs
+   //     animationWebview.loadUrl("file:///android_asset/htmls/flashing_microbit.html");
         imageIcon = (ImageView) findViewById(R.id.image_icon);
         titleTxt = (TextView) findViewById(R.id.flash_projects_title_txt);
         titleTxt.setTypeface(MBApp.getApp().getTypeface());
@@ -85,7 +85,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         messageTxt.setTypeface(MBApp.getApp().getTypeface());
         inputText = (EditText) findViewById(R.id.inputText);
 
-        layoutBottom = (LinearLayout) findViewById(R.id.bottomLayout); // TODO RelativeLayout
+        layoutBottom = (LinearLayout) findViewById(R.id.bottomLayout); // TODO - RelativeLayout
 
         okButton = (Button) findViewById(R.id.imageButtonOk);
         cancelButton = (Button) findViewById(R.id.imageButtonCancel);
@@ -119,11 +119,12 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         int imageBackgroundResId = intent.getIntExtra(INTENT_EXTRA_ICONBG, 0);
         if (imageResId != 0) {
             imageIcon.setImageResource(imageResId);
-//            animationWebview.setBackgroundColor(imageResId);
+        //    animationWebview.setBackgroundColor(imageResId);
+         //   animationWebview.loadUrl("file:///android_asset/htmls/flashing_microbit.html");
         }
         if (imageBackgroundResId != 0) {
             imageIcon.setBackgroundResource(imageBackgroundResId);
-//            animationWebview.setBackgroundColor(imageBackgroundResId);
+          //  animationWebview.setBackgroundColor(imageBackgroundResId);
         }
 
         switch (intent.getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_MAX)) {

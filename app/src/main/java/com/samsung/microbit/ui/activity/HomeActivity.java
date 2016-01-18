@@ -322,9 +322,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
+    protected void onPause() {
+        super.onPause();
+        // Pause animation
+        animation.onPause();
     }
 
     @Override
