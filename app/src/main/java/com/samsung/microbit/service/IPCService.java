@@ -54,10 +54,6 @@ public class IPCService extends Service {
 	 * Business method
 	 */
 
-	public void bleDisconnectForFlash() {
-		sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_DISCONNECT_FOR_FLASH, null, null);
-	}
-
 	public void bleDisconnect() {
 		sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_DISCONNECT, null, null);
 	}

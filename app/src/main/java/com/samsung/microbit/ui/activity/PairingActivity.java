@@ -200,12 +200,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
             int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
 
-            if (Constants.BLE_DISCONNECTED_FOR_FLASH == v) {
-                logi("Bluetooth disconnected for flashing. No need to display pop-up");
-                handleBLENotification(context, intent, false);
-                return;
-            }
-            handleBLENotification(context, intent, true);
+            updatePairedDeviceCard();
+            PopUp.hide();
             if (v != 0) {
                 logi("localBroadcastReceiver Error code =" + v);
                 String message = intent.getStringExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
@@ -227,15 +223,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             }
         }
     };
-
-    private void handleBLENotification(Context context, Intent intent, boolean popupHide) {
-
-        logi("handleBLENotification() ");
-        updatePairedDeviceCard();
-        if (popupHide)
-            PopUp.hide();
-    }
-
     // *************************************************
 
     // DEBUG
@@ -700,15 +687,17 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                         getString(R.string.init_connection),
                         "",
                         R.drawable.message_face, R.drawable.blue_btn,
-                        PopUp.TYPE_SPINNER,
+                        PopUp.TYPE_SPINNER_NOT_CANCELABLE,
                         null, null);
                 IPCService.getInstance().bleConnect();
             } else {
+                PopUp.show(MBApp.getContext(),
+                        getString(R.string.disconnecting),
+                        "",
+                        R.drawable.message_face, R.drawable.blue_btn,
+                        PopUp.TYPE_SPINNER_NOT_CANCELABLE,
+                        null, null);
                 IPCService.getInstance().bleDisconnect();
-                currentDevice.mStatus = !currentState;
-                Utils.setPairedMicrobit(this, currentDevice);
-                updatePairedDeviceCard();
-                updateConnectionStatus();
             }
         }
     }
