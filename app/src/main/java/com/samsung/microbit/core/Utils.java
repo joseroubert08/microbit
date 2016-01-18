@@ -562,7 +562,7 @@ public class Utils {
                 return "GATT BUSY";
 
             case 0x0085:
-                return "GATT ERROR";
+                return "Cannot connect to micro:bit (GATT error). Please retry.";
 
             case 0x0086:
                 return "GATT CMD STARTED";
@@ -604,28 +604,28 @@ public class Utils {
                 return "micro:bit disconnected";
 
 			case DfuService.ERROR_FILE_NOT_FOUND:
-                return "File not found";
+                return "File not found. Please retry.";
 			case DfuService.ERROR_FILE_ERROR:
-                return "Unable to open file";
+                return "Unable to open file. Please retry.";
 			case DfuService.ERROR_FILE_INVALID:
-				return "File not a valid HEX";
+				return "File not a valid HEX. Please retry.";
 			case DfuService.ERROR_FILE_IO_EXCEPTION:
 				return "Unable to read file";
 			case DfuService.ERROR_SERVICE_DISCOVERY_NOT_STARTED:
                 return "Bluetooth Discovery not started";
 			case DfuService.ERROR_SERVICE_NOT_FOUND:
-                return  "Dfu Service not found";
+                return  "Dfu Service not found. Please retry.";
 			case DfuService.ERROR_CHARACTERISTICS_NOT_FOUND:
-                return "Dfu Characteristics not found";
+                return "Dfu Characteristics not found. Please retry.";
 			case DfuService.ERROR_INVALID_RESPONSE:
-				return "Invalid response from micro:bit";
+				return "Invalid response from micro:bit. Please retry.";
 			case DfuService.ERROR_FILE_TYPE_UNSUPPORTED:
-				return "Unsupported file type";
+				return "Unsupported file type. Please retry.";
 			case DfuService.ERROR_BLUETOOTH_DISABLED:
 				return "Bluetooth Disabled";
 
 			case DfuService.ERROR_FILE_SIZE_INVALID:
-				return "Invalid filesize";
+				return "Invalid filesize. Please retry.";
 
 			default:
                 if ((DfuBaseService.ERROR_REMOTE_MASK & errorCode) > 0) {
