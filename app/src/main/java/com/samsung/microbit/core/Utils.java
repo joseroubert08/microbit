@@ -52,6 +52,7 @@ public class Utils {
 	private static final Object lock = new Object();
 
     private static AudioManager mAudioManager = null ;
+    private static MediaPlayer mMediaplayer = null ;
     private static int originalRingerMode = -1 ;
     private static int originalRingerVolume = -1 ;
 
@@ -191,10 +192,13 @@ public class Utils {
         int resID = resources.getIdentifier(filename, "raw", MBApp.getApp().getApplicationContext().getPackageName());
         Utils.preparePhoneToPlayAudio();
 
-
-        MediaPlayer mediaPlayer= MediaPlayer.create(MBApp.getApp().getApplicationContext(), resID);
+        if (mMediaplayer != null)
+        {
+            mMediaplayer.release();
+        }
+        mMediaplayer= MediaPlayer.create(MBApp.getApp().getApplicationContext(), resID);
         //Set a callback for completion
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        mMediaplayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 restoreAudioMode();
@@ -202,7 +206,7 @@ public class Utils {
                     callBack.onCompletion(mp);
             }
         });
-        mediaPlayer.start();
+        mMediaplayer.start();
     }
 
     private static void preparePhoneToPlayAudio()
