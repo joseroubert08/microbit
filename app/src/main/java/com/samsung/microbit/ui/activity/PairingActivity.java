@@ -587,7 +587,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             mdeviceConnectionStatus.setAlpha(1.0f);
         } else {
             // Device is connected
-            mconnectBtn.setImageResource(R.drawable.device_connected);
+            mconnectBtn.setImageResource(R.drawable.device_status_connected);
             itemSelectorLayout.setBackgroundResource(R.drawable.white_btn);
             itemSelectorLayout.setAlpha(1.0f);
             mConnectedDeviceName.setTextColor(Color.BLACK);

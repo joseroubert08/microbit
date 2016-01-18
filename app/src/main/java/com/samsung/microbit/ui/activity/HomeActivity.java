@@ -26,6 +26,7 @@ import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -173,9 +174,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationContentDescription(R.string.content_description_toolbar_home);
-        toolbar.setLogo(R.drawable.bbc_microbit);
-        toolbar.setNavigationIcon(R.drawable.white_red_led_btn);
-        toolbar.setLogoDescription(R.string.content_description_toolbar_logo);
+        ImageView imgToolbarLogo = (ImageView) findViewById(R.id.img_toolbar_bbc_logo);
+        imgToolbarLogo.setContentDescription("BBC Micro:bit");
+        //toolbar.setLogo(R.drawable.bbc_microbit_app_bar_logo);
+        // toolbar.setNavigationIcon(R.drawable.white_red_led_btn);
+        //  toolbar.setLogoDescription(R.string.content_description_toolbar_logo);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
