@@ -311,7 +311,8 @@ public class CameraActivity_OldAPI extends Activity {
 
                     mCurrentIconList = mStopRecord;
                     updateButtonClickIcon();
-                    indicateVideoRecording();
+                    //TODO Video recodring crashing. Check #112 for details. Temporary fix for the BETT
+                    //indicateVideoRecording();
                     //TODO Check that is true
                     // work on UiThread for better performance
                     runOnUiThread(new Runnable() {
