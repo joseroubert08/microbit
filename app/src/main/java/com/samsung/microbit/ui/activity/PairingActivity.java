@@ -489,6 +489,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
                 if ((findViewById(R.id.ok_enter_pattern_step_2_btn).getVisibility() != View.VISIBLE)) {
+              //      findViewById(R.id.oh_pretty_emoji).setVisibility(View.VISIBLE); // TODO - make the emoji visible after pin entered
                     findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
                 }
 
@@ -498,14 +499,19 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
                 if (!Arrays.asList(deviceCodeArray).contains("1")) {
                     findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.INVISIBLE);
+             //       findViewById(R.id.oh_pretty_emoji).setVisibility(View.INVISIBLE); // TODO make it disappear on 5
                 }
             }
         });
 
         if (!Arrays.asList(deviceCodeArray).contains("1")) {
             findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.INVISIBLE);
+        //    findViewById(R.id.oh_pretty_emoji).setVisibility(View.INVISIBLE); // TODO make it disappear on 5
+
         } else
             findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
+           // findViewById(R.id.oh_pretty_emoji).setVisibility(View.VISIBLE); // TODO make it disappear on 5
+
     }
 
     private void generateName() {
@@ -666,6 +672,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
                 // test
                 findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.GONE);
+             //   findViewById(R.id.oh_pretty_emoji).setVisibility(View.INVISIBLE); // TODO - change the timing for when emoji is visible
 
                 displayLedGrid();
                 break;
