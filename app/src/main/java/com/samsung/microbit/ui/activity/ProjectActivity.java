@@ -220,13 +220,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(broadcastReceiver, broadcastIntentFilter);
         }
         setConnectedDeviceText();
-        String fullpathoffile = null ;
-        String fileName = null ;
-        if (getIntent() != null && getIntent().getData() != null && getIntent().getData().getEncodedPath() != null)
-        {
+        String fullpathoffile = null;
+        String fileName = null;
+        if (getIntent() != null && getIntent().getData() != null && getIntent().getData().getEncodedPath() != null) {
             fullpathoffile = getIntent().getData().getEncodedPath();
-            String path[] =fullpathoffile.split("/");
-            fileName = path[path.length -1];
+            String path[] = fullpathoffile.split("/");
+            fileName = path[path.length - 1];
             setActivityState(ACTIVITY_STATE.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST);
         }
         if (fullpathoffile != null) {
@@ -262,7 +261,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 || mActivityState == ACTIVITY_STATE.FLASH_STATE_PROGRESS
 
                 ) {
-            connectedIndicatorIcon.setImageResource(R.drawable.device_connected);
+            connectedIndicatorIcon.setImageResource(R.drawable.device_status_connected);
             connectedIndicatorText.setText(getString(R.string.connected_to));
 
             return;
@@ -282,7 +281,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                     deviceName1.setText(device.mName + " (" + device.mPattern + ")");
             }
         } else {
-            connectedIndicatorIcon.setImageResource(R.drawable.device_connected);
+            connectedIndicatorIcon.setImageResource(R.drawable.device_status_connected);
             connectedIndicatorText.setText(getString(R.string.connected_to));
             if (deviceName1 != null) {
                 //Mobile Device.. 2 lines of display
@@ -526,7 +525,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             }
                         });//pass null to use default listeneronClick
             } else if (mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST) {
-                    initiateFlashing();
+                initiateFlashing();
             }
         }
     }
@@ -777,7 +776,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             }
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

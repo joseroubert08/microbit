@@ -33,7 +33,7 @@
         android:layout_marginBottom="8dp"
         android:background="@drawable/grey_btn"
         android:contentDescription="@string/desc_connect_btn"
-        android:drawableEnd="@drawable/connect_device"
+        android:drawableEnd="@drawable/device_status_disconnected"
         android:elevation="@dimen/elevation"
         android:ellipsize="end"
         android:gravity="center_vertical|start"

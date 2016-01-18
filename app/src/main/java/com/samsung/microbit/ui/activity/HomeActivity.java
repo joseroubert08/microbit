@@ -344,7 +344,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         switch (v.getId()) {
-            case R.id.addDevice:
+//            case R.id.addDevice:
             case R.id.connect_device_btn: {
                 Intent intent = new Intent(this, PairingActivity.class);
                 startActivity(intent);
