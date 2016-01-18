@@ -79,12 +79,12 @@
     <string name="pairing_success_title">micro:bit paired</string>
     <string name="run_code_button_name">Continue to Flash</string>
     <string name="flashing_failed_not_found">Flashing Failed!Cannot read the file</string>
-    <string name="flashing_failed_io_error">Flashing Failed! Cannot find the file</string>
+    <string name="flashing_failed_io_error">Flashing Failed! Cannot find the file. Please reset micro:bit and try again.</string>
     <string name="flashing_failed_message">Flashing Failed! No Programs Found</string>
-    <string name="flashing_aborted">Flashing aborted! Required service not found on device</string>
+    <string name="flashing_aborted">Flashing aborted! Required service not found on device. Please reset micro:bit and try again.</string>
 
     <string name="flashing_verifcation_failed">Flashing Failed</string>
-    <string name="flashing_verifcation_failed_title">Cannot verify the flashing code.</string>
+    <string name="flashing_verifcation_failed_title">Cannot verify the flashing code. Please reset micro:bit and try again.</string>
 
 
     <string name="flashing_aborted_title">Aborted</string>
