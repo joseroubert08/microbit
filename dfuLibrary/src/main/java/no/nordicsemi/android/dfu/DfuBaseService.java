@@ -1485,7 +1485,7 @@ public abstract class DfuBaseService extends IntentService {
                 disconnect(gatt);
                 logi("Refreshing the cache ");
                 refreshDeviceCache(gatt, true);
-                gattConnect(gatt);
+                gattConnect(gatt); //TODO What if there is any error here
                 dfuService = gatt.getService(DFU_SERVICE_UUID); //Check again
             }
 			if (dfuService == null) {
@@ -2312,8 +2312,9 @@ public abstract class DfuBaseService extends IntentService {
 		try {
 			if (gatt.connect()) {
 				synchronized (mLock) {
-					while (mConnectionState != STATE_CONNECTED_AND_READY && mError == 0)
-						mLock.wait();
+					while (mConnectionState != STATE_CONNECTED_AND_READY && mError == 0) {
+                        mLock.wait(30*1000); //Wait only 30 seconds. TODO Check this again
+                    }
 				}
 			}
 		} catch (final InterruptedException e) {
