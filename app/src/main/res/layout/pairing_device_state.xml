@@ -54,7 +54,8 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:importantForAccessibility="yes"
-            android:src="@drawable/delete_device_project" />
+            android:src="@drawable/delete_device_project"
+            android:visibility="invisible"/>
 
         <!-- Connect Micro:bit -->
         <ImageButton
