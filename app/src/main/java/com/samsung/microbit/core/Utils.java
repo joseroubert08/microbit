@@ -22,6 +22,7 @@ import com.samsung.microbit.service.DfuService;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -190,13 +191,26 @@ public class Utils {
     {
         Resources resources = MBApp.getApp().getApplicationContext().getResources();
         int resID = resources.getIdentifier(filename, "raw", MBApp.getApp().getApplicationContext().getPackageName());
+        AssetFileDescriptor afd = resources.openRawResourceFd(resID);
         Utils.preparePhoneToPlayAudio();
 
         if (mMediaplayer != null)
         {
             mMediaplayer.release();
         }
-        mMediaplayer= MediaPlayer.create(MBApp.getApp().getApplicationContext(), resID);
+        mMediaplayer = new MediaPlayer();
+
+        mMediaplayer.reset(); //MBApp.getApp().getApplicationContext(), resID);
+        mMediaplayer.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+        try {
+            mMediaplayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            mMediaplayer.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d("Utils", "playAudio: exception");
+            mMediaplayer.release();
+            return;
+        }
         //Set a callback for completion
         mMediaplayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -216,11 +230,13 @@ public class Utils {
             mAudioManager = (AudioManager) MBApp.getApp().getApplicationContext().getSystemService(MBApp.getApp().getApplicationContext().AUDIO_SERVICE);
         }
         originalRingerMode = mAudioManager.getRingerMode();
-        originalRingerVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        originalRingerVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+
+
         if (originalRingerMode == AudioManager.RINGER_MODE_SILENT) {
             mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
         }
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION),0);
     }
 
     private static void restoreAudioMode()
@@ -230,7 +246,7 @@ public class Utils {
             mAudioManager = (AudioManager) MBApp.getApp().getApplicationContext().getSystemService(MBApp.getApp().getApplicationContext().AUDIO_SERVICE);
         }
         mAudioManager.setRingerMode(originalRingerMode);
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, originalRingerVolume, 0);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalRingerVolume, 0);
     }
 
 	public static boolean installSamples() {
