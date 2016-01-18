@@ -53,8 +53,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
     private DFUResultReceiver dfuResultReceiver;
     private int projectListSortOrder = 0;
-    private boolean connectionInitiated = false;
-    // DEBUG
+
     protected boolean debug = true;
     protected String TAG = "ProjectActivity";
 
@@ -69,7 +68,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         FLASH_STATE_VERIFY_DEVICE,
         FLASH_STATE_WAIT_DEVICE_REBOOT,
         FLASH_STATE_INIT_DEVICE,
-        FLASH_STATE_PROGRESS
+        FLASH_STATE_PROGRESS,
+        MICROBIT_CONNECTING,
+        MICROBIT_DISCONNECTING
     }
 
     protected void logi(String message) {
@@ -87,24 +88,17 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         @Override
         public void onReceive(Context context, Intent intent) {
 
+            setActivityState(ACTIVITY_STATE.STATE_IDLE);
             int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-
-            logi(" broadcastReceiver ---- v= " + v);
-            if (Constants.BLE_DISCONNECTED_FOR_FLASH == v) {
-                logi("Bluetooth disconnected for flashing. No need to display pop-up");
-                handleBLENotification(context, intent, false);
-                if (programToSend != null && programToSend.filePath != null)
-                    initiateFlashing();
-                return;
-            }
-            handleBLENotification(context, intent, true);
+            logi(" broadcastReceiver ---- Error code = " + v);
+            setConnectedDeviceText();
+            PopUp.hide();
             if (v != 0) {
                 String message = intent.getStringExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
                 logi("broadcastReceiver Error message = " + message);
                 if (message == null)
                     message = "Error";
                 final String displayTitle = message;
-
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -118,30 +112,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             }
         }
     };
-
-    private void handleBLENotification(Context context, Intent intent, boolean hide) {
-        int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-        logi("broadcastReceiver Error code =" + v);
-        logi("handleBLENotification()");
-        final boolean popupHide = hide;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                setConnectedDeviceText();
-                if (popupHide && connectionInitiated) {
-                    connectionInitiated = false;
-                    PopUp.hide();
-                }
-            }
-        });
-
-        int cause = intent.getIntExtra(IPCService.NOTIFICATION_CAUSE, 0);
-        if (cause == IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED) {
-//			if (isDisconnectedForFlash) {
-//				startFlashingPhase1();
-//			}
-        }
-    }
 
     private void setActivityState(ACTIVITY_STATE newState) {
         logi("Flash state old - " + mActivityState + " new - " + newState);
@@ -393,14 +363,21 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
         if (connectedDevice.mPattern != null) {
             if (connectedDevice.mStatus) {
+                setActivityState(ACTIVITY_STATE.MICROBIT_DISCONNECTING);
+                PopUp.show(MBApp.getContext(),
+                        getString(R.string.disconnecting),
+                        "",
+                        R.drawable.flash_face, R.drawable.blue_btn,
+                        PopUp.TYPE_SPINNER_NOT_CANCELABLE,
+                        null, null);
                 IPCService.getInstance().bleDisconnect();
             } else {
-                connectionInitiated = true;
+                setActivityState(ACTIVITY_STATE.MICROBIT_CONNECTING);
                 PopUp.show(MBApp.getContext(),
                         getString(R.string.init_connection),
                         "",
                         R.drawable.flash_face, R.drawable.blue_btn,
-                        PopUp.TYPE_SPINNER,
+                        PopUp.TYPE_SPINNER_NOT_CANCELABLE,
                         null, null);
 
                 IPCService.getInstance().bleConnect();
@@ -754,10 +731,15 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 }
             } else if (intent.getAction() == DfuService.BROADCAST_ERROR) {
                 String error_message = Utils.broadcastGetErrorMessage(intent.getIntExtra(DfuService.EXTRA_DATA, 0));
-                setActivityState(ACTIVITY_STATE.STATE_IDLE);
+
                 logi("DFUResultReceiver.onReceive() :: Flashing ERROR!!  Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
                         + "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
-                //Update Stats
+
+
+                setActivityState(ACTIVITY_STATE.STATE_IDLE);
+                LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
+                dfuResultReceiver = null;
+               //Update Stats
                 if (MBApp.getApp().getEcho() != null) {
                     //TODO add more data action_location (app/web), hex_file_size, binary_size, firmware <Micro:bit firmware version >
                     MBApp.getApp().getEcho().userActionEvent("hex_file_flash", "fail", null);
@@ -769,10 +751,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         PopUp.TYPE_ALERT, //type of popup.
                         popupOkHandler,//override click listener for ok button
                         popupOkHandler);//pass null to use default listener
-
-                LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
-                dfuResultReceiver = null;
-
             }
         }
     }

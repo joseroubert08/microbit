@@ -232,13 +232,8 @@ public class Constants {
 
     public static String ZIP_INTERNAL_NAME = "raw/samples";
 
-	public static int NOTIFICATION_ID = 1001 ;
-    public static int BLE_DISCONNECTED_FOR_FLASH = 501 ;
-    public static int PAIRING_CONTROL_CODE_REQUESTED = 0x01 ;
-    public static int FLASHING_PHASE_2_COMPLETE = 0x02 ;
-    public static int FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED = 0X33 ;
-
     public static int REQUEST_ENABLE_BT = 12345 ; //Magic number
+    public static int POPUP_CREATE_REQUEST = 45809 ; //Magic number
 
 	public static String LAUNCH_CAMERA_AUDIO = "raw/en_gb_emma_launching_camera";
 

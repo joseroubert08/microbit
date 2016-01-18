@@ -50,8 +50,6 @@ import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.samsung.dfulibrary.R;
-
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -606,14 +604,8 @@ public abstract class DfuBaseService extends IntentService {
 
 	private static final UUID CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
-
-	public static final  int FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED = 0x33;
-    public static final int PAIRING_REQUEST = 0x01;
-    public static final int PAIRING_FAILED = 0x55;
     public static final int FLASHING_WITH_PAIR_CODE = 0x02;
 
-
-	//
 	public static final int NOTIFICATION_ID = 283; // a random number
 	private static final int NOTIFICATIONS = 1;
 	private static final int INDICATIONS = 2;
@@ -629,7 +621,6 @@ public abstract class DfuBaseService extends IntentService {
 	private InputStream mInputStream;
 	private String mDeviceAddress;
 	private String mDeviceName;
-    private int mDevicePairingCode;
 
 	/**
 	 * The current connection state. If its value is > 0 than an error has occurred. Error number is a negative value of mConnectionState
@@ -879,13 +870,13 @@ public abstract class DfuBaseService extends IntentService {
 				}
 			} else {
 				loge("Connection state change error: " + status + " newState: " + newState);
-				if (newState == BluetoothGatt.STATE_DISCONNECTED) {
+/*				if (newState == BluetoothGatt.STATE_DISCONNECTED) {
                     mConnectionState = STATE_DISCONNECTED;
                     if (mServicePhase == PAIRING_REQUEST ){
                         mServicePhase = PAIRING_FAILED ;
                         updateProgressNotification(status);
                     }
-                }
+                }*/
 				mPaused = false;
 				mError = ERROR_CONNECTION_STATE_MASK | status;
 			}
@@ -1264,12 +1255,10 @@ public abstract class DfuBaseService extends IntentService {
 
         mDeviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
         mDeviceName = intent.getStringExtra(EXTRA_DEVICE_NAME);
-        mDevicePairingCode = intent.getIntExtra(EXTRA_DEVICE_PAIR_CODE, 0);
 
         sendLogBroadcast(LOG_LEVEL_VERBOSE, "Connecting to DFU target 2...");
         if (!makeGattConnection(mDeviceAddress))
             return 5;
-
 
 		logi("Phase2 s");
 
@@ -1490,9 +1479,15 @@ public abstract class DfuBaseService extends IntentService {
 			// We have connected to DFU device and services are discoverer
 			BluetoothGattService dfuService = null;
 
-
             dfuService = gatt.getService(DFU_SERVICE_UUID);
 
+            if (dfuService == null){
+                disconnect(gatt);
+                logi("Refreshing the cache ");
+                refreshDeviceCache(gatt, true);
+                gattConnect(gatt);
+                dfuService = gatt.getService(DFU_SERVICE_UUID); //Check again
+            }
 			if (dfuService == null) {
 				loge("DFU service does not exists on the device");
 				sendLogBroadcast(LOG_LEVEL_WARNING, "Connected. DFU Service not found");
@@ -2222,14 +2217,10 @@ public abstract class DfuBaseService extends IntentService {
 	private void terminateConnection(final BluetoothGatt gatt, final int error) {
 		if (mConnectionState != STATE_DISCONNECTED) {
 			updateProgressNotification(PROGRESS_DISCONNECTING);
-
-			// No need to disable notifications
-
 			// Disconnect from the device
 			disconnect(gatt);
 			sendLogBroadcast(LOG_LEVEL_INFO, "Disconnected");
 		}
-
 		// Close the device
 		refreshDeviceCache(gatt, false); // This should be set to true when DFU Version is 0.5 or lower
         close(gatt);
@@ -3016,117 +3007,11 @@ public abstract class DfuBaseService extends IntentService {
 	 *                 {@link #PROGRESS_VALIDATING}, {@link #PROGRESS_DISCONNECTING}, {@link #PROGRESS_COMPLETED} or {@link #ERROR_FILE_ERROR}, {@link #ERROR_FILE_INVALID} , etc
 	 */
 	private void updateProgressNotification(final int progress) {
-		final String deviceAddress = mDeviceAddress;
-		final String deviceName = mDeviceName != null ? mDeviceName : getString(R.string.dfu_unknown_name);
-
-        //Do not show notification try when Pairing
-        if (mServicePhase == PAIRING_REQUEST ){
-            logi("Not displaying the Progress tray icon as we are in Pairing mode");
-            return;
-        } else if (mServicePhase == PAIRING_FAILED)
-        {
-            logi("Pairing has failed");
-            sendErrorBroadcast(progress);
-            return;
-        }
-		/*
-		// final Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_stat_notify_dfu); <- this looks bad on Android 5
-		if(progress < 0) {
-			builder = new NotificationCompat.Builder(this).setSmallIcon(android.R.drawable.stat_sys_upload).
-					setOnlyAlertOnce(true);//.setLargeIcon(largeIcon);
-            builder.setColor(Color.GRAY);
-		}
-
-		switch (progress) {
-			case PROGRESS_CONNECTING:
-				builder.setOngoing(true).setContentTitle(getString(R.string.dfu_status_connecting)).setContentText(getString(R.string.dfu_status_connecting_msg, deviceName)).setProgress(100, 0, true);
-				break;
-
-			case PROGRESS_STARTING:
-				builder.setOngoing(true).setContentTitle(getString(R.string.dfu_status_starting)).setContentText(getString(R.string.dfu_status_starting_msg, deviceName)).setProgress(100, 0, true);
-				break;
-
-			case PROGRESS_ENABLING_DFU_MODE:
-				builder.setOngoing(true).setContentTitle(getString(R.string.dfu_status_switching_to_dfu)).setContentText(getString(R.string.dfu_status_switching_to_dfu_msg, deviceName))
-					.setProgress(100, 0, true);
-
-				break;
-
-			case PROGRESS_VALIDATING:
-				builder.setOngoing(true).setContentTitle(getString(R.string.dfu_status_validating)).setContentText(getString(R.string.dfu_status_validating_msg, deviceName)).setProgress(100, 0, true);
-				break;
-
-			case PROGRESS_DISCONNECTING:
-				builder.setOngoing(true).setContentTitle(getString(R.string.dfu_status_disconnecting)).setContentText(getString(R.string.dfu_status_disconnecting_msg, deviceName))
-					.setProgress(100, 0, true);
-
-				break;
-
-			case PROGRESS_COMPLETED:
-				builder.setOngoing(false).setContentTitle(getString(R.string.dfu_status_completed)).setSmallIcon(android.R.drawable.stat_sys_upload_done)
-					.setContentText(getString(R.string.dfu_status_completed_msg)).setAutoCancel(true).setColor(0xFF00B81A);
-
-				break;
-
-			case PROGRESS_ABORTED:
-				builder.setOngoing(false).setContentTitle(getString(R.string.dfu_status_aborted)).setSmallIcon(android.R.drawable.stat_sys_upload_done)
-					.setContentText(getString(R.string.dfu_status_aborted_msg)).setAutoCancel(true);
-
-				break;
-
-            case PROGRESS_VALIDATION_FAILED:
-                builder.setOngoing(false).setContentTitle(getString(R.string.dfu_status_error)).setSmallIcon(android.R.drawable.stat_sys_upload_done)
-                        .setContentText(getString(R.string.dfu_validation_failed)).setAutoCancel(true).setColor(Color.RED);
-                break;
-
-			default:
-				if (progress >= ERROR_MASK) {
-					// progress is an error number
-					builder.setOngoing(false).setContentTitle(getString(R.string.dfu_status_error)).setSmallIcon(android.R.drawable.stat_sys_upload_done)
-						.setContentText(getString(R.string.dfu_status_error_msg)).setAutoCancel(true).setColor(Color.RED);
-				} else {
-					// progress is in percents
-					final String title = mPartsTotal == 1 ? getString(R.string.dfu_status_uploading) : getString(R.string.dfu_status_uploading_part, mPartCurrent, mPartsTotal);
-					final String text = (mFileType & TYPE_APPLICATION) > 0 ? getString(R.string.dfu_status_uploading_msg, deviceName) : getString(R.string.dfu_status_uploading_components_msg, deviceName);
-					builder.setOngoing(true).setContentTitle(title).setContentText(text).setProgress(100, progress, false).setColor(Color.BLUE);
-				}
-		}
-		*/
 		// send progress or error broadcast
 		if (progress < ERROR_MASK)
 			sendProgressBroadcast(progress);
 		else
 			sendErrorBroadcast(progress);
-
-        /*
-		// update the notification
-		final Intent intent = new Intent(this, getNotificationTarget());
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent.putExtra(EXTRA_DEVICE_ADDRESS, deviceAddress);
-		intent.putExtra(EXTRA_DEVICE_NAME, deviceName);
-		intent.putExtra(EXTRA_PROGRESS, progress); // this may contains ERROR_CONNECTION_MASK bit!
-		final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		builder.setContentIntent(pendingIntent);
-
-        final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-		// Add Abort action to the notification
-        //Rohit - Disabled Cancel for now
-
-		if (progress != PROGRESS_ABORTED && progress != PROGRESS_COMPLETED && progress <  0) { //ERROR_MASK) {
-			final Intent abortIntent = new Intent(BROADCAST_ACTION);
-			abortIntent.putExtra(EXTRA_ACTION, ACTION_ABORT);
-            final PendingIntent pendingAbortIntent = PendingIntent.getBroadcast(this, 1, abortIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            manager.cancel(NOTIFICATION_ID);
-            builder.addAction(R.drawable.ic_action_notify_cancel, getString(R.string.dfu_action_abort), pendingAbortIntent);
-		}
-
-        if(progress>0)
-            builder.addAction(0,null,null);
-
-
-        manager.notify(NOTIFICATION_ID, builder.build());
-        */
 	}
 
 	/**

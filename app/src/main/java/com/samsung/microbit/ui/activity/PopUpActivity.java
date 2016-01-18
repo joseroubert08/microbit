@@ -26,6 +26,8 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     //intent from PopUpActivity to PopUp
     static public final String INTENT_ACTION_OK_PRESSED = "PopUpActivity.OK_PRESSED";
     static public final String INTENT_ACTION_CANCEL_PRESSED = "PopUpActivity.CANCEL_PRESSED";
+    static public final String INTENT_ACTION_DESTROYED = "PopUpActivity.DESTROYED";
+
     //intent from PopUp to PopUpActivity
     static public final String INTENT_ACTION_CLOSE = "PopUpActivity.CLOSE";
     static public final String INTENT_ACTION_UPDATE_PROGRESS = "PopUpActivity.UPDATE_PROGRESS";
@@ -38,6 +40,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     static public final String INTENT_EXTRA_ICONBG = "imageIconBg";
     static public final String INTENT_EXTRA_PROGRESS = "progress";
     static public final String INTENT_EXTRA_CANCELABLE = "cancelable";
+
 
     private WebView animationWebview = null;
     private ImageView imageIcon = null;
@@ -71,7 +74,6 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
 
         Log.d("PopUpActivity", "onCreate()");
-
         setContentView(R.layout.activity_popup);
 
      //   animationWebview = (WebView) findViewById(R.id.error_animation_webview);// TODO - change this to load when error occurs
@@ -162,9 +164,9 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     protected void onDestroy() {
         super.onDestroy();
         Log.d("PopUpActivity", "onDestroy()");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(INTENT_ACTION_DESTROYED));
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
     }
-
     @Override
     public void onBackPressed() {
         boolean IsCancelable = getIntent().getBooleanExtra(INTENT_EXTRA_CANCELABLE, true);

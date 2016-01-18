@@ -49,6 +49,8 @@ public class PopUp {
 
     static private Context ctx = null;
 
+    static protected final Object locker = new Object();
+
     static private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -62,6 +64,10 @@ public class PopUp {
                 inputText = intent.getStringExtra(PopUpActivity.INTENT_EXTRA_INPUTTEXT);
                 if (cancelPressListener != null)
                     cancelPressListener.onClick(null);
+            } else if (intent.getAction().equals(PopUpActivity.INTENT_ACTION_DESTROYED)) {
+                //Previous pop-up is now destroyed. unlock
+                Log.d("PopUp", "onReceive: previous pop-up destroyed");
+                //locker.notify();
             }
         }
     };
@@ -82,9 +88,19 @@ public class PopUp {
             Log.e("Popup","Nothing to hide");
             return;
         }
-
         LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(new Intent(PopUpActivity.INTENT_ACTION_CLOSE));
         current_type = TYPE_MAX;// reset current type to none
+
+/*        synchronized (locker)
+        {
+            try {
+                Log.e("Popup","Waiting for previous pop-up to be destroyed");
+                locker.wait(2*1000);
+                Log.e("Popup", "Finished waiting");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }*/
     }
 
     public static void updateProgressBar(int val) {
@@ -145,7 +161,7 @@ public class PopUp {
 
             LocalBroadcastManager.getInstance(context).registerReceiver(broadcastReceiver, new IntentFilter(PopUpActivity.INTENT_ACTION_OK_PRESSED));
             LocalBroadcastManager.getInstance(context).registerReceiver(broadcastReceiver, new IntentFilter(PopUpActivity.INTENT_ACTION_CANCEL_PRESSED));
-
+            LocalBroadcastManager.getInstance(context).registerReceiver(broadcastReceiver, new IntentFilter(PopUpActivity.INTENT_ACTION_DESTROYED));
             registered = true;
         }
 

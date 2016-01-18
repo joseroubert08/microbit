@@ -254,15 +254,14 @@ public class BLEService extends BLEBaseService {
 	@Override
 	protected void handleCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 
-
         String UUID = characteristic.getUuid().toString();
+        int value = 0 ;
+        Integer integerValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
 
-        if (characteristic == null)
-        {
-            logi("Null characteristic found");
+        if (integerValue == null) {
             return;
         }
-		int value = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
+        value = integerValue.intValue();
 		int eventSrc = value & 0x0ffff;
 		if (eventSrc < 1001) {
 			return;
@@ -338,31 +337,6 @@ public class BLEService extends BLEBaseService {
 			sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null, args);
 			sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null, args);
 		}
-
-		/*
-        if (!isConnected && Constants.BLE_DISCONNECTED_FOR_FLASH == errorCode){
-            //Diconnected for flashing. Remove the icon
-            if (notifyMgr!= null) {
-                logi("Removing Notifcation as we are now flashing the device ");
-                notifyMgr.cancel(Constants.NOTIFICATION_ID);
-            }
-        }
-        else {
-            //Update the tray message
-            NotificationCompat.Builder mBuilder =
-                    new NotificationCompat.Builder(this)
-                            .setSmallIcon(isConnected ? R.drawable.ble_connection_on : R.drawable.ble_connection_off)
-                            .setContentTitle("micro:bit companion")
-                            .setOngoing(onGoingNotification)
-                            .setContentText(notificationString);
-
-            Intent intent = new Intent(this, PairingActivity.class);
-            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-            mBuilder.setContentIntent(resultPendingIntent);
-            notifyMgr.notify(Constants.NOTIFICATION_ID, mBuilder.build());
-        }
-        */
-
     }
 
 	// ######################################################################
@@ -580,12 +554,6 @@ public class BLEService extends BLEBaseService {
 					}
 
 					break;
-                case IPCMessageManager.IPC_FUNCTION_DISCONNECT_FOR_FLASH:
-                    logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_DISCONNECT_FOR_FLASH = " + bleManager);
-                    if (reset()) {
-                        setNotification(false, Constants.BLE_DISCONNECTED_FOR_FLASH);
-                    }
-                    break;
 
 				default:
 			}
