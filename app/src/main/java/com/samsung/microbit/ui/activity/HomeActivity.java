@@ -378,7 +378,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             // TODO: HACK - Navigation View items from drawer here instead of [onNavigationItemSelected]
             // NavigationView items
             case R.id.btn_nav_menu: {
-                Toast.makeText(this, "Menu", Toast.LENGTH_LONG).show();
+               // Toast.makeText(this, "Menu", Toast.LENGTH_LONG).show();
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
             }
@@ -393,7 +393,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.btn_help: {
-                Toast.makeText(this, "Help", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Coming Soon", Toast.LENGTH_LONG).show();
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
             }

@@ -264,7 +264,7 @@
     <string name="desc_manage_microbit_txt">Rename and remove paired micro:bits</string>
     <string name="desc_manage_microbits">To manage paired micro:bits, go to your Bluetooth Settings on your device</string>
     <string name="desc_manage_and_remove_microbits_label">How do i manage and remove paired micro:bits?</string>
-    <string name="manage_and_remove_microbit">How do i manage and remove paired micro:bits?</string>
+    <string name="manage_and_remove_microbit">How do I manage and remove paired micro:bits?</string>
     <string name="desc_homescreen_logo_img">Hello</string>
     <string name="desc_connect_btn">Connections</string>
     <string name="desc_flash_btn">Flash</string>
