@@ -27,10 +27,12 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     static public final String INTENT_ACTION_OK_PRESSED = "PopUpActivity.OK_PRESSED";
     static public final String INTENT_ACTION_CANCEL_PRESSED = "PopUpActivity.CANCEL_PRESSED";
     static public final String INTENT_ACTION_DESTROYED = "PopUpActivity.DESTROYED";
+    static public final String INTENT_ACTION_CREATED = "PopUpActivity.CREATED";
 
     //intent from PopUp to PopUpActivity
     static public final String INTENT_ACTION_CLOSE = "PopUpActivity.CLOSE";
     static public final String INTENT_ACTION_UPDATE_PROGRESS = "PopUpActivity.UPDATE_PROGRESS";
+    static public final String INTENT_ACTION_UPDATE_LAYOUT = "PopUpActivity.UPDATE_LAYOUT";
 
     static public final String INTENT_EXTRA_TYPE = "type";
     static public final String INTENT_EXTRA_TITLE = "title";
@@ -40,7 +42,6 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     static public final String INTENT_EXTRA_ICONBG = "imageIconBg";
     static public final String INTENT_EXTRA_PROGRESS = "progress";
     static public final String INTENT_EXTRA_CANCELABLE = "cancelable";
-
 
     private WebView animationWebview = null;
     private ImageView imageIcon = null;
@@ -55,16 +56,29 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
 
     private LinearLayout layoutBottom = null;
 
+    private boolean isCancelable = false;
+
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, final Intent intent) {
+
             if (intent.getAction().equals(INTENT_ACTION_CLOSE)) {
                 Log.d("PopUpActivity", "BroadcastReceiver.INTENT_ACTION_CLOSE");
                 finish();
             } else if (intent.getAction().equals(INTENT_ACTION_UPDATE_PROGRESS)) {
                 if (progressBar != null)
                     progressBar.setProgress(intent.getIntExtra(INTENT_EXTRA_PROGRESS, 0));
+            } else if (intent.getAction().equals(INTENT_ACTION_UPDATE_LAYOUT)) {
+                Log.d("PopUpActivity", "BroadcastReceiver.INTENT_ACTION_UPDATE_LAYOUT");
+                isCancelable = intent.getBooleanExtra(INTENT_EXTRA_CANCELABLE, true);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        clearLayout();
+                        setLayout(intent);
+                    }
+                });
             }
         }
     };
@@ -73,7 +87,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d("PopUpActivity", "onCreate()");
+        Log.d("PopUpActivity", "onCreate() popuptype = " + getIntent().getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_MAX));
         setContentView(R.layout.activity_popup);
 
      //   animationWebview = (WebView) findViewById(R.id.error_animation_webview);// TODO - change this to load when error occurs
@@ -94,12 +108,30 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         affirmationOKButton = (Button) findViewById(R.id.affirmationOKBtn);
         affirmationOKButton.setTypeface(MBApp.getApp().getTypeface());
 
+        isCancelable = getIntent().getBooleanExtra(INTENT_EXTRA_CANCELABLE, true);
+
         setLayout(getIntent());
         //listen for close or update progress request
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(INTENT_ACTION_CLOSE));
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(INTENT_ACTION_UPDATE_PROGRESS));
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(INTENT_ACTION_UPDATE_LAYOUT));
+
+        //notify creation of activity to calling code PopUp class
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(INTENT_ACTION_CREATED));
     }
 
+    private void clearLayout() {
+        imageIcon.setImageResource(R.drawable.overwrite_face);
+        imageIcon.setBackgroundResource(0);
+        titleTxt.setVisibility(View.GONE);
+        messageTxt.setVisibility(View.GONE);
+        layoutBottom.setVisibility(View.GONE);
+        okButton.setVisibility(View.GONE);
+        cancelButton.setVisibility(View.GONE);
+        affirmationOKButton.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
+        spinnerBar.setVisibility(View.GONE);
+    }
     private void setLayout(Intent intent) {
         String title = intent.getStringExtra(INTENT_EXTRA_TITLE);
 
@@ -149,7 +181,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
             case PopUp.TYPE_SPINNER_NOT_CANCELABLE:
                 spinnerBar.setVisibility(View.VISIBLE);
                 break;
-            case PopUp.TYPE_INPUTTEXT:
+            case PopUp.TYPE_INPUTTEXT://TODO: deprecated
                 layoutBottom.setVisibility(View.VISIBLE);
                 okButton.setVisibility(View.VISIBLE);
                 cancelButton.setVisibility(View.VISIBLE);
@@ -169,20 +201,17 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     }
     @Override
     public void onBackPressed() {
-        boolean IsCancelable = getIntent().getBooleanExtra(INTENT_EXTRA_CANCELABLE, true);
-        if (!IsCancelable)
+        Log.d("PopUpActivity", "onBackPressed IsCancelable " + isCancelable );
+        if (!isCancelable)
             return;
 
-        super.onBackPressed();
-
+        //Do not call super.onBackPressed() because we let the calling PopUp code to issue a "hide" call.
+        //PopUp code is the master code which decides when to destroy or create PopUpActivity.
         LocalBroadcastManager.getInstance(this).sendBroadcastSync(new Intent(INTENT_ACTION_CANCEL_PRESSED));
     }
 
     @Override
     public void onClick(View v) {
-
-        finish();
-
         Intent intent = new Intent();
         intent.putExtra(INTENT_EXTRA_INPUTTEXT, inputText.getText().toString());
 

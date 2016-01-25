@@ -45,6 +45,7 @@
             android:paddingTop="@dimen/popup_body_view_paddingVertical"
             android:text="Title"
             android:textAppearance="?android:textAppearanceLarge"
+            android:textColor="@color/white_color"
             android:visibility="gone" />
 
         <ProgressBar
@@ -78,6 +79,7 @@
             android:text="Message A B C D E F G H I J K L M N O P Q R S T U V W X Y Z Message"
             android:textAlignment="center"
             android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/white_color"
             android:visibility="gone" />
 
         <com.samsung.microbit.ui.control.ExtendedEditText
@@ -104,6 +106,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:visibility="gone"
         android:gravity="center"
         android:orientation="horizontal">
 
