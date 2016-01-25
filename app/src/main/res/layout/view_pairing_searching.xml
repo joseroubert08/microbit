@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black_color"
-    android:orientation="vertical"
-    android:visibility="gone">
+    android:orientation="vertical">
 
     <!-- pairing animation -->
     <TextView
@@ -21,15 +20,25 @@
         android:textColor="@color/white_color" />
 
     <!--pairing animation-->
-    <WebView
-        android:id="@+id/searching_microbit_webview"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+    <!--<WebView-->
+    <!--android:id="@+id/searching_microbit_webview"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="0dp"-->
+    <!--android:layout_gravity="center"-->
+    <!--android:layout_margin="16dp"-->
+    <!--android:layout_weight="3"-->
+    <!--android:foregroundGravity="center"-->
+    <!--android:scrollbars="none" />-->
+
+    <ProgressBar
+        android:id="@+id/searching_progress_spinner"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_gravity="center"
         android:layout_margin="16dp"
-        android:layout_weight="3"
+        android:layout_weight="2"
         android:foregroundGravity="center"
-        android:scrollbars="none" />
+        android:indeterminateDrawable="@xml/progress" />
 
     <include layout="@layout/view_pairing_searching_step" />
 

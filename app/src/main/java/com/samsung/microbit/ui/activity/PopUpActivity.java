@@ -38,7 +38,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     static public final String INTENT_EXTRA_INPUTTEXT = "inputText";
     static public final String INTENT_EXTRA_ICON = "imageIcon";
     static public final String INTENT_EXTRA_ICONBG = "imageIconBg";
-    static public final String INTENT_EXTRA_PROGRESS = "progress";
+    static public final String INTENT_EXTRA_PROGRESS = "progress.xml";
     static public final String INTENT_EXTRA_CANCELABLE = "cancelable";
 
 
@@ -95,7 +95,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         affirmationOKButton.setTypeface(MBApp.getApp().getTypeface());
 
         setLayout(getIntent());
-        //listen for close or update progress request
+        //listen for close or update progress.xml request
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(INTENT_ACTION_CLOSE));
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(INTENT_ACTION_UPDATE_PROGRESS));
     }

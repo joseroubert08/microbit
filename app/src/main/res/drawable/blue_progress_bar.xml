@@ -10,7 +10,7 @@
         </shape>
     </item>
 
-    <!-- Define the progress properties like start color, end color etc -->
+    <!-- Define the progress.xml properties like start color, end color etc -->
     <item android:id="@android:id/progress">
         <clip>
             <shape>

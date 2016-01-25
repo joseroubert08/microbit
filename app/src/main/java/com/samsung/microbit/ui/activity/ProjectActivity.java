@@ -471,7 +471,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                     || mActivityState == ACTIVITY_STATE.FLASH_STATE_PROGRESS
 
                     ) {
-                // Another download session is in progress
+                // Another download session is in progress.xml
                 PopUp.show(MBApp.getContext(),
                         getString(R.string.multple_flashing_session_msg),
                         "",

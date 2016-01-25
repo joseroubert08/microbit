@@ -37,11 +37,11 @@ public class PopUp {
 
     static public final int TYPE_CHOICE = 0;//2 buttons type
     static public final int TYPE_ALERT = 1;//1 button type
-    static public final int TYPE_PROGRESS = 2;//0 button progress bar type
+    static public final int TYPE_PROGRESS = 2;//0 button progress.xml bar type
 	static public final int TYPE_NOBUTTON = 3;//No button type
     static public final int TYPE_SPINNER = 4;//0 button type spinner
     static public final int TYPE_INPUTTEXT = 5;//2 buttons type + edittext
-    static public final int TYPE_PROGRESS_NOT_CANCELABLE = 6;//0 button progress bar type not cancelable (backpress disabled)
+    static public final int TYPE_PROGRESS_NOT_CANCELABLE = 6;//0 button progress.xml bar type not cancelable (backpress disabled)
     static public final int TYPE_SPINNER_NOT_CANCELABLE = 7;//0 button type spinner not cancelable (backpress disabled)
     static public final int TYPE_MAX = 8;
 

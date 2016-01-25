@@ -27,13 +27,13 @@ import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -103,8 +103,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private ImageButton mdeleteBtn;
     private Handler mHandler;
 
-    // Animation webviews
-    WebView searchingMicrobitAnimation;
+    // Searching for Microbit spinner
+    ProgressBar searchingProgressSpinner;
 
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 15000;
@@ -240,7 +240,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         MBApp.setContext(this);
         updatePairedDeviceCard();
         // Searching for micro:bit
-        searchingMicrobitAnimation.onResume();
+     //   searchingMicrobitAnimation.onResume();
     }
 
     @Override
@@ -248,8 +248,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         logi("onPause() ::");
         super.onPause();
         // Stop searching for micro:bit animation
-        searchingMicrobitAnimation.onPause();
-    }
+
+   }
 
     public PairingActivity() {
         logi("PairingActivity() ::");
@@ -418,9 +418,12 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 //        howToPairMicrobit.loadUrl("file:///android_asset/htmls/how_to_pair_microbit.html");
 
         // Step 3: Searching for Microbit (animation)
-        searchingMicrobitAnimation = (WebView) findViewById(R.id.searching_microbit_webview);
-        searchingMicrobitAnimation.setBackgroundColor(Color.TRANSPARENT);
-        searchingMicrobitAnimation.loadUrl("file:///android_asset/htmls/loading_search_microbit.html");
+      //  searchingMicrobitAnimation = (WebView) findViewById(R.id.searching_microbit_webview);
+     //   searchingMicrobitAnimation.setBackgroundColor(Color.TRANSPARENT);
+      //  searchingMicrobitAnimation.loadUrl("file:///android_asset/htmls/loading_search_microbit.html");
+
+      searchingProgressSpinner = (ProgressBar) findViewById(R.id.searching_progress_spinner);
+
     }
 
     boolean setupBleController() {
