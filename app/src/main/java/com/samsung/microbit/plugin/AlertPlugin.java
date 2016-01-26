@@ -88,7 +88,8 @@ public class AlertPlugin {
 				PopUp.showFromService(context,cmd.getValue(),
 									"Message from Micro:Bit",
 									R.drawable.message_face, R.drawable.blue_btn,
-									PopUp.TYPE_ALERT);
+                       0, /* TODO - nothing needs to be done */
+                        PopUp.TYPE_ALERT);
 				break;
 
 			case Constants.SAMSUNG_ALERT_EVT_VIBRATE:
@@ -183,7 +184,8 @@ public class AlertPlugin {
 		PopUp.showFromService(context,"",
 				textMsg,
 				R.drawable.message_face, R.drawable.blue_btn,
-				PopUp.TYPE_ALERT);
+                0, /* TODO - nothing needs to be done */
+                PopUp.TYPE_ALERT);
 	}
 
 }

@@ -20,6 +20,7 @@ public class PopUpServiceReceiver extends BroadcastReceiver {
                                         intent.getStringExtra(PopUpActivity.INTENT_EXTRA_TITLE),
                                         intent.getIntExtra(PopUpActivity.INTENT_EXTRA_ICON, 0),
                                         intent.getIntExtra(PopUpActivity.INTENT_EXTRA_ICONBG, 0),
+                intent.getIntExtra(PopUpActivity.INTENT_GIFF_ANIMATION_CODE, 0), /* Default 0 */
                                         intent.getIntExtra(PopUpActivity.INTENT_EXTRA_TYPE, PopUp.TYPE_MAX),
                                         null, null);
     }

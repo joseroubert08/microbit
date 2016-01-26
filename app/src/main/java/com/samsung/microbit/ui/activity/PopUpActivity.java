@@ -42,6 +42,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     static public final String INTENT_EXTRA_ICONBG = "imageIconBg";
     static public final String INTENT_EXTRA_PROGRESS = "progress.xml";
     static public final String INTENT_EXTRA_CANCELABLE = "cancelable";
+    static public final String INTENT_GIFF_ANIMATION_CODE = "giffAnimationCode";
 
     private WebView animationWebview = null;
     private ImageView imageIcon = null;
@@ -53,7 +54,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     private Button okButton = null;
     private Button cancelButton = null;
     private Button affirmationOKButton = null;
-
+    private int imageGiffAnimationCode = 1;
     private LinearLayout layoutBottom = null;
 
     private boolean isCancelable = false;
@@ -90,8 +91,8 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         Log.d("PopUpActivity", "onCreate() popuptype = " + getIntent().getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_MAX));
         setContentView(R.layout.activity_popup);
 
-     //   animationWebview = (WebView) findViewById(R.id.error_animation_webview);// TODO - change this to load when error occurs
-   //     animationWebview.loadUrl("file:///android_asset/htmls/flashing_microbit.html");
+        animationWebview = (WebView) findViewById(R.id.error_animation_webview);// TODO - change this to load when error occurs
+        animationWebview.loadUrl("file:///android_asset/htmls/error_fail_flash_animation.html");
         imageIcon = (ImageView) findViewById(R.id.image_icon);
         titleTxt = (TextView) findViewById(R.id.flash_projects_title_txt);
         titleTxt.setTypeface(MBApp.getApp().getTypeface());
@@ -121,6 +122,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     }
 
     private void clearLayout() {
+     //   animationWebview.clearAnimation(); // ~TODO check it doesn't screw up giff animation
         imageIcon.setImageResource(R.drawable.overwrite_face);
         imageIcon.setBackgroundResource(0);
         titleTxt.setVisibility(View.GONE);
@@ -132,6 +134,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         progressBar.setVisibility(View.GONE);
         spinnerBar.setVisibility(View.GONE);
     }
+
     private void setLayout(Intent intent) {
         String title = intent.getStringExtra(INTENT_EXTRA_TITLE);
 
@@ -153,12 +156,24 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         int imageBackgroundResId = intent.getIntExtra(INTENT_EXTRA_ICONBG, 0);
         if (imageResId != 0) {
             imageIcon.setImageResource(imageResId);
-        //    animationWebview.setBackgroundColor(imageResId);
-         //   animationWebview.loadUrl("file:///android_asset/htmls/flashing_microbit.html");
         }
         if (imageBackgroundResId != 0) {
             imageIcon.setBackgroundResource(imageBackgroundResId);
-          //  animationWebview.setBackgroundColor(imageBackgroundResId);
+        }
+
+        // Loading the Giff
+        int imageGiffAnimationCode = intent.getIntExtra(INTENT_GIFF_ANIMATION_CODE, 2); // Default value is 0 (no animation ) 2 = flash, set to 2 for testing
+        switch (imageGiffAnimationCode) {
+            // Flashing screen
+            case 1:
+
+                break;
+
+            // Error screen
+            case 2:
+                animationWebview.loadUrl("file:///android_asset/htmls/error_fail_flash_animation.html");
+                animationWebview.setVisibility(View.VISIBLE);
+                break;
         }
 
         switch (intent.getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_MAX)) {
@@ -199,9 +214,10 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(INTENT_ACTION_DESTROYED));
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
     }
+
     @Override
     public void onBackPressed() {
-        Log.d("PopUpActivity", "onBackPressed IsCancelable " + isCancelable );
+        Log.d("PopUpActivity", "onBackPressed IsCancelable " + isCancelable);
         if (!isCancelable)
             return;
 

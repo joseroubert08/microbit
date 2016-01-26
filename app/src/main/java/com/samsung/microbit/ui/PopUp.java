@@ -152,20 +152,21 @@ public class PopUp {
     //Interface function for showing a popup inside a service plugin class
     //only supports TYPE_ALERT popup for now.
     public static void showFromService(Context context, String message, String title,
-                                       int imageResId, int imageBackgroundResId, int type) {
+                                       int imageResId, int imageBackgroundResId, int animationCode, int type) {
         Log.d("PopUp", "showFromService");
         Intent intent = new Intent("com.samsung.microbit.core.SHOWFROMSERVICE");
-        putIntentExtra(intent, message, title, imageResId, imageBackgroundResId, type);
+        putIntentExtra(intent, message, title, imageResId, imageBackgroundResId, animationCode, type);
         context.sendBroadcast(intent);
     }
 
     private static void putIntentExtra(Intent intent, String message, String title,
-                                        int imageResId, int imageBackgroundResId, int type) {
+                                        int imageResId, int imageBackgroundResId, int animationCode, int type) {
         intent.putExtra(PopUpActivity.INTENT_EXTRA_TYPE, type);
         intent.putExtra(PopUpActivity.INTENT_EXTRA_TITLE, title);
         intent.putExtra(PopUpActivity.INTENT_EXTRA_MESSAGE, message);
         intent.putExtra(PopUpActivity.INTENT_EXTRA_ICON, imageResId);
         intent.putExtra(PopUpActivity.INTENT_EXTRA_ICONBG, imageBackgroundResId);
+        intent.putExtra(PopUpActivity.INTENT_GIFF_ANIMATION_CODE, animationCode);
         switch (type) {
             case TYPE_PROGRESS_NOT_CANCELABLE:
             case TYPE_SPINNER_NOT_CANCELABLE:
@@ -182,6 +183,7 @@ public class PopUp {
         private String title;
         private int imageResId;
         private int imageBackgroundResId;
+        private int giffAnimationCode = 2;
         private int type;
         private View.OnClickListener okListener;
         private View.OnClickListener cancelListener;
@@ -189,19 +191,20 @@ public class PopUp {
         @Override
         protected Void doInBackground(Void... voids) {
             Log.d("PopUpTask", "doInBackground");
-            PopUp.showInternal(context, message, title, imageResId, imageBackgroundResId, type,
+            PopUp.showInternal(context, message, title, imageResId, imageBackgroundResId, giffAnimationCode, type,
                     okListener, cancelListener);
             return null;
         }
 
         public PopUpTask(Context context, String message, String title,
-                              int imageResId, int imageBackgroundResId, int type,
+                              int imageResId, int imageBackgroundResId, int animationCode, int type,
                               View.OnClickListener okListener, View.OnClickListener cancelListener){
             this.context = context;
             this.message = message;
             this.title = title;
             this.imageResId = imageResId;
             this.imageBackgroundResId = imageBackgroundResId;
+            this.giffAnimationCode = animationCode;
             this.type = type;
             this.okListener = okListener;
             this.cancelListener = cancelListener;
@@ -212,17 +215,17 @@ public class PopUp {
     //pass 0 to imageResId to use default icon
     //pass 0 to imageBackgroundResId if no background needed for icon
     public static boolean show(Context context, String message, String title,
-                            int imageResId, int imageBackgroundResId, int type,
+                            int imageResId, int imageBackgroundResId,  int animationCode, int type,
                             View.OnClickListener okListener, View.OnClickListener cancelListener) {
-        new PopUpTask(context, message, title, imageResId, imageBackgroundResId, type,
+       // int animationCode = 2; // TODO - animation code
+        new PopUpTask(context, message, title, imageResId, imageBackgroundResId, animationCode ,type,
                 okListener, cancelListener).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         return true;
     }
 
     private static synchronized boolean showInternal(Context context, String message, String title,
-                            int imageResId, int imageBackgroundResId, int type,
-                            View.OnClickListener okListener, View.OnClickListener cancelListener)
-    {
+                            int imageResId, int imageBackgroundResId, int animationCode, int type,
+                            View.OnClickListener okListener, View.OnClickListener cancelListener) {
         Log.d("PopUp", "show START popup type " + type);
         if (!(context instanceof Activity)) {
             //TODO: throw exception?
@@ -241,7 +244,7 @@ public class PopUp {
         }
 
         Intent intent = new Intent(context, PopUpActivity.class);
-        putIntentExtra(intent, message, title, imageResId, imageBackgroundResId, type);
+        putIntentExtra(intent, message, title, imageResId, imageBackgroundResId, animationCode, type);
 
         pendingQueue.add(new PendingRequest(intent, okListener, cancelListener, REQUEST_TYPE_SHOW));
 

@@ -7,15 +7,17 @@
     android:paddingEnd="16dp"
     android:paddingStart="16dp">
 
-    <!--&lt;!&ndash; Webview for animated error emoji &ndash;&gt;-->
-    <!--<WebView-->
-        <!--android:id="@+id/error_animation_webview"-->
-        <!--android:layout_width="120dp"-->
-        <!--android:layout_height="120dp"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:layout_gravity="top"-->
-        <!--android:layout_margin="16dp"-->
-        <!--android:scrollbars="none" />-->
+    <!-- Webview for animated error emoji -->
+    <WebView
+        android:id="@+id/error_animation_webview"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_centerHorizontal="true"
+
+        android:layout_gravity="top"
+        android:layout_margin="16dp"
+        android:scrollbars="none"
+        />
 
     <!--Non animated images for flashing-->
     <ImageView
@@ -26,7 +28,8 @@
         android:layout_gravity="top"
         android:layout_marginTop="@dimen/popup_header_section_marginTop"
         android:scaleType="centerInside"
-        android:src="@drawable/overwrite_face" />
+        android:src="@drawable/overwrite_face"
+        />
 
     <LinearLayout
         android:id="@+id/bodyLayout"

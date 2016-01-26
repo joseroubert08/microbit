@@ -117,6 +117,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
                 "",
                 parent.getResources().getString(R.string.q_overwrite_existing),
                 R.drawable.overwrite_face, R.drawable.blue_btn,
+                0, /* TODO - flashing*/
                 PopUp.TYPE_CHOICE,
                 new View.OnClickListener() {
                     @Override
@@ -145,6 +146,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
                 "",
                 parent.getResources().getString(R.string.rename_file),
                 R.drawable.overwrite_face, R.drawable.blue_btn,
+                0, /* TODO - doesn't need one */
                 PopUp.TYPE_INPUTTEXT,
                 new View.OnClickListener() {
                     @Override
@@ -174,7 +176,9 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
             public void run() {
                 if (show) {
                     PopUp.show(MBApp.getContext(), MBApp.getContext().getString(R.string.downloading),
-                            MBApp.getContext().getString(R.string.downloading_file), R.drawable.flash_face, R.drawable.blue_btn, PopUp.TYPE_SPINNER, null, null);
+                            MBApp.getContext().getString(R.string.downloading_file), R.drawable.flash_face, R.drawable.blue_btn,
+                            1 /* TODO - flashing*/
+                            , PopUp.TYPE_SPINNER, null, null);
                 } else {
                     PopUp.hide();
                 }
@@ -192,6 +196,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
                     MBApp.getContext().getString(R.string.download_failed_msg),
                     MBApp.getContext().getString(R.string.download_failed_title),
                     R.drawable.error_face, R.drawable.red_btn,
+                    2, // TODO - check error
                     PopUp.TYPE_ALERT,
                     null, null);
 
@@ -200,6 +205,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, String> {
                     MBApp.getContext().getString(R.string.download_complete),
                     "",
                     R.drawable.message_face, R.drawable.blue_btn,
+                    0, // TODO - no image needed
                     PopUp.TYPE_CHOICE,
                     new View.OnClickListener() {
                         @Override
