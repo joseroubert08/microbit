@@ -561,6 +561,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         @Override
         public void onClick(View v) {
             logi("popupOkHandler");
+            PopUp.hide();
         }
     };
 
