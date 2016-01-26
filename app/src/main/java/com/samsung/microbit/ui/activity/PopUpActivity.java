@@ -37,7 +37,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     static public final String INTENT_EXTRA_TYPE = "type";
     static public final String INTENT_EXTRA_TITLE = "title";
     static public final String INTENT_EXTRA_MESSAGE = "message";
-    static public final String INTENT_EXTRA_INPUTTEXT = "inputText";
+    //  static public final String INTENT_EXTRA_INPUTTEXT = "inputText"; TODO - depracated / remove
     static public final String INTENT_EXTRA_ICON = "imageIcon";
     static public final String INTENT_EXTRA_ICONBG = "imageIconBg";
     static public final String INTENT_EXTRA_PROGRESS = "progress.xml";
@@ -91,8 +91,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         Log.d("PopUpActivity", "onCreate() popuptype = " + getIntent().getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_MAX));
         setContentView(R.layout.activity_popup);
 
-        animationWebview = (WebView) findViewById(R.id.error_animation_webview);// TODO - change this to load when error occurs
-        animationWebview.loadUrl("file:///android_asset/htmls/error_fail_flash_animation.html");
+        animationWebview = (WebView) findViewById(R.id.giff_animation_webview);
         imageIcon = (ImageView) findViewById(R.id.image_icon);
         titleTxt = (TextView) findViewById(R.id.flash_projects_title_txt);
         titleTxt.setTypeface(MBApp.getApp().getTypeface());
@@ -100,9 +99,9 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         spinnerBar = (ProgressBar) findViewById(R.id.spinnerBar);
         messageTxt = (TextView) findViewById(R.id.messageTxt);
         messageTxt.setTypeface(MBApp.getApp().getTypeface());
-        inputText = (EditText) findViewById(R.id.inputText);
+//          inputText = (EditText) findViewById(R.id.inputText); TODO: deprecated - remove
 
-        layoutBottom = (LinearLayout) findViewById(R.id.bottomLayout); // TODO - RelativeLayout
+        layoutBottom = (LinearLayout) findViewById(R.id.popup_bottom_layout); // TODO - RelativeLayout
 
         okButton = (Button) findViewById(R.id.imageButtonOk);
         cancelButton = (Button) findViewById(R.id.imageButtonCancel);
@@ -121,8 +120,22 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(INTENT_ACTION_CREATED));
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Ensure sure animation remains loading
+        animationWebview.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Ensure animation pauses
+        animationWebview.onPause();
+    }
+
     private void clearLayout() {
-     //   animationWebview.clearAnimation(); // ~TODO check it doesn't screw up giff animation
+        //   animationWebview.clearAnimation(); // ~TODO check it doesn't screw up giff animation
         imageIcon.setImageResource(R.drawable.overwrite_face);
         imageIcon.setBackgroundResource(0);
         titleTxt.setVisibility(View.GONE);
@@ -149,8 +162,8 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
             messageTxt.setVisibility(View.VISIBLE);
         }
 
-        inputText.setText(intent.getStringExtra(INTENT_EXTRA_INPUTTEXT));
-        inputText.setSelection(inputText.getText().length());
+        //   inputText.setText(intent.getStringExtra(INTENT_EXTRA_INPUTTEXT));
+        //    inputText.setSelection(inputText.getText().length());
 
         int imageResId = intent.getIntExtra(INTENT_EXTRA_ICON, 0);
         int imageBackgroundResId = intent.getIntExtra(INTENT_EXTRA_ICONBG, 0);
@@ -161,19 +174,28 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
             imageIcon.setBackgroundResource(imageBackgroundResId);
         }
 
-        // Loading the Giff
-        int imageGiffAnimationCode = intent.getIntExtra(INTENT_GIFF_ANIMATION_CODE, 2); // Default value is 0 (no animation ) 2 = flash, set to 2 for testing
-        switch (imageGiffAnimationCode) {
-            // Flashing screen
-            case 1:
+        // Loading the Giff only if the animation code isn't default 0
+        int imageGiffAnimationCode = intent.getIntExtra(INTENT_GIFF_ANIMATION_CODE, 0); // Default value is 0 (no animation ) 2 = flash, set to 2 for testing
+        if (imageGiffAnimationCode != 0) {
+            switch (imageGiffAnimationCode) {
+                // Flashing screen
+                case 1:
+                    animationWebview.loadUrl("file:///android_asset/htmls/testing_flashing_microbit_animation.html");
+                    imageIcon.setVisibility(View.GONE);
+                    animationWebview.setVisibility(View.VISIBLE);
+                    break;
 
-                break;
-
-            // Error screen
-            case 2:
-                animationWebview.loadUrl("file:///android_asset/htmls/error_fail_flash_animation.html");
-                animationWebview.setVisibility(View.VISIBLE);
-                break;
+                // Error screen
+                case 2:
+                    animationWebview.loadUrl("file:///android_asset/htmls/error_fail_flash_animation.html");
+                    imageIcon.setVisibility(View.GONE);
+                    animationWebview.setVisibility(View.VISIBLE);
+                    break;
+            }
+            // Set default plain icon
+        } else {
+            imageIcon.setVisibility(View.VISIBLE);
+            animationWebview.setVisibility(View.INVISIBLE);
         }
 
         switch (intent.getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_MAX)) {
@@ -196,12 +218,12 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
             case PopUp.TYPE_SPINNER_NOT_CANCELABLE:
                 spinnerBar.setVisibility(View.VISIBLE);
                 break;
-            case PopUp.TYPE_INPUTTEXT://TODO: deprecated
-                layoutBottom.setVisibility(View.VISIBLE);
-                okButton.setVisibility(View.VISIBLE);
-                cancelButton.setVisibility(View.VISIBLE);
-                inputText.setVisibility(View.VISIBLE);
-                break;
+//            case PopUp.TYPE_INPUTTEXT://TODO: deprecated
+//                layoutBottom.setVisibility(View.VISIBLE);
+//                okButton.setVisibility(View.VISIBLE);
+//                cancelButton.setVisibility(View.VISIBLE);
+//                inputText.setVisibility(View.VISIBLE);
+//                break;
             default:
                 //TODO: handle Error
         }
@@ -229,7 +251,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         Intent intent = new Intent();
-        intent.putExtra(INTENT_EXTRA_INPUTTEXT, inputText.getText().toString());
+        //       intent.putExtra(INTENT_EXTRA_INPUTTEXT, inputText.getText().toString());
 
         switch (v.getId()) {
             case R.id.imageButtonOk:

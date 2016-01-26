@@ -14,7 +14,7 @@ import com.samsung.microbit.ui.activity.PopUpActivity;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-
+//TODO - documentation for pop up animation code new addition
 /*
 How to use:
 
@@ -26,6 +26,7 @@ PopUp.show(context,
         "Privacy", //title
         R.drawable.recording, //image icon res id (pass 0 to use default icon)
 		0, //image icon background res id (pass 0 if there is no background)
+        Animationode
         PopUp.TYPE_CHOICE, //type of popup.
         new View.OnClickListener(){
             @Override
@@ -41,9 +42,9 @@ public class PopUp {
     static public final int TYPE_CHOICE = 0;//2 buttons type
     static public final int TYPE_ALERT = 1;//1 button type
     static public final int TYPE_PROGRESS = 2;//0 button progress.xml bar type
-	static public final int TYPE_NOBUTTON = 3;//No button type
+    static public final int TYPE_NOBUTTON = 3;//No button type
     static public final int TYPE_SPINNER = 4;//0 button type spinner
-    static public final int TYPE_INPUTTEXT = 5;//2 buttons type + edittext
+    static public final int TYPE_INPUTTEXT = 5;//2 buttons type + edittext // TODO remove deprecated
     static public final int TYPE_PROGRESS_NOT_CANCELABLE = 6;//0 button progress.xml bar type not cancelable (backpress disabled)
     static public final int TYPE_SPINNER_NOT_CANCELABLE = 7;//0 button type spinner not cancelable (backpress disabled)
     static public final int TYPE_MAX = 8;
@@ -54,6 +55,11 @@ public class PopUp {
     static private final short REQUEST_TYPE_HIDE = 1;
     static private final short REQUEST_TYPE_UPDATE_PROGRESS = 2;
     static private final short REQUEST_TYPE_MAX = 3;
+
+    // Constants for giff animation options
+    static public final int GIFF_ANIMATION_NONE = 0;
+    static public final int GIFF_ANIMATION_FLASH = 1;
+    static public final int GIFF_ANIMATION_ERROR = 2;
 
     static private int current_type = TYPE_MAX;//current type of displayed popup  (TYPE_CHOICE, ...)
 
@@ -76,6 +82,7 @@ public class PopUp {
             this.type = type;
         }
     }
+
     //FIFO queue for pending requests
     //This queue is a solution to handle the asynchronous behaviour
     // of Activity startActivity/onCreate
@@ -117,10 +124,9 @@ public class PopUp {
             PopUp.hide();
         }
     };
-    static private String inputText = "";//TODO: deprecated
+  //  static private String inputText = "";//TODO: deprecated remove
 
-    public static void hide()
-    {
+    public static void hide() {
         Log.d("PopUp", "hide START");
         pendingQueue.add(new PendingRequest(new Intent(PopUpActivity.INTENT_ACTION_CLOSE),
                 null, null, REQUEST_TYPE_HIDE));
@@ -141,13 +147,14 @@ public class PopUp {
     }
 
     //TODO: deprecated
-    public static String getInputText() {
-        return inputText;
-    }
-    //TODO: deprecated
-    public static void setInputText(String text) {
-        inputText = text;
-    }
+//   // public static String getInputText() {
+//        return inputText;
+//    }
+
+//    //TODO: deprecated
+//    public static void setInputText(String text) {
+//        inputText = text;
+//    }
 
     //Interface function for showing a popup inside a service plugin class
     //only supports TYPE_ALERT popup for now.
@@ -160,7 +167,7 @@ public class PopUp {
     }
 
     private static void putIntentExtra(Intent intent, String message, String title,
-                                        int imageResId, int imageBackgroundResId, int animationCode, int type) {
+                                       int imageResId, int imageBackgroundResId, int animationCode, int type) {
         intent.putExtra(PopUpActivity.INTENT_EXTRA_TYPE, type);
         intent.putExtra(PopUpActivity.INTENT_EXTRA_TITLE, title);
         intent.putExtra(PopUpActivity.INTENT_EXTRA_MESSAGE, message);
@@ -197,8 +204,8 @@ public class PopUp {
         }
 
         public PopUpTask(Context context, String message, String title,
-                              int imageResId, int imageBackgroundResId, int animationCode, int type,
-                              View.OnClickListener okListener, View.OnClickListener cancelListener){
+                         int imageResId, int imageBackgroundResId, int animationCode, int type,
+                         View.OnClickListener okListener, View.OnClickListener cancelListener) {
             this.context = context;
             this.message = message;
             this.title = title;
@@ -215,21 +222,20 @@ public class PopUp {
     //pass 0 to imageResId to use default icon
     //pass 0 to imageBackgroundResId if no background needed for icon
     public static boolean show(Context context, String message, String title,
-                            int imageResId, int imageBackgroundResId,  int animationCode, int type,
-                            View.OnClickListener okListener, View.OnClickListener cancelListener) {
-       // int animationCode = 2; // TODO - animation code
-        new PopUpTask(context, message, title, imageResId, imageBackgroundResId, animationCode ,type,
+                               int imageResId, int imageBackgroundResId, int animationCode, int type,
+                               View.OnClickListener okListener, View.OnClickListener cancelListener) {
+        new PopUpTask(context, message, title, imageResId, imageBackgroundResId, animationCode, type,
                 okListener, cancelListener).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         return true;
     }
 
     private static synchronized boolean showInternal(Context context, String message, String title,
-                            int imageResId, int imageBackgroundResId, int animationCode, int type,
-                            View.OnClickListener okListener, View.OnClickListener cancelListener) {
+                                                     int imageResId, int imageBackgroundResId, int animationCode, int type,
+                                                     View.OnClickListener okListener, View.OnClickListener cancelListener) {
         Log.d("PopUp", "show START popup type " + type);
         if (!(context instanceof Activity)) {
             //TODO: throw exception?
-            Log.e("PopUp","Cannot show popup because context is not an activity. PopUp.show must be called from an activity");
+            Log.e("PopUp", "Cannot show popup because context is not an activity. PopUp.show must be called from an activity");
             return false;
         }
         ctx = context;
@@ -255,8 +261,7 @@ public class PopUp {
         return true;
     }
 
-    private static void processNextPendingRequest()
-    {
+    private static void processNextPendingRequest() {
         Log.d("PopUp", "processNextPendingRequest START size = " + pendingQueue.size());
         boolean done = false;
         //keep iterating until we find async. request (HIDE, SHOW) to process

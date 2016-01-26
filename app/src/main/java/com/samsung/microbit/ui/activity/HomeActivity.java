@@ -141,7 +141,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     RemoteConfig.getInstance().getExceptionTitle(),
                     R.drawable.error_face,//image icon res id
                     R.drawable.red_btn,
-                    2, /* TODO - error proceeding */
+                    PopUp.GIFF_ANIMATION_ERROR, /* TODO - error */
                     PopUp.TYPE_ALERT, //type of popup.
                     null,
                     null);
