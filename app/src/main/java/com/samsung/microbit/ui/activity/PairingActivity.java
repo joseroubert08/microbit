@@ -240,7 +240,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         MBApp.setContext(this);
         updatePairedDeviceCard();
         // Searching for micro:bit
-     //   searchingMicrobitAnimation.onResume();
+        //   searchingMicrobitAnimation.onResume();
     }
 
     @Override
@@ -249,7 +249,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         super.onPause();
         // Stop searching for micro:bit animation
 
-   }
+    }
 
     public PairingActivity() {
         logi("PairingActivity() ::");
@@ -370,6 +370,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         TextView stepTwoInstructions = (TextView) findViewById(R.id.pair_enter_pattern_step_2_instructions);
         stepTwoInstructions.setTypeface(MBApp.getApp().getTypeface());
 
+        ImageView ohPrettyImg = (ImageView) findViewById(R.id.oh_pretty_emoji);
+        ohPrettyImg.setVisibility(View.INVISIBLE);
+
         Button cancelEnterPattern = (Button) findViewById(R.id.cancel_enter_pattern_step_2_btn);
         cancelEnterPattern.setTypeface(MBApp.getApp().getTypeface());
 
@@ -418,17 +421,12 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 //        howToPairMicrobit.loadUrl("file:///android_asset/htmls/how_to_pair_microbit.html");
 
         // Step 3: Searching for Microbit (animation)
-      //  searchingMicrobitAnimation = (WebView) findViewById(R.id.searching_microbit_webview);
-     //   searchingMicrobitAnimation.setBackgroundColor(Color.TRANSPARENT);
-      //  searchingMicrobitAnimation.loadUrl("file:///android_asset/htmls/loading_search_microbit.html");
-
-      searchingProgressSpinner = (ProgressBar) findViewById(R.id.searching_progress_spinner);
+        searchingProgressSpinner = (ProgressBar) findViewById(R.id.searching_progress_spinner);
 
     }
 
     boolean setupBleController() {
         boolean retvalue = true;
-
 
         if (mBluetoothAdapter == null) {
             final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -479,8 +477,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
                 if ((findViewById(R.id.ok_enter_pattern_step_2_btn).getVisibility() != View.VISIBLE)) {
-                    //      findViewById(R.id.oh_pretty_emoji).setVisibility(View.VISIBLE); // TODO - make the emoji visible after pin entered
                     findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
+                    findViewById(R.id.oh_pretty_emoji).setVisibility(View.VISIBLE);
                 }
 
                 boolean isOn = toggleLED((ImageView) v, position);
@@ -489,19 +487,18 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
                 if (!Arrays.asList(deviceCodeArray).contains("1")) {
                     findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.INVISIBLE);
-                    //       findViewById(R.id.oh_pretty_emoji).setVisibility(View.INVISIBLE); // TODO make it disappear on 5
+                    findViewById(R.id.oh_pretty_emoji).setVisibility(View.INVISIBLE);
                 }
             }
         });
 
         if (!Arrays.asList(deviceCodeArray).contains("1")) {
             findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.INVISIBLE);
-            //    findViewById(R.id.oh_pretty_emoji).setVisibility(View.INVISIBLE); // TODO make it disappear on 5
-
-        } else
+            findViewById(R.id.oh_pretty_emoji).setVisibility(View.INVISIBLE);
+        } else {
             findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
-        // findViewById(R.id.oh_pretty_emoji).setVisibility(View.VISIBLE); // TODO make it disappear on 5
-
+            findViewById(R.id.oh_pretty_emoji).setVisibility(View.VISIBLE);
+        }
     }
 
     private void generateName() {
@@ -662,7 +659,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
                 // test
                 findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.GONE);
-                //   findViewById(R.id.oh_pretty_emoji).setVisibility(View.INVISIBLE); // TODO - change the timing for when emoji is visible
+                findViewById(R.id.oh_pretty_emoji).setVisibility(View.INVISIBLE); // TODO - change the timing for when emoji is visible
 
                 displayLedGrid();
                 break;

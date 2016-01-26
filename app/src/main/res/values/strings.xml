@@ -301,5 +301,6 @@
     <string name="pair_new_device_dialog_message">Pairing with a new device will remove any previously paired Mircobits.</string>
     <string name="ok_button_label">OK</string>
     <string name="toolbar_title">Menu</string>
+    <string name="step_enter_pattern_text">Step 2</string>
 
 </resources>

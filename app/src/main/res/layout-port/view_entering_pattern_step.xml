@@ -16,7 +16,7 @@
         android:paddingBottom="16dp"
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
-        android:text="Step 2"
+        android:text="@string/step_enter_pattern_text"
         android:textAppearance="?android:textAppearanceMedium"
         android:textColor="@color/white_color" />
 
@@ -40,7 +40,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:paddingBottom="16dp"
+        android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:src="@drawable/ooh_pretty_emoji" />
+        android:src="@drawable/ooh_pretty_emoji"
+        android:visibility="invisible"/>
 
 </RelativeLayout>
