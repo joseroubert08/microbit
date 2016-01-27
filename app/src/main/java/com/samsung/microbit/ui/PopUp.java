@@ -14,32 +14,11 @@ import com.samsung.microbit.ui.activity.PopUpActivity;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-//TODO - documentation for pop up animation code new addition
-/*
-How to use:
 
-To show a popup from an application/activity context, call the below.
-To show a popup from a Plugin class or service context, use showFromService function.
-
-PopUp.show(context,
-        "Accept Audio Recording?\nClick Yes to allow", //message
-        "Privacy", //title
-        R.drawable.recording, //image icon res id (pass 0 to use default icon)
-		0, //image icon background res id (pass 0 if there is no background)
-        Animationode
-        PopUp.TYPE_CHOICE, //type of popup.
-        new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(HomeActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
-                //Write your own code
-            }
-        },//override click listener for ok button
-        null);//pass null to use default listener
+/**
+ * To show a popup from an application/activity context, use the @Show call below.
+ * To show a popup from a Plugin class or service context, use @showFromService function.
  */
-
-
-/** */
 public class PopUp {
 
     static public final int TYPE_CHOICE = 0;//2 buttons type
@@ -47,7 +26,6 @@ public class PopUp {
     static public final int TYPE_PROGRESS = 2;//0 button progress.xml bar type
     static public final int TYPE_NOBUTTON = 3;//No button type
     static public final int TYPE_SPINNER = 4;//0 button type spinner
-    static public final int TYPE_INPUTTEXT = 5;//2 buttons type + edittext // TODO remove deprecated
     static public final int TYPE_PROGRESS_NOT_CANCELABLE = 6;//0 button progress.xml bar type not cancelable (backpress disabled)
     static public final int TYPE_SPINNER_NOT_CANCELABLE = 7;//0 button type spinner not cancelable (backpress disabled)
     static public final int TYPE_MAX = 8;
@@ -64,7 +42,7 @@ public class PopUp {
     static public final int GIFF_ANIMATION_FLASH = 1;
     static public final int GIFF_ANIMATION_ERROR = 2;
 
-    static private int current_type = TYPE_MAX;//current type of displayed popup  (TYPE_CHOICE, ...)
+    static private int current_type = TYPE_MAX; //current type of displayed popup  (TYPE_CHOICE, ...)
 
     static private Context ctx = null;
 
@@ -127,7 +105,7 @@ public class PopUp {
             PopUp.hide();
         }
     };
-  //  static private String inputText = "";//TODO: deprecated remove
+    //  static private String inputText = "";//TODO: deprecated remove
 
     public static void hide() {
         Log.d("PopUp", "hide START");
@@ -211,9 +189,21 @@ public class PopUp {
         }
     }
 
+    /**
+     * Method used by activities to display Pop ups
+     *
+     * @param context              - context
+     * @param message              - pop up message
+     * @param title,               - pop up title
+     * @param imageResId           - pass 0 to imageResId to use default icon
+     * @param imageBackgroundResId - pass 0 to imageBackgroundResId if no background is needed for icon
+     * @param animationCode        - pass 0 to use default @imageResId icon.
+     *                               The animationCode and the @imageResId are shown separately but never together (visibility is toggled)
+     * @param type                 - pop up type e.g. spinner, cancellable;
+     * @param okListener           - pass null to use default listener (which hides the pops) - you can override for your own purpose
+     * @param cancelListener       - pass null to use default listener (which hides the pops)
+     */
     //Interface function for showing popup inside an application activity
-    //pass 0 to imageResId to use default icon
-    //pass 0 to imageBackgroundResId if no background needed for icon
     public static boolean show(Context context, String message, String title,
                                int imageResId, int imageBackgroundResId, int animationCode, int type,
                                View.OnClickListener okListener, View.OnClickListener cancelListener) {
