@@ -43,9 +43,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:paddingBottom="@dimen/popup_body_view_paddingVertical"
-            android:paddingTop="@dimen/popup_body_view_paddingVertical"
-            android:text="Title"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="@string/popup_title"
             android:textAppearance="?android:textAppearanceLarge"
             android:textColor="@color/white_color"
             android:visibility="gone" />
@@ -81,26 +81,11 @@
             android:gravity="center"
             android:paddingBottom="@dimen/popup_body_view_paddingVertical"
             android:paddingTop="@dimen/popup_body_view_paddingVertical"
-            android:text="Message A B C D E F G H I J K L M N O P Q R S T U V W X Y Z Message"
+            android:text="@string/pop_up_subtitle_text"
             android:textAlignment="center"
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="@color/white_color"
             android:visibility="gone" />
-
-        <!--<com.samsung.microbit.ui.control.ExtendedEditText-->
-        <!--android:id="@+id/inputText"-->
-        <!--style="@style/p1"-->
-        <!--android:layout_width="@dimen/popup_textinput_width"-->
-        <!--android:layout_height="60dp"-->
-        <!--android:background="@drawable/white_bg"-->
-        <!--android:drawableEnd="@drawable/rename"-->
-        <!--android:editable="true"-->
-        <!--android:enabled="true"-->
-        <!--android:gravity="start|center_vertical"-->
-        <!--android:inputType="textNoSuggestions|textVisiblePassword"-->
-        <!--android:paddingBottom="@dimen/popup_body_view_paddingVertical"-->
-        <!--android:paddingTop="@dimen/popup_body_view_paddingVertical"-->
-        <!--android:textColor="@color/black_color" />-->
 
     </LinearLayout>
 
@@ -128,7 +113,6 @@
             android:drawableEnd="@drawable/cancel_step_pairing_btn"
             android:gravity="center_vertical|start"
             android:onClick="onClick"
-            android:src="@drawable/white_cross"
             android:text="@string/txt_cancel_btn"
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="@color/black_color"

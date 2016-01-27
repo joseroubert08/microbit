@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -38,7 +37,6 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     static public final String INTENT_EXTRA_TYPE = "type";
     static public final String INTENT_EXTRA_TITLE = "title";
     static public final String INTENT_EXTRA_MESSAGE = "message";
-    //  static public final String INTENT_EXTRA_INPUTTEXT = "inputText"; TODO - depracated / remove
     static public final String INTENT_EXTRA_ICON = "imageIcon";
     static public final String INTENT_EXTRA_ICONBG = "imageIconBg";
     static public final String INTENT_EXTRA_PROGRESS = "progress.xml";
@@ -51,11 +49,9 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     private ProgressBar progressBar = null;
     private ProgressBar spinnerBar = null;
     private TextView messageTxt = null;
-    private EditText inputText = null;
     private Button okButton = null;
     private Button cancelButton = null;
     private Button affirmationOKButton = null;
-    private int imageGiffAnimationCode = 1;
     private LinearLayout layoutBottom = null;
 
     private boolean isCancelable = false;
@@ -103,9 +99,8 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         spinnerBar = (ProgressBar) findViewById(R.id.spinnerBar);
         messageTxt = (TextView) findViewById(R.id.messageTxt);
         messageTxt.setTypeface(MBApp.getApp().getTypeface());
-//          inputText = (EditText) findViewById(R.id.inputText); TODO: deprecated - remove
 
-        layoutBottom = (LinearLayout) findViewById(R.id.popup_bottom_layout); // TODO - RelativeLayout
+        layoutBottom = (LinearLayout) findViewById(R.id.popup_bottom_layout);
 
         okButton = (Button) findViewById(R.id.imageButtonOk);
         cancelButton = (Button) findViewById(R.id.imageButtonCancel);
@@ -166,9 +161,6 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
             messageTxt.setVisibility(View.VISIBLE);
         }
 
-        //   inputText.setText(intent.getStringExtra(INTENT_EXTRA_INPUTTEXT));
-        //    inputText.setSelection(inputText.getText().length());
-
         int imageResId = intent.getIntExtra(INTENT_EXTRA_ICON, 0);
         int imageBackgroundResId = intent.getIntExtra(INTENT_EXTRA_ICONBG, 0);
         if (imageResId != 0) {
@@ -222,12 +214,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
             case PopUp.TYPE_SPINNER_NOT_CANCELABLE:
                 spinnerBar.setVisibility(View.VISIBLE);
                 break;
-//            case PopUp.TYPE_INPUTTEXT://TODO: deprecated
-//                layoutBottom.setVisibility(View.VISIBLE);
-//                okButton.setVisibility(View.VISIBLE);
-//                cancelButton.setVisibility(View.VISIBLE);
-//                inputText.setVisibility(View.VISIBLE);
-//                break;
+
             default:
                 //TODO: handle Error
         }

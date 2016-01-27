@@ -348,7 +348,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         getString(R.string.bluetooth_off_cannot_continue), //message
                         "",
                         R.drawable.error_face, R.drawable.red_btn,
-                        PopUp.GIFF_ANIMATION_ERROR, /* TODO - error flashing */
+                        PopUp.GIFF_ANIMATION_ERROR,
                         PopUp.TYPE_ALERT,
                         null, null);
             }
@@ -449,7 +449,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                     getString(R.string.flashing_error), //title
                     R.drawable.error_face,//image icon res id
                     R.drawable.red_btn,
-                    PopUp.GIFF_ANIMATION_ERROR, /* TODO - error flashing */
+                    PopUp.GIFF_ANIMATION_ERROR,
                     PopUp.TYPE_ALERT, //type of popup.
                     new View.OnClickListener() {
                         @Override
@@ -465,7 +465,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         getString(R.string.internal_error_msg),
                         "",
                         R.drawable.error_face, R.drawable.red_btn,
-                        PopUp.GIFF_ANIMATION_ERROR, /* TODO - error flashing */
+                        PopUp.GIFF_ANIMATION_ERROR,
                         PopUp.TYPE_ALERT,
                         null, null);
                 return;
@@ -482,7 +482,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         getString(R.string.multple_flashing_session_msg),
                         "",
                         R.drawable.flash_face, R.drawable.blue_btn,
-                        PopUp.GIFF_ANIMATION_FLASH, /* TODO - flashing */
+                        PopUp.GIFF_ANIMATION_FLASH,
                         PopUp.TYPE_ALERT,
                         null, null);
                 return;
@@ -494,7 +494,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         getString(R.string.flash_start_message, currentMicrobit.mName), //message
                         getString(R.string.flashing_title), //title
                         R.drawable.flash_face, R.drawable.blue_btn, //image icon res id
-                        0, /* TODO - nothing */
+                        PopUp.GIFF_ANIMATION_NONE,
                         PopUp.TYPE_CHOICE, //type of popup.
                         new View.OnClickListener() {
                             @Override
@@ -595,7 +595,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                     getString(R.string.dfu_status_starting_msg), //message
                                     getString(R.string.send_project), //title
                                     R.drawable.flash_face, R.drawable.blue_btn,
-                                    PopUp.GIFF_ANIMATION_FLASH, /* TODO - flashing */
+                                    PopUp.GIFF_ANIMATION_FLASH,
                                     PopUp.TYPE_SPINNER_NOT_CANCELABLE, //type of popup.
                                     new View.OnClickListener() {
                                         @Override
@@ -620,7 +620,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                         getString(R.string.flashing_success_message), //message
                                         getString(R.string.flashing_success_title), //title
                                         R.drawable.message_face, R.drawable.blue_btn,
-                                        0, // --TODO - nothing needs to be done just verification
+                                        PopUp.GIFF_ANIMATION_NONE,
                                         PopUp.TYPE_ALERT, //type of popup.
                                         popupOkHandler,//override click listener for ok button
                                         popupOkHandler);//pass null to use default listener
@@ -643,7 +643,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                         getString(R.string.init_connection), //message
                                         getString(R.string.send_project), //title
                                         R.drawable.flash_face, R.drawable.blue_btn,
-                                        PopUp.GIFF_ANIMATION_FLASH, /* TODO - flashing */
+                                        PopUp.GIFF_ANIMATION_FLASH,
                                         PopUp.TYPE_SPINNER_NOT_CANCELABLE, //type of popup.
                                         new View.OnClickListener() {
                                             @Override
@@ -702,7 +702,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                     getString(R.string.flashing_verifcation_failed), //message
                                     getString(R.string.flashing_verifcation_failed_title),
                                     R.drawable.error_face, R.drawable.red_btn,
-                                    PopUp.GIFF_ANIMATION_ERROR, /* TODO - error flashing */
+                                    PopUp.GIFF_ANIMATION_ERROR,
                                     PopUp.TYPE_ALERT, //type of popup.
                                     popupOkHandler,//override click listener for ok button
                                     popupOkHandler);//pass null to use default listener
@@ -738,7 +738,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                 MBApp.getContext().getString(R.string.flashing_progress_message),
                                 String.format(MBApp.getContext().getString(R.string.flashing_project), programToSend.name),
                                 R.drawable.flash_modal_emoji, 0,
-                                PopUp.GIFF_ANIMATION_FLASH, /* TODO - flashing */
+                                PopUp.GIFF_ANIMATION_FLASH,
                                 PopUp.TYPE_PROGRESS_NOT_CANCELABLE, null, null);
 
                         inProgress = true;
@@ -765,7 +765,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         error_message, //message
                         getString(R.string.flashing_failed_title), //title
                         R.drawable.error_face, R.drawable.red_btn,
-                        PopUp.GIFF_ANIMATION_ERROR, /* TODO - error flashing */
+                        PopUp.GIFF_ANIMATION_ERROR,
                         PopUp.TYPE_ALERT, //type of popup.
                         popupOkHandler,//override click listener for ok button
                         popupOkHandler);//pass null to use default listener

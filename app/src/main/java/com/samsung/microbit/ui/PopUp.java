@@ -37,6 +37,9 @@ PopUp.show(context,
         },//override click listener for ok button
         null);//pass null to use default listener
  */
+
+
+/** */
 public class PopUp {
 
     static public final int TYPE_CHOICE = 0;//2 buttons type
@@ -145,16 +148,6 @@ public class PopUp {
             processNextPendingRequest();
         }
     }
-
-    //TODO: deprecated
-//   // public static String getInputText() {
-//        return inputText;
-//    }
-
-//    //TODO: deprecated
-//    public static void setInputText(String text) {
-//        inputText = text;
-//    }
 
     //Interface function for showing a popup inside a service plugin class
     //only supports TYPE_ALERT popup for now.

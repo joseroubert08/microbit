@@ -173,7 +173,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                             getString(R.string.pairing_failed_title), //title
                             R.drawable.error_face, //image icon res id
                             R.drawable.red_btn,
-                            PopUp.GIFF_ANIMATION_ERROR, /* TODO - error  */
+                            PopUp.GIFF_ANIMATION_ERROR,
                             PopUp.TYPE_CHOICE, //type of popup.
                             new View.OnClickListener() {
                                 @Override
@@ -218,7 +218,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                                 MBApp.getContext().getString(R.string.micro_bit_reset_msg),
                                 displayTitle,
                                 R.drawable.error_face, R.drawable.red_btn,
-                                PopUp.GIFF_ANIMATION_ERROR, /* TODO - error */
+                                PopUp.GIFF_ANIMATION_ERROR,
                                 PopUp.TYPE_ALERT, null, null);
                     }
                 });
@@ -463,7 +463,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                         getString(R.string.bluetooth_off_cannot_continue), //message
                         "",
                         R.drawable.error_face, R.drawable.red_btn,
-                        PopUp.GIFF_ANIMATION_ERROR, /* TODO - error flashing */
+                        PopUp.GIFF_ANIMATION_ERROR,
                         PopUp.TYPE_ALERT,
                         null, null);
             }
@@ -806,7 +806,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 getString(R.string.deleteMicrobitMessage), //message
                 getString(R.string.deleteMicrobitTitle), //title
                 R.drawable.delete_project, R.drawable.red_btn,
-                0, /* TODO - nothing needs to be done */
+                PopUp.GIFF_ANIMATION_NONE,
                 PopUp.TYPE_CHOICE, //type of popup.
                 new View.OnClickListener() {
                     @Override
@@ -863,7 +863,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 getString(R.string.timeOut), //title
                 R.drawable.error_face, //image icon res id
                 R.drawable.red_btn,
-                PopUp.GIFF_ANIMATION_ERROR, /* TODO - error flashing */
+                PopUp.GIFF_ANIMATION_ERROR,
                 PopUp.TYPE_CHOICE, //type of popup.
                 mRetryPairing,//override click listener for ok button
                 mFailedPairingHandler);
@@ -879,7 +879,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 getString(R.string.pairing_success_message_1), //title
                 R.drawable.message_face, //image icon res id
                 R.drawable.green_btn,
-                PopUp.GIFF_ANIMATION_NONE, /* TODO - nothing needs to be done (confirmation of success )*/
+                PopUp.GIFF_ANIMATION_NONE,
                 PopUp.TYPE_ALERT, //type of popup.
                 mSuccessFulPairingHandler,
                 mSuccessFulPairingHandler);
