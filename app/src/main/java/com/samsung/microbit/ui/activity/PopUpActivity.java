@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -91,6 +92,9 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         Log.d("PopUpActivity", "onCreate() popuptype = " + getIntent().getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_MAX));
         setContentView(R.layout.activity_popup);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         animationWebview = (WebView) findViewById(R.id.giff_animation_webview);
         imageIcon = (ImageView) findViewById(R.id.image_icon);
         titleTxt = (TextView) findViewById(R.id.flash_projects_title_txt);
@@ -135,7 +139,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     }
 
     private void clearLayout() {
-        //   animationWebview.clearAnimation(); // ~TODO check it doesn't screw up giff animation
+        //   animationWebview.clearAnimation(); // ~ TODO check it doesn't screw up giff animation
         imageIcon.setImageResource(R.drawable.overwrite_face);
         imageIcon.setBackgroundResource(0);
         titleTxt.setVisibility(View.GONE);

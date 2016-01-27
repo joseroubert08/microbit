@@ -106,7 +106,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                 MBApp.getContext().getString(R.string.micro_bit_reset_msg),
                                 displayTitle,
                                 R.drawable.error_face, R.drawable.red_btn,
-                                PopUp.GIFF_ANIMATION_ERROR, /* TODO - error handling*/
+                                PopUp.GIFF_ANIMATION_ERROR,
                                 PopUp.TYPE_ALERT, null, null);
                     }
                 });
@@ -370,7 +370,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         getString(R.string.disconnecting),
                         "",
                         R.drawable.flash_face, R.drawable.blue_btn,
-                        PopUp.GIFF_ANIMATION_FLASH, /* TODO - flashing */
+                        PopUp.GIFF_ANIMATION_NONE,
                         PopUp.TYPE_SPINNER_NOT_CANCELABLE,
                         null, null);
                 IPCService.getInstance().bleDisconnect();
@@ -380,7 +380,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         getString(R.string.init_connection),
                         "",
                         R.drawable.flash_face, R.drawable.blue_btn,
-                        PopUp.GIFF_ANIMATION_FLASH, /* TODO - flashing */
+                        PopUp.GIFF_ANIMATION_NONE,
                         PopUp.TYPE_SPINNER_NOT_CANCELABLE,
                         null, null);
 
@@ -663,7 +663,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                     getString(R.string.validating_microbit), //message
                                     getString(R.string.send_project), //title
                                     R.drawable.flash_face, R.drawable.blue_btn,
-                                    PopUp.GIFF_ANIMATION_FLASH, /* TODO - flashing */
+                                    PopUp.GIFF_ANIMATION_FLASH,
                                     PopUp.TYPE_SPINNER_NOT_CANCELABLE, //type of popup.
                                     new View.OnClickListener() {
                                         @Override
@@ -680,7 +680,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                     getString(R.string.waiting_reboot), //message
                                     getString(R.string.send_project), //title
                                     R.drawable.flash_face, R.drawable.blue_btn,
-                                    PopUp.GIFF_ANIMATION_FLASH, /* TODO - flashing */
+                                    PopUp.GIFF_ANIMATION_FLASH,
                                     PopUp.TYPE_SPINNER_NOT_CANCELABLE, //type of popup.
                                     new View.OnClickListener() {
                                         @Override

@@ -30,15 +30,25 @@
     <!--android:foregroundGravity="center"-->
     <!--android:scrollbars="none" />-->
 
+    <!--<ProgressBar-->
+    <!--android:id="@+id/searching_progress_spinner"-->
+    <!--android:layout_width="120dp"-->
+    <!--android:layout_height="120dp"-->
+    <!--android:layout_gravity="center"-->
+    <!--android:layout_margin="16dp"-->
+    <!--android:layout_weight="2"-->
+    <!--android:foregroundGravity="center"-->
+    <!--android:indeterminateDrawable="@xml/progress" />-->
     <ProgressBar
         android:id="@+id/searching_progress_spinner"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="center"
         android:layout_margin="16dp"
         android:layout_weight="2"
         android:foregroundGravity="center"
-        android:indeterminateDrawable="@xml/progress" />
+        android:paddingBottom="@dimen/popup_body_view_paddingVertical"
+        android:paddingTop="@dimen/popup_body_view_paddingVertical" />
 
     <include layout="@layout/view_pairing_searching_step" />
 

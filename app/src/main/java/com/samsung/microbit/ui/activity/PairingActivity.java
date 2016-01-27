@@ -697,7 +697,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                         getString(R.string.init_connection),
                         "",
                         R.drawable.message_face, R.drawable.blue_btn,
-                        PopUp.GIFF_ANIMATION_FLASH, /* TODO - flashing */
+                        PopUp.GIFF_ANIMATION_NONE,
                         PopUp.TYPE_SPINNER_NOT_CANCELABLE,
                         null, null);
                 IPCService.getInstance().bleConnect();
@@ -706,7 +706,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                         getString(R.string.disconnecting),
                         "",
                         R.drawable.message_face, R.drawable.blue_btn,
-                        PopUp.GIFF_ANIMATION_FLASH, /* TODO - flashing */
+                        PopUp.GIFF_ANIMATION_NONE,
                         PopUp.TYPE_SPINNER_NOT_CANCELABLE,
                         null, null);
                 IPCService.getInstance().bleDisconnect();
