@@ -92,7 +92,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
             logi(" broadcastReceiver ---- Error code = " + v);
             setConnectedDeviceText();
-            PopUp.hide();
+            PopUp.hide(); // TODO - check PopUp.Hide
             if (v != 0) {
                 String message = intent.getStringExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
                 logi("broadcastReceiver Error message = " + message);

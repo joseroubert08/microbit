@@ -27,6 +27,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
@@ -418,9 +419,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.cancel_enter_pin_step_4_btn).setOnClickListener(this);
 
         // Step 1: How to Pair (animation)
-//        WebView howToPairMicrobit = (WebView) findViewById(R.id.how_to_pair_microbit_webview);
-//        howToPairMicrobit.setBackgroundColor(Color.TRANSPARENT);
-//        howToPairMicrobit.loadUrl("file:///android_asset/htmls/how_to_pair_microbit.html");
+        WebView howToPairMicrobit = (WebView) findViewById(R.id.how_to_pair_microbit_webview);
+        howToPairMicrobit.setBackgroundColor(Color.TRANSPARENT);
+        howToPairMicrobit.loadUrl("file:///android_asset/htmls/how_to_pair_microbit.html");
 
         // Step 3: Searching for Microbit (animation)
         searchingProgressSpinner = (ProgressBar) findViewById(R.id.searching_progress_spinner);
