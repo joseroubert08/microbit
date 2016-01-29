@@ -15,7 +15,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -54,6 +53,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+
+import pl.droidsonroids.gif.GifDrawable;
 
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -106,6 +107,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
     // Step 1 - How to Pair
     ImageView imgHowToPairAnimation;
+    GifDrawable gifFromAssets;
     // Step 3 - Searching for Microbit (spinner)
     ProgressBar searchingProgressSpinner;
 
@@ -246,8 +248,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         updatePairedDeviceCard();
 
         // Step 1 - How to pair
-        ((AnimationDrawable) imgHowToPairAnimation.getBackground()).start();
-
+   //     ((AnimationDrawable) imgHowToPairAnimation.getBackground()).start();
+      //  gifFromAssets.start();
         // Searching for micro:bit
         //   searchingMicrobitAnimation.onResume();
     }
@@ -258,7 +260,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         super.onPause();
 
         // Step 1 - How to pair
-        ((AnimationDrawable) imgHowToPairAnimation.getBackground()).stop();
+      //  ((AnimationDrawable) imgHowToPairAnimation.getBackground()).stop();
+     //   gifFromAssets.stop();
 
 
         // Step 3 - Stop searching for micro:bit animation
@@ -433,7 +436,15 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 //        howToPairMicrobit.loadUrl("file:///android_asset/htmls/how_to_pair_microbit.html");
 
         // Step 1: How to Pair (animation)
-        imgHowToPairAnimation = (ImageView) findViewById(R.id.how_to_pair_microbit_imageview);
+     //   imgHowToPairAnimation = (ImageView) findViewById(R.id.how_to_pair_microbit_imageview);
+
+        //asset file
+//        try {
+//             gifFromAssets = new GifDrawable( getAssets(), "how_to_pair_microbit.gif" ); //TODO find class
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         // Step 3: Searching for Microbit (animation)
         searchingProgressSpinner = (ProgressBar) findViewById(R.id.searching_progress_spinner);

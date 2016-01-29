@@ -21,6 +21,9 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.ui.PopUp;
 
+import pl.droidsonroids.gif.GifDrawable;
+import pl.droidsonroids.gif.GifImageView;
+
 public class PopUpActivity extends Activity implements View.OnClickListener {
 
     //intent from PopUpActivity to PopUp
@@ -44,6 +47,10 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     static public final String INTENT_GIFF_ANIMATION_CODE = "giffAnimationCode";
 
     private WebView animationWebview = null;
+    // Animations - Loading Error & Flash states
+    private GifImageView gifImageView;
+    private GifDrawable giffDrawable;
+
     private ImageView imageIcon = null;
     private TextView titleTxt = null;
     private ProgressBar progressBar = null;
@@ -91,7 +98,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        animationWebview = (WebView) findViewById(R.id.giff_animation_webview);
+        //  animationWebview = (WebView) findViewById(R.id.giff_animation_webview);
         imageIcon = (ImageView) findViewById(R.id.image_icon);
         titleTxt = (TextView) findViewById(R.id.flash_projects_title_txt);
         titleTxt.setTypeface(MBApp.getApp().getTypeface());
@@ -117,24 +124,33 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
 
         //notify creation of activity to calling code PopUp class
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(INTENT_ACTION_CREATED));
+
+
+        gifImageView = (GifImageView) findViewById(R.id.pop_up_gif_image_view);
+
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         // Ensure sure animation remains loading
-        animationWebview.onResume();
+        //    animationWebview.onResume();
+        //  gifImageView;
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         // Ensure animation pauses
-        animationWebview.onPause();
+        //   animationWebview.onPause();
+        //    gifImageView.stop();
+
     }
 
     private void clearLayout() {
-        //   animationWebview.clearAnimation(); // ~ TODO check it doesn't screw up giff animation
+        //   gifFromAssets.reset(); // tODO
+        ; // ~ TODO check it doesn't screw up giff animation
         imageIcon.setImageResource(R.drawable.overwrite_face);
         imageIcon.setBackgroundResource(0);
         titleTxt.setVisibility(View.GONE);
@@ -176,22 +192,28 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
             switch (imageGiffAnimationCode) {
                 // Flashing screen
                 case 1:
-                    animationWebview.loadUrl("file:///android_asset/htmls/testing_flashing_microbit_animation.html");
                     imageIcon.setVisibility(View.GONE);
-                    animationWebview.setVisibility(View.VISIBLE);
+
+                    //asset file
+                    findViewById(R.id.pop_up_gif_image_view).setBackgroundResource(R.drawable.testing_flashing_microbit);
+                    findViewById(R.id.pop_up_gif_image_view).setVisibility(View.VISIBLE);
+
                     break;
 
                 // Error screen
                 case 2:
-                    animationWebview.loadUrl("file:///android_asset/htmls/error_fail_flash_animation.html");
                     imageIcon.setVisibility(View.GONE);
-                    animationWebview.setVisibility(View.VISIBLE);
+
+                    //asset file
+                    GifImageView giffImageViewFail = (GifImageView) findViewById(R.id.pop_up_gif_image_view);
+                    giffImageViewFail.setBackgroundResource(R.drawable.fail_flashing_microbit);
                     break;
             }
             // Set default plain icon
         } else {
             imageIcon.setVisibility(View.VISIBLE);
-            animationWebview.setVisibility(View.INVISIBLE);
+            giffDrawable.setVisible(false, false);
+
         }
 
         switch (intent.getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_MAX)) {

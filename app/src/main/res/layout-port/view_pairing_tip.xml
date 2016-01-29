@@ -27,23 +27,11 @@
         android:orientation="horizontal"
         android:scrollbars="none">
 
-        <ImageView
-            android:id="@+id/how_to_pair_microbit_imageview"
+        <pl.droidsonroids.gif.GifImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:background="@drawable/anim_how_to_pair" />
-        <!--android:src="@drawable/micro_bit_illustration" />-->
-
-        <!--pairing animation-->
-        <!--<WebView-->
-        <!--android:id="@+id/how_to_pair_microbit_webview"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_margin="16dp"-->
-        <!--android:foregroundGravity="fill|center"-->
-        <!--android:scrollbars="none"-->
-        <!--/>-->
+            android:background="@drawable/how_to_pair_microbit" />
     </LinearLayout>
 
     <include layout="@layout/pair_microbit_step" />
