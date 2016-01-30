@@ -305,4 +305,7 @@
     <string name="popup_title">Title</string>
     <string name="pop_up_subtitle_text">Message A B C D E F G H I J K L M N O P Q R S T U V W X Y Z Message</string>
 
+    <!-- Stats -->
+    <string name="stats_view_name">kl.education.microbit.%s.page</string>
+
 </resources>

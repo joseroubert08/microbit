@@ -104,8 +104,6 @@ public class Utils {
 		}
 	}
 
-	final public static String BINARY_FILE_NAME = "/sdcard/output.bin";
-
 	public static int findProgramsAndPopulate(HashMap<String, String> prettyFileNameMap, List<Project> list) {
 		File sdcardDownloads = Constants.HEX_FILE_DIR;
 		Log.d("MicroBit", "Searching files in " + sdcardDownloads.getAbsolutePath());
@@ -236,7 +234,7 @@ public class Utils {
         if (originalRingerMode == AudioManager.RINGER_MODE_SILENT) {
             mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
         }
-        mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION),0);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
     }
 
     private static void restoreAudioMode()
@@ -364,6 +362,15 @@ public class Utils {
 		return false;
 	}
 
+    public static String getFileSize(String filePath)
+    {
+        String size = "0";
+        File file = new File(filePath);
+        if (file.exists()){
+            size = Long.toString(file.length());
+        }
+        return  size;
+    }
 	public static ConnectedDevice getPairedMicrobit(Context ctx) {
 		SharedPreferences pairedDevicePref = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
 

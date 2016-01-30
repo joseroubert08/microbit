@@ -120,12 +120,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         final Intent intent = new Intent(this, PluginService.class);
         startService(intent);
 
-
-        if (app.getEcho() != null) {
-            logi("Page View test for HomeActivity");
-            //Page view test
-            app.getEcho().viewEvent("com.samsung.microbit.ui.activity.homeactivity.page", null);
-        }
+        app.sendViewEventStats("homeactivity");
 
         /* Debug code*/
         MenuItem item = (MenuItem) findViewById(R.id.live);
@@ -163,8 +158,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         config.put(EchoConfigKeys.ECHO_TRACE, "microbit_android_app");
         //Use CS debug mode
         config.put(EchoConfigKeys.COMSCORE_DEBUG_MODE, "1");
+
+
         // Send Comscore events to EchoChamber
-        config.put(EchoConfigKeys.COMSCORE_URL, "https://sb.scorecardresearch.com/p2");
+        //config.put(EchoConfigKeys.COMSCORE_URL, "https://sb.scorecardresearch.com/p2");
+
+
+        config.put(EchoConfigKeys.COMSCORE_URL, "http://data.bbc.co.uk/v1/analytics-echo-chamber-inbound/comscore");
+
         config.put(EchoConfigKeys.COMSCORE_SITE, "test");
         //Enable debug mode
         config.put(EchoConfigKeys.ECHO_DEBUG, "1");

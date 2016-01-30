@@ -527,6 +527,10 @@ public abstract class DfuBaseService extends IntentService {
 	 */
 	public final static int LOG_LEVEL_ERROR = 20;
 
+    public final static int LOG_LEVEL_BINARY_SIZE = 21;
+    public final static int LOG_LEVEL_HEX_SIZE = 22;
+    public final static int LOG_LEVEL_FIRMWARE = 23;
+
 	/**
 	 * Activity may broadcast this broadcast in order to pause, resume or abort DFU process.
 	 * Use {@link #EXTRA_ACTION} extra to pass the action.
@@ -588,7 +592,12 @@ public abstract class DfuBaseService extends IntentService {
 	//private static final byte[] OP_CODE_REPORT_RECEIVED_IMAGE_SIZE = new byte[] { OP_CODE_PACKET_REPORT_RECEIVED_IMAGE_SIZE_KEY };
 	private static final byte[] OP_CODE_PACKET_RECEIPT_NOTIF_REQ = new byte[]{OP_CODE_PACKET_RECEIPT_NOTIF_REQ_KEY, 0x00, 0x00};
 
-	// UUIDs used by the DFU
+    private static final UUID DEVICE_INFORMATION_SERVICE_UUID = new UUID(0x0000180A00001000l, 0x800000805F9B34FBl);
+    private static final UUID FIRMWARE_REVISION_UUID = new UUID(0x00002A2600001000l, 0x800000805F9B34FBl);
+
+
+
+    // UUIDs used by the DFU
 	private static final UUID GENERIC_ATTRIBUTE_SERVICE_UUID = new UUID(0x0000180100001000l, 0x800000805F9B34FBl);
 	private static final UUID SERVICE_CHANGED_UUID = new UUID(0x00002A0500001000l, 0x800000805F9B34FBl);
 
@@ -1264,6 +1273,26 @@ public abstract class DfuBaseService extends IntentService {
 
         updateProgressNotification(PROGRESS_VALIDATING);
 
+        //For Stats purpose only
+        {
+            BluetoothGattService deviceService = gatt.getService(DEVICE_INFORMATION_SERVICE_UUID);
+            if (deviceService != null){
+                BluetoothGattCharacteristic firmwareCharacteristic = deviceService.getCharacteristic(FIRMWARE_REVISION_UUID);
+                if (firmwareCharacteristic != null)
+                {
+                    String firmware  = null;
+                    firmware = readCharacteristicNoFailure(gatt, firmwareCharacteristic);
+                    logi("Micro:bit firmware version String = " + firmware);
+                    sendStatsMicroBitFirmware(firmware);
+                }
+                else
+                {
+                    logi("Error Cannot find FIRMWARE_REVISION_UUID");
+                }
+            } else {
+                logi("Error Cannot find DEVICE_INFORMATION_SERVICE_UUID");
+            }
+        }//For Stats purpose only Ends
         int rc = 1;
 
 		BluetoothGattService fps = gatt.getService(MICROBIT_FLASH_SERVICE_UUID);
@@ -1297,7 +1326,7 @@ public abstract class DfuBaseService extends IntentService {
             waitUntilDisconnected();
 			waitUntilConnected();
             logi("Refreshing the cache before discoverServices() for Android version " + Build.VERSION.SDK_INT);
-            refreshDeviceCache(gatt,true);
+            refreshDeviceCache(gatt, true);
 			do {
 				logi("Calling phase 3");
 				mError = 0;
@@ -1720,6 +1749,7 @@ public abstract class DfuBaseService extends IntentService {
 						logi("Sending image size array to DFU Packet (" + softDeviceImageSize + "b, " + bootloaderImageSize + "b, " + appImageSize + "b)");
 						writeImageSize(gatt, packetCharacteristic, softDeviceImageSize, bootloaderImageSize, appImageSize);
 						sendLogBroadcast(LOG_LEVEL_APPLICATION, "Firmware image size sent (" + softDeviceImageSize + "b, " + bootloaderImageSize + "b, " + appImageSize + "b)");
+                        sendStatsBinFileSize(appImageSize);
 
 						// A notification will come with confirmation. Let's wait for it a bit
 						response = readNotificationResponse();
@@ -1777,8 +1807,9 @@ public abstract class DfuBaseService extends IntentService {
 								logi("Sending image size array to DFU Packet: [" + softDeviceImageSize + "b, " + bootloaderImageSize + "b, " + appImageSize + "b]");
 								writeImageSize(gatt, packetCharacteristic, softDeviceImageSize, bootloaderImageSize, appImageSize);
 								sendLogBroadcast(LOG_LEVEL_APPLICATION, "Firmware image size sent [" + softDeviceImageSize + "b, " + bootloaderImageSize + "b, " + appImageSize + "b]");
+                                sendStatsBinFileSize(appImageSize);
 
-								// A notification will come with confirmation. Let's wait for it a bit
+                                // A notification will come with confirmation. Let's wait for it a bit
 								response = readNotificationResponse();
 								status = getStatusCode(response, OP_CODE_START_DFU_KEY);
 								sendLogBroadcast(LOG_LEVEL_APPLICATION, "Response received (Op Code = " + response[1] + " Status = " + status + ")");
@@ -1809,6 +1840,7 @@ public abstract class DfuBaseService extends IntentService {
 								logi("Sending application image size to DFU Packet: " + imageSizeInBytes + " bytes");
 								writeImageSize(gatt, packetCharacteristic, mImageSizeInBytes);
 								sendLogBroadcast(LOG_LEVEL_APPLICATION, "Firmware image size sent (" + imageSizeInBytes + " bytes)");
+                                sendStatsBinFileSize(imageSizeInBytes);
 
 								// A notification will come with confirmation. Let's wait for it a bit
 								response = readNotificationResponse();
@@ -2382,6 +2414,33 @@ public abstract class DfuBaseService extends IntentService {
 		return response[2];
 	}
 
+    private String readCharacteristicNoFailure(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic)
+    {
+        if (mConnectionState != STATE_CONNECTED_AND_READY)
+            return "not_ready";
+        if (characteristic == null)
+            return "unknown";
+        logi("readCharacteristicNoFailure");
+        gatt.readCharacteristic(characteristic);
+        try {
+            synchronized (mLock) {
+                while ((!mRequestCompleted && mConnectionState == STATE_CONNECTED_AND_READY && mError == 0 && !mAborted) || mPaused)
+                    mLock.wait();
+            }
+        } catch (final InterruptedException e) {
+            loge("Sleeping interrupted", e);
+        }
+
+        if (mAborted)
+            return "unknown";
+
+        if (mError != 0)
+            return "unknown";
+
+        if (mConnectionState != STATE_CONNECTED_AND_READY)
+            return "unknown";
+        return characteristic.getStringValue(0);
+    }
 	/**
 	 * Reads the DFU Version characteristic if such exists. Otherwise it returns 0.
 	 *
@@ -2846,7 +2905,7 @@ public abstract class DfuBaseService extends IntentService {
 			System.arraycopy(buffer, 0, locBuffer, 0, size);
 		}
 
-        logi("Sending Packet - " + bytesToHex(locBuffer));
+        //logi("Sending Packet - " + bytesToHex(locBuffer));
 		characteristic.setValue(locBuffer);
 		gatt.writeCharacteristic(characteristic);
 		// FIXME BLE buffer overflow
@@ -3089,6 +3148,20 @@ public abstract class DfuBaseService extends IntentService {
 		broadcast.putExtra(EXTRA_DEVICE_ADDRESS, mDeviceAddress);
 		LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
 	}
+    private void sendStatsBinFileSize(final int size) {
+        final Intent broadcast = new Intent(BROADCAST_LOG);
+        broadcast.putExtra(EXTRA_LOG_LEVEL, LOG_LEVEL_BINARY_SIZE);
+        broadcast.putExtra(EXTRA_DATA, Integer.toString(size));
+
+
+        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
+    }
+    private void sendStatsMicroBitFirmware(final String firmware) {
+        final Intent broadcast = new Intent(BROADCAST_LOG);
+        broadcast.putExtra(EXTRA_LOG_LEVEL, LOG_LEVEL_FIRMWARE);
+        broadcast.putExtra(EXTRA_DATA, firmware);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
+    }
 
 	/**
 	 * Initializes bluetooth adapter

@@ -51,6 +51,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
     Project programToSend;
 
+    private String m_HexFileSizeStats = "0" ;
+    private String m_BinSizeStats = "0" ;
+    private String m_MicroBitFirmware = "0.0" ;
+
+
     private DFUResultReceiver dfuResultReceiver;
     private int projectListSortOrder = 0;
 
@@ -136,10 +141,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         RemoteConfig.getInstance().init();
 
         // Make sure to call this before any other userActionEvent is sent
-        if (MBApp.getApp().getEcho() != null) {
-            logi("Page View test for ProjectActivity");
-            MBApp.getApp().getEcho().viewEvent("com.samsung.microbit.ui.activity.projectactivity.page", null);
-        }
+        MBApp.getApp().sendViewEventStats("projectactivity");
+
         //Remove title bar
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_projects);
@@ -528,6 +531,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
     protected void startFlashing() {
         logi(">>>>>>>>>>>>>>>>>>> startFlashing called  >>>>>>>>>>>>>>>>>>>  ");
+        //Reset all stats value
+        m_BinSizeStats = "0" ;
+        m_MicroBitFirmware = "0.0" ;
+        m_HexFileSizeStats = Utils.getFileSize(programToSend.filePath);
+
         ConnectedDevice currentMicrobit = Utils.getPairedMicrobit(this);
         final Intent service = new Intent(ProjectActivity.this, DfuService.class);
         service.putExtra(DfuService.EXTRA_DEVICE_ADDRESS, currentMicrobit.mAddress);
@@ -544,9 +552,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
     private void registerCallbacksForFlashing() {
         IntentFilter filter = new IntentFilter(DfuService.BROADCAST_PROGRESS);
         IntentFilter filter1 = new IntentFilter(DfuService.BROADCAST_ERROR);
+        IntentFilter filter2 = new IntentFilter(DfuService.BROADCAST_LOG);
         dfuResultReceiver = new DFUResultReceiver();
         LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter);
         LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter1);
+        LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(dfuResultReceiver, filter2);
     }
 
     /**
@@ -612,10 +622,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                 LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
                                 dfuResultReceiver = null;
                                 //Update Stats
-                                if (MBApp.getApp().getEcho() != null) {
-                                    //TODO add more data action_location (app/web), hex_file_size, binary_size, firmware <Micro:bit firmware version >
-                                    MBApp.getApp().getEcho().userActionEvent("hex_file_flash", "success", null);
-                                }
+                                MBApp.getApp().sendFlashStats(true , programToSend.name, m_HexFileSizeStats, m_BinSizeStats, m_MicroBitFirmware);
                                 PopUp.show(MBApp.getContext(),
                                         getString(R.string.flashing_success_message), //message
                                         getString(R.string.flashing_success_title), //title
@@ -694,10 +701,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         case DfuService.PROGRESS_VALIDATION_FAILED:
                             setActivityState(ACTIVITY_STATE.STATE_IDLE);
                             //Update Stats
-                            if (MBApp.getApp().getEcho() != null) {
-                                //TODO add more data action_location (app/web), hex_file_size, binary_size, firmware <Micro:bit firmware version >
-                                MBApp.getApp().getEcho().userActionEvent("hex_file_flash", "fail", null);
-                            }
+                            MBApp.getApp().sendFlashStats(false , programToSend.name, m_HexFileSizeStats, m_BinSizeStats, m_MicroBitFirmware);
                             PopUp.show(MBApp.getContext(),
                                     getString(R.string.flashing_verifcation_failed), //message
                                     getString(R.string.flashing_verifcation_failed_title),
@@ -713,10 +717,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         case DfuService.PROGRESS_ABORTED:
                             setActivityState(ACTIVITY_STATE.STATE_IDLE);
                             //Update Stats
-                            if (MBApp.getApp().getEcho() != null) {
-                                //TODO add more data action_location (app/web), hex_file_size, binary_size, firmware <Micro:bit firmware version >
-                                MBApp.getApp().getEcho().userActionEvent("hex_file_flash", "fail", null);
-                            }
+                            MBApp.getApp().sendFlashStats(false, programToSend.name, m_HexFileSizeStats, m_BinSizeStats, m_MicroBitFirmware);
                             PopUp.show(MBApp.getContext(),
                                     getString(R.string.flashing_aborted), //message
                                     getString(R.string.flashing_aborted_title),
@@ -757,10 +758,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
                 dfuResultReceiver = null;
                 //Update Stats
-                if (MBApp.getApp().getEcho() != null) {
-                    //TODO add more data action_location (app/web), hex_file_size, binary_size, firmware <Micro:bit firmware version >
-                    MBApp.getApp().getEcho().userActionEvent("hex_file_flash", "fail", null);
-                }
+                MBApp.getApp().sendFlashStats(false, programToSend.name, m_HexFileSizeStats, m_BinSizeStats, m_MicroBitFirmware);
                 PopUp.show(MBApp.getContext(),
                         error_message, //message
                         getString(R.string.flashing_failed_title), //title
@@ -769,6 +767,21 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         PopUp.TYPE_ALERT, //type of popup.
                         popupOkHandler,//override click listener for ok button
                         popupOkHandler);//pass null to use default listener
+            } else if (intent.getAction() == DfuService.BROADCAST_LOG) {
+                //Only used for Stats at the moment
+                String data = "";
+                int logLevel = intent.getIntExtra(DfuService.EXTRA_LOG_LEVEL, 0);
+                switch (logLevel)
+                {
+                    case DfuService.LOG_LEVEL_BINARY_SIZE:
+                        data = intent.getStringExtra(DfuService.EXTRA_DATA);
+                        m_BinSizeStats = data ;
+                        break;
+                    case DfuService.LOG_LEVEL_FIRMWARE:
+                        data = intent.getStringExtra(DfuService.EXTRA_DATA);
+                        m_MicroBitFirmware = data ;
+                        break;
+                }
             }
         }
     }

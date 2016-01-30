@@ -282,10 +282,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         MBApp.setContext(this);
 
         // Make sure to call this before any other userActionEvent is sent
-        if (MBApp.getApp().getEcho() != null) {
-            logi("Page View test for PairingActivity");
-            MBApp.getApp().getEcho().viewEvent("com.samsung.microbit.ui.activity.pairingactivity.page", null);
-        }
+        MBApp.getApp().sendViewEventStats("pairingactivity");
 
         IntentFilter broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
         LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(localBroadcastReceiver, broadcastIntentFilter);
