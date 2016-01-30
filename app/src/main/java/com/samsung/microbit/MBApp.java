@@ -39,7 +39,7 @@ public class MBApp extends Application {
         echo = new EchoClient(
                 "microbit", //getString(R.string.app_name),   // App Name
                 ApplicationType.MOBILE_APP,    // App Type
-                "kl.education.microbit.splashscreen.page",   // App Countername // ECHO: Label had to be cleaned from: com.samsung.microbit to com.samsung.microbit.page error only thrown in debug mode
+                "kl.education.microbit.appstart.page",   // App Countername // ECHO: Label had to be cleaned from: com.samsung.microbit to com.samsung.microbit.page error only thrown in debug mode
                 getApplicationContext(),       // The Android Context of your Application
                 config
         );
