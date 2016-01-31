@@ -104,6 +104,37 @@ public class Utils {
 		}
 	}
 
+    public static int getTotalSavedPrograms()
+    {
+        File sdcardDownloads = Constants.HEX_FILE_DIR;
+        int totalPrograms = 0;
+        if (sdcardDownloads.exists()) {
+            File files[] = sdcardDownloads.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                String fileName = files[i].getName();
+                if (fileName.endsWith(".hex")) {
+                    ++totalPrograms;
+                }
+            }
+        }
+        return totalPrograms;
+    }
+
+    public static int getTotalPairedMicroBitsFromSystem()
+    {
+        int totalPairedMicrobits = 0;
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter.isEnabled())
+        {
+            Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+            for (BluetoothDevice bt : pairedDevices) {
+                if (bt.getName().contains("micro:bit")) {
+                    ++totalPairedMicrobits;
+                }
+            }
+        }
+        return totalPairedMicrobits;
+    }
 	public static int findProgramsAndPopulate(HashMap<String, String> prettyFileNameMap, List<Project> list) {
 		File sdcardDownloads = Constants.HEX_FILE_DIR;
 		Log.d("MicroBit", "Searching files in " + sdcardDownloads.getAbsolutePath());

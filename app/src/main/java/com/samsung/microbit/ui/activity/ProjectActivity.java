@@ -311,10 +311,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         if (reReadFS) {
             projectList.clear();
             int totalPrograms = Utils.findProgramsAndPopulate(prettyFileNameMap, projectList);
-            //Update Stats
-            if (MBApp.getApp() != null && MBApp.getApp().getEcho() != null) {
-                MBApp.getApp().getEcho().userActionEvent("saved_projects", Integer.toString(totalPrograms), null);
-            }
         }
 
         projectListSortOrder = Utils.getListOrderPrefs(this);

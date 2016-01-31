@@ -43,8 +43,6 @@ import com.samsung.microbit.ui.PopUp;
 import java.util.HashMap;
 import java.util.List;
 
-import uk.co.bbc.echo.EchoConfigKeys;
-
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
     // share stats checkbox
@@ -94,8 +92,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_home);
         setupDrawer();
 
-        //Set up Echo
-        setupEcho();
+        if (app == null)
+            app = (MBApp) MBApp.getApp().getApplicationContext();
 
         LinearLayout connectBarView = (LinearLayout) findViewById(R.id.connectBarView);
         connectBarView.getBackground().setAlpha(128);
@@ -147,32 +145,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         animation.setBackgroundColor(Color.TRANSPARENT);
         animation.loadUrl("file:///android_asset/htmls/hello_home_animation.html");
     }
-
-    private void setupEcho() {
-        // Echo Config
-        app = (MBApp) MBApp.getApp().getApplicationContext();
-
-        HashMap<String, String> config = new HashMap<String, String>();
-
-        //Use ECHO_TRACE value for searching in echo chamber
-        config.put(EchoConfigKeys.ECHO_TRACE, "microbit_android_app");
-        //Use CS debug mode
-        config.put(EchoConfigKeys.COMSCORE_DEBUG_MODE, "1");
-
-
-        // Send Comscore events to EchoChamber
-        //config.put(EchoConfigKeys.COMSCORE_URL, "https://sb.scorecardresearch.com/p2");
-
-
-        config.put(EchoConfigKeys.COMSCORE_URL, "http://data.bbc.co.uk/v1/analytics-echo-chamber-inbound/comscore");
-
-        config.put(EchoConfigKeys.COMSCORE_SITE, "test");
-        //Enable debug mode
-        config.put(EchoConfigKeys.ECHO_DEBUG, "1");
-        // Instantiate EchoClient
-        app.initialiseEcho(config);
-    }
-
     private void setupDrawer() {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
