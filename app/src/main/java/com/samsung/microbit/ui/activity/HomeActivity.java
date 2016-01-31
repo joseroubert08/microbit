@@ -429,6 +429,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mPrefs.edit().putBoolean(getString(R.string.prefs_share_stats_status), shareStatistics).apply();
         logi("shareStatistics = " + shareStatistics);
         MBApp.setSharingStats(shareStatistics);
+        MBApp.getApp().sendStatSharing(shareStatistics);
     }
 
     @Override

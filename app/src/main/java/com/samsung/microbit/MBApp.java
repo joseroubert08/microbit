@@ -151,4 +151,19 @@ public class MBApp extends Application {
         }
     }
 
+    public void sendStatSharing(boolean enable)
+    {
+        if (echo != null){
+            HashMap <String, String> eventLabels = new HashMap<String,String>();
+            eventLabels.put("bbc_site", "bitesize");
+            if (enable){
+                echo.userActionEvent("opt-in", "stats-tracking", eventLabels);
+            } else {
+                echo.userActionEvent("opt-out", "stats-tracking", eventLabels);
+            }
+        } else {
+            Log.d("MBApp", "Sharing of stats is disabled by user or Echo not initialised");
+        }
+    }
+
 }
