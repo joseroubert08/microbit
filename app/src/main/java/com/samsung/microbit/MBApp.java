@@ -144,6 +144,7 @@ public class MBApp extends Application {
             HashMap <String, String> eventLabels = new HashMap<String,String>();
             eventLabels.put("action_location", location);
             eventLabels.put("button", button);
+            eventLabels.put("bbc_site", "bitesize");
             echo.userActionEvent("click", "navigate", eventLabels);
         } else {
             Log.d("MBApp", "Sharing of stats is disabled by user or Echo not initialised");
