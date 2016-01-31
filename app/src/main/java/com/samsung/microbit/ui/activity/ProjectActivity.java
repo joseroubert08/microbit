@@ -395,9 +395,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
         switch (v.getId()) {
             case R.id.createProject: {
-                if (MBApp.getApp().getEcho() != null) {
-                    MBApp.getApp().getEcho().userActionEvent("onClick", "myScripts", null);
-                }
+                MBApp.getApp().sendNavigationStats("home", "my-scripts");
                 String url = RemoteConfig.getInstance().getMyScriptsURL();
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(url));

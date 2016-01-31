@@ -137,4 +137,17 @@ public class MBApp extends Application {
             Log.d("MBApp", "Sharing of stats is disabled by user or Echo not initialised");
         }
     }
+
+    public void sendNavigationStats(String location, String button)
+    {
+        if (mshareStat && echo != null){
+            HashMap <String, String> eventLabels = new HashMap<String,String>();
+            eventLabels.put("action_location", location);
+            eventLabels.put("button", button);
+            echo.userActionEvent("click", "navigate", eventLabels);
+        } else {
+            Log.d("MBApp", "Sharing of stats is disabled by user or Echo not initialised");
+        }
+    }
+
 }

@@ -327,23 +327,23 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             break;
             case R.id.create_code_btn: {
                 //Update Stats
-                if (app != null && app.getEcho() != null) {
-                    logi("User action test for delete project");
-                    app.getEcho().userActionEvent("click", "CreateCode", null);
-                }
+                app.sendNavigationStats("home", "create-code");
                 if (urlToOpen == null) {
                     urlToOpen = RemoteConfig.getInstance().getCreateCodeURL();
                 }
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(urlToOpen));
+
                 startActivity(intent);
             }
             break;
             case R.id.flash_microbit_btn:
+                app.sendNavigationStats("home" , "flash");
                 Intent i = new Intent(this, ProjectActivity.class);
                 startActivity(i);
                 break;
             case R.id.discover_btn:
+                app.sendNavigationStats("home", "discover");
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(RemoteConfig.getInstance().getDiscoverURL()));
                 startActivity(intent);
@@ -352,7 +352,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             // TODO: HACK - Navigation View items from drawer here instead of [onNavigationItemSelected]
             // NavigationView items
             case R.id.btn_nav_menu: {
-               // Toast.makeText(this, "Menu", Toast.LENGTH_LONG).show();
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
             }
@@ -370,6 +369,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "Coming Soon", Toast.LENGTH_LONG).show();
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
+                app.sendNavigationStats("overflow-menu", "help");
             }
             break;
             case R.id.btn_privacy_cookies: {
@@ -379,6 +379,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(privacyIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
+                app.sendNavigationStats("overflow-menu", "privacy-policy");
             }
             break;
             case R.id.btn_terms_conditions: {
@@ -388,6 +389,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(termsIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
+                app.sendNavigationStats("overflow-menu" , "ts-and-cs");
 
             }
             break;
