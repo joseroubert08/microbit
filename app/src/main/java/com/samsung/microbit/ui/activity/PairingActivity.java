@@ -404,6 +404,12 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         TextView stepOneInstructions = (TextView) findViewById(R.id.pair_tip_step_1_instructions);
         stepOneInstructions.setTypeface(MBApp.getApp().getTypeface());
 
+        TextView stepTwoHowToPairTitle = (TextView) findViewById(R.id.pair_tip_step_2_step);
+        stepTwoHowToPairTitle.setTypeface(MBApp.getApp().getTypeface());
+
+        TextView stepTwoHowToPairInstructions = (TextView) findViewById(R.id.pair_tip_step_2_instructions);
+        stepTwoHowToPairInstructions.setTypeface(MBApp.getApp().getTypeface());
+
         Button cancelPairButton = (Button) findViewById(R.id.cancel_tip_step_1_btn);
         cancelPairButton.setTypeface(MBApp.getApp().getTypeface());
 

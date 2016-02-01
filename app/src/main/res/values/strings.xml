@@ -143,9 +143,13 @@
     <string name="connectNew">Pair a new micro:bit</string>
     <string name="connect_tip_title">How to pair your micro:bit</string>
     <string name="step_connect_tip_text">Step 1</string>
+    <string name="step_connect_tip_text_step_two">Step 2</string>
     <string name="connect_tip_text">Hold the A and B buttons,\nthen PRESS RESET</string>
+    <string name="desc_connect_tip_text">Hold the a and b buttons, then PRESS RESET</string>
     <string name="desc_connect_tip_text_step">Step one</string>
-    <string name="desc_connect_tip_text">Hold the A and B buttons, then PRESS RESET</string>
+    <string name="desc_connect_tip_text_step_two">Step two</string>
+    <string name="connect_tip_text_step_two_text">When asked, enter your PIP \n(personal identification pattern) </string>
+    <string name="desc_connect_tip_text_step_two_text">When asked, enter your personal identification pattern </string>
     <string name="step_enter_pattern_tip_text">Step 2</string>
     <string name="enter_pattern_tip_text">Copy the pattern from your\ndevice and PRESS OK</string>
     <string name="desc_enter_pattern_tip_step_two">Step two</string>
@@ -290,6 +294,7 @@
     <string name="desc_nav_drawer_menu">Close Menu</string>
     <string name="desc_share_statistics_description">The BBC will only use this information to analyse and improve the services offered through this app. For information, see our privacy policy </string>
     <string name="txt_pair_btn">Pair</string>
+    <string name="txt_how_to_pair_next_btn">Next</string>
     <string name="txt_cancel_btn">Cancel</string>
     <string name="desc_connection_status_flash_text">Micro:Bit connection status</string>
     <string name="desc_send_project_btn">Flash code to your Micro:bit</string>
