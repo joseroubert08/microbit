@@ -248,10 +248,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         updatePairedDeviceCard();
 
         // Step 1 - How to pair
-   //     ((AnimationDrawable) imgHowToPairAnimation.getBackground()).start();
-      //  gifFromAssets.start();
-        // Searching for micro:bit
-        //   searchingMicrobitAnimation.onResume();
+        findViewById(R.id.pair_tip_step_1_giff).animate();
+        // Step 3 - Searching for micro:bit
+
     }
 
     @Override
@@ -260,9 +259,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         super.onPause();
 
         // Step 1 - How to pair
-      //  ((AnimationDrawable) imgHowToPairAnimation.getBackground()).stop();
-     //   gifFromAssets.stop();
-
 
         // Step 3 - Stop searching for micro:bit animation
     }
@@ -428,22 +424,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.go_bluetooth_settings).setOnClickListener(this);
         findViewById(R.id.cancel_enter_pin_step_4_btn).setOnClickListener(this);
 
-//        WebView howToPairMicrobit = (WebView) findViewById(R.id.how_to_pair_microbit_webview);
-//        howToPairMicrobit.setBackgroundColor(Color.TRANSPARENT);
-//        howToPairMicrobit.loadUrl("file:///android_asset/htmls/how_to_pair_microbit.html");
-
-        // Step 1: How to Pair (animation)
-     //   imgHowToPairAnimation = (ImageView) findViewById(R.id.how_to_pair_microbit_imageview);
-
-        //asset file
-//        try {
-//             gifFromAssets = new GifDrawable( getAssets(), "how_to_pair_microbit.gif" ); //TODO find class
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-        // Step 3: Searching for Microbit (animation)
+        // Step 3: Searching for Micro:bit (animation)
         searchingProgressSpinner = (ProgressBar) findViewById(R.id.searching_progress_spinner);
 
     }
@@ -1092,8 +1073,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         mPairTipView.setVisibility(View.GONE);
         mNewDeviceView.setVisibility(View.GONE);
         mPairSearchView.setVisibility(View.GONE);
-        mConnectDeviceView.setVisibility(View.GONE); // TODO check this
-        mEnterPinView.setVisibility(View.GONE); // TODO check this
+        mConnectDeviceView.setVisibility(View.GONE);
+        mEnterPinView.setVisibility(View.GONE);
         unregisterReceiver(mPairReceiver);
     }
 

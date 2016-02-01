@@ -28,6 +28,7 @@
         android:scrollbars="none">
 
         <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/pair_tip_step_1_giff"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
