@@ -19,7 +19,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -299,7 +298,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         //Layout status indicator
         itemSelectorLayout = (LinearLayout) findViewById(R.id.connected_device_item);
-
+        itemSelectorLayout.setFocusable(false);
+        itemSelectorLayout.setFocusableInTouchMode(false);
+        itemSelectorLayout.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        
         // Device connection status
         mdeviceConnectionStatus = (TextView) findViewById(R.id.device_status_txt);
         mdeviceConnectionStatus.setTypeface(MBApp.getApp().getTypeface());
@@ -323,7 +325,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         mdeleteBtn.setFocusableInTouchMode(false);
         mdeleteBtn.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
 
-        mconnectBtn.setOnClickListener(this);
+        itemSelectorLayout.setOnClickListener(this);
+        //mconnectBtn.setOnClickListener(this);
         mdeleteBtn.setOnClickListener(this);
 
         updatePairedDeviceCard();
@@ -344,14 +347,20 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         TextView manageMicrobit = (TextView) findViewById(R.id.title_manage_microbit);
         manageMicrobit.setTypeface(MBApp.getApp().getTypeface());
 
+        TextView manageSubtitleMicrobit = (TextView) findViewById(R.id.subtitle_manage_microbit);
+        manageSubtitleMicrobit.setTypeface(MBApp.getApp().getTypeface());
+
         TextView descriptionManageMicrobit = (TextView) findViewById(R.id.description_manage_microbit);
         descriptionManageMicrobit.setTypeface(MBApp.getApp().getTypeface());
 
-        Button bluetoothSettings = (Button) findViewById(R.id.go_bluetooth_settings);
-        bluetoothSettings.setTypeface(MBApp.getApp().getTypeface());
+//        Button bluetoothSettings = (Button) findViewById(R.id.go_bluetooth_settings);
+//        bluetoothSettings.setTypeface(MBApp.getApp().getTypeface());
 
         Button pairButton = (Button) findViewById(R.id.pairButton);
         pairButton.setTypeface(MBApp.getApp().getTypeface());
+
+        TextView problemsMicrobit = (TextView) findViewById(R.id.connect_microbit_problems_message);
+        problemsMicrobit.setTypeface(MBApp.getApp().getTypeface());
 
         // Step 1 - How to pair your micro:bit
         TextView pairTipTitle = (TextView) findViewById(R.id.pairTipTitle);
@@ -421,7 +430,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.ok_enter_pattern_step_2_btn).setOnClickListener(this);
         findViewById(R.id.cancel_enter_pattern_step_2_btn).setOnClickListener(this);
         findViewById(R.id.cancel_search_microbit_step_3_btn).setOnClickListener(this);
-        findViewById(R.id.go_bluetooth_settings).setOnClickListener(this);
+        //findViewById(R.id.go_bluetooth_settings).setOnClickListener(this);
         findViewById(R.id.cancel_enter_pin_step_4_btn).setOnClickListener(this);
 
         // Step 3: Searching for Micro:bit (animation)
@@ -573,18 +582,14 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             // Device is not connected
             mconnectBtn.setImageResource(R.drawable.device_status_disconnected);
             itemSelectorLayout.setBackgroundResource(R.drawable.grey_btn);
-            itemSelectorLayout.setAlpha(1.0f);
             mConnectedDeviceName.setTextColor(Color.WHITE);
             mdeviceConnectionStatus.setText(R.string.most_recent_device_status);
-            mdeviceConnectionStatus.setAlpha(1.0f);
         } else {
             // Device is connected
             mconnectBtn.setImageResource(R.drawable.device_status_connected);
             itemSelectorLayout.setBackgroundResource(R.drawable.white_btn);
-            itemSelectorLayout.setAlpha(1.0f);
             mConnectedDeviceName.setTextColor(Color.BLACK);
             mdeviceConnectionStatus.setText(R.string.device_connected_device_status);
-            mdeviceConnectionStatus.setAlpha(1.0f);
         }
 
     }
@@ -596,10 +601,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             mconnectBtn.setVisibility(View.INVISIBLE);
             mdeleteBtn.setVisibility(View.INVISIBLE);
             itemSelectorLayout.setBackgroundResource(R.drawable.grey_btn);
-            itemSelectorLayout.setAlpha(0.25f);
             mConnectedDeviceName.setText("-");
             mConnectedDeviceName.setEnabled(false);
-            mdeviceConnectionStatus.setAlpha(0.25f);
         } else {
             mConnectedDeviceName.setText(connectedDevice.mName);
             mconnectBtn.setVisibility(View.VISIBLE);
@@ -729,10 +732,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 }
                 startWithPairing();
                 break;
-            case R.id.go_bluetooth_settings: //Bluetooth
-                Intent goToBlueToothIntent = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
-                startActivity(goToBlueToothIntent);
-                break;
+//            case R.id.go_bluetooth_settings: //Bluetooth
+//                Intent goToBlueToothIntent = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
+//                startActivity(goToBlueToothIntent);
+//                break;
             case R.id.ok_tip_step_1_btn:
                 if (debug) logi("onClick() :: ok_pair_button");
                 displayScreen(PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY);
@@ -769,7 +772,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
                 break;
 
-            case R.id.connectBtn:
+            case R.id.connected_device_item: // TODO - change back to case R.id.connectBtn:
                 if (debug) logi("onClick() :: connectBtn");
                 if (!BluetoothSwitch.getInstance().isBluetoothON()) {
                     mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_CONNECT;

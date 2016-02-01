@@ -140,11 +140,11 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     protected void onPause() {
         super.onPause();
         // Ensure animation pauses
+        findViewById(R.id.pop_up_gif_image_view).clearAnimation();
     }
 
     private void clearLayout() {
 // ~ TODO check it doesn't screw up giff animation
-        gifImageView.clearAnimation();
         imageIcon.setImageResource(R.drawable.overwrite_face);
         imageIcon.setBackgroundResource(0);
         titleTxt.setVisibility(View.GONE);

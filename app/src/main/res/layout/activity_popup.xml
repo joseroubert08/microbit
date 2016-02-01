@@ -8,15 +8,6 @@
     android:paddingEnd="16dp"
     android:paddingStart="16dp">
 
-    <!--&lt;!&ndash; Webview for animated emoji &ndash;&gt;-->
-    <!--<WebView-->
-    <!--android:id="@+id/giff_animation_webview"-->
-    <!--android:layout_width="128dp"-->
-    <!--android:layout_height="128dp"-->
-    <!--android:layout_alignParentTop="true"-->
-    <!--android:layout_centerInParent="true"-->
-    <!--android:layout_margin="16dp"-->
-    <!--android:scrollbars="none" />-->
     <!-- Loading Giffs -->
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/pop_up_gif_image_view"
