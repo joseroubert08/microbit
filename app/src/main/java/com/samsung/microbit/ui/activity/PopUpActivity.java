@@ -125,32 +125,26 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         //notify creation of activity to calling code PopUp class
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(INTENT_ACTION_CREATED));
 
-
+        // Error / Flash animation
         gifImageView = (GifImageView) findViewById(R.id.pop_up_gif_image_view);
-
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         // Ensure sure animation remains loading
-        //    animationWebview.onResume();
-        //  gifImageView;
+        findViewById(R.id.pop_up_gif_image_view).animate();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         // Ensure animation pauses
-        //   animationWebview.onPause();
-        //    gifImageView.stop();
-
     }
 
     private void clearLayout() {
-        //   gifFromAssets.reset(); // tODO
-        ; // ~ TODO check it doesn't screw up giff animation
+// ~ TODO check it doesn't screw up giff animation
+        gifImageView.clearAnimation();
         imageIcon.setImageResource(R.drawable.overwrite_face);
         imageIcon.setBackgroundResource(0);
         titleTxt.setVisibility(View.GONE);
@@ -192,28 +186,26 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
             switch (imageGiffAnimationCode) {
                 // Flashing screen
                 case 1:
-                    imageIcon.setVisibility(View.GONE);
-
-                    //asset file
-                    findViewById(R.id.pop_up_gif_image_view).setBackgroundResource(R.drawable.testing_flashing_microbit);
+                    // Asset file
+                    findViewById(R.id.pop_up_gif_image_view).setBackgroundResource(R.drawable.flash_face);
                     findViewById(R.id.pop_up_gif_image_view).setVisibility(View.VISIBLE);
-
+                    // Regular image disabled
+                    imageIcon.setVisibility(View.GONE);
                     break;
 
                 // Error screen
                 case 2:
+                    // Asset file
+                    findViewById(R.id.pop_up_gif_image_view).setBackgroundResource(R.drawable.error_face);
+                    findViewById(R.id.pop_up_gif_image_view).setVisibility(View.VISIBLE);
+                    // Regular image disabled
                     imageIcon.setVisibility(View.GONE);
-
-                    //asset file
-                    GifImageView giffImageViewFail = (GifImageView) findViewById(R.id.pop_up_gif_image_view);
-                    giffImageViewFail.setBackgroundResource(R.drawable.fail_flashing_microbit);
                     break;
             }
             // Set default plain icon
         } else {
             imageIcon.setVisibility(View.VISIBLE);
-            giffDrawable.setVisible(false, false);
-
+            findViewById(R.id.pop_up_gif_image_view).setVisibility(View.INVISIBLE);
         }
 
         switch (intent.getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_MAX)) {

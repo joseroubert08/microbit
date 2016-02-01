@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,7 +21,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -43,6 +41,8 @@ import com.samsung.microbit.ui.PopUp;
 import java.util.HashMap;
 import java.util.List;
 
+import pl.droidsonroids.gif.GifImageView;
+
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
     // share stats checkbox
@@ -52,8 +52,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     StableArrayAdapter adapter = null;
     private AppCompatDelegate delegate;
     // Hello animation
-    private WebView animation;
-
+    private GifImageView gifAnimationHelloEmoji;
     boolean connectionInitiated = false;
 
     private MBApp app = null;
@@ -141,10 +140,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         }
         // animation for loading hello .giff
-        animation = (WebView) findViewById(R.id.homeHelloAnimationWebView);
-        animation.setBackgroundColor(Color.TRANSPARENT);
-        animation.loadUrl("file:///android_asset/htmls/hello_home_animation.html");
+        gifAnimationHelloEmoji = (GifImageView) findViewById(R.id.homeHelloAnimationGifView);
+        //gifAnimationHelloEmoji.setBackgroundResource(R.drawable.hello_emoji_animation);
     }
+
     private void setupDrawer() {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -303,7 +302,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onPause() {
         super.onPause();
         // Pause animation
-        animation.onPause();
+        gifAnimationHelloEmoji.setFreezesAnimation(true);
     }
 
     @Override
@@ -338,7 +337,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.flash_microbit_btn:
-                app.sendNavigationStats("home" , "flash");
+                app.sendNavigationStats("home", "flash");
                 Intent i = new Intent(this, ProjectActivity.class);
                 startActivity(i);
                 break;
@@ -389,7 +388,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(termsIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
-                app.sendNavigationStats("overflow-menu" , "ts-and-cs");
+                app.sendNavigationStats("overflow-menu", "ts-and-cs");
 
             }
             break;
@@ -453,7 +452,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         /* Code removal ends */
         MBApp.setContext(this);
         // Reload Hello Emoji animation
-        animation.loadUrl("file:///android_asset/htmls/hello_home_animation.html");
-        animation.onResume();
+        gifAnimationHelloEmoji.refreshDrawableState();
+        gifAnimationHelloEmoji.animate();
     }
 }

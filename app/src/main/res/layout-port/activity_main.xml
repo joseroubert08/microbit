@@ -12,19 +12,27 @@
     tools:showIn="@layout/app_bar_main">
 
     <!--pairing animation-->
-    <WebView
-        android:id="@+id/homeHelloAnimationWebView"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="3"
+        android:orientation="horizontal"
+        android:scrollbars="none">
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/homeHelloAnimationGifView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="16dp"
-        android:layout_weight="3"
         android:contentDescription="@string/desc_homescreen_logo_img"
         android:foregroundGravity="center"
         android:labelFor="@drawable/bbc_microbit_vertical"
         android:nextFocusDown="@+id/connect_device_btn"
+        android:src="@drawable/hello_emoji_animation"
         android:scrollbars="none" />
 
+</LinearLayout>
     <!-- Connections -->
     <Button
         android:id="@+id/connect_device_btn"
