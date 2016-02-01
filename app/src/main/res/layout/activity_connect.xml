@@ -9,6 +9,8 @@
     <include layout="@layout/view_connect_microbit" />
     <!-- device pairing tip screen -->
     <include layout="@layout/view_pairing_tip" />
+    <!-- device pairing tip screen -->
+    <include layout="@layout/view_pairing_tip_screen_two" />
     <!-- enter the pattern screen-->
     <include layout="@layout/view_pairing_pattern" />
     <!-- searching for micro:bit screen-->

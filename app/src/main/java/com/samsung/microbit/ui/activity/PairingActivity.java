@@ -420,8 +420,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         TextView enterPatternTitle = (TextView) findViewById(R.id.enter_pattern_step_2_title);
         enterPatternTitle.setTypeface(MBApp.getApp().getTypeface());
 
-        TextView stepTwoTitle = (TextView) findViewById(R.id.pair_enter_pattern_step_2);
-        stepTwoTitle.setTypeface(MBApp.getApp().getTypeface());
+//        TextView stepTwoTitle = (TextView) findViewById(R.id.pair_enter_pattern_step_2);
+//        stepTwoTitle.setTypeface(MBApp.getApp().getTypeface());
 
         TextView stepTwoInstructions = (TextView) findViewById(R.id.pair_enter_pattern_step_2_instructions);
         stepTwoInstructions.setTypeface(MBApp.getApp().getTypeface());

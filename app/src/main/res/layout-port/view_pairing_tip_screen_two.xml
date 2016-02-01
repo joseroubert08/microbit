@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pairTipView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black_color"
+    android:orientation="vertical">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/how_to_pair_screen_two_title"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/connect_tip_title"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="@color/white_color" />
+
+    <!-- Images -->
+    <LinearLayout
+        android:id="@+id/how_to_pair_screen_two_image_ll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:orientation="horizontal"
+        android:scrollbars="none">
+
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/how_to_pair_screen_two_giff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@drawable/how_to_pair_microbit" />
+    </LinearLayout>
+
+    <include layout="@layout/pair_microbit_step" />
+
+    <!-- Line -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:alpha="0.5"
+        android:background="@color/gray_color" />
+
+    <include layout="@layout/pairing_tip_action_buttons" />
+
+</LinearLayout>

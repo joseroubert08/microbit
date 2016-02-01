@@ -15,6 +15,8 @@
         android:paddingBottom="16dp"
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
+        android:lines="3"
+        android:maxLines="3"
         android:text="@string/searching_tip_step_text"
         android:textAppearance="?android:textAppearanceMedium"
         android:textColor="@color/white_color" />
@@ -25,8 +27,8 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/where_are_you_emoji"
         android:contentDescription="@string/desc_searching_tip_text"
-        android:lines="3"
-        android:maxLines="3"
+        android:lines="2"
+        android:maxLines="2"
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
         android:text="@string/searching_tip_text"
@@ -41,6 +43,7 @@
         android:paddingBottom="16dp"
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
-        android:src="@drawable/ooh_pretty_emoji" />
+        android:src="@drawable/ooh_pretty_emoji"
+        android:visibility="invisible"/>
     <!-- TODO - change icon to match Step 4 (where are you) -->
 </RelativeLayout>

@@ -44,23 +44,33 @@ public class LEDAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        if(mDeviceCodeArray[position].equals("1")) {
+        if (mDeviceCodeArray[position].equals("1")) {
+            imageView.setContentDescription("" + calculateLEDPosition(position) + "on");
             imageView.setBackground(mContext.getResources().getDrawable(R.drawable.red_white_led_btn));
 
         } else {
 
+            imageView.setContentDescription("" + calculateLEDPosition(position) + "off");
             imageView.setBackground(mContext.getResources().getDrawable(R.drawable.white_red_led_btn));
 
-            int startIndex =  position -5;
-            while(startIndex >= 0) {
-                if(mDeviceCodeArray[startIndex].equals("1")){
+            int startIndex = position - 5;
+            while (startIndex >= 0) {
+                if (mDeviceCodeArray[startIndex].equals("1")) {
+                    imageView.setContentDescription("" + calculateLEDPosition(position) + "on"); // TODO check this for status of button
                     imageView.setBackground(mContext.getResources().getDrawable(R.drawable.red_white_led_btn));
                 }
 
-                startIndex-=5;
+                startIndex -= 5;
             }
         }
 
         return imageView;
     }
+
+    // Function to add 1 to the position in the array to correctly read out the LED position
+    private int calculateLEDPosition(int position) {
+        return ++position;
+    }
+
+
 }
