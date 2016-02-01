@@ -166,4 +166,21 @@ public class MBApp extends Application {
         }
     }
 
+
+    public void sendPairingStats(boolean paired, String firmware)
+    {
+        if (echo != null){
+            HashMap <String, String> eventLabels = new HashMap<String,String>();
+            eventLabels.put("bbc_site", "bitesize");
+            if (paired){
+                eventLabels.put("firmware", firmware);
+                echo.userActionEvent("success", "pair", eventLabels);
+            } else {
+                echo.userActionEvent("fail", "pair", eventLabels);
+            }
+        } else {
+            Log.d("MBApp", "Sharing of stats is disabled by user or Echo not initialised");
+        }
+    }
+
 }

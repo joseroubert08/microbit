@@ -222,6 +222,23 @@ public class BLEService extends BLEBaseService {
 	public boolean registerNotifications(boolean enable) {
 
 		logi("registerNotifications() : " + enable  );
+
+        //Read microbit firmware version
+        BluetoothGattService deviceInfoService = getService(Constants.DEVICE_INFORMATION_SERVICE_UUID);
+        if (deviceInfoService != null) {
+            BluetoothGattCharacteristic firmwareCharacteristic = deviceInfoService.getCharacteristic(Constants.FIRMWARE_REVISION_UUID);
+            if (firmwareCharacteristic != null)
+            {
+                String firmware  = "";
+                BluetoothGattCharacteristic characteristic = readCharacteristic(firmwareCharacteristic);
+                if (characteristic !=null && characteristic.getValue() != null && characteristic.getValue().length != 0)
+                {
+                     firmware = firmwareCharacteristic.getStringValue(0) ;
+                }
+                Utils.setmicroBitFirmware(firmware);
+                logi("Micro:bit firmware version String = " + firmware);
+            }
+        }
 		BluetoothGattService eventService = getService(Constants.EVENT_SERVICE);
 		if (eventService == null) {
 			logi("registerNotifications() :: not found service : Constants.EVENT_SERVICE");
@@ -234,7 +251,6 @@ public class BLEService extends BLEBaseService {
             logi("Constants.ES_MICROBIT_EVENT   = " + Constants.ES_MICROBIT_EVENT.toString());
             logi("Constants.ES_CLIENT_REQUIREMENTS   = " + Constants.ES_CLIENT_REQUIREMENTS.toString());
         }
-
         if (!registerMicrobitRequirements(eventService, enable)){
             if (BuildConfig.DEBUG) {
                 logi("***************** Cannot Register Microbit Requirements.. Will continue ************** ");

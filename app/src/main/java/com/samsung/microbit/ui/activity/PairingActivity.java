@@ -860,6 +860,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private void handlePairingFailed() {
 
         if (debug) logi("handlePairingFailed() :: Start");
+        MBApp.getApp().sendPairingStats(false, null);
         PopUp.show(this,
                 getString(R.string.pairingErrorMessage), //message
                 getString(R.string.timeOut), //title
@@ -873,6 +874,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
     private void handlePairingSuccessful(final ConnectedDevice newDev) {
         logi("handlePairingSuccessful()");
+        MBApp.getApp().sendPairingStats(true, Utils.getmicroBitFirmware());
         Utils.setPairedMicrobit(MBApp.getContext(), newDev);
         updatePairedDeviceCard();
         // Pop up to show pairing successful
