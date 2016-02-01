@@ -67,7 +67,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         PAIRING_STATE_TIP,
         PAIRING_STATE_PATTERN_EMPTY,
         PAIRING_STATE_SEARCHING,
-        PAIRING_STATE_ERROR,
+        PAIRING_STATE_ERROR
     }
 
     private static PAIRING_STATE mState = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
@@ -125,11 +125,16 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         STATE_IDLE,
         STATE_ENABLE_BT_FOR_CONNECT,
         STATE_ENABLE_BT_FOR_PAIRING,
+        STATE_CONNECTING,
+        STATE_DISCONNECTING
     }
 
 
     private static ACTIVITY_STATE mActivityState = ACTIVITY_STATE.STATE_IDLE;
     private int selectedDeviceForConnect = 0;
+
+    private long mConnectionStartTime = 0 ;
+    private String mMicroBitFirmware = "unknown";
 
 
     private View.OnClickListener mSuccessFulPairingHandler = new View.OnClickListener() {
@@ -204,30 +209,57 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+            int error = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+            String firmware = intent.getStringExtra(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE);
 
-            updatePairedDeviceCard();
-            PopUp.hide();
-            if (v != 0) {
-                logi("localBroadcastReceiver Error code =" + v);
-                String message = intent.getStringExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
-                logi("localBroadcastReceiver Error message = " + message);
-                if (message == null)
-                    message = "Error";
-                final String displayTitle = message;
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        PopUp.show(MBApp.getContext(),
-                                MBApp.getContext().getString(R.string.micro_bit_reset_msg),
-                                displayTitle,
-                                R.drawable.error_face, R.drawable.red_btn,
-                                PopUp.GIFF_ANIMATION_ERROR,
-                                PopUp.TYPE_ALERT, null, null);
-                    }
-                });
+            if (firmware != null && !firmware.isEmpty()){
+                mMicroBitFirmware = firmware ;
+                return;
             }
+            updatePairedDeviceCard();
+
+            if (mActivityState == ACTIVITY_STATE.STATE_DISCONNECTING || mActivityState == ACTIVITY_STATE.STATE_CONNECTING)
+            {
+                if (mActivityState == ACTIVITY_STATE.STATE_CONNECTING)
+                {
+                    if (error == 0){
+                        MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.SUCCESS, mMicroBitFirmware, null);
+                        mConnectionStartTime = System.currentTimeMillis();
+                    } else {
+                        MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.FAIL, null, null);
+                    }
+                }
+                if (error == 0  && mActivityState == ACTIVITY_STATE.STATE_DISCONNECTING)
+                {
+                    long now = System.currentTimeMillis();
+                    long connectionTime =  (now - mConnectionStartTime) /1000; //Time in seconds
+                    MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.DISCONNECT, mMicroBitFirmware, Long.toString(connectionTime));
+                }
+                PopUp.hide();
+                mActivityState = ACTIVITY_STATE.STATE_IDLE;
+
+                if (error != 0) {
+                    logi("localBroadcastReceiver Error code =" + error);
+                    String message = intent.getStringExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
+                    logi("localBroadcastReceiver Error message = " + message);
+                    if (message == null)
+                        message = "Error";
+                    final String displayTitle = message;
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            PopUp.show(MBApp.getContext(),
+                                    MBApp.getContext().getString(R.string.micro_bit_reset_msg),
+                                    displayTitle,
+                                    R.drawable.error_face, R.drawable.red_btn,
+                                    PopUp.GIFF_ANIMATION_ERROR,
+                                    PopUp.TYPE_ALERT, null, null);
+                        }
+                    });
+                }
+            }
+
         }
     };
     // *************************************************
@@ -695,6 +727,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         if (currentDevice.mAddress != null) {
             boolean currentState = currentDevice.mStatus;
             if (!currentState) {
+                mActivityState = ACTIVITY_STATE.STATE_CONNECTING;
                 PopUp.show(MBApp.getContext(),
                         getString(R.string.init_connection),
                         "",
@@ -704,6 +737,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                         null, null);
                 IPCService.getInstance().bleConnect();
             } else {
+                mActivityState = ACTIVITY_STATE.STATE_DISCONNECTING;
                 PopUp.show(MBApp.getContext(),
                         getString(R.string.disconnecting),
                         "",
@@ -874,7 +908,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
     private void handlePairingSuccessful(final ConnectedDevice newDev) {
         logi("handlePairingSuccessful()");
-        MBApp.getApp().sendPairingStats(true, Utils.getmicroBitFirmware());
+        MBApp.getApp().sendPairingStats(true, mMicroBitFirmware);
         Utils.setPairedMicrobit(MBApp.getContext(), newDev);
         updatePairedDeviceCard();
         // Pop up to show pairing successful

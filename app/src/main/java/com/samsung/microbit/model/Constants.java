@@ -251,4 +251,11 @@ public class Constants {
     public static int MAX_VIDEO_FILE_SIZE = 100 * 1024 * 1024 ; //Size in bytes
 
     public static String MEDIA_OUTPUT_FOLDER = "bbc-microbit";
+
+    //For stats
+    public enum CONNECTION_STATE {
+        SUCCESS,
+        FAIL,
+        DISCONNECT
+    }
 }

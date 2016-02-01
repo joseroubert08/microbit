@@ -235,7 +235,7 @@ public class BLEService extends BLEBaseService {
                 {
                      firmware = firmwareCharacteristic.getStringValue(0) ;
                 }
-                Utils.setmicroBitFirmware(firmware);
+                sendMicrobitFirmware(firmware);
                 logi("Micro:bit firmware version String = " + firmware);
             }
         }
@@ -312,6 +312,14 @@ public class BLEService extends BLEBaseService {
 		}
 	}
 
+    protected void sendMicrobitFirmware(String firmware)
+    {
+        logi("sendMicrobitFirmware() :: firmware = " + firmware);
+        NameValuePair[] args = new NameValuePair[2];
+        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE, firmware);
+        sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
+    }
 	@Override
 	protected void setNotification(boolean isConnected, int errorCode) {
 
