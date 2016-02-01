@@ -301,7 +301,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         itemSelectorLayout.setFocusable(false);
         itemSelectorLayout.setFocusableInTouchMode(false);
         itemSelectorLayout.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        
+
         // Device connection status
         mdeviceConnectionStatus = (TextView) findViewById(R.id.device_status_txt);
         mdeviceConnectionStatus.setTypeface(MBApp.getApp().getTypeface());
