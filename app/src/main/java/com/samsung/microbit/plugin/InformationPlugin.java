@@ -258,6 +258,7 @@ public class InformationPlugin {
 
     static ShakeEventListener mShakeListener;
     static BroadcastReceiver mBatteryReceiver;
+    static BroadcastReceiver mScreenReceiver;
     static int mPreviousBatteryPct;
 
     static {
@@ -391,47 +392,34 @@ public class InformationPlugin {
     }
 
     public static void registerDisplay() {
-        // TODO - complete this
-        Log.i("Information Plugin", "registerDisplay() ");
-        if (mPowerManager != null) {
+        if (mScreenReceiver != null)
             return;
-        }
-        Log.i("Information Plugin", "registerSignalStrength ");
+        Log.i("Information Plugin", "registerDisplay() ");
+        mScreenReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+                    PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID, Constants.SAMSUNG_DEVICE_DISPLAY_OFF));
+                } else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
+                    PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID,Constants.SAMSUNG_DEVICE_DISPLAY_ON));
+                }
+            }
+        };
 
-        // retrieve status from receiver
-
-        // send to service
+        IntentFilter screenStateFilter = new IntentFilter();
+        screenStateFilter.addAction(Intent.ACTION_SCREEN_ON);
+        screenStateFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        mContext.registerReceiver(mScreenReceiver, screenStateFilter);
     }
 
     public static void unregisterDisplay() {
-        // TODO - complete this
-        Log.i("Information Plugin", "registerDisplay() ");
-        if (mPowerManager != null) {
+        Log.i("Information Plugin", "unregisterDisplay() ");
+        if (mScreenReceiver == null)
             return;
-        }
-        Log.i("Information Plugin", "registerSignalStrength ");
 
+        mContext.unregisterReceiver(mScreenReceiver);
+        mScreenReceiver = null;
     }
-
-    // Listen for changes in screen state
-    public class ScreenReceiver extends BroadcastReceiver {
-        // Screen status
-        private boolean screenOff;
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
-                screenOff = true;
-            } else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
-                screenOff = false;
-            }
-            // Start service with the value
-            Intent updateScreenStatus = new Intent(context,  PluginService.class);
-            updateScreenStatus.putExtra("screen_status", screenOff);
-            context.startService(updateScreenStatus);
-        }
-    }
-
     public static boolean isTemperatureRegistered() {
         return mTemperatureListener != null;
     }

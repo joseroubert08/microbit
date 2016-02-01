@@ -402,6 +402,10 @@ public class BLEService extends BLEBaseService {
         CmdArg cmd5 = register? new CmdArg(Constants.REG_MESSAGING, "On") : new CmdArg(Constants.REG_MESSAGING, "Off");
         sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_TELEPHONY_ID, cmd5, null);
 
+        //Register Display
+        CmdArg cmd6 = register? new CmdArg(Constants.REG_DISPLAY, "On") : new CmdArg(Constants.REG_DISPLAY, "Off");
+        sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_DEVICE_INFO_ID, cmd6, null);
+
     }
 	/*
 	 * IPC Messenger handling
