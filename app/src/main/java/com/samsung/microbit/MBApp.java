@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.util.Log;
 
 import com.samsung.microbit.core.Utils;
+import com.samsung.microbit.model.Constants;
 
 import java.util.HashMap;
 
@@ -160,6 +161,52 @@ public class MBApp extends Application {
                 echo.userActionEvent("opt-in", "stats-tracking", eventLabels);
             } else {
                 echo.userActionEvent("opt-out", "stats-tracking", eventLabels);
+            }
+        } else {
+            Log.d("MBApp", "Sharing of stats is disabled by user or Echo not initialised");
+        }
+    }
+
+
+    public void sendPairingStats(boolean paired, String firmware)
+    {
+        if (echo != null){
+            HashMap <String, String> eventLabels = new HashMap<String,String>();
+            eventLabels.put("bbc_site", "bitesize");
+            if (paired){
+                eventLabels.put("firmware", firmware);
+                echo.userActionEvent("success", "pair", eventLabels);
+            } else {
+                echo.userActionEvent("fail", "pair", eventLabels);
+            }
+        } else {
+            Log.d("MBApp", "Sharing of stats is disabled by user or Echo not initialised");
+        }
+    }
+
+    public void sendConnectStats(Constants.CONNECTION_STATE connectionState, String firmware, String duration)
+    {
+        if (echo != null){
+            HashMap <String, String> eventLabels = new HashMap<String,String>();
+            eventLabels.put("bbc_site", "bitesize");
+            switch (connectionState)
+            {
+                case SUCCESS:
+                    Log.d("MBApp", "Sending Connection stats - MSG(SUCCESS) - Firmware = " + firmware );
+                    eventLabels.put("firmware", firmware);
+                    echo.userActionEvent("success", "connect", eventLabels);
+                    break;
+                case FAIL:
+                    Log.d("MBApp", "Sending Connection stats - MSG(Failed)");
+                    echo.userActionEvent("fail", "connect", null);
+                    break;
+                case DISCONNECT:
+                    Log.d("MBApp", "Sending Connection stats - MSG(DISCONNECT) - Firmware = " + firmware  + " Duration =" + duration);
+                    eventLabels.put("firmware", firmware);
+                    eventLabels.put("duration", duration);
+                    echo.userActionEvent("disconnect", "connect", eventLabels);
+                    break;
+
             }
         } else {
             Log.d("MBApp", "Sharing of stats is disabled by user or Echo not initialised");

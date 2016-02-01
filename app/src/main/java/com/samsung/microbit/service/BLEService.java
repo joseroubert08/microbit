@@ -222,6 +222,23 @@ public class BLEService extends BLEBaseService {
 	public boolean registerNotifications(boolean enable) {
 
 		logi("registerNotifications() : " + enable  );
+
+        //Read microbit firmware version
+        BluetoothGattService deviceInfoService = getService(Constants.DEVICE_INFORMATION_SERVICE_UUID);
+        if (deviceInfoService != null) {
+            BluetoothGattCharacteristic firmwareCharacteristic = deviceInfoService.getCharacteristic(Constants.FIRMWARE_REVISION_UUID);
+            if (firmwareCharacteristic != null)
+            {
+                String firmware  = "";
+                BluetoothGattCharacteristic characteristic = readCharacteristic(firmwareCharacteristic);
+                if (characteristic !=null && characteristic.getValue() != null && characteristic.getValue().length != 0)
+                {
+                     firmware = firmwareCharacteristic.getStringValue(0) ;
+                }
+                sendMicrobitFirmware(firmware);
+                logi("Micro:bit firmware version String = " + firmware);
+            }
+        }
 		BluetoothGattService eventService = getService(Constants.EVENT_SERVICE);
 		if (eventService == null) {
 			logi("registerNotifications() :: not found service : Constants.EVENT_SERVICE");
@@ -234,7 +251,6 @@ public class BLEService extends BLEBaseService {
             logi("Constants.ES_MICROBIT_EVENT   = " + Constants.ES_MICROBIT_EVENT.toString());
             logi("Constants.ES_CLIENT_REQUIREMENTS   = " + Constants.ES_CLIENT_REQUIREMENTS.toString());
         }
-
         if (!registerMicrobitRequirements(eventService, enable)){
             if (BuildConfig.DEBUG) {
                 logi("***************** Cannot Register Microbit Requirements.. Will continue ************** ");
@@ -296,6 +312,14 @@ public class BLEService extends BLEBaseService {
 		}
 	}
 
+    protected void sendMicrobitFirmware(String firmware)
+    {
+        logi("sendMicrobitFirmware() :: firmware = " + firmware);
+        NameValuePair[] args = new NameValuePair[2];
+        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE, firmware);
+        sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
+    }
 	@Override
 	protected void setNotification(boolean isConnected, int errorCode) {
 

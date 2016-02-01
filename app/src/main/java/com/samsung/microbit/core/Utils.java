@@ -36,9 +36,8 @@ import no.nordicsemi.android.dfu.DfuBaseService;
 public class Utils {
 
 	public static final String PREFERENCES_KEY = "Microbit_PairedDevices";
-	public static final String PREFERENCES_NAME_KEY = "PairedDeviceName";  // To be removed
-	public static final String PREFERENCES_ADDRESS_KEY = "PairedDeviceAddress"; // To be removed
 	public static final String PREFERENCES_PAIREDDEV_KEY = "PairedDeviceDevice";
+    public static String PREFERENCES_MICROBIT_FIRMWARE = "PairedDeviceDevice";
 
 	public static final String PREFERENCES = "Preferences";
 	public static final String PREFERENCES_LIST_ORDER = "Preferences.listOrder";
@@ -463,6 +462,30 @@ public class Utils {
 		editor.commit();
 	}
 
+    public static String getmicroBitFirmware()
+    {
+        return PREFERENCES_MICROBIT_FIRMWARE;
+/*        SharedPreferences pairedDevicePref = MBApp.getContext().getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
+
+        String firmware = "unknown" ;
+        if (pairedDevicePref.contains(PREFERENCES_MICROBIT_FIRMWARE)) {
+            pairedDevicePref.getString(PREFERENCES_MICROBIT_FIRMWARE, "unknown");
+        }
+        return firmware;*/
+    }
+
+    public static void setmicroBitFirmware(String firmware)
+    {
+        PREFERENCES_MICROBIT_FIRMWARE = firmware ;
+/*
+
+        SharedPreferences pairedDevicePref = MBApp.getContext().getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
+        SharedPreferences.Editor editor = pairedDevicePref.edit();
+        if (editor != null) {
+            editor.putString(PREFERENCES_MICROBIT_FIRMWARE, firmware).commit();
+        }
+*/
+    }
 	public static int getListOrderPrefs(Context ctx) {
 		SharedPreferences prefs = ctx.getApplicationContext().getSharedPreferences(PREFERENCES, Context.MODE_MULTI_PROCESS);
 
