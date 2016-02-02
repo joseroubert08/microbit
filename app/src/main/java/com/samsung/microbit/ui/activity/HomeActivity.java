@@ -302,7 +302,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onPause() {
         super.onPause();
         // Pause animation
-        gifAnimationHelloEmoji.setFreezesAnimation(true);
+        //gifAnimationHelloEmoji.setFreezesAnimation(true);
     }
 
     @Override
@@ -452,7 +452,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         /* Code removal ends */
         MBApp.setContext(this);
         // Reload Hello Emoji animation
-        gifAnimationHelloEmoji.refreshDrawableState();
-        gifAnimationHelloEmoji.animate();
+        findViewById(R.id.homeHelloAnimationGifView).animate();
     }
 }
