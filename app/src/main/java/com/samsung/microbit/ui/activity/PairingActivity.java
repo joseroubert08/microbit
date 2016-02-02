@@ -618,11 +618,14 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             image.setBackground(getApplication().getResources().getDrawable(R.drawable.red_white_led_btn));
             image.setTag("1");
             isOn = true;
+            image.setContentDescription("" + ++pos + "on"); // TODO check this for status of button
+
         } else {
             deviceCodeArray[pos] = "0";
             image.setBackground(getApplication().getResources().getDrawable(R.drawable.white_red_led_btn));
             image.setTag("0");
             isOn = false;
+            image.setContentDescription("" + ++pos + "off"); // TODO check this for status of button
             // Update the code to consider the still ON LED below the toggled one
             if (pos < 20)
                 deviceCodeArray[pos + 5] = "1";
@@ -734,6 +737,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     mPairSearchView.setVisibility(View.VISIBLE);
                     TextView tvTitle = (TextView) findViewById(R.id.search_microbit_step_3_title);
                     TextView tvSearchingStep = (TextView) findViewById(R.id.searching_microbit_step);
+                    tvSearchingStep.setContentDescription(tvSearchingStep.getText());
                     TextView tvSearchingInstructions = (TextView) findViewById(R.id.searching_microbit_step_instructions);
                     if (tvTitle != null) {
                         tvTitle.setText(R.string.searchingTitle);

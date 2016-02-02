@@ -151,6 +151,8 @@
     <string name="step_connect_tip_text_step_three_text">When asked, press button A \nand enter your PIN</string>
     <string name="desc_step_connect_tip_text_step_three_text">When asked, press button A and enter your PIN</string>
     <string name="desc_step_connect_tip_text_step_four">Step 4</string>
+    <string name="searching_microbit_found_message">Open your notification drawer \nand enter your Pin</string>
+    <string name="desc_searching_microbit_found_message">Open your notification drawer and enter your Pin</string>
     <string name="step_connect_tip_text_step_two">Step 2</string>
     <string name="connect_tip_text">Hold the A and B buttons,\nthen PRESS RESET</string>
     <string name="desc_connect_tip_text">Hold the a and b buttons, then PRESS RESET</string>
@@ -160,7 +162,7 @@
     <string name="connect_tip_text_step_two_text">When asked, enter your PIP \n(personal identification pattern) </string>
     <string name="desc_connect_tip_text_step_two_text">When asked, enter your personal identification pattern </string>
     <string name="step_enter_pattern_tip_text">Step 2</string>
-    <string name="enter_pattern_tip_text">Copy the pattern from your\nmicro:bit onto this grid</string>
+    <string name="enter_pattern_tip_text">Copy the pattern from \nyour micro:bit onto this grid</string>
     <string name="desc_enter_pattern_tip_step_two">Step two</string>
     <string name="desc_enter_pattern_tip_text">Copy the pattern from your micro:bit onto this grid</string>
     <string name="searching_tip_text_instructions">(you only have 30 seconds)</string>
@@ -326,6 +328,5 @@
     <!-- Stats -->
     <string name="stats_view_name">kl.education.microbit.%s.page</string>
     <string name="cancel_searching_btn_txt">Cancel</string>
-    <string name="searching_microbit_found_message">Open your notification drawer \nand enter your Pin</string>
 
 </resources>
