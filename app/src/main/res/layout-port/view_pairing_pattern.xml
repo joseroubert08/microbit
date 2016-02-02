@@ -23,8 +23,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center"
-        android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         android:layout_weight="3">
 
         <GridView
@@ -39,10 +39,9 @@
             android:verticalSpacing="@dimen/led_gap" />
     </LinearLayout>
 
-
     <include layout="@layout/view_entering_pattern_step" />
 
-    <!-- Line -->
+    <!--Line-->
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -57,10 +56,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:divider="?android:dividerHorizontal"
-        android:dividerPadding="16dp"
-        android:orientation="horizontal"
-        android:showDividers="end">
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/cancel_enter_pattern_step_2_btn"

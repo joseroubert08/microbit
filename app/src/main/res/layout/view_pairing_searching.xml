@@ -4,52 +4,59 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black_color"
-    android:orientation="vertical"
-    android:keepScreenOn="true">
+    android:keepScreenOn="true"
+    android:orientation="vertical">
 
-    <!-- pairing animation -->
+    <!-- Title -->
     <TextView
         android:id="@+id/search_microbit_step_3_title"
+        style="@style/h1"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|top"
         android:layout_margin="16dp"
-        android:layout_weight="1"
         android:gravity="center"
         android:text="@string/searchingTitle"
         android:textAppearance="?android:textAppearanceMedium"
         android:textColor="@color/white_color" />
 
-    <!--pairing animation-->
-    <!--<WebView-->
-    <!--android:id="@+id/searching_microbit_webview"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="0dp"-->
-    <!--android:layout_gravity="center"-->
-    <!--android:layout_margin="16dp"-->
-    <!--android:layout_weight="3"-->
-    <!--android:foregroundGravity="center"-->
-    <!--android:scrollbars="none" />-->
-
-    <!--<ProgressBar-->
-    <!--android:id="@+id/searching_progress_spinner"-->
-    <!--android:layout_width="120dp"-->
-    <!--android:layout_height="120dp"-->
-    <!--android:layout_gravity="center"-->
-    <!--android:layout_margin="16dp"-->
-    <!--android:layout_weight="2"-->
-    <!--android:foregroundGravity="center"-->
-    <!--android:indeterminateDrawable="@xml/progress" />-->
-    <ProgressBar
-        android:id="@+id/searching_progress_spinner"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_margin="16dp"
-        android:layout_weight="2"
-        android:foregroundGravity="center"
-        android:paddingBottom="@dimen/popup_body_view_paddingVertical"
-        android:paddingTop="@dimen/popup_body_view_paddingVertical" />
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!--pairing animation-->
+        <ImageView
+            android:id="@+id/searching_microbit_found_imageview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:scrollbars="none"
+            android:src="@drawable/encouragement_emojio"
+            android:visibility="gone" />
+
+        <!--<ProgressBar-->
+        <!--android:id="@+id/searching_progress_spinner"-->
+        <!--android:layout_width="120dp"-->
+        <!--android:layout_height="120dp"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_margin="16dp"-->
+        <!--android:layout_weight="2"-->
+        <!--android:foregroundGravity="center"-->
+        <!--android:indeterminateDrawable="@xml/progress" />-->
+        <ProgressBar
+            android:id="@+id/searching_progress_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:foregroundGravity="center"
+            android:paddingBottom="@dimen/popup_body_view_paddingVertical"
+            android:paddingTop="@dimen/popup_body_view_paddingVertical"
+            android:visibility="gone" />
+    </LinearLayout>
 
     <include layout="@layout/view_pairing_searching_step" />
 
@@ -86,7 +93,7 @@
             android:drawableEnd="@drawable/cancel_step_pairing_btn"
             android:gravity="start|center_vertical"
             android:padding="8dp"
-            android:text="Cancel"
+            android:text="@string/cancel_searching_btn_txt"
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="@color/black_color" />
     </LinearLayout>

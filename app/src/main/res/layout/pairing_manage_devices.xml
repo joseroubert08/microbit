@@ -32,7 +32,8 @@
             android:maxLines="2"
             android:nextFocusDown="@+id/img_pair_microbit"
             android:text="@string/manage_and_remove_microbit"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/subtitle_manage_microbit"
@@ -45,9 +46,7 @@
             android:maxLines="2"
             android:nextFocusDown="@+id/img_pair_microbit"
             android:text="@string/subtitle_manage_and_remove_microbits_label"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textStyle="bold"  />
-
+            android:textAppearance="?android:textAppearanceMedium" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -81,7 +80,6 @@
                 android:src="@drawable/connected_emoji" />
         </LinearLayout>
 
-
         <!-- Bluetooth settings -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -99,18 +97,6 @@
                 android:nextFocusDown="@id/flash_projects_title_txt"
                 android:text="@string/connect_microbit_problems_message"
                 android:textAppearance="?android:textAppearanceMedium" />
-
-
-            <!--<Button-->
-            <!--android:id="@+id/go_bluetooth_settings"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:background="@drawable/grey_btn"-->
-            <!--android:contentDescription="@string/desc_go_to_bluetooth_settings"-->
-            <!--android:drawableEnd="@drawable/ic_bluetooth_white_btn"-->
-            <!--android:gravity="center|start"-->
-            <!--android:nextFocusDown="@+id/pairButton"-->
-            <!--android:text="@string/tv_go_to_bluetooth_Settings" />-->
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

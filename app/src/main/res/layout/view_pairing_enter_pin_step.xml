@@ -24,7 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/lets_do_this_emoji"
-        android:contentDescription="@string/searching_tip_text"
+        android:contentDescription="@string/searching_tip_text_instructions"
         android:lines="3"
         android:maxLines="3"
         android:paddingEnd="16dp"

@@ -7,11 +7,11 @@
     tools:showIn="@layout/view_pairing_searching">
 
     <TextView
-        android:id="@+id/searching_microbit_step_3_step"
+        android:id="@+id/searching_microbit_step"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:contentDescription="@string/desc_searching_tip_step_three"
+        android:contentDescription="@string/searching_tip_step_text"
         android:paddingBottom="16dp"
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
@@ -22,7 +22,7 @@
         android:textColor="@color/white_color" />
 
     <TextView
-        android:id="@+id/searching_microbit_step_3_instructions"
+        android:id="@+id/searching_microbit_step_instructions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/where_are_you_emoji"
@@ -31,7 +31,7 @@
         android:maxLines="2"
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
-        android:text="@string/searching_tip_text"
+        android:text="@string/searching_tip_text_instructions"
         android:textAppearance="?android:textAppearanceMedium"
         android:textColor="@color/white_color" />
 

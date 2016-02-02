@@ -53,8 +53,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import pl.droidsonroids.gif.GifDrawable;
-
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class PairingActivity extends Activity implements View.OnClickListener {
@@ -92,6 +90,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
     LinearLayout mPairButtonView;
     LinearLayout mPairTipView;
+    LinearLayout mPairTipViewScreenTwo;
     LinearLayout mConnectDeviceView; // new layout
     LinearLayout mNewDeviceView;
     LinearLayout mPairSearchView;
@@ -104,10 +103,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private ImageButton mdeleteBtn;
     private Handler mHandler;
 
-    // Step 1 - How to Pair
-    ImageView imgHowToPairAnimation;
-    GifDrawable gifFromAssets;
-    // Step 3 - Searching for Microbit (spinner)
+    // Searching for Micro:bit (spinner)
     ProgressBar searchingProgressSpinner;
 
     // Stops scanning after 10 seconds.
@@ -132,7 +128,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private static ACTIVITY_STATE mActivityState = ACTIVITY_STATE.STATE_IDLE;
     private int selectedDeviceForConnect = 0;
 
-    private long mConnectionStartTime = 0 ;
+    private long mConnectionStartTime = 0;
     private String mMicroBitFirmware = "unknown";
 
 
@@ -211,27 +207,24 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             int error = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
             String firmware = intent.getStringExtra(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE);
 
-            if (firmware != null && !firmware.isEmpty()){
-                mMicroBitFirmware = firmware ;
+            if (firmware != null && !firmware.isEmpty()) {
+                mMicroBitFirmware = firmware;
                 return;
             }
             updatePairedDeviceCard();
 
-            if (mActivityState == ACTIVITY_STATE.STATE_DISCONNECTING || mActivityState == ACTIVITY_STATE.STATE_CONNECTING)
-            {
-                if (mActivityState == ACTIVITY_STATE.STATE_CONNECTING)
-                {
-                    if (error == 0){
+            if (mActivityState == ACTIVITY_STATE.STATE_DISCONNECTING || mActivityState == ACTIVITY_STATE.STATE_CONNECTING) {
+                if (mActivityState == ACTIVITY_STATE.STATE_CONNECTING) {
+                    if (error == 0) {
                         MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.SUCCESS, mMicroBitFirmware, null);
                         mConnectionStartTime = System.currentTimeMillis();
                     } else {
                         MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.FAIL, null, null);
                     }
                 }
-                if (error == 0  && mActivityState == ACTIVITY_STATE.STATE_DISCONNECTING)
-                {
+                if (error == 0 && mActivityState == ACTIVITY_STATE.STATE_DISCONNECTING) {
                     long now = System.currentTimeMillis();
-                    long connectionTime =  (now - mConnectionStartTime) /1000; //Time in seconds
+                    long connectionTime = (now - mConnectionStartTime) / 1000; //Time in seconds
                     MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.DISCONNECT, mMicroBitFirmware, Long.toString(connectionTime));
                 }
                 PopUp.hide();
@@ -358,7 +351,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         mdeleteBtn.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
 
         itemSelectorLayout.setOnClickListener(this);
-        //mconnectBtn.setOnClickListener(this);
+        //  mconnectBtn.setOnClickListener(this); TODO - whole bar selectable
         mdeleteBtn.setOnClickListener(this);
 
         updatePairedDeviceCard();
@@ -366,6 +359,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         mBottomPairButton = (LinearLayout) findViewById(R.id.ll_pairing_activity_screen);
         mPairButtonView = (LinearLayout) findViewById(R.id.pairButtonView);
         mPairTipView = (LinearLayout) findViewById(R.id.pairTipView);
+        mPairTipViewScreenTwo = (LinearLayout) findViewById(R.id.pair_tip_screen_two);
         mConnectDeviceView = (LinearLayout) findViewById(R.id.connectDeviceView); // Connect device view
         mNewDeviceView = (LinearLayout) findViewById(R.id.newDeviceView);
         mPairSearchView = (LinearLayout) findViewById(R.id.pairSearchView);
@@ -394,7 +388,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         TextView problemsMicrobit = (TextView) findViewById(R.id.connect_microbit_problems_message);
         problemsMicrobit.setTypeface(MBApp.getApp().getTypeface());
 
-        // Step 1 - How to pair your micro:bit
+        // How to pair your micro:bit - Screen #1
         TextView pairTipTitle = (TextView) findViewById(R.id.pairTipTitle);
         pairTipTitle.setTypeface(MBApp.getApp().getTypeface());
 
@@ -415,6 +409,28 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         Button nextPairButton = (Button) findViewById(R.id.ok_tip_step_1_btn);
         nextPairButton.setTypeface(MBApp.getApp().getTypeface());
+
+        // How to pair your micro:bit - Screen #2
+        TextView howToPairStepThreeTitle = (TextView) findViewById(R.id.how_to_pair_screen_two_title);
+        howToPairStepThreeTitle.setTypeface(MBApp.getApp().getTypeface());
+
+        TextView howToPairStepThreeStep = (TextView) findViewById(R.id.pair_tip_step_3_step);
+        howToPairStepThreeStep.setTypeface(MBApp.getApp().getTypeface());
+
+        TextView howToPairStepThreeText = (TextView) findViewById(R.id.pair_tip_step_3_instructions);
+        howToPairStepThreeText.setTypeface(MBApp.getApp().getTypeface());
+
+        TextView howToPairStepFourTitle = (TextView) findViewById(R.id.pair_tip_step_4_step);
+        howToPairStepFourTitle.setTypeface(MBApp.getApp().getTypeface());
+
+        TextView howToPairStepFourText = (TextView) findViewById(R.id.pair_tip_step_4_instructions);
+        howToPairStepFourText.setTypeface(MBApp.getApp().getTypeface());
+
+        Button cancelPairScreenTwoButton = (Button) findViewById(R.id.cancel_tip_step_3_btn);
+        cancelPairScreenTwoButton.setTypeface(MBApp.getApp().getTypeface());
+
+        Button nextPairScreenTwoButton = (Button) findViewById(R.id.ok_tip_step_3_btn);
+        nextPairScreenTwoButton.setTypeface(MBApp.getApp().getTypeface());
 
         // Step 2 - Enter Pattern
         TextView enterPatternTitle = (TextView) findViewById(R.id.enter_pattern_step_2_title);
@@ -439,10 +455,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         TextView searchMicrobitTitle = (TextView) findViewById(R.id.search_microbit_step_3_title);
         searchMicrobitTitle.setTypeface(MBApp.getApp().getTypeface());
 
-        TextView stepThreeTitle = (TextView) findViewById(R.id.searching_microbit_step_3_step);
+        TextView stepThreeTitle = (TextView) findViewById(R.id.searching_microbit_step);
         stepThreeTitle.setTypeface(MBApp.getApp().getTypeface());
 
-        TextView stepThreeInstructions = (TextView) findViewById(R.id.searching_microbit_step_3_instructions);
+        TextView stepThreeInstructions = (TextView) findViewById(R.id.searching_microbit_step_instructions);
         stepThreeInstructions.setTypeface(MBApp.getApp().getTypeface());
 
         Button cancelSearchMicroBit = (Button) findViewById(R.id.cancel_search_microbit_step_3_btn);
@@ -466,9 +482,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.pairButton).setOnClickListener(this);
         findViewById(R.id.cancel_tip_step_1_btn).setOnClickListener(this);
         findViewById(R.id.ok_enter_pattern_step_2_btn).setOnClickListener(this);
+        findViewById(R.id.cancel_tip_step_3_btn).setOnClickListener(this);
+        findViewById(R.id.ok_tip_step_3_btn).setOnClickListener(this);
         findViewById(R.id.cancel_enter_pattern_step_2_btn).setOnClickListener(this);
         findViewById(R.id.cancel_search_microbit_step_3_btn).setOnClickListener(this);
-        //findViewById(R.id.go_bluetooth_settings).setOnClickListener(this);
         findViewById(R.id.cancel_enter_pin_step_4_btn).setOnClickListener(this);
 
         // Step 3: Searching for Micro:bit (animation)
@@ -660,6 +677,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private void displayScreen(PAIRING_STATE gotoState) {
         //Reset all screens first
         mPairTipView.setVisibility(View.GONE);
+        mPairTipViewScreenTwo.setVisibility(View.GONE);
         mNewDeviceView.setVisibility(View.GONE);
         mPairSearchView.setVisibility(View.GONE);
         mEnterPinView.setVisibility(View.GONE);
@@ -698,6 +716,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 break;
 
             case PAIRING_STATE_PATTERN_EMPTY:
+
                 findViewById(R.id.enter_pattern_step_2_gridview).setEnabled(true);
                 mNewDeviceView.setVisibility(View.VISIBLE);
                 findViewById(R.id.cancel_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
@@ -711,7 +730,19 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 break;
 
             case PAIRING_STATE_SEARCHING:
-                mPairSearchView.setVisibility(View.VISIBLE);
+                if (mPairSearchView != null) {
+                    mPairSearchView.setVisibility(View.VISIBLE);
+                    TextView tvTitle = (TextView) findViewById(R.id.search_microbit_step_3_title);
+                    TextView tvSearchingStep = (TextView) findViewById(R.id.searching_microbit_step);
+                    TextView tvSearchingInstructions = (TextView) findViewById(R.id.searching_microbit_step_instructions);
+                    if (tvTitle != null) {
+                        tvTitle.setText(R.string.searchingTitle);
+                        findViewById(R.id.searching_progress_spinner).setVisibility(View.VISIBLE);
+                        findViewById(R.id.searching_microbit_found_imageview).setVisibility(View.GONE);
+                        tvSearchingStep.setText(R.string.searching_tip_step_text);
+                        tvSearchingInstructions.setText(R.string.searching_tip_text_instructions);
+                    }
+                }
                 break;
         }
     }
@@ -759,79 +790,111 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         }
     }
 
+    @Override
     public void onClick(final View v) {
-        int pos;
-
         switch (v.getId()) {
+            // Pair a micro:bit
             case R.id.pairButton:
-                if (debug) logi("onClick() :: pairButton");
-                if (!BluetoothSwitch.getInstance().isBluetoothON()) {
-                    mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_PAIRING;
-                    startBluetooth();
-                    return;
+                if (debug) {
+                    logi("onClick() :: pairButton");
+                    if (!BluetoothSwitch.getInstance().isBluetoothON()) {
+                        mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_PAIRING;
+                        startBluetooth();
+                        return;
+                    }
                 }
                 startWithPairing();
                 break;
-//            case R.id.go_bluetooth_settings: //Bluetooth
-//                Intent goToBlueToothIntent = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
-//                startActivity(goToBlueToothIntent);
-//                break;
+            // Proceed to How to Pair (screen 2)
             case R.id.ok_tip_step_1_btn:
-                if (debug) logi("onClick() :: ok_pair_button");
-                displayScreen(PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY);
+                if (debug) {
+                    logi("onClick() :: ok_pair_button");
+                    displayScreen(PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY);
+                    mPairTipViewScreenTwo.setVisibility(View.VISIBLE);
+                }
                 break;
-
+            // Confirm Pattern and begin searching for micro:bit
             case R.id.ok_enter_pattern_step_2_btn:
-                if (debug) logi("onClick() :: ok_name_button");
-                if (mState == PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY) {
-                    generateName();
-                    if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()) {
-                        return;
+                if (debug) {
+                    logi("onClick() :: ok_name_button");
+                    if (mState == PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY) {
+                        generateName();
+                        if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()) {
+                            return;
+                        }
+                        scanLeDevice(true);
+                        displayScreen(PAIRING_STATE.PAIRING_STATE_SEARCHING);
                     }
-                    scanLeDevice(true);
-                    displayScreen(PAIRING_STATE.PAIRING_STATE_SEARCHING);
                     break;
                 }
                 break;
 
             case R.id.cancel_tip_step_1_btn:
-                if (debug) logi("onClick() :: cancel_tip_button");
-                displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                if (debug) {
+                    logi("onClick() :: cancel_tip_button");
+                    displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                }
                 break;
 
+            case R.id.cancel_tip_step_3_btn:
+                if (debug) {
+                    logi("onClick() :: cancel_tip_screen_two_button");
+                    displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                }
+                break;
+            case R.id.ok_tip_step_3_btn:
+                if (debug) {
+                    logi("onClick() :: ok_tip_screen_2_enter_patten");
+                    if (mPairTipViewScreenTwo != null) {
+                        mPairTipViewScreenTwo.setVisibility(View.GONE);
+                    }
+                }
+                break;
             case R.id.cancel_enter_pattern_step_2_btn:
-                if (debug) logi("onClick() :: cancel_name_button");
-                cancelPairing();
-                displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                if (debug) {
+                    logi("onClick() :: cancel_name_button");
+                    cancelPairing();
+                    displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                }
                 break;
 
             case R.id.cancel_search_microbit_step_3_btn:
-                if (debug) logi("onClick() :: cancel_search_button");
-                scanLeDevice(false);
-                cancelPairing();
-                displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
-                break;
-
-            case R.id.connected_device_item: // TODO - change back to case R.id.connectBtn:
-                if (debug) logi("onClick() :: connectBtn");
-                if (!BluetoothSwitch.getInstance().isBluetoothON()) {
-                    mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_CONNECT;
-                    startBluetooth();
-                    return;
+                if (debug) {
+                    logi("onClick() :: cancel_search_button");
+                    scanLeDevice(false);
+                    cancelPairing();
+                    displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
                 }
-                toggleConnection();
                 break;
 
+            case R.id.connected_device_item: // TODO - Might change back to case R.id.connectBtn:
+                if (debug) {
+                    logi("onClick() :: connectBtn");
+                    if (!BluetoothSwitch.getInstance().isBluetoothON()) {
+                        mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_CONNECT;
+                        startBluetooth();
+                        return;
+                    }
+                    toggleConnection();
+                }
+                break;
+            // Delete Microbit
             case R.id.deleteBtn:
-                if (debug) logi("onClick() :: deleteBtn");
-                handleDeleteMicrobit();
+                if (debug) {
+                    logi("onClick() :: deleteBtn");
+                    handleDeleteMicrobit();
+                }
                 break;
             case R.id.cancel_enter_pin_step_4_btn:
-                displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                if (debug) {
+                    displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
+                }
                 break;
             case R.id.backBtn:
-                if (debug) logi("onClick() :: backBtn");
-                handleResetAll();
+                if (debug) {
+                    logi("onClick() :: backBtn");
+                    handleResetAll();
+                }
                 break;
 
             default:
@@ -956,7 +1019,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 TextView textView = (TextView) findViewById(R.id.search_microbit_step_3_title);
                 if (textView != null)
                     textView.setText(getString(R.string.searchingTitle));
-
                 mHandler.postDelayed(scanTimedOut, SCAN_PERIOD);
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) { //Lollipop
                     mBluetoothAdapter.startLeScan((BluetoothAdapter.LeScanCallback) getBlueToothCallBack());
@@ -1079,10 +1141,16 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     @Override
                     public void run() {
                         TextView textView = (TextView) findViewById(R.id.search_microbit_step_3_title);
-                        if (textView != null)
-                            textView.setText(getString(R.string.pairing_msg_1));
-                        //startPairing(mNewDeviceAddress);
-                        startPairingSecureBle(device);
+                        TextView tvSearchingStep = (TextView) findViewById(R.id.searching_microbit_step);
+                        TextView tvSearchingInstructions = (TextView) findViewById(R.id.searching_microbit_step_instructions);
+                        if (textView != null) {
+                            textView.setText(getString(R.string.searchingTitle));
+                            findViewById(R.id.searching_progress_spinner).setVisibility(View.GONE);
+                            findViewById(R.id.searching_microbit_found_imageview).setVisibility(View.VISIBLE);
+                            tvSearchingStep.setText(R.string.searching_microbit_found_message);
+                            tvSearchingInstructions.setText(R.string.searching_tip_text_instructions);
+                            startPairingSecureBle(device);
+                        }
                     }
                 });
             } else {
@@ -1116,6 +1184,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     protected void onDestroy() {
         super.onDestroy();
         mPairTipView.setVisibility(View.GONE);
+        mPairTipViewScreenTwo.setVisibility(View.GONE);
         mNewDeviceView.setVisibility(View.GONE);
         mPairSearchView.setVisibility(View.GONE);
         mConnectDeviceView.setVisibility(View.GONE);
