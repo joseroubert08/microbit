@@ -78,6 +78,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         MICROBIT_DISCONNECTING
     }
 
+    private long mConnectionStartTime = 0 ;
+    private String mMicroBitFirmware = "unknown";
+
     protected void logi(String message) {
         if (debug) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
@@ -88,33 +91,59 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
      * TODO setup to Handle BLE Notifications
      */
     IntentFilter broadcastIntentFilter;
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver localBroadcastReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            setActivityState(ACTIVITY_STATE.STATE_IDLE);
-            int v = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-            logi(" broadcastReceiver ---- Error code = " + v);
+            int error = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+            String firmware = intent.getStringExtra(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE);
+
+            if (firmware != null && !firmware.isEmpty()){
+                mMicroBitFirmware = firmware ;
+                return;
+            }
             setConnectedDeviceText();
-            PopUp.hide(); // TODO - check PopUp.Hide
-            if (v != 0) {
-                String message = intent.getStringExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
-                logi("broadcastReceiver Error message = " + message);
-                if (message == null)
-                    message = "Error";
-                final String displayTitle = message;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        PopUp.show(MBApp.getContext(),
-                                MBApp.getContext().getString(R.string.micro_bit_reset_msg),
-                                displayTitle,
-                                R.drawable.error_face, R.drawable.red_btn,
-                                PopUp.GIFF_ANIMATION_ERROR,
-                                PopUp.TYPE_ALERT, null, null);
+
+            if (mActivityState == ACTIVITY_STATE.MICROBIT_CONNECTING || mActivityState == ACTIVITY_STATE.MICROBIT_DISCONNECTING) {
+
+                if (mActivityState == ACTIVITY_STATE.MICROBIT_CONNECTING)
+                {
+                    if (error == 0){
+                        MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.SUCCESS, mMicroBitFirmware, null);
+                        mConnectionStartTime = System.currentTimeMillis();
+                    } else {
+                        MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.FAIL, null, null);
                     }
-                });
+                }
+                if (error == 0  && mActivityState == ACTIVITY_STATE.MICROBIT_DISCONNECTING)
+                {
+                    long now = System.currentTimeMillis();
+                    long connectionTime =  (now - mConnectionStartTime) /1000; //Time in seconds
+                    MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.DISCONNECT, mMicroBitFirmware, Long.toString(connectionTime));
+                }
+
+                setActivityState(ACTIVITY_STATE.STATE_IDLE);
+                PopUp.hide();
+                
+                if (error != 0) {
+                    String message = intent.getStringExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
+                    logi("localBroadcastReceiver Error message = " + message);
+                    if (message == null)
+                        message = "Error";
+                    final String displayTitle = message;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            PopUp.show(MBApp.getContext(),
+                                    MBApp.getContext().getString(R.string.micro_bit_reset_msg),
+                                    displayTitle,
+                                    R.drawable.error_face, R.drawable.red_btn,
+                                    PopUp.GIFF_ANIMATION_ERROR,
+                                    PopUp.TYPE_ALERT, null, null);
+                        }
+                    });
+                }
             }
         }
     };
@@ -191,7 +220,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 		 */
         if (broadcastIntentFilter == null) {
             broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
-            LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(broadcastReceiver, broadcastIntentFilter);
+            LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(localBroadcastReceiver, broadcastIntentFilter);
         }
         setConnectedDeviceText();
         String fullpathoffile = null;
