@@ -187,8 +187,8 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
                 // Flashing screen
                 case 1:
                     // Asset file
-                    //       findViewById(R.id.pop_up_gif_image_view).setBackgroundResource(R.drawable.flash_face);
-                    //      findViewById(R.id.pop_up_gif_image_view).setVisibility(View.VISIBLE);
+                    findViewById(R.id.pop_up_gif_image_view).setBackgroundResource(R.drawable.emoji_flashing_microbit);
+                    findViewById(R.id.pop_up_gif_image_view).setVisibility(View.VISIBLE);
                     // Regular image disabled
                     imageIcon.setVisibility(View.GONE);
                     break;
@@ -196,8 +196,8 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
                 // Error screen
                 case 2:
                     // Asset file
-                    //        findViewById(R.id.pop_up_gif_image_view).setBackgroundResource(R.drawable.error_face);
-                    //       findViewById(R.id.pop_up_gif_image_view).setVisibility(View.VISIBLE);
+                    findViewById(R.id.pop_up_gif_image_view).setBackgroundResource(R.drawable.emoji_fail_microbit);
+                    findViewById(R.id.pop_up_gif_image_view).setVisibility(View.VISIBLE);
                     // Regular image disabled
                     imageIcon.setVisibility(View.GONE);
                     break;
