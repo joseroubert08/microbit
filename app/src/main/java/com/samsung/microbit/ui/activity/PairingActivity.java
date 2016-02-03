@@ -632,7 +632,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             mConnectedDeviceName.setTextColor(Color.BLACK);
             mdeviceConnectionStatus.setText(R.string.device_connected_device_status);
         }
-
     }
 
     private void updatePairedDeviceCard() {
