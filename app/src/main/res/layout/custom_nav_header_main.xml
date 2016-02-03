@@ -8,7 +8,6 @@
     android:orientation="vertical">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/ll_header_custom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -28,27 +27,6 @@
             android:paddingStart="16dp"
             android:paddingTop="20dp"
             android:text="@string/nav_draw_menu"
-            android:textAppearance="?textAppearanceListItem"
-            android:textColor="@color/white_color" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.25dp"
-            android:alpha="0.5"
-            android:background="@color/white_color" />
-
-        <!-- About-->
-        <Button
-            android:id="@+id/btn_about"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/nav_drawer_grey_btn"
-            android:gravity="center_vertical|start"
-            android:paddingBottom="23dp"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            android:paddingTop="20dp"
-            android:text="@string/nav_draw_about"
             android:textAppearance="?textAppearanceListItem"
             android:textColor="@color/white_color" />
 
@@ -78,6 +56,30 @@
             android:layout_height="0.25dp"
             android:alpha="0.5"
             android:background="@color/white_color" />
+
+        <!-- About-->
+        <Button
+            android:id="@+id/btn_about"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/nav_drawer_grey_btn"
+            android:drawablePadding="8dp"
+            android:drawableStart="@drawable/discover"
+            android:gravity="center_vertical|start"
+            android:paddingBottom="23dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="20dp"
+            android:text="@string/nav_draw_about"
+            android:textAppearance="?textAppearanceListItem"
+            android:textColor="@color/white_color" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.25dp"
+            android:alpha="0.5"
+            android:background="@color/white_color" />
+
 
         <!-- Privacy & cookies -->
         <Button

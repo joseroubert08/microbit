@@ -311,7 +311,8 @@ public class CameraActivity_OldAPI extends Activity {
 
                     mCurrentIconList = mStopRecord;
                     updateButtonClickIcon();
-                    indicateVideoRecording();
+                    //TODO Video recodring crashing. Check #112 for details. Temporary fix for the BETT
+                    //indicateVideoRecording();
                     //TODO Check that is true
                     // work on UiThread for better performance
                     runOnUiThread(new Runnable() {
@@ -490,10 +491,11 @@ public class CameraActivity_OldAPI extends Activity {
                     mfrontCamera = true;
 					mButtonClick.callOnClick();
 				}
-                else if (!mVideo && intent.getAction().equals("TOGGLE_CAMERA")){
+                else if (intent.getAction().equals("TOGGLE_CAMERA")){
                     toggleCamera();
                 }
 				else if(mVideo && !mIsRecording && intent.getAction().equals("START_VIDEO")) {
+                    mfrontCamera = true;
 					mButtonClick.callOnClick();
 				}
 				else if(mVideo && mIsRecording && intent.getAction().equals("STOP_VIDEO")) {
@@ -553,6 +555,7 @@ public class CameraActivity_OldAPI extends Activity {
 			if(mVideo){
 				this.registerReceiver(mMessageReceiver, new IntentFilter("START_VIDEO"));
 				this.registerReceiver(mMessageReceiver, new IntentFilter("STOP_VIDEO"));
+                this.registerReceiver(mMessageReceiver, new IntentFilter("TOGGLE_CAMERA"));
 			}
 			else {
 				this.registerReceiver(mMessageReceiver, new IntentFilter("TAKE_PIC"));

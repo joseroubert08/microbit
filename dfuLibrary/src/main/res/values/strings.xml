@@ -25,9 +25,9 @@
     <string name="dfu_status_uploading_msg">Flashing application to %s&#8230;</string>
     <string name="dfu_status_validating_msg">Checking the pairing code&#8230;</string>
     <string name="dfu_status_completed_msg">Application has been send successfully.</string>
-    <string name="dfu_status_aborted_msg">Application flashing has been aborted.</string>
+    <string name="dfu_status_aborted_msg">Application flashing has been aborted. Please reset micro:bit and try again.</string>
     <string name="dfu_status_disconnecting_msg">Disconnecting from %s&#8230;</string>
-    <string name="dfu_status_error_msg">Flashing unsuccessful</string>
-    <string name="dfu_validation_failed">Validation failed or Timeout</string>
+    <string name="dfu_status_error_msg">Flashing unsuccessful. Please reset micro:bit and try again.</string>
+    <string name="dfu_validation_failed">Validation failed or Timeout. Please reset micro:bit and try again.</string>
 
 </resources>

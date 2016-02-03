@@ -222,6 +222,23 @@ public class BLEService extends BLEBaseService {
 	public boolean registerNotifications(boolean enable) {
 
 		logi("registerNotifications() : " + enable  );
+
+        //Read microbit firmware version
+        BluetoothGattService deviceInfoService = getService(Constants.DEVICE_INFORMATION_SERVICE_UUID);
+        if (deviceInfoService != null) {
+            BluetoothGattCharacteristic firmwareCharacteristic = deviceInfoService.getCharacteristic(Constants.FIRMWARE_REVISION_UUID);
+            if (firmwareCharacteristic != null)
+            {
+                String firmware  = "";
+                BluetoothGattCharacteristic characteristic = readCharacteristic(firmwareCharacteristic);
+                if (characteristic !=null && characteristic.getValue() != null && characteristic.getValue().length != 0)
+                {
+                     firmware = firmwareCharacteristic.getStringValue(0) ;
+                }
+                sendMicrobitFirmware(firmware);
+                logi("Micro:bit firmware version String = " + firmware);
+            }
+        }
 		BluetoothGattService eventService = getService(Constants.EVENT_SERVICE);
 		if (eventService == null) {
 			logi("registerNotifications() :: not found service : Constants.EVENT_SERVICE");
@@ -234,7 +251,6 @@ public class BLEService extends BLEBaseService {
             logi("Constants.ES_MICROBIT_EVENT   = " + Constants.ES_MICROBIT_EVENT.toString());
             logi("Constants.ES_CLIENT_REQUIREMENTS   = " + Constants.ES_CLIENT_REQUIREMENTS.toString());
         }
-
         if (!registerMicrobitRequirements(eventService, enable)){
             if (BuildConfig.DEBUG) {
                 logi("***************** Cannot Register Microbit Requirements.. Will continue ************** ");
@@ -254,15 +270,14 @@ public class BLEService extends BLEBaseService {
 	@Override
 	protected void handleCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 
-
         String UUID = characteristic.getUuid().toString();
+        int value = 0 ;
+        Integer integerValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
 
-        if (characteristic == null)
-        {
-            logi("Null characteristic found");
+        if (integerValue == null) {
             return;
         }
-		int value = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
+        value = integerValue.intValue();
 		int eventSrc = value & 0x0ffff;
 		if (eventSrc < 1001) {
 			return;
@@ -297,6 +312,14 @@ public class BLEService extends BLEBaseService {
 		}
 	}
 
+    protected void sendMicrobitFirmware(String firmware)
+    {
+        logi("sendMicrobitFirmware() :: firmware = " + firmware);
+        NameValuePair[] args = new NameValuePair[2];
+        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE, firmware);
+        sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
+    }
 	@Override
 	protected void setNotification(boolean isConnected, int errorCode) {
 
@@ -338,31 +361,6 @@ public class BLEService extends BLEBaseService {
 			sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null, args);
 			sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null, args);
 		}
-
-		/*
-        if (!isConnected && Constants.BLE_DISCONNECTED_FOR_FLASH == errorCode){
-            //Diconnected for flashing. Remove the icon
-            if (notifyMgr!= null) {
-                logi("Removing Notifcation as we are now flashing the device ");
-                notifyMgr.cancel(Constants.NOTIFICATION_ID);
-            }
-        }
-        else {
-            //Update the tray message
-            NotificationCompat.Builder mBuilder =
-                    new NotificationCompat.Builder(this)
-                            .setSmallIcon(isConnected ? R.drawable.ble_connection_on : R.drawable.ble_connection_off)
-                            .setContentTitle("micro:bit companion")
-                            .setOngoing(onGoingNotification)
-                            .setContentText(notificationString);
-
-            Intent intent = new Intent(this, PairingActivity.class);
-            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-            mBuilder.setContentIntent(resultPendingIntent);
-            notifyMgr.notify(Constants.NOTIFICATION_ID, mBuilder.build());
-        }
-        */
-
     }
 
 	// ######################################################################
@@ -427,6 +425,10 @@ public class BLEService extends BLEBaseService {
         //Register Messaging
         CmdArg cmd5 = register? new CmdArg(Constants.REG_MESSAGING, "On") : new CmdArg(Constants.REG_MESSAGING, "Off");
         sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_TELEPHONY_ID, cmd5, null);
+
+        //Register Display
+        CmdArg cmd6 = register? new CmdArg(Constants.REG_DISPLAY, "On") : new CmdArg(Constants.REG_DISPLAY, "Off");
+        sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_DEVICE_INFO_ID, cmd6, null);
 
     }
 	/*
@@ -580,12 +582,6 @@ public class BLEService extends BLEBaseService {
 					}
 
 					break;
-                case IPCMessageManager.IPC_FUNCTION_DISCONNECT_FOR_FLASH:
-                    logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_DISCONNECT_FOR_FLASH = " + bleManager);
-                    if (reset()) {
-                        setNotification(false, Constants.BLE_DISCONNECTED_FOR_FLASH);
-                    }
-                    break;
 
 				default:
 			}

@@ -25,15 +25,15 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="3"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:scrollbars="none">
 
-        <ImageView
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/pair_tip_step_1_giff"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:src="@drawable/micro_bit_illustration" />
-
+            android:background="@drawable/how_to_pair_microbit" />
     </LinearLayout>
 
     <include layout="@layout/pair_microbit_step" />

@@ -79,12 +79,12 @@
     <string name="pairing_success_title">micro:bit paired</string>
     <string name="run_code_button_name">Continue to Flash</string>
     <string name="flashing_failed_not_found">Flashing Failed!Cannot read the file</string>
-    <string name="flashing_failed_io_error">Flashing Failed! Cannot find the file</string>
+    <string name="flashing_failed_io_error">Flashing Failed! Cannot find the file. Please reset micro:bit and try again.</string>
     <string name="flashing_failed_message">Flashing Failed! No Programs Found</string>
-    <string name="flashing_aborted">Flashing aborted! Required service not found on device</string>
+    <string name="flashing_aborted">Flashing aborted! Required service not found on device. Please reset micro:bit and try again.</string>
 
     <string name="flashing_verifcation_failed">Flashing Failed</string>
-    <string name="flashing_verifcation_failed_title">Cannot verify the flashing code.</string>
+    <string name="flashing_verifcation_failed_title">Cannot verify the flashing code. Please reset micro:bit and try again.</string>
 
 
     <string name="flashing_aborted_title">Aborted</string>
@@ -142,17 +142,32 @@
     <string name="gamepad">Gamepad</string>
     <string name="connectNew">Pair a new micro:bit</string>
     <string name="connect_tip_title">How to pair your micro:bit</string>
-    <string name="step_connect_tip_text">Step 1</string>
+    <string name="step_connect_tip_text_step_three">Step 3</string>
+    <string name="step_connect_tip_text_step_four_text">When you see the success message, \npress RESET and you\'re done!</string>
+    <string name="connect_tip_text_step">Step 1</string>
+    <string name="step_connect_tip_text_step_four">Step 4</string>
+    <string name="desc_step_connect_tip_text_step_four_text">When you see the success message, press RESET and you\'re done!</string>
+    <string name="desc_step_connect_tip_text_step_three">Step 3</string>
+    <string name="step_connect_tip_text_step_three_text">When asked, press button A \nand enter your PIN</string>
+    <string name="desc_step_connect_tip_text_step_three_text">When asked, press button A and enter your PIN</string>
+    <string name="desc_step_connect_tip_text_step_four">Step 4</string>
+    <string name="searching_microbit_found_message">Open your notification drawer \nand enter your Pin</string>
+    <string name="desc_searching_microbit_found_message">Open your notification drawer and enter your Pin</string>
+    <string name="step_connect_tip_text_step_two">Step 2</string>
     <string name="connect_tip_text">Hold the A and B buttons,\nthen PRESS RESET</string>
+    <string name="desc_connect_tip_text">Hold the a and b buttons, then PRESS RESET</string>
     <string name="desc_connect_tip_text_step">Step one</string>
-    <string name="desc_connect_tip_text">Hold the A and B buttons, then PRESS RESET</string>
+    <string name="connect_tip_text_step_text">Hold the A and B buttons,\nthen PRESS RESET</string>
+    <string name="desc_connect_tip_text_step_two">Step two</string>
+    <string name="connect_tip_text_step_two_text">When asked, enter your PIP \n(personal identification pattern) </string>
+    <string name="desc_connect_tip_text_step_two_text">When asked, enter your personal identification pattern </string>
     <string name="step_enter_pattern_tip_text">Step 2</string>
-    <string name="enter_pattern_tip_text">Copy the pattern from your\ndevice and PRESS OK</string>
+    <string name="enter_pattern_tip_text">Copy the pattern from \nyour micro:bit onto this grid</string>
     <string name="desc_enter_pattern_tip_step_two">Step two</string>
-    <string name="desc_enter_pattern_tip_text">Copy the pattern from your device and PRESS OK</string>
-    <string name="searching_tip_text">Currently searching for\nmicro:bit, please wait...</string>
-    <string name="desc_searching_tip_text">Currently searching for micro:bit, please wait</string>
-    <string name="desc_searching_tip_step_three">Step three</string>
+    <string name="desc_enter_pattern_tip_text">Copy the pattern from your micro:bit onto this grid</string>
+    <string name="searching_tip_text_instructions">(you only have 30 seconds)</string>
+    <string name="desc_searching_tip_text">You only have 30 seconds</string>
+    <string name="desc_searching_tip_step_three">When asked for a PIN, press button A</string>
     <string name="enter_pin_to_pair_text">Press button A, and\nenter the 6 digit PIN</string>
     <string name="step_enter_pin_to_pair_text">Step 4</string>
     <string name="desc_enterPinToPairText">Press button A, and enter the 6 digit PIN</string>
@@ -176,7 +191,7 @@
     <string name="loading_page_msg">Please wait. Page is loading...</string>
 
     <!-- Popup message -->
-    <string name="delete_project_message">Are you sure you want to want to remove this project?\r\nIt will be removed from this app but will still be available within your Micro:Bit account.</string>
+    <string name="delete_project_message">Are you sure you want to want to remove this file?\r\nThe file will be permanently removed from this application.</string>
     <string name="delete_project_title">Delete project?</string>
     <string name="record_audio">Record Audio?</string>
     <string name="audio_recorder_notification">micro:bit Audio Recorder</string>
@@ -216,6 +231,7 @@
     <string name="validating_microbit">Verifying services needed for flashing</string>
     <string name="waiting_reboot">Waiting for micro:bit to reboot</string>
     <string name="init_connection">Connecting to micro:bit</string>
+    <string name="disconnecting">Disconnecting from micro:bit</string>
     <string name="dfu_status_starting_msg">Initializing flashing process&#8230;</string>
     <string name="multple_flashing_session_msg">A project is currently being flashed. Wait for it to complete!</string>
     <string name="internal_error_msg">Internal error. Please try again</string>
@@ -259,11 +275,15 @@
     <string name="prefs_share_stats_status">share_stats</string>
     <string name="content_description_toolbar_home">Open Menu</string>
     <string name="content_description_toolbar_logo">BBC Micro:bit</string>
-    <string name="manage_microbit_txt">To manage paired micro:bits, go to your \nBluetooth Settings on your device</string>
-    <string name="desc_manage_microbit_txt">Rename and remove paired micro:bits</string>
+    <string name="manage_microbit_txt">1. Enter Pattern \n2. Enter PIN \n3. Press Reset</string>
+    <string name="desc_connect_microbit_problems_message">Having problems? Try the help page.</string>
+    <string name="connect_microbit_problems_message">Having problems? \nTry the help page.</string>
+    <string name="desc_manage_microbit_txt">1. Enter Pattern, 2. Enter PIN, 3. Press Reset</string>
     <string name="desc_manage_microbits">To manage paired micro:bits, go to your Bluetooth Settings on your device</string>
-    <string name="desc_manage_and_remove_microbits_label">How do i manage and remove paired micro:bits?</string>
-    <string name="manage_and_remove_microbit">How do i manage and remove paired micro:bits?</string>
+    <string name="desc_manage_and_remove_microbits_label">How do I pair a new micro:bit?</string>
+    <string name="subtitle_manage_and_remove_microbits_label">Follow the on-screen instructions to</string>
+    <string name="desc_subtitle_manage_and_remove_microbits_label">Follow the on-screen instructions to</string>
+    <string name="manage_and_remove_microbit">How do I pair a new micro:bit?</string>
     <string name="desc_homescreen_logo_img">Hello</string>
     <string name="desc_connect_btn">Connections</string>
     <string name="desc_flash_btn">Flash</string>
@@ -285,11 +305,12 @@
     <string name="desc_nav_drawer_menu">Close Menu</string>
     <string name="desc_share_statistics_description">The BBC will only use this information to analyse and improve the services offered through this app. For information, see our privacy policy </string>
     <string name="txt_pair_btn">Pair</string>
+    <string name="txt_how_to_pair_next_btn">Next</string>
     <string name="txt_cancel_btn">Cancel</string>
     <string name="desc_connection_status_flash_text">Micro:Bit connection status</string>
     <string name="desc_send_project_btn">Flash code to your Micro:bit</string>
     <string name="desc_delete_project_btn">Delete code</string>
-    <string name="searching_tip_step_text">Step 3</string>
+    <string name="searching_tip_step_text">When asked for a PIN, \npress button A</string>
     <string name="desc_connect_pair_micro_bit">Pair a new micro:bit</string>
     <string name="most_recent_device_status">Most recently used micro:bit</string>
     <string name="device_connected_device_status">Currently connected micro:bit</string>
@@ -300,5 +321,12 @@
     <string name="pair_new_device_dialog_message">Pairing with a new device will remove any previously paired Mircobits.</string>
     <string name="ok_button_label">OK</string>
     <string name="toolbar_title">Menu</string>
+    <string name="step_enter_pattern_text">Step 2</string>
+    <string name="popup_title">Title</string>
+    <string name="pop_up_subtitle_text">Message A B C D E F G H I J K L M N O P Q R S T U V W X Y Z Message</string>
+
+    <!-- Stats -->
+    <string name="stats_view_name">kl.education.microbit.%s.page</string>
+    <string name="cancel_searching_btn_txt">Cancel</string>
 
 </resources>

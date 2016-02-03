@@ -200,6 +200,10 @@ public class Constants {
 	public static final UUID IOPS_PIN_CONFIGURATION = makeUUID(MICROBIT_BASE_UUID_STR, 0x05899);
 	public static final UUID IOPS_PARALLEL_PORT = makeUUID(MICROBIT_BASE_UUID_STR, 0x060cf);
 
+
+    public static final UUID DEVICE_INFORMATION_SERVICE_UUID = new UUID(0x0000180A00001000l, 0x800000805F9B34FBl);
+    public static final UUID FIRMWARE_REVISION_UUID = new UUID(0x00002A2600001000l, 0x800000805F9B34FBl);
+
 	public static final UUID EVENT_SERVICE = makeUUID(MICROBIT_BASE_UUID_STR, 0x093af);
 	public static final UUID ES_MICROBIT_REQUIREMENTS = makeUUID(MICROBIT_BASE_UUID_STR, 0x0B84C);
 
@@ -232,13 +236,8 @@ public class Constants {
 
     public static String ZIP_INTERNAL_NAME = "raw/samples";
 
-	public static int NOTIFICATION_ID = 1001 ;
-    public static int BLE_DISCONNECTED_FOR_FLASH = 501 ;
-    public static int PAIRING_CONTROL_CODE_REQUESTED = 0x01 ;
-    public static int FLASHING_PHASE_2_COMPLETE = 0x02 ;
-    public static int FLASHING_PAIRING_CODE_CHARACTERISTIC_RECIEVED = 0X33 ;
-
     public static int REQUEST_ENABLE_BT = 12345 ; //Magic number
+    public static int POPUP_CREATE_REQUEST = 45809 ; //Magic number
 
 	public static String LAUNCH_CAMERA_AUDIO = "raw/en_gb_emma_launching_camera";
 
@@ -252,4 +251,11 @@ public class Constants {
     public static int MAX_VIDEO_FILE_SIZE = 100 * 1024 * 1024 ; //Size in bytes
 
     public static String MEDIA_OUTPUT_FOLDER = "bbc-microbit";
+
+    //For stats
+    public enum CONNECTION_STATE {
+        SUCCESS,
+        FAIL,
+        DISCONNECT
+    }
 }

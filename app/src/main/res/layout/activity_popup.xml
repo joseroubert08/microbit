@@ -4,51 +4,56 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/pop_up_background"
+    android:orientation="vertical"
     android:paddingEnd="16dp"
     android:paddingStart="16dp">
 
-    <!--&lt;!&ndash; Webview for animated error emoji &ndash;&gt;-->
-    <!--<WebView-->
-    <!--android:id="@+id/error_animation_webview"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_margin="16dp"-->
-    <!--android:scrollbars="none" />-->
+    <!-- Loading Giffs -->
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/pop_up_gif_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:layout_margin="8dp" />
 
-    <!--Non animated images for flashing-->
+    <!-- Non animated images for flashing-->
     <ImageView
         android:id="@+id/image_icon"
         android:layout_width="@dimen/popup_icon_size"
         android:layout_height="@dimen/popup_icon_size"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="top"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
         android:layout_marginTop="@dimen/popup_header_section_marginTop"
         android:scaleType="centerInside"
         android:src="@drawable/overwrite_face" />
 
+    <!-- Body of pop up - main text area, loader etc-->
     <LinearLayout
-        android:id="@+id/bodyLayout"
+        android:id="@+id/pop_body_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:gravity="center_horizontal"
         android:orientation="vertical">
 
+        <!-- Pop up  title-->
         <TextView
             android:id="@+id/flash_projects_title_txt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:paddingBottom="@dimen/popup_body_view_paddingVertical"
-            android:paddingTop="@dimen/popup_body_view_paddingVertical"
-            android:text="Title"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="@string/popup_title"
             android:textAppearance="?android:textAppearanceLarge"
+            android:textColor="@color/white_color"
             android:visibility="gone" />
 
+        <!-- Flashing progress bar -->
         <ProgressBar
             android:id="@+id/progressBar"
             style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/popup_progressbar_height"
             android:indeterminate="false"
             android:max="100"
@@ -58,14 +63,16 @@
             android:progressDrawable="@drawable/blue_progress_bar"
             android:visibility="gone" />
 
+        <!-- Connecting /disconnecting spinner -->
         <ProgressBar
             android:id="@+id/spinnerBar"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/popup_body_view_paddingVertical"
             android:paddingTop="@dimen/popup_body_view_paddingVertical"
             android:visibility="gone" />
 
+        <!-- Subtitle text, messages about status-->
         <TextView
             android:id="@+id/messageTxt"
             android:layout_width="match_parent"
@@ -73,35 +80,21 @@
             android:gravity="center"
             android:paddingBottom="@dimen/popup_body_view_paddingVertical"
             android:paddingTop="@dimen/popup_body_view_paddingVertical"
-            android:text="Message A B C D E F G H I J K L M N O P Q R S T U V W X Y Z Message"
+            android:text="@string/pop_up_subtitle_text"
             android:textAlignment="center"
             android:textAppearance="?android:textAppearanceMedium"
-            android:visibility="gone" />
-
-        <com.samsung.microbit.ui.control.ExtendedEditText
-            android:id="@+id/inputText"
-            style="@style/p1"
-            android:layout_width="@dimen/popup_textinput_width"
-            android:layout_height="60dp"
-            android:background="@drawable/white_bg"
-            android:drawableRight="@drawable/rename"
-            android:editable="true"
-            android:enabled="true"
-            android:gravity="left|center_vertical"
-            android:inputType="textNoSuggestions|textVisiblePassword"
-            android:paddingBottom="@dimen/popup_body_view_paddingVertical"
-            android:paddingTop="@dimen/popup_body_view_paddingVertical"
-            android:textColor="@color/black_color"
+            android:textColor="@color/white_color"
             android:visibility="gone" />
 
     </LinearLayout>
+
     <!-- User confirmation [OK, cancel etc] -->
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/bottomLayout"
+        android:id="@+id/popup_bottom_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
+        android:layout_gravity="bottom"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -119,7 +112,6 @@
             android:drawableEnd="@drawable/cancel_step_pairing_btn"
             android:gravity="center_vertical|start"
             android:onClick="onClick"
-            android:src="@drawable/white_cross"
             android:text="@string/txt_cancel_btn"
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="@color/black_color"

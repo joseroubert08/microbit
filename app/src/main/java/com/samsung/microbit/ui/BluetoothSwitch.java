@@ -42,6 +42,7 @@ public class BluetoothSwitch {
                     MBApp.getContext().getString(R.string.bluetooth_turn_on_guide),
                     MBApp.getContext().getString(R.string.turn_on_bluetooth),
                     R.drawable.bluetooth, R.drawable.blue_btn,
+                    0, /* TODO - nothing needs to be done */
                     PopUp.TYPE_CHOICE,
                     new View.OnClickListener() {
                         @Override

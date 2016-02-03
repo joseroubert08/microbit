@@ -5,8 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="top"
+    android:divider="?android:dividerVertical"
     android:orientation="vertical"
     android:padding="16dp"
+    android:showDividers="end"
     tools:showIn="@layout/view_connect_microbit">
 
     <!-- Connection status-->
@@ -16,10 +18,10 @@
         android:id="@+id/connected_device_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/grey_btn"
         android:contentDescription="@null"
         android:focusable="false"
-        android:alpha="0.25"
         android:focusableInTouchMode="false"
         android:importantForAccessibility="yes"
         android:orientation="horizontal"
@@ -54,7 +56,8 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:importantForAccessibility="yes"
-            android:src="@drawable/delete_project" />
+            android:src="@drawable/delete_device_project"
+            android:visibility="invisible" />
 
         <!-- Connect Micro:bit -->
         <ImageButton

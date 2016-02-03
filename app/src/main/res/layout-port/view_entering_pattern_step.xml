@@ -6,20 +6,6 @@
     android:layout_height="wrap_content"
     tools:showIn="@layout/view_pairing_pattern">
 
-
-    <TextView
-        android:id="@+id/pair_enter_pattern_step_2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:contentDescription="@string/desc_enter_pattern_tip_step_two"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp"
-        android:paddingBottom="16dp"
-        android:text="Step 2"
-        android:textAppearance="?android:textAppearanceMedium"
-        android:textColor="@color/white_color" />
-
     <TextView
         android:id="@+id/pair_enter_pattern_step_2_instructions"
         android:layout_width="match_parent"
@@ -40,7 +26,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:paddingBottom="16dp"
+        android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:src="@drawable/ooh_pretty_emoji" />
+        android:src="@drawable/ooh_pretty_emoji"
+        android:visibility="invisible"/>
 
 </RelativeLayout>

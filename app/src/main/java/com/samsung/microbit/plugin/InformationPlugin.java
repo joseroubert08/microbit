@@ -10,6 +10,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.BatteryManager;
+import android.os.PowerManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
@@ -79,6 +80,15 @@ public class InformationPlugin {
                     unregisterTemperature();
                 break;
             }
+
+            case Constants.REG_DISPLAY: {
+                if (register)
+                    registerDisplay();
+                else
+                    unregisterDisplay();
+                break;
+
+            }
         }
     }
 
@@ -109,6 +119,8 @@ public class InformationPlugin {
     //Signal strength code
     static TelephonyManager mTelephonyManager;
     static SignalStrength mSignalStrength;
+    static PowerManager mPowerManager;
+
     static PhoneStateListener mPhoneListener = new PhoneStateListener() {
         @Override
         public void onSignalStrengthsChanged(SignalStrength signalStrength) {
@@ -246,6 +258,7 @@ public class InformationPlugin {
 
     static ShakeEventListener mShakeListener;
     static BroadcastReceiver mBatteryReceiver;
+    static BroadcastReceiver mScreenReceiver;
     static int mPreviousBatteryPct;
 
     static {
@@ -378,6 +391,35 @@ public class InformationPlugin {
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
+    public static void registerDisplay() {
+        if (mScreenReceiver != null)
+            return;
+        Log.i("Information Plugin", "registerDisplay() ");
+        mScreenReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+                    PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID, Constants.SAMSUNG_DEVICE_DISPLAY_OFF));
+                } else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
+                    PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID,Constants.SAMSUNG_DEVICE_DISPLAY_ON));
+                }
+            }
+        };
+
+        IntentFilter screenStateFilter = new IntentFilter();
+        screenStateFilter.addAction(Intent.ACTION_SCREEN_ON);
+        screenStateFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        mContext.registerReceiver(mScreenReceiver, screenStateFilter);
+    }
+
+    public static void unregisterDisplay() {
+        Log.i("Information Plugin", "unregisterDisplay() ");
+        if (mScreenReceiver == null)
+            return;
+
+        mContext.unregisterReceiver(mScreenReceiver);
+        mScreenReceiver = null;
+    }
     public static boolean isTemperatureRegistered() {
         return mTemperatureListener != null;
     }

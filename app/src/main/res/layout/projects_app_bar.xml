@@ -101,6 +101,6 @@
         android:importantForAccessibility="yes"
         android:nextFocusDown="@+id/ll_toolbar_indicator"
         android:onClick="onClick"
-        android:padding="8dp"
-        android:src="@drawable/device_connected" />
+        android:padding="12dp"
+        android:src="@drawable/device_status_connected" />
 </LinearLayout>

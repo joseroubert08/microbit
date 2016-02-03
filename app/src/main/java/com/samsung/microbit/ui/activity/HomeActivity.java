@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,10 +21,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,7 +41,7 @@ import com.samsung.microbit.ui.PopUp;
 import java.util.HashMap;
 import java.util.List;
 
-import uk.co.bbc.echo.EchoConfigKeys;
+import pl.droidsonroids.gif.GifImageView;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -53,8 +52,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     StableArrayAdapter adapter = null;
     private AppCompatDelegate delegate;
     // Hello animation
-    private WebView animation;
-
+    private GifImageView gifAnimationHelloEmoji;
     boolean connectionInitiated = false;
 
     private MBApp app = null;
@@ -93,8 +91,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_home);
         setupDrawer();
 
-        //Set up Echo
-        setupEcho();
+        if (app == null)
+            app = (MBApp) MBApp.getApp().getApplicationContext();
 
         LinearLayout connectBarView = (LinearLayout) findViewById(R.id.connectBarView);
         connectBarView.getBackground().setAlpha(128);
@@ -119,12 +117,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         final Intent intent = new Intent(this, PluginService.class);
         startService(intent);
 
-
-        if (app.getEcho() != null) {
-            logi("Page View test for HomeActivity");
-            //Page view test
-            app.getEcho().viewEvent("com.samsung.microbit.ui.activity.homeactivity.page", null);
-        }
+        app.sendViewEventStats("homeactivity");
 
         /* Debug code*/
         MenuItem item = (MenuItem) findViewById(R.id.live);
@@ -140,42 +133,26 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     RemoteConfig.getInstance().getExceptionTitle(),
                     R.drawable.error_face,//image icon res id
                     R.drawable.red_btn,
+                    PopUp.GIFF_ANIMATION_ERROR,
                     PopUp.TYPE_ALERT, //type of popup.
                     null,
                     null);
 
         }
         // animation for loading hello .giff
-        animation = (WebView) findViewById(R.id.homeHelloAnimationWebView);
-        animation.setBackgroundColor(Color.TRANSPARENT);
-        animation.loadUrl("file:///android_asset/htmls/hello_home_animation.html");
-    }
-
-    private void setupEcho() {
-        // Echo Config
-        app = (MBApp) MBApp.getApp().getApplicationContext();
-
-        HashMap<String, String> config = new HashMap<String, String>();
-
-        //Use ECHO_TRACE value for searching in echo chamber
-        config.put(EchoConfigKeys.ECHO_TRACE, "microbit_android_app"); //TODO Change later
-        //Use CS debug mode
-        config.put(EchoConfigKeys.COMSCORE_DEBUG_MODE, "1");
-        // Send Comscore events to EchoChamber
-        config.put(EchoConfigKeys.COMSCORE_URL, "http://data.bbc.co.uk/v1/analytics-echo-chamber-inbound/comscore");
-        //Enable debug mode
-        config.put(EchoConfigKeys.ECHO_DEBUG, "1");
-        // Instantiate EchoClient
-        app.initialiseEcho(config);
+        gifAnimationHelloEmoji = (GifImageView) findViewById(R.id.homeHelloAnimationGifView);
+        //gifAnimationHelloEmoji.setBackgroundResource(R.drawable.hello_emoji_animation);
     }
 
     private void setupDrawer() {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationContentDescription(R.string.content_description_toolbar_home);
-        toolbar.setLogo(R.drawable.bbc_microbit);
-        toolbar.setNavigationIcon(R.drawable.white_red_led_btn);
-        toolbar.setLogoDescription(R.string.content_description_toolbar_logo);
+        ImageView imgToolbarLogo = (ImageView) findViewById(R.id.img_toolbar_bbc_logo);
+        imgToolbarLogo.setContentDescription("BBC Micro:bit");
+        //toolbar.setLogo(R.drawable.bbc_microbit_app_bar_logo);
+        // toolbar.setNavigationIcon(R.drawable.white_red_led_btn);
+        //  toolbar.setLogoDescription(R.string.content_description_toolbar_logo);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -322,8 +299,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onPause() {
+        super.onPause();
+        // Pause animation
+        //gifAnimationHelloEmoji.setFreezesAnimation(true);
     }
 
     @Override
@@ -339,7 +318,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         switch (v.getId()) {
-            case R.id.addDevice:
+//            case R.id.addDevice:
             case R.id.connect_device_btn: {
                 Intent intent = new Intent(this, PairingActivity.class);
                 startActivity(intent);
@@ -347,23 +326,23 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             break;
             case R.id.create_code_btn: {
                 //Update Stats
-                if (app != null && app.getEcho() != null) {
-                    logi("User action test for delete project");
-                    app.getEcho().userActionEvent("click", "CreateCode", null);
-                }
+                app.sendNavigationStats("home", "create-code");
                 if (urlToOpen == null) {
                     urlToOpen = RemoteConfig.getInstance().getCreateCodeURL();
                 }
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(urlToOpen));
+
                 startActivity(intent);
             }
             break;
             case R.id.flash_microbit_btn:
+                app.sendNavigationStats("home", "flash");
                 Intent i = new Intent(this, ProjectActivity.class);
                 startActivity(i);
                 break;
             case R.id.discover_btn:
+                app.sendNavigationStats("home", "discover");
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(RemoteConfig.getInstance().getDiscoverURL()));
                 startActivity(intent);
@@ -372,7 +351,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             // TODO: HACK - Navigation View items from drawer here instead of [onNavigationItemSelected]
             // NavigationView items
             case R.id.btn_nav_menu: {
-                Toast.makeText(this, "Menu", Toast.LENGTH_LONG).show();
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
             }
@@ -387,9 +365,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.btn_help: {
-                Toast.makeText(this, "Help", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Coming Soon", Toast.LENGTH_LONG).show();
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
+                app.sendNavigationStats("overflow-menu", "help");
             }
             break;
             case R.id.btn_privacy_cookies: {
@@ -399,6 +378,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(privacyIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
+                app.sendNavigationStats("overflow-menu", "privacy-policy");
             }
             break;
             case R.id.btn_terms_conditions: {
@@ -408,6 +388,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(termsIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
+                app.sendNavigationStats("overflow-menu", "ts-and-cs");
 
             }
             break;
@@ -447,6 +428,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mPrefs.edit().putBoolean(getString(R.string.prefs_share_stats_status), shareStatistics).apply();
         logi("shareStatistics = " + shareStatistics);
         MBApp.setSharingStats(shareStatistics);
+        MBApp.getApp().sendStatSharing(shareStatistics);
     }
 
     @Override
@@ -469,5 +451,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         /* Code removal ends */
         MBApp.setContext(this);
+        // Reload Hello Emoji animation
+        findViewById(R.id.homeHelloAnimationGifView).animate();
     }
 }

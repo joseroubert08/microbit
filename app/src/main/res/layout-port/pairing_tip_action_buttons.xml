@@ -5,10 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
-    android:divider="?android:dividerHorizontal"
     android:gravity="center"
     android:orientation="horizontal"
-    android:showDividers="beginning"
     tools:showIn="@layout/view_pairing_tip">
 
     <Button
@@ -41,7 +39,7 @@
         android:drawableEnd="@drawable/next_step_pairing_btn"
         android:gravity="center_vertical|start"
         android:padding="8dp"
-        android:text="@string/txt_pair_btn"
+        android:text="@string/txt_how_to_pair_next_btn"
         android:textAppearance="?android:textAppearanceMedium"
         android:textColor="@color/black_color" />
 </LinearLayout>

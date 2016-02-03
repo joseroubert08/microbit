@@ -54,10 +54,6 @@ public class IPCService extends Service {
 	 * Business method
 	 */
 
-	public void bleDisconnectForFlash() {
-		sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_DISCONNECT_FOR_FLASH, null, null);
-	}
-
 	public void bleDisconnect() {
 		sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_DISCONNECT, null, null);
 	}
@@ -186,10 +182,13 @@ public class IPCService extends Service {
 
             String error_message = (String) msg.getData().getSerializable(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
 
+			String firmware = (String) msg.getData().getSerializable(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE);
+
 			Intent intent = new Intent(INTENT_BLE_NOTIFICATION);
 			intent.putExtra(NOTIFICATION_CAUSE, msg.arg1);
 			intent.putExtra(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
             intent.putExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE, error_message);
+            intent.putExtra(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE, firmware);
 			LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 		} else if (msg.what == IPCMessageManager.MICROBIT_MESSAGE) {
 			if (debug) logi("handleIncomingMessage() :: IPCMessageManager.MICROBIT_MESSAGE msg.arg1 = " + msg.arg1);

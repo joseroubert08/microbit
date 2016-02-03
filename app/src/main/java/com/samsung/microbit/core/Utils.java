@@ -22,6 +22,7 @@ import com.samsung.microbit.service.DfuService;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -35,9 +36,8 @@ import no.nordicsemi.android.dfu.DfuBaseService;
 public class Utils {
 
 	public static final String PREFERENCES_KEY = "Microbit_PairedDevices";
-	public static final String PREFERENCES_NAME_KEY = "PairedDeviceName";  // To be removed
-	public static final String PREFERENCES_ADDRESS_KEY = "PairedDeviceAddress"; // To be removed
 	public static final String PREFERENCES_PAIREDDEV_KEY = "PairedDeviceDevice";
+    public static String PREFERENCES_MICROBIT_FIRMWARE = "PairedDeviceDevice";
 
 	public static final String PREFERENCES = "Preferences";
 	public static final String PREFERENCES_LIST_ORDER = "Preferences.listOrder";
@@ -52,6 +52,7 @@ public class Utils {
 	private static final Object lock = new Object();
 
     private static AudioManager mAudioManager = null ;
+    private static MediaPlayer mMediaplayer = null ;
     private static int originalRingerMode = -1 ;
     private static int originalRingerVolume = -1 ;
 
@@ -102,8 +103,37 @@ public class Utils {
 		}
 	}
 
-	final public static String BINARY_FILE_NAME = "/sdcard/output.bin";
+    public static int getTotalSavedPrograms()
+    {
+        File sdcardDownloads = Constants.HEX_FILE_DIR;
+        int totalPrograms = 0;
+        if (sdcardDownloads.exists()) {
+            File files[] = sdcardDownloads.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                String fileName = files[i].getName();
+                if (fileName.endsWith(".hex")) {
+                    ++totalPrograms;
+                }
+            }
+        }
+        return totalPrograms;
+    }
 
+    public static int getTotalPairedMicroBitsFromSystem()
+    {
+        int totalPairedMicrobits = 0;
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter.isEnabled())
+        {
+            Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+            for (BluetoothDevice bt : pairedDevices) {
+                if (bt.getName().contains("micro:bit")) {
+                    ++totalPairedMicrobits;
+                }
+            }
+        }
+        return totalPairedMicrobits;
+    }
 	public static int findProgramsAndPopulate(HashMap<String, String> prettyFileNameMap, List<Project> list) {
 		File sdcardDownloads = Constants.HEX_FILE_DIR;
 		Log.d("MicroBit", "Searching files in " + sdcardDownloads.getAbsolutePath());
@@ -189,12 +219,28 @@ public class Utils {
     {
         Resources resources = MBApp.getApp().getApplicationContext().getResources();
         int resID = resources.getIdentifier(filename, "raw", MBApp.getApp().getApplicationContext().getPackageName());
+        AssetFileDescriptor afd = resources.openRawResourceFd(resID);
         Utils.preparePhoneToPlayAudio();
 
+        if (mMediaplayer != null)
+        {
+            mMediaplayer.release();
+        }
+        mMediaplayer = new MediaPlayer();
 
-        MediaPlayer mediaPlayer= MediaPlayer.create(MBApp.getApp().getApplicationContext(), resID);
+        mMediaplayer.reset(); //MBApp.getApp().getApplicationContext(), resID);
+        mMediaplayer.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+        try {
+            mMediaplayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            mMediaplayer.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d("Utils", "playAudio: exception");
+            mMediaplayer.release();
+            return;
+        }
         //Set a callback for completion
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        mMediaplayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 restoreAudioMode();
@@ -202,7 +248,7 @@ public class Utils {
                     callBack.onCompletion(mp);
             }
         });
-        mediaPlayer.start();
+        mMediaplayer.start();
     }
 
     private static void preparePhoneToPlayAudio()
@@ -212,11 +258,13 @@ public class Utils {
             mAudioManager = (AudioManager) MBApp.getApp().getApplicationContext().getSystemService(MBApp.getApp().getApplicationContext().AUDIO_SERVICE);
         }
         originalRingerMode = mAudioManager.getRingerMode();
-        originalRingerVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        originalRingerVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+
+
         if (originalRingerMode == AudioManager.RINGER_MODE_SILENT) {
             mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
         }
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
     }
 
     private static void restoreAudioMode()
@@ -226,7 +274,7 @@ public class Utils {
             mAudioManager = (AudioManager) MBApp.getApp().getApplicationContext().getSystemService(MBApp.getApp().getApplicationContext().AUDIO_SERVICE);
         }
         mAudioManager.setRingerMode(originalRingerMode);
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, originalRingerVolume, 0);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalRingerVolume, 0);
     }
 
 	public static boolean installSamples() {
@@ -344,6 +392,15 @@ public class Utils {
 		return false;
 	}
 
+    public static String getFileSize(String filePath)
+    {
+        String size = "0";
+        File file = new File(filePath);
+        if (file.exists()){
+            size = Long.toString(file.length());
+        }
+        return  size;
+    }
 	public static ConnectedDevice getPairedMicrobit(Context ctx) {
 		SharedPreferences pairedDevicePref = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
 
@@ -352,21 +409,27 @@ public class Utils {
 		}
 
 		if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
-            boolean pairedInDeviceList = false;
+            boolean pairedMicrobitInSystemList = false;
 			String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
 			Gson gson = new Gson();
 			pairedDevice = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
 			//Check if the microbit is still paired with our mobile
             BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-            for (BluetoothDevice bt : pairedDevices) {
-                if (bt.getAddress().equals(pairedDevice.mAddress)) {
-                    pairedInDeviceList = true;
-                    break;
+            if (mBluetoothAdapter.isEnabled())
+            {
+                Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+                for (BluetoothDevice bt : pairedDevices) {
+                    if (bt.getAddress().equals(pairedDevice.mAddress)) {
+                        pairedMicrobitInSystemList = true;
+                        break;
+                    }
                 }
+            } else {
+                //Do not change the list until the Bluetooth is back ON again
+                pairedMicrobitInSystemList = true;
             }
 
-            if (!pairedInDeviceList){
+            if (!pairedMicrobitInSystemList){
                 Log.e("Utils","The last paired microbit is no longer in the system list. Hence removing it");
                 //Return a NULL device & update preferences
                 pairedDevice.mPattern = null;
@@ -399,6 +462,30 @@ public class Utils {
 		editor.commit();
 	}
 
+    public static String getmicroBitFirmware()
+    {
+        return PREFERENCES_MICROBIT_FIRMWARE;
+/*        SharedPreferences pairedDevicePref = MBApp.getContext().getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
+
+        String firmware = "unknown" ;
+        if (pairedDevicePref.contains(PREFERENCES_MICROBIT_FIRMWARE)) {
+            pairedDevicePref.getString(PREFERENCES_MICROBIT_FIRMWARE, "unknown");
+        }
+        return firmware;*/
+    }
+
+    public static void setmicroBitFirmware(String firmware)
+    {
+        PREFERENCES_MICROBIT_FIRMWARE = firmware ;
+/*
+
+        SharedPreferences pairedDevicePref = MBApp.getContext().getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
+        SharedPreferences.Editor editor = pairedDevicePref.edit();
+        if (editor != null) {
+            editor.putString(PREFERENCES_MICROBIT_FIRMWARE, firmware).commit();
+        }
+*/
+    }
 	public static int getListOrderPrefs(Context ctx) {
 		SharedPreferences prefs = ctx.getApplicationContext().getSharedPreferences(PREFERENCES, Context.MODE_MULTI_PROCESS);
 
@@ -536,7 +623,7 @@ public class Utils {
                 return "GATT BUSY";
 
             case 0x0085:
-                return "GATT ERROR";
+                return "Cannot connect to micro:bit (GATT error). Please retry.";
 
             case 0x0086:
                 return "GATT CMD STARTED";
@@ -578,28 +665,28 @@ public class Utils {
                 return "micro:bit disconnected";
 
 			case DfuService.ERROR_FILE_NOT_FOUND:
-                return "File not found";
+                return "File not found. Please retry.";
 			case DfuService.ERROR_FILE_ERROR:
-                return "Unable to open file";
+                return "Unable to open file. Please retry.";
 			case DfuService.ERROR_FILE_INVALID:
-				return "File not a valid HEX";
+				return "File not a valid HEX. Please retry.";
 			case DfuService.ERROR_FILE_IO_EXCEPTION:
 				return "Unable to read file";
 			case DfuService.ERROR_SERVICE_DISCOVERY_NOT_STARTED:
                 return "Bluetooth Discovery not started";
 			case DfuService.ERROR_SERVICE_NOT_FOUND:
-                return  "Dfu Service not found";
+                return  "Dfu Service not found. Please retry.";
 			case DfuService.ERROR_CHARACTERISTICS_NOT_FOUND:
-                return "Dfu Characteristics not found";
+                return "Dfu Characteristics not found. Please retry.";
 			case DfuService.ERROR_INVALID_RESPONSE:
-				return "Invalid response from micro:bit";
+				return "Invalid response from micro:bit. Please retry.";
 			case DfuService.ERROR_FILE_TYPE_UNSUPPORTED:
-				return "Unsupported file type";
+				return "Unsupported file type. Please retry.";
 			case DfuService.ERROR_BLUETOOTH_DISABLED:
 				return "Bluetooth Disabled";
 
 			case DfuService.ERROR_FILE_SIZE_INVALID:
-				return "Invalid filesize";
+				return "Invalid filesize. Please retry.";
 
 			default:
                 if ((DfuBaseService.ERROR_REMOTE_MASK & errorCode) > 0) {

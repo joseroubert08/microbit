@@ -22,6 +22,7 @@ public final class IPCMessageManager {
 	public static final long STARTUP_DELAY = 1000L;
 	public static final String BUNDLE_DATA = "data";
 	public static final String BUNDLE_VALUE = "value";
+	public static final String BUNDLE_MICROBIT_FIRMWARE = "BUNDLE_MICROBIT_FIRMWARE";
 	public static final String BUNDLE_ERROR_CODE = "BUNDLE_ERROR_CODE";
 	public static final String BUNDLE_ERROR_MESSAGE = "BUNDLE_ERROR_MESSAGE";
 	public static final String BUNDLE_SERVICE_GUID = "BUNDLE_SERVICE_GUID";
