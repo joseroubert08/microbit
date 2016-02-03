@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Point;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -15,9 +14,6 @@ import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.Display;
-import android.view.OrientationEventListener;
-import android.view.WindowManager;
 
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.Constants;
@@ -113,7 +109,7 @@ public class InformationPlugin {
 
 
     static SensorManager mSensorManager;
-    static OrientationEventListener mOrientationListener;
+    static SensorEventListener mOrientationListener;
     static int mPreviousOrientation;
 
     //Signal strength code
@@ -276,56 +272,47 @@ public class InformationPlugin {
      */
     public static void registerOrientation() {
         if (mOrientationListener != null)
-            return;
+              return;
 
-        mOrientationListener = new OrientationEventListener(mContext,
-                SensorManager.SENSOR_DELAY_NORMAL) {
-            static private final int INTERVAL = 2000;//TODO adjust
-            private long previousTime = 0;
+        if (mSensorManager == null) {
+            mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
+        }
 
+        mOrientationListener = new SensorEventListener() {
+            int orientation=-1;;
             @Override
-            public void onOrientationChanged(int orientation) {   //we use orientation listener as a callback mechanism
-                //but in fact we do not use the given orientation value (angle)
-                long currentTime = System.currentTimeMillis();
-                long deltaTime = currentTime - previousTime;
-
-                if (deltaTime > INTERVAL)//uses interval to avoid spamming client
-                {
-                    previousTime = currentTime;
-                    Display display = ((WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-                    Point size = new Point();
-                    display.getRealSize(size);
-
+            public void onSensorChanged(SensorEvent event) {
+                if (event.values[1]<6.5 && event.values[1]>-6.5) {
+                    if (orientation!=1) {
+                        Log.d("Sensor", "Landscape");
+                    }
+                    orientation = Constants.SAMSUNG_DEVICE_ORIENTATION_LANDSCAPE;
+                } else {
+                    if (orientation!=0) {
+                        Log.d("Sensor", "Portrait");
+                    }
                     orientation = Constants.SAMSUNG_DEVICE_ORIENTATION_PORTRAIT;
-                    if (size.y < size.x) {
-                        orientation = Constants.SAMSUNG_DEVICE_ORIENTATION_LANDSCAPE;
-                    }
+                }
+                if (mPreviousOrientation != orientation) {
 
-                    if (mPreviousOrientation != orientation) {
-
-                        PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID, (orientation & 0x01)));
-                        mPreviousOrientation = orientation;
-                    }
+                    PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID, orientation));
+                    mPreviousOrientation = orientation;
                 }
             }
-        };
 
-        if (mOrientationListener.canDetectOrientation() == true) {
-            mOrientationListener.enable();
-        } else {
-            mOrientationListener.disable();
-        }
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+            }
+        };
+        mSensorManager.registerListener(mOrientationListener , mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     public static void unregisterOrientation() {
         if (mOrientationListener == null)
             return;
-
-        mOrientationListener.disable();
+        mSensorManager.unregisterListener(mOrientationListener);
         mOrientationListener = null;
-
-        CmdArg cmd = new CmdArg(0, "Unregistered Orientation.");
-        InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
     public static boolean isOrientationRegistered() {
