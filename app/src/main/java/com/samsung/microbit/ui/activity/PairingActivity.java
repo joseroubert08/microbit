@@ -91,11 +91,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     LinearLayout mPairButtonView;
     LinearLayout mPairTipView;
     LinearLayout mPairTipViewScreenTwo;
-    LinearLayout mConnectDeviceView; // new layout
+    LinearLayout mConnectDeviceView;
     LinearLayout mNewDeviceView;
     LinearLayout mPairSearchView;
     LinearLayout mBottomPairButton;
-    LinearLayout mEnterPinView; // pin view
     private LinearLayout itemSelectorLayout;
     private TextView mConnectedDeviceName;
     private TextView mdeviceConnectionStatus;
@@ -351,7 +350,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         mdeleteBtn.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
 
         itemSelectorLayout.setOnClickListener(this);
-        //  mconnectBtn.setOnClickListener(this); TODO - whole bar selectable
         mdeleteBtn.setOnClickListener(this);
 
         updatePairedDeviceCard();
@@ -363,7 +361,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         mConnectDeviceView = (LinearLayout) findViewById(R.id.connectDeviceView); // Connect device view
         mNewDeviceView = (LinearLayout) findViewById(R.id.newDeviceView);
         mPairSearchView = (LinearLayout) findViewById(R.id.pairSearchView);
-        mEnterPinView = (LinearLayout) findViewById(R.id.enterPinView);
 
         /* Font type */
         // Connect Screen
@@ -464,19 +461,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         Button cancelSearchMicroBit = (Button) findViewById(R.id.cancel_search_microbit_step_3_btn);
         cancelSearchMicroBit.setTypeface(MBApp.getApp().getTypeface());
 
-        // Step 4 - Enter Pin
-        TextView enterPinTitle = (TextView) findViewById(R.id.enter_pin_step_4_title);
-        enterPinTitle.setTypeface(MBApp.getApp().getTypeface());
-
-        TextView stepFourTitle = (TextView) findViewById(R.id.enter_pin_step_4_step);
-        stepFourTitle.setTypeface(MBApp.getApp().getTypeface());
-
-        TextView stepFourInstructions = (TextView) findViewById(R.id.enter_pin_step_4_instructions);
-        stepFourInstructions.setTypeface(MBApp.getApp().getTypeface());
-
-        Button cancelEnterPin = (Button) findViewById(R.id.cancel_enter_pin_step_4_btn);
-        cancelEnterPin.setTypeface(MBApp.getApp().getTypeface());
-
         // pin view
         displayScreen(mState);
         findViewById(R.id.pairButton).setOnClickListener(this);
@@ -486,7 +470,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.ok_tip_step_3_btn).setOnClickListener(this);
         findViewById(R.id.cancel_enter_pattern_step_2_btn).setOnClickListener(this);
         findViewById(R.id.cancel_search_microbit_step_3_btn).setOnClickListener(this);
-        findViewById(R.id.cancel_enter_pin_step_4_btn).setOnClickListener(this);
 
         // Step 3: Searching for Micro:bit (animation)
         searchingProgressSpinner = (ProgressBar) findViewById(R.id.searching_progress_spinner);
@@ -683,7 +666,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         mPairTipViewScreenTwo.setVisibility(View.GONE);
         mNewDeviceView.setVisibility(View.GONE);
         mPairSearchView.setVisibility(View.GONE);
-        mEnterPinView.setVisibility(View.GONE);
 
         logi("********** Connect: state from " + mState + " to " + gotoState);
         mState = gotoState;
@@ -887,11 +869,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 if (debug) {
                     logi("onClick() :: deleteBtn");
                     handleDeleteMicrobit();
-                }
-                break;
-            case R.id.cancel_enter_pin_step_4_btn:
-                if (debug) {
-                    displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
                 }
                 break;
             case R.id.backBtn:
@@ -1192,7 +1169,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         mNewDeviceView.setVisibility(View.GONE);
         mPairSearchView.setVisibility(View.GONE);
         mConnectDeviceView.setVisibility(View.GONE);
-        mEnterPinView.setVisibility(View.GONE);
         unregisterReceiver(mPairReceiver);
     }
 
