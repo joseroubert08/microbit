@@ -127,10 +127,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private static ACTIVITY_STATE mActivityState = ACTIVITY_STATE.STATE_IDLE;
     private int selectedDeviceForConnect = 0;
 
-    private long mConnectionStartTime = 0;
-    private String mMicroBitFirmware = "unknown";
-
-
     private View.OnClickListener mSuccessFulPairingHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -167,7 +163,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
                 logi(" mPairReceiver - state = " + state + " prevState = " + prevState);
                 if (state == BluetoothDevice.BOND_BONDED && prevState == BluetoothDevice.BOND_BONDING) {
-                    ConnectedDevice newDev = new ConnectedDevice(mNewDeviceCode.toUpperCase(), mNewDeviceCode.toUpperCase(), false, mNewDeviceAddress, 0 /*No pair code*/);
+                    ConnectedDevice newDev = new ConnectedDevice(mNewDeviceCode.toUpperCase(), mNewDeviceCode.toUpperCase(), false, mNewDeviceAddress, 0 ,null,System.currentTimeMillis());
                     handlePairingSuccessful(newDev);
                     return;
                 } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDING) {
@@ -206,25 +202,29 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             int error = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
             String firmware = intent.getStringExtra(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE);
 
-            if (firmware != null && !firmware.isEmpty()) {
-                mMicroBitFirmware = firmware;
+            if (firmware != null && !firmware.isEmpty()){
+                Utils.updateFirmwareMicrobit(context, firmware);
                 return;
             }
             updatePairedDeviceCard();
 
-            if (mActivityState == ACTIVITY_STATE.STATE_DISCONNECTING || mActivityState == ACTIVITY_STATE.STATE_CONNECTING) {
-                if (mActivityState == ACTIVITY_STATE.STATE_CONNECTING) {
-                    if (error == 0) {
-                        MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.SUCCESS, mMicroBitFirmware, null);
-                        mConnectionStartTime = System.currentTimeMillis();
+            if (mActivityState == ACTIVITY_STATE.STATE_DISCONNECTING || mActivityState == ACTIVITY_STATE.STATE_CONNECTING)
+            {
+                ConnectedDevice device = Utils.getPairedMicrobit(context);
+                if (mActivityState == ACTIVITY_STATE.STATE_CONNECTING)
+                {
+                    if (error == 0){
+                        MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.SUCCESS, device.mfirmware_version, null);
+                        Utils.updateConnectionStartTime(context, System.currentTimeMillis());
                     } else {
                         MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.FAIL, null, null);
                     }
                 }
-                if (error == 0 && mActivityState == ACTIVITY_STATE.STATE_DISCONNECTING) {
+                if (error == 0  && mActivityState == ACTIVITY_STATE.STATE_DISCONNECTING)
+                {
                     long now = System.currentTimeMillis();
-                    long connectionTime = (now - mConnectionStartTime) / 1000; //Time in seconds
-                    MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.DISCONNECT, mMicroBitFirmware, Long.toString(connectionTime));
+                    long connectionTime =  (now - device.mlast_connection_time) /1000; //Time in seconds
+                    MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.DISCONNECT, device.mfirmware_version, Long.toString(connectionTime));
                 }
                 PopUp.hide();
                 mActivityState = ACTIVITY_STATE.STATE_IDLE;
@@ -961,7 +961,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
     private void handlePairingSuccessful(final ConnectedDevice newDev) {
         logi("handlePairingSuccessful()");
-        MBApp.getApp().sendPairingStats(true, mMicroBitFirmware);
+        MBApp.getApp().sendPairingStats(true, newDev.mfirmware_version);
         Utils.setPairedMicrobit(MBApp.getContext(), newDev);
         updatePairedDeviceCard();
         // Pop up to show pairing successful
@@ -1149,7 +1149,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             logi("Device is already bonded.");
             cancelPairing();
             //Get device name from the System settings if present and add to our list
-            ConnectedDevice newDev = new ConnectedDevice(mNewDeviceCode.toUpperCase(), mNewDeviceCode.toUpperCase(), false, mNewDeviceAddress, 0);
+            ConnectedDevice newDev = new ConnectedDevice(mNewDeviceCode.toUpperCase(), mNewDeviceCode.toUpperCase(), false, mNewDeviceAddress, 0 , null , System.currentTimeMillis());
             handlePairingSuccessful(newDev);
             return;
         }
