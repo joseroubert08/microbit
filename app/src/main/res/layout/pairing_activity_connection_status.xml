@@ -3,6 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
-    android:gravity="center|top"
+    android:gravity="start|top"
     android:text="@string/previous_devices"
     android:textAppearance="?android:textAppearanceMedium" />

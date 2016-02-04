@@ -25,7 +25,7 @@
             android:id="@+id/title_manage_microbit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|top"
+            android:layout_gravity="start|top"
             android:contentDescription="@string/desc_manage_and_remove_microbits_label"
             android:gravity="start"
             android:lines="2"
@@ -35,18 +35,18 @@
             android:textAppearance="?android:textAppearanceMedium"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/subtitle_manage_microbit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|top"
-            android:contentDescription="@string/desc_subtitle_manage_and_remove_microbits_label"
-            android:gravity="start"
-            android:lines="2"
-            android:maxLines="2"
-            android:nextFocusDown="@+id/img_pair_microbit"
-            android:text="@string/subtitle_manage_and_remove_microbits_label"
-            android:textAppearance="?android:textAppearanceMedium" />
+        <!--<TextView-->
+        <!--android:id="@+id/subtitle_manage_microbit"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="start|top"-->
+        <!--android:contentDescription="@string/desc_subtitle_manage_and_remove_microbits_label"-->
+        <!--android:gravity="start"-->
+        <!--android:lines="2"-->
+        <!--android:maxLines="2"-->
+        <!--android:nextFocusDown="@+id/img_pair_microbit"-->
+        <!--android:text="@string/subtitle_manage_and_remove_microbits_label"-->
+        <!--android:textAppearance="?android:textAppearanceMedium" />-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -68,27 +68,19 @@
                 android:nextFocusDown="@id/flash_projects_title_txt"
                 android:text="@string/manage_microbit_txt"
                 android:textAppearance="?android:textAppearanceMedium" />
-
-            <ImageView
-                android:id="@+id/img_pair_microbit"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:contentDescription="@string/desc_manage_microbits"
-                android:nextFocusDown="@+id/connect_microbit_problems_message"
-                android:padding="16dp"
-                android:src="@drawable/connected_emoji" />
         </LinearLayout>
 
         <!-- Bluetooth settings -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/connect_microbit_problems_message"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
                 android:layout_weight="2"
                 android:contentDescription="@string/desc_connect_microbit_problems_message"
                 android:focusable="true"
@@ -97,6 +89,16 @@
                 android:nextFocusDown="@id/flash_projects_title_txt"
                 android:text="@string/connect_microbit_problems_message"
                 android:textAppearance="?android:textAppearanceMedium" />
+
+            <ImageView
+                android:id="@+id/img_pair_microbit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:contentDescription="@string/desc_manage_microbits"
+                android:nextFocusDown="@+id/connect_microbit_problems_message"
+                android:src="@drawable/connected_emoji" />
+
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

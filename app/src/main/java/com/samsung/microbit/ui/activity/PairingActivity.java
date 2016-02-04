@@ -346,8 +346,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         TextView manageMicrobit = (TextView) findViewById(R.id.title_manage_microbit);
         manageMicrobit.setTypeface(MBApp.getApp().getTypeface());
 
-        TextView manageSubtitleMicrobit = (TextView) findViewById(R.id.subtitle_manage_microbit);
-        manageSubtitleMicrobit.setTypeface(MBApp.getApp().getTypeface());
+//        TextView manageSubtitleMicrobit = (TextView) findViewById(R.id.subtitle_manage_microbit);
+//        manageSubtitleMicrobit.setTypeface(MBApp.getApp().getTypeface());
 
         TextView descriptionManageMicrobit = (TextView) findViewById(R.id.description_manage_microbit);
         descriptionManageMicrobit.setTypeface(MBApp.getApp().getTypeface());
@@ -601,22 +601,12 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             deviceConnectionStatusBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, mDeviceDisconnectedImg, null);
             deviceConnectionStatusBtn.setContentDescription("Micro:bit not connected " + connectedDevice.mName + "is " + getMicobitStatusForAccessibility(connectedDevice.mStatus));
 
-            //
-//            mconnectBtn.setImageResource(R.drawable.device_status_disconnected);
-//            itemSelectorLayout.setBackgroundResource(R.drawable.grey_btn);
-//            mConnectedDeviceName.setTextColor(Color.WHITE);
-//            mdeviceConnectionStatus.setText(R.string.most_recent_device_status);
         } else {
             // Device is connected
             deviceConnectionStatusBtn.setBackgroundResource(R.drawable.white_btn_devices_status_connected);
             deviceConnectionStatusBtn.setTextColor(Color.BLACK);
             deviceConnectionStatusBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, mDeviceConnectedImg, null);
             deviceConnectionStatusBtn.setContentDescription("Currently connected Micro:bit " + connectedDevice.mName + "is " + getMicobitStatusForAccessibility(connectedDevice.mStatus));
-            //
-//            mconnectBtn.setImageResource(R.drawable.device_status_connected);
-//            itemSelectorLayout.setBackgroundResource(R.drawable.white_btn);
-//            mConnectedDeviceName.setTextColor(Color.BLACK);
-//            mdeviceConnectionStatus.setText(R.string.device_connected_device_status);
         }
     }
 
@@ -632,7 +622,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
     private void updatePairedDeviceCard() {
         ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
-        Drawable mDeviceDisconnectedImg = MBApp.getApp().getResources().getDrawable(R.drawable.device_status_disconnected, null);
+
+       // Drawable mDeviceDisconnectedImg = MBApp.getApp().getResources().getDrawable(R.drawable.device_status_disconnected, null);
 
         if (connectedDevice.mName == null) {
             // No device is Paired
@@ -640,19 +631,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             deviceConnectionStatusBtn.setText("-");
             deviceConnectionStatusBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
 
-            //
-            //  mconnectBtn.setVisibility(View.INVISIBLE);
-//            mdeleteBtn.setVisibility(View.INVISIBLE);
-//            itemSelectorLayout.setBackgroundResource(R.drawable.grey_btn);
-//            mConnectedDeviceName.setText("-");
-//            mConnectedDeviceName.setEnabled(false); // TODO - no longer need fade status
         } else {
             deviceConnectionStatusBtn.setText(connectedDevice.mName);
-            deviceConnectionStatusBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, mDeviceDisconnectedImg, null);
-//
-//            mConnectedDeviceName.setText(connectedDevice.mName);
-//            mconnectBtn.setVisibility(View.VISIBLE);
-//            mdeleteBtn.setVisibility(View.INVISIBLE); // TODO - reenable to allow deleting
+          //  deviceConnectionStatusBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, mDeviceDisconnectedImg, null);
+
             updateConnectionStatus();
         }
     }
