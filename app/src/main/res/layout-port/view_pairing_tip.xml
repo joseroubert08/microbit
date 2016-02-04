@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black_color"
-    android:orientation="vertical"
-    android:visibility="gone">
+    android:orientation="vertical">
 
     <!-- Title -->
     <TextView
@@ -24,7 +23,9 @@
         android:id="@+id/tipImageView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_gravity="center"
         android:layout_weight="3"
+        android:gravity="center"
         android:orientation="horizontal"
         android:scrollbars="none">
 
@@ -33,7 +34,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:background="@drawable/how_to_pair_microbit" />
+            android:background="@drawable/how_to_pair_microbit"
+            android:gravity="center" />
     </LinearLayout>
 
     <include layout="@layout/pair_microbit_step" />
