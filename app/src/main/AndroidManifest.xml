@@ -30,8 +30,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
-    <uses-permission android:name="android.permission.FLASHLIGHT"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-feature android:name="android.hardware.camera.flash" />
 
@@ -122,6 +122,15 @@
             android:parentActivityName=".ui.activity.HomeActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize">
+            >
+        </activity>
+        <activity
+            android:name=".ui.activity.HelpWebView"
+            android:configChanges="orientation|screenSize"
+            android:label="Help Webview"
+            android:launchMode="singleTask"
+            android:parentActivityName=".ui.activity.HomeActivity"
+            android:screenOrientation="portrait">
             ></activity>
 
         <service
@@ -157,8 +166,7 @@
         </activity>
         <receiver android:name=".core.PopUpServiceReceiver">
             <intent-filter>
-                <action android:name="com.samsung.microbit.core.SHOWFROMSERVICE">
-                </action>
+                <action android:name="com.samsung.microbit.core.SHOWFROMSERVICE"></action>
             </intent-filter>
         </receiver>
     </application>
