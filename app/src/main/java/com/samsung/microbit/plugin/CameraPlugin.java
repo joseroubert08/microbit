@@ -84,7 +84,6 @@ public class CameraPlugin {
 
 			case Constants.SAMSUNG_CAMERA_EVT_STOP_PHOTO_MODE:
 			case Constants.SAMSUNG_CAMERA_EVT_STOP_VIDEO_MODE:
-                mWakeLock.release();
                 closeCamera();
 				break;
 
