@@ -545,10 +545,6 @@ public class CameraActivity_OldAPI extends Activity {
                 logi("Couldn't open the camera");
             }
             logi("Step 2");
-            /*
-            if (mParameters == null && mCamera != null){
-                setParameters();
-            }*/
 			mPreview.setCamera(mCamera, mCameraIdx);
             logi("Step 3");
 
@@ -590,7 +586,7 @@ public class CameraActivity_OldAPI extends Activity {
             myOrientationEventListener.disable();
         }
 		this.unregisterReceiver(
-				mMessageReceiver);
+                mMessageReceiver);
 		if (mCamera != null) {
 			mCamera.stopPreview();
 			mPreview.setCamera(null,-1);
@@ -601,8 +597,17 @@ public class CameraActivity_OldAPI extends Activity {
 	}
 
 	private void resetCam() {
-		mCamera.startPreview();
-		//mPreview.setCamera(mCamera);
+        Camera.Parameters parameters = mCamera.getParameters();
+        logi("Set Flash mode ON");
+        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+        mCamera.setParameters(parameters);
+        mCamera.startPreview();
+        mCamera.autoFocus(new AutoFocusCallback() {
+            public void onAutoFocus(boolean success, Camera camera) {
+            }
+        });
+        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+        mCamera.setParameters(parameters);
 	}
 
 	private void refreshGallery(File file) {

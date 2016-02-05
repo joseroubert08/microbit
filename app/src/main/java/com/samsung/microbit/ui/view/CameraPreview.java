@@ -1,7 +1,5 @@
 package com.samsung.microbit.ui.view;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.Camera;
@@ -12,10 +10,12 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 
     private static final String TAG = "CameraPreview";
-    private boolean debug = false;
+    private boolean debug = true;
 
     void logi(String message) {
         if (debug) {
@@ -36,6 +36,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
     public SurfaceHolder getHolder(){return mHolder;}
 
     public void restartCameraPreview() {
+        logi("restartCameraPreview");
         if(mCamera != null && mPreviewSize!=null) {
             try {
                 mCamera.stopPreview();
@@ -43,7 +44,17 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
                 parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
                 mCamera.setParameters(parameters);
                 mCamera.setPreviewDisplay(mHolder);
+                logi("Set Flash mode ON");
+                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                mCamera.setParameters(parameters);
                 mCamera.startPreview();
+                mCamera.autoFocus(new Camera.AutoFocusCallback() {
+                    public void onAutoFocus(boolean success, Camera camera) {
+                    }
+                });
+                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                mCamera.setParameters(parameters);
+
             }catch (Exception e){
                 Log.e(TAG, "IOException caused by setPreviewDisplay()", e);
             }
@@ -102,6 +113,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
     }
 
     public void setCamera(Camera camera, int idx) {
+        logi("setCamera");
         mCamera = camera;
         mCameraIdx = idx;
         if (mCamera != null) {
