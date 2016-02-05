@@ -10,7 +10,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,7 +20,6 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.ui.PopUp;
 
-import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
 public class PopUpActivity extends Activity implements View.OnClickListener {
@@ -46,10 +44,8 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     static public final String INTENT_EXTRA_CANCELABLE = "cancelable";
     static public final String INTENT_GIFF_ANIMATION_CODE = "giffAnimationCode";
 
-    private WebView animationWebview = null;
     // Animations - Loading Error & Flash states
     private GifImageView gifImageView;
-    private GifDrawable giffDrawable;
 
     private ImageView imageIcon = null;
     private TextView titleTxt = null;
@@ -98,7 +94,6 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        //  animationWebview = (WebView) findViewById(R.id.giff_animation_webview);
         imageIcon = (ImageView) findViewById(R.id.image_icon);
         titleTxt = (TextView) findViewById(R.id.flash_projects_title_txt);
         titleTxt.setTypeface(MBApp.getApp().getTypeface());
@@ -144,7 +139,6 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     }
 
     private void clearLayout() {
-// ~ TODO check it doesn't screw up giff animation
         imageIcon.setImageResource(R.drawable.overwrite_face);
         imageIcon.setBackgroundResource(0);
         titleTxt.setVisibility(View.GONE);
@@ -180,15 +174,16 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
             imageIcon.setBackgroundResource(imageBackgroundResId);
         }
 
-        // Loading the Giff only if the animation code isn't default 0
-        int imageGiffAnimationCode = intent.getIntExtra(INTENT_GIFF_ANIMATION_CODE, 0); // Default value is 0 (no animation ) 2 = flash, set to 2 for testing
+        /* Loading the Giff only if the animation code isn't default 0
+         * Default value is 0 (there is no animation ) Case 1 = flash, Case 2 = Error */
+        int imageGiffAnimationCode = intent.getIntExtra(INTENT_GIFF_ANIMATION_CODE, 0);
         if (imageGiffAnimationCode != 0) {
             switch (imageGiffAnimationCode) {
                 // Flashing screen
                 case 1:
                     // Asset file
-                    //       findViewById(R.id.pop_up_gif_image_view).setBackgroundResource(R.drawable.flash_face);
-                    //      findViewById(R.id.pop_up_gif_image_view).setVisibility(View.VISIBLE);
+                    findViewById(R.id.pop_up_gif_image_view).setBackgroundResource(R.drawable.emoji_flashing_microbit);
+                    findViewById(R.id.pop_up_gif_image_view).setVisibility(View.VISIBLE);
                     // Regular image disabled
                     imageIcon.setVisibility(View.GONE);
                     break;
@@ -196,8 +191,8 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
                 // Error screen
                 case 2:
                     // Asset file
-                    //        findViewById(R.id.pop_up_gif_image_view).setBackgroundResource(R.drawable.error_face);
-                    //       findViewById(R.id.pop_up_gif_image_view).setVisibility(View.VISIBLE);
+                    findViewById(R.id.pop_up_gif_image_view).setBackgroundResource(R.drawable.emoji_fail_microbit);
+                    findViewById(R.id.pop_up_gif_image_view).setVisibility(View.VISIBLE);
                     // Regular image disabled
                     imageIcon.setVisibility(View.GONE);
                     break;

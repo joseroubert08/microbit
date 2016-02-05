@@ -365,7 +365,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.btn_help: {
-                Toast.makeText(this, "Coming Soon", Toast.LENGTH_LONG).show();
+                Intent launchHelpIntent = new Intent(this, HelpWebView.class);
+                launchHelpIntent.putExtra("url", "file:///android_asset/htmls/help/index.html");
+                startActivity(launchHelpIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
                 app.sendNavigationStats("overflow-menu", "help");

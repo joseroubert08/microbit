@@ -8,25 +8,30 @@
     android:paddingEnd="16dp"
     android:paddingStart="16dp">
 
-    <!-- Loading Giffs -->
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/pop_up_gif_image_view"
-        android:layout_width="wrap_content"
+    <FrameLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerInParent="true"
-        android:layout_margin="8dp" />
+        android:layout_alignParentTop="true">
 
-    <!-- Non animated images for flashing-->
-    <ImageView
-        android:id="@+id/image_icon"
-        android:layout_width="@dimen/popup_icon_size"
-        android:layout_height="@dimen/popup_icon_size"
-        android:layout_alignParentTop="true"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="@dimen/popup_header_section_marginTop"
-        android:scaleType="centerInside"
-        android:src="@drawable/overwrite_face" />
+        <!-- Loading Giffs -->
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/pop_up_gif_image_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:layout_margin="16dp" />
+
+        <!-- Non animated images for flashing-->
+        <ImageView
+            android:id="@+id/image_icon"
+            android:layout_width="@dimen/popup_icon_size"
+            android:layout_height="@dimen/popup_icon_size"
+            android:layout_gravity="center|top"
+
+            android:layout_marginTop="@dimen/popup_header_section_marginTop"
+            android:scaleType="centerInside"
+            android:src="@drawable/overwrite_face" />
+    </FrameLayout>
 
     <!-- Body of pop up - main text area, loader etc-->
     <LinearLayout
