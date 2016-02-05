@@ -261,7 +261,7 @@ public class Utils {
         originalRingerVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
 
 
-        if (originalRingerMode == AudioManager.RINGER_MODE_SILENT) {
+        if (originalRingerMode != AudioManager.RINGER_MODE_NORMAL) {
             mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
         }
         mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
