@@ -155,7 +155,7 @@
     <string name="desc_searching_microbit_found_message">Open your notification drawer and enter your Pin</string>
     <string name="step_connect_tip_text_step_two">Step 2</string>
     <string name="connect_tip_text">Hold the A and B buttons,\nthen PRESS RESET</string>
-    <string name="desc_connect_tip_text">Hold the a and b buttons, then PRESS RESET</string>
+    <string name="desc_connect_tip_text">Hold the A and B buttons, then PRESS RESET</string>
     <string name="desc_connect_tip_text_step">Step one</string>
     <string name="connect_tip_text_step_text">Hold the A and B buttons,\nthen PRESS RESET</string>
     <string name="desc_connect_tip_text_step_two">Step two</string>
@@ -283,7 +283,7 @@
     <string name="desc_manage_and_remove_microbits_label">How do I remove a paired micro:bit?</string>
     <string name="subtitle_manage_and_remove_microbits_label">Follow the on-screen instructions to</string>
     <string name="desc_subtitle_manage_and_remove_microbits_label">Follow the on-screen instructions to</string>
-    <string name="manage_and_remove_microbit">How do I pair a new micro:bit?</string>
+    <string name="manage_and_remove_microbit">How do I remove a paired micro:bit?</string>
     <string name="desc_homescreen_logo_img">Hello</string>
     <string name="desc_connect_btn">Connections</string>
     <string name="desc_flash_btn">Flash</string>

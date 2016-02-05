@@ -7,7 +7,7 @@
     android:layout_gravity="bottom"
     android:gravity="center"
     android:orientation="horizontal"
-    tools:showIn="@layout/view_pairing_tip">
+    tools:showIn="@layout/view_pairing_tip_screen_two">
 
     <Button
         android:id="@+id/cancel_tip_step_3_btn"

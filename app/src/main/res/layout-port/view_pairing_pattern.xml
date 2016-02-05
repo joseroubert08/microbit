@@ -12,7 +12,8 @@
         style="@style/h1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center|top"
+        android:layout_gravity="top|center"
+        android:layout_margin="16dp"
         android:gravity="center"
         android:text="@string/new_devices_pattern_null"
         android:textColor="@color/white_color" />

@@ -30,7 +30,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -99,12 +98,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
     // Connected Device Status
     Button deviceConnectionStatusBtn;
-
-    private LinearLayout itemSelectorLayout;
-    private TextView mConnectedDeviceName;
-    private TextView mdeviceConnectionStatus;
-    private ImageButton mconnectBtn;
-    private ImageButton mdeleteBtn;
 
     private Handler mHandler;
 
@@ -610,6 +603,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         }
     }
 
+    // Retrieve Micro:bit accessibility state
     public String getMicobitStatusForAccessibility(boolean status) {
         String statusRead = null;
         if (status) {
@@ -623,7 +617,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private void updatePairedDeviceCard() {
         ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
 
-       // Drawable mDeviceDisconnectedImg = MBApp.getApp().getResources().getDrawable(R.drawable.device_status_disconnected, null);
+        // Drawable mDeviceDisconnectedImg = MBApp.getApp().getResources().getDrawable(R.drawable.device_status_disconnected, null);
 
         if (connectedDevice.mName == null) {
             // No device is Paired
@@ -633,7 +627,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         } else {
             deviceConnectionStatusBtn.setText(connectedDevice.mName);
-          //  deviceConnectionStatusBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, mDeviceDisconnectedImg, null);
+            //  deviceConnectionStatusBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, mDeviceDisconnectedImg, null);
 
             updateConnectionStatus();
         }
@@ -778,27 +772,20 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 }
                 startWithPairing();
                 break;
-            // Proceed to How to Pair (screen 2)
+            // Proceed to Enter Pattern
             case R.id.ok_tip_step_1_btn:
                 if (debug) {
-                    logi("onClick() :: ok_pair_button");
+                    logi("onClick() :: ok_tip_screen_one_button");
                     displayScreen(PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY);
-                    mPairTipViewScreenTwo.setVisibility(View.VISIBLE);
                 }
                 break;
-            // Confirm Pattern and begin searching for micro:bit
+            // Confirm pattern and begin searching for micro:bit
             case R.id.ok_enter_pattern_step_2_btn:
                 if (debug) {
-                    logi("onClick() :: ok_name_button");
-                    if (mState == PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY) {
-                        generateName();
-                        if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()) {
-                            return;
-                        }
-                        scanLeDevice(true);
-                        displayScreen(PAIRING_STATE.PAIRING_STATE_SEARCHING);
+                    logi("onClick() :: ok_tip_screen_2_enter_patten");
+                    if (mPairTipViewScreenTwo != null) {
+                        mPairTipViewScreenTwo.setVisibility(View.VISIBLE); // TODO change state
                     }
-                    break;
                 }
                 break;
 
@@ -817,10 +804,16 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 break;
             case R.id.ok_tip_step_3_btn:
                 if (debug) {
-                    logi("onClick() :: ok_tip_screen_2_enter_patten");
-                    if (mPairTipViewScreenTwo != null) {
-                        mPairTipViewScreenTwo.setVisibility(View.GONE);
+                    logi("onClick() :: ok_name_button");
+                    if (mState == PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY) {
+                        generateName();
+                        if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()) {
+                            return;
+                        }
+                        scanLeDevice(true);
+                        displayScreen(PAIRING_STATE.PAIRING_STATE_SEARCHING);
                     }
+                    break;
                 }
                 break;
             case R.id.cancel_enter_pattern_step_2_btn:

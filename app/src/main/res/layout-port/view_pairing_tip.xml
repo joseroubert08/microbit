@@ -13,8 +13,9 @@
         android:layout_height="0dp"
         android:layout_gravity="center"
         android:layout_weight="1"
-        android:gravity="center"
+        android:gravity="start|center"
         android:text="@string/connect_tip_title"
+        android:layout_marginStart="16dp"
         android:textAppearance="?android:textAppearanceLarge"
         android:textColor="@color/white_color" />
 
