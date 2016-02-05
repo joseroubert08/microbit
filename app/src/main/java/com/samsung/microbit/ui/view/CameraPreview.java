@@ -32,12 +32,17 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 
     private Activity mParentActivity;
 
-    public void setParentActivity(Activity parentActivity){mParentActivity = parentActivity;}
-    public SurfaceHolder getHolder(){return mHolder;}
+    public void setParentActivity(Activity parentActivity) {
+        mParentActivity = parentActivity;
+    }
+
+    public SurfaceHolder getHolder() {
+        return mHolder;
+    }
 
     public void restartCameraPreview() {
         logi("restartCameraPreview");
-        if(mCamera != null && mPreviewSize!=null) {
+        if (mCamera != null && mPreviewSize != null) {
             try {
                 mCamera.stopPreview();
                 Camera.Parameters parameters = mCamera.getParameters();
@@ -55,20 +60,18 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
                 parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
                 mCamera.setParameters(parameters);
 
-            }catch (Exception e){
+            } catch (Exception e) {
                 Log.e(TAG, "IOException caused by setPreviewDisplay()", e);
             }
         }
     }
 
-    public int getCameraDisplayOrientation(int cameraId, android.hardware.Camera mCamera)
-    {
+    public int getCameraDisplayOrientation(int cameraId, android.hardware.Camera mCamera) {
         android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
         android.hardware.Camera.getCameraInfo(cameraId, info);
         int rotation = mParentActivity.getWindowManager().getDefaultDisplay().getRotation();
         int degrees = 0;
-        switch (rotation)
-        {
+        switch (rotation) {
             case Surface.ROTATION_0:
                 degrees = 0;
                 break;
@@ -86,12 +89,10 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
         logi("info.orientation " + info.orientation + " degrees " + degrees);
 
         int result;
-        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT)
-        {
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
             result = (info.orientation + degrees) % 360;
             result = (360 - result) % 360; // compensate the mirror
-        } else
-        { // back-facing
+        } else { // back-facing
             result = (info.orientation - degrees + 360) % 360;
         }
 
@@ -169,7 +170,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
             if (mPreviewSize != null) {
                 //The previewSize is always in landscape mode,
                 // so we have to change the dimensions accordingly
-                boolean landscapeMode = mPreviewSize.width>mPreviewSize.height && width>height;
+                boolean landscapeMode = mPreviewSize.width > mPreviewSize.height && width > height;
                 previewWidth = (landscapeMode) ? mPreviewSize.width : mPreviewSize.height;
                 previewHeight = (landscapeMode) ? mPreviewSize.height : mPreviewSize.width;
             }
@@ -212,7 +213,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
         logi("surfaceChanged()");
-        if(mHolder.getSurface()==null){
+        if (mHolder.getSurface() == null) {
             return;
         }
 
@@ -224,7 +225,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 
         //The list of camera preview sizes inside sizes is always with w>h (landscape)
         //When in portrait mode w and h has to be inverted to have a proper comparison
-        if(w<h) {
+        if (w < h) {
             int temp = w;
             w = h;
             h = temp;
