@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Message;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.Gravity;
@@ -25,6 +26,11 @@ public class CameraPlugin {
 	private static final String TAG = "CameraPlugin";
 
     private static int m_NextState = -1 ;
+	private static int m_CurrentState = -1;
+
+    private static PowerManager mPowerManager;
+    private static PowerManager.WakeLock mWakeLock;
+
 
 
     private static MediaPlayer.OnCompletionListener m_OnCompletionListener = new MediaPlayer.OnCompletionListener()
@@ -38,37 +44,52 @@ public class CameraPlugin {
 	public static void pluginEntry(Context ctx, CmdArg cmd) {
 
 		context = ctx;
+
+        if (mPowerManager == null)
+        {
+            mPowerManager = (PowerManager) ctx.getApplicationContext().getSystemService(Context.POWER_SERVICE);
+            mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
+        }
 		switch (cmd.getCMD()) {
 			case Constants.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE:
+                mWakeLock.acquire(5*1000);
+                m_CurrentState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE ;
                 m_NextState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE ;
                 Utils.playAudio(Utils.getLaunchCameraAudio() , m_OnCompletionListener);
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE:
+                mWakeLock.acquire(5*1000);
+                m_CurrentState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE ;
                 m_NextState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE ;
                 Utils.playAudio(Utils.getLaunchCameraAudio(), m_OnCompletionListener);
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO:
+                mWakeLock.acquire(5*1000);
                 m_NextState = Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO ;
                 Utils.playAudio(Utils.geTakingPhotoAudio(), m_OnCompletionListener);
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE:
+                mWakeLock.acquire(5*1000);
                 m_NextState = Constants.SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE ;
                 Utils.playAudio(Utils.getRecordingVideoAudio(), m_OnCompletionListener);
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_STOP_VIDEO_CAPTURE:
+                mWakeLock.acquire(5*1000);
                 recVideoStop();
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_STOP_PHOTO_MODE:
 			case Constants.SAMSUNG_CAMERA_EVT_STOP_VIDEO_MODE:
+                mWakeLock.release();
                 closeCamera();
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_TOGGLE_FRONT_REAR:
+                mWakeLock.acquire(5*1000);
                 toggleCamera();
 				break;
 			default:
