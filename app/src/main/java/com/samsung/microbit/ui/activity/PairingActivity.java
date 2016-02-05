@@ -64,6 +64,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         PAIRING_STATE_TIP,
         PAIRING_STATE_PATTERN_EMPTY,
         PAIRING_STATE_SEARCHING,
+        PAIRING_STATE_HOW_TO_PAIR_TWO, // TODO - new state
         PAIRING_STATE_ERROR
     }
 
@@ -565,19 +566,20 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         if (image.getTag() != "1") {
             deviceCodeArray[pos] = "1";
             image.setBackground(getApplication().getResources().getDrawable(R.drawable.red_white_led_btn));
+            image.setContentDescription("" + ++pos + "on"); // TODO check this for status of button
             image.setTag("1");
             isOn = true;
-            image.setContentDescription("" + ++pos + "on"); // TODO check this for status of button
 
         } else {
             deviceCodeArray[pos] = "0";
+            image.setContentDescription("" + ++pos + "off"); // TODO check this for status of button
             image.setBackground(getApplication().getResources().getDrawable(R.drawable.white_red_led_btn));
             image.setTag("0");
             isOn = false;
-            image.setContentDescription("" + ++pos + "off"); // TODO check this for status of button
             // Update the code to consider the still ON LED below the toggled one
-            if (pos < 20)
+            if (pos < 20) {
                 deviceCodeArray[pos + 5] = "1";
+            }
         }
         return isOn;
     }
@@ -666,6 +668,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         switch (gotoState) {
             case PAIRING_STATE_CONNECT_BUTTON:
+                break;
+
+            case PAIRING_STATE_HOW_TO_PAIR_TWO:
+                mPairTipViewScreenTwo.setVisibility(View.VISIBLE);
                 break;
 
             case PAIRING_STATE_ERROR:
@@ -782,10 +788,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             // Confirm pattern and begin searching for micro:bit
             case R.id.ok_enter_pattern_step_2_btn:
                 if (debug) {
-                    logi("onClick() :: ok_tip_screen_2_enter_patten");
-                    if (mPairTipViewScreenTwo != null) {
-                        mPairTipViewScreenTwo.setVisibility(View.VISIBLE); // TODO change state
-                    }
+                    logi("onClick() :: ok_tip_screen_one_button");
+                    displayScreen(PAIRING_STATE.PAIRING_STATE_HOW_TO_PAIR_TWO);
                 }
                 break;
 
@@ -804,8 +808,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 break;
             case R.id.ok_tip_step_3_btn:
                 if (debug) {
-                    logi("onClick() :: ok_name_button");
-                    if (mState == PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY) {
+                    logi("onClick() :: ok_tip_screen_two_button");
+                    if (mState == PAIRING_STATE.PAIRING_STATE_HOW_TO_PAIR_TWO) {
                         generateName();
                         if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()) {
                             return;
