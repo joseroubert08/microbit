@@ -191,7 +191,7 @@
     <string name="loading_page_msg">Please wait. Page is loading...</string>
 
     <!-- Popup message -->
-    <string name="delete_project_message">Are you sure you want to want to remove this file?\r\nThe file will be permanently removed from this application.</string>
+    <string name="delete_project_message">Are you sure you want to remove this file?\r\nThe file will be permanently removed from this application.</string>
     <string name="delete_project_title">Delete project?</string>
     <string name="record_audio">Record Audio?</string>
     <string name="audio_recorder_notification">micro:bit Audio Recorder</string>
