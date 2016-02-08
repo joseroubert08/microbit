@@ -276,8 +276,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        /* Debug menu. To be removed later */
-        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
