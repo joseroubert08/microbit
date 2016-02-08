@@ -1,5 +1,6 @@
 package com.samsung.microbit.ui.activity;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -14,14 +15,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.content.PermissionChecker;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -778,17 +782,83 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode)
+        {
+            case Constants.BLUETOOTH_PERMISSIONS_REQUESTED: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    proceedAfterBlePermissionGranted();
+                } else {
+                    PopUp.show(MBApp.getContext(),
+                            getString(R.string.location_permission_error),
+                            getString(R.string.permissions_needed_title),
+                            R.drawable.error_face, R.drawable.red_btn,
+                            PopUp.GIFF_ANIMATION_ERROR,
+                            PopUp.TYPE_ALERT,
+                            null, null);
+                }
+            }
+            break;
+
+        }
+    }
+    private void proceedAfterBlePermissionGranted()
+    {
+        if (!BluetoothSwitch.getInstance().isBluetoothON()) {
+            mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_PAIRING;
+            startBluetooth();
+            return;
+        }
+        startWithPairing();
+    }
+
+    private void requetPermission(String[] permissions, final int requestCode) {
+        ActivityCompat.requestPermissions(this, permissions, requestCode);
+    }
+    View.OnClickListener bluetoothPermissionOKHandler = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            logi("bluetoothPermissionOKHandler");
+            PopUp.hide();
+            String[] permissionsNeeded = {Manifest.permission.ACCESS_COARSE_LOCATION};
+            requetPermission(permissionsNeeded, Constants.BLUETOOTH_PERMISSIONS_REQUESTED);
+        }
+    };
+    View.OnClickListener bluetoothPermissionCancelHandler = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            logi("bluetoothPermissionCancelHandler");
+            PopUp.hide();
+            PopUp.show(MBApp.getContext(),
+                    getString(R.string.location_permission_error),
+                    getString(R.string.permissions_needed_title),
+                    R.drawable.error_face, R.drawable.red_btn,
+                    PopUp.GIFF_ANIMATION_ERROR,
+                    PopUp.TYPE_ALERT,
+                    null, null);
+        }
+    };
+    private void checkBluetoothPermissions() {
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PermissionChecker.PERMISSION_GRANTED) {
+            PopUp.show(MBApp.getContext(),
+                    getString(R.string.location_permission_pairing),
+                    getString(R.string.permissions_needed_title),
+                    R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
+                    PopUp.TYPE_CHOICE,
+                    bluetoothPermissionOKHandler,
+                    bluetoothPermissionCancelHandler);
+        } else {
+            proceedAfterBlePermissionGranted();
+        }
+    }
+    @Override
     public void onClick(final View v) {
         switch (v.getId()) {
             // Pair a micro:bit
             case R.id.pairButton:
                 logi("onClick() :: pairButton");
-                if (!BluetoothSwitch.getInstance().isBluetoothON()) {
-                    mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_PAIRING;
-                    startBluetooth();
-                    return;
-                }
-                startWithPairing();
+                checkBluetoothPermissions();
                 break;
             // Proceed to Enter Pattern
             case R.id.ok_tip_step_1_btn:
