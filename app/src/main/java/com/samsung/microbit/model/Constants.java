@@ -260,4 +260,5 @@ public class Constants {
     }
     //Can only use lower 8 bits for requestCode
     public static final int APP_STORAGE_PERMISSIONS_REQUESTED = 0x01;
+    public static final int BLUETOOTH_PERMISSIONS_REQUESTED = 0x02;
 }

@@ -455,6 +455,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private void installSamples() {
         if (mPrefs.getBoolean("firstrun", true)) {
+            mPrefs.edit().putBoolean("firstrun", false).commit();
             //First Run. Install the Sample applications
             new Thread(new Runnable() {
                 @Override
@@ -467,7 +468,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                             PopUp.TYPE_ALERT,
                             null, null);
                     Utils.installSamples();
-                    mPrefs.edit().putBoolean("firstrun", false).commit();
+
                 }
             }).start();
         }
@@ -478,7 +479,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         switch (requestCode)
         {
             case Constants.APP_STORAGE_PERMISSIONS_REQUESTED: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     installSamples();
                 } else {
                     if (mPrefs!= null) mPrefs.edit().putBoolean("firstrun", false).commit();
@@ -505,7 +506,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         public void onClick(View v) {
             logi("diskStoragePermissionOKHandler");
             PopUp.hide();
-            String[] permissionsNeeded = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            String[] permissionsNeeded = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
             requetPermission(permissionsNeeded, Constants.APP_STORAGE_PERMISSIONS_REQUESTED);
         }
     };
