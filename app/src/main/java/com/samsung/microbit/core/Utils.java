@@ -409,7 +409,7 @@ public class Utils {
         SharedPreferences pairedDevicePref = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
         if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
             String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
-            Log.e("Utils","Updating the microbit firmware");
+            Log.v("Utils","Updating the microbit firmware");
             ConnectedDevice deviceInSharedPref = new ConnectedDevice();
             Gson gson = new Gson();
             deviceInSharedPref = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
