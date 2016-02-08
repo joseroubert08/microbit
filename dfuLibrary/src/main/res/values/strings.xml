@@ -30,4 +30,10 @@
     <string name="dfu_status_error_msg">Flashing unsuccessful. Please reset micro:bit and try again.</string>
     <string name="dfu_validation_failed">Validation failed or Timeout. Please reset micro:bit and try again.</string>
 
+    <!-- Strings for permissions-->
+    <string name="permissions_needed_title">More permissions needed</string>
+    <string name="storage_permission_for_samples">We need to storage permissions to copy sample program files on your device. This will help you try your micro:bit straight away.\n Proceed?</string>
+    <string name="storage_permission_for_samples_error">No sample files will be installed.</string>
+
+
 </resources>

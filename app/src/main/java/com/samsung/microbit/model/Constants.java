@@ -258,4 +258,6 @@ public class Constants {
         FAIL,
         DISCONNECT
     }
+    //Can only use lower 8 bits for requestCode
+    public static final int APP_STORAGE_PERMISSIONS_REQUESTED = 0x01;
 }

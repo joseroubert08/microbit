@@ -1,5 +1,6 @@
 package com.samsung.microbit.ui.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +11,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,12 +31,12 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.RemoteConfig;
 import com.samsung.microbit.core.Utils;
+import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.service.PluginService;
@@ -65,7 +69,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private String emailBodyString = null;
-
 
     protected void logi(String message) {
         if (debug) {
@@ -107,15 +110,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         Button discoverButton = (Button) findViewById(R.id.discover_btn);
         discoverButton.setTypeface(MBApp.getApp().getTypeface());
 
-        // Start the other services - local service to handle IPC in the main process
-        Intent ipcIntent = new Intent(this, IPCService.class);
-        startService(ipcIntent);
-
-        Intent bleIntent = new Intent(this, BLEService.class);
-        startService(bleIntent);
-
-        final Intent intent = new Intent(this, PluginService.class);
-        startService(intent);
+        checkMinimumPermissionsForThisScreen();
+        startOtherServices();
 
         app.sendViewEventStats("homeactivity");
 
@@ -141,7 +137,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         // animation for loading hello .giff
         gifAnimationHelloEmoji = (GifImageView) findViewById(R.id.homeHelloAnimationGifView);
-        //gifAnimationHelloEmoji.setBackgroundResource(R.drawable.hello_emoji_animation);
+    }
+
+    private void startOtherServices() {
+        // IPC service to communicate between the services
+        Intent ipcIntent = new Intent(this, IPCService.class);
+        startService(ipcIntent);
+
+        // BLE service to Handle all BLE communications
+        Intent bleIntent = new Intent(this, BLEService.class);
+        startService(bleIntent);
+
+        // Plugin service to handle incoming requests
+        final Intent intent = new Intent(this, PluginService.class);
+        startService(intent);
     }
 
     private void setupDrawer() {
@@ -270,6 +279,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         /* Debug menu. To be removed later */
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
     }
 
 
@@ -433,27 +452,102 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         MBApp.getApp().sendStatSharing(shareStatistics);
     }
 
-    @Override
-    public void onResume() {
-        if (debug) logi("onResume() :: ");
-        super.onResume();
-        /* TODO Remove this code in commercial build*/
+
+    private void installSamples() {
         if (mPrefs.getBoolean("firstrun", true)) {
             //First Run. Install the Sample applications
-            Toast.makeText(MBApp.getContext(), "Installing Sample HEX files. The projects number will be updated in some time", Toast.LENGTH_LONG).show();
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    PopUp.show(MBApp.getContext(),
+                            "Samples will now be copied to your device. You can check them in the Flash section in sometime",
+                            "Thank you",
+                            R.drawable.message_face, R.drawable.blue_btn,
+                            PopUp.GIFF_ANIMATION_NONE,
+                            PopUp.TYPE_ALERT,
+                            null, null);
                     Utils.installSamples();
                     mPrefs.edit().putBoolean("firstrun", false).commit();
                 }
             }).start();
-        } else {
-            logi("Not the first run");
         }
-        /* Code removal ends */
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode)
+        {
+            case Constants.APP_STORAGE_PERMISSIONS_REQUESTED: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    installSamples();
+                } else {
+                    if (mPrefs!= null) mPrefs.edit().putBoolean("firstrun", false).commit();
+                    PopUp.show(MBApp.getContext(),
+                            getString(R.string.storage_permission_for_samples_error),
+                            "",
+                            R.drawable.error_face, R.drawable.red_btn,
+                            PopUp.GIFF_ANIMATION_ERROR,
+                            PopUp.TYPE_ALERT,
+                            null, null);
+                }
+            }
+            break;
+
+        }
+    }
+
+    private void requetPermission(String[] permissions, final int requestCode) {
+        ActivityCompat.requestPermissions(this, permissions, requestCode);
+    }
+
+    View.OnClickListener diskStoragePermissionOKHandler = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            logi("diskStoragePermissionOKHandler");
+            PopUp.hide();
+            String[] permissionsNeeded = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            requetPermission(permissionsNeeded, Constants.APP_STORAGE_PERMISSIONS_REQUESTED);
+        }
+    };
+
+    View.OnClickListener diskStoragePermissionCancelHandler = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            logi("diskStoragePermissionCancelHandler");
+            PopUp.hide();
+            PopUp.show(MBApp.getContext(),
+                    getString(R.string.storage_permission_for_samples_error),
+                    "",
+                    R.drawable.error_face, R.drawable.red_btn,
+                    PopUp.GIFF_ANIMATION_ERROR,
+                    PopUp.TYPE_ALERT,
+                    null, null);
+            if (mPrefs!= null) mPrefs.edit().putBoolean("firstrun", false).commit();
+        }
+    };
+
+
+    private void checkMinimumPermissionsForThisScreen() {
+        //Check reading perminssions & writing permission to populate the HEX files & show program list
+        if (mPrefs.getBoolean("firstrun", true)) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PermissionChecker.PERMISSION_GRANTED ||
+                    (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PermissionChecker.PERMISSION_GRANTED)) {
+                PopUp.show(MBApp.getContext(),
+                        getString(R.string.storage_permission_for_samples),
+                        getString(R.string.permissions_needed_title),
+                        R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
+                        PopUp.TYPE_CHOICE,
+                        diskStoragePermissionOKHandler,
+                        diskStoragePermissionCancelHandler);
+            }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        if (debug) logi("onResume() :: ");
+        super.onResume();
         MBApp.setContext(this);
-        // Reload Hello Emoji animation
         findViewById(R.id.homeHelloAnimationGifView).animate();
     }
 }

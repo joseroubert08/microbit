@@ -109,10 +109,12 @@ public class Utils {
         int totalPrograms = 0;
         if (sdcardDownloads.exists()) {
             File files[] = sdcardDownloads.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                String fileName = files[i].getName();
-                if (fileName.endsWith(".hex")) {
-                    ++totalPrograms;
+            if (files != null) {
+                for (int i = 0; i < files.length; i++) {
+                    String fileName = files[i].getName();
+                    if (fileName.endsWith(".hex")) {
+                        ++totalPrograms;
+                    }
                 }
             }
         }
