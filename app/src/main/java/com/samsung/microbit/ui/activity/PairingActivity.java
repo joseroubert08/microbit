@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -584,10 +585,23 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         return isOn;
     }
 
+    private Drawable getDrawableResource(int resID) {
+        return ContextCompat.getDrawable(this, resID);
+    }
+
     private void updateConnectionStatus() {
         ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
-        Drawable mDeviceDisconnectedImg = MBApp.getApp().getResources().getDrawable(R.drawable.device_status_disconnected, null);
-        Drawable mDeviceConnectedImg = MBApp.getApp().getResources().getDrawable(R.drawable.device_status_connected, null);
+        Drawable mDeviceDisconnectedImg;
+        Drawable mDeviceConnectedImg;
+
+        // @getDrawable method depracated in API 21
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mDeviceDisconnectedImg = getDrawableResource(R.drawable.device_status_disconnected);
+            mDeviceConnectedImg = getDrawableResource(R.drawable.device_status_connected);
+        } else {
+            mDeviceDisconnectedImg = getDrawableResource(R.drawable.device_status_disconnected);
+            mDeviceConnectedImg = getDrawableResource(R.drawable.device_status_connected);
+        }
 
         if (!connectedDevice.mStatus) {
             // Device is not connected
