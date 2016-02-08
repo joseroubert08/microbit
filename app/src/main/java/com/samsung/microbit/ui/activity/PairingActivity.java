@@ -782,73 +782,55 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         switch (v.getId()) {
             // Pair a micro:bit
             case R.id.pairButton:
-                if (debug) {
-                    logi("onClick() :: pairButton");
-                    if (!BluetoothSwitch.getInstance().isBluetoothON()) {
-                        mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_PAIRING;
-                        startBluetooth();
-                        return;
-                    }
+                logi("onClick() :: pairButton");
+                if (!BluetoothSwitch.getInstance().isBluetoothON()) {
+                    mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_PAIRING;
+                    startBluetooth();
+                    return;
                 }
                 startWithPairing();
                 break;
             // Proceed to Enter Pattern
             case R.id.ok_tip_step_1_btn:
-                if (debug) {
-                    logi("onClick() :: ok_tip_screen_one_button");
-                    displayScreen(PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY);
-                }
+                logi("onClick() :: ok_tip_screen_one_button");
+                displayScreen(PAIRING_STATE.PAIRING_STATE_PATTERN_EMPTY);
                 break;
             // Confirm pattern and begin searching for micro:bit
             case R.id.ok_enter_pattern_step_2_btn:
-                if (debug) {
-                    logi("onClick() :: ok_tip_screen_one_button");
-                    displayScreen(PAIRING_STATE.PAIRING_STATE_HOW_TO_PAIR_TWO);
-                }
+                logi("onClick() :: ok_tip_screen_one_button");
+                displayScreen(PAIRING_STATE.PAIRING_STATE_HOW_TO_PAIR_TWO);
                 break;
 
             case R.id.cancel_tip_step_1_btn:
-                if (debug) {
-                    logi("onClick() :: cancel_tip_button");
-                    displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
-                }
+                logi("onClick() :: cancel_tip_button");
+                displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
                 break;
 
             case R.id.cancel_tip_step_3_btn:
-                if (debug) {
-                    logi("onClick() :: cancel_tip_screen_two_button");
-                    displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
-                }
+                logi("onClick() :: cancel_tip_screen_two_button");
+                displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
                 break;
             case R.id.ok_tip_step_3_btn:
-                if (debug) {
-                    logi("onClick() :: ok_tip_screen_two_button");
-                    if (mState == PAIRING_STATE.PAIRING_STATE_HOW_TO_PAIR_TWO) {
-                        generateName();
-                        if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()) {
-                            return;
-                        }
-                        scanLeDevice(true);
-                        displayScreen(PAIRING_STATE.PAIRING_STATE_SEARCHING);
+                logi("onClick() :: ok_tip_screen_two_button");
+                if (mState == PAIRING_STATE.PAIRING_STATE_HOW_TO_PAIR_TWO) {
+                    generateName();
+                    if (!BluetoothSwitch.getInstance().checkBluetoothAndStart()) {
+                        return;
                     }
-                    break;
+                    scanLeDevice(true);
+                    displayScreen(PAIRING_STATE.PAIRING_STATE_SEARCHING);
                 }
                 break;
             case R.id.cancel_enter_pattern_step_2_btn:
-                if (debug) {
-                    logi("onClick() :: cancel_name_button");
-                    cancelPairing();
-                    displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
-                }
+                logi("onClick() :: cancel_name_button");
+                cancelPairing();
+                displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
                 break;
-
             case R.id.cancel_search_microbit_step_3_btn:
-                if (debug) {
-                    logi("onClick() :: cancel_search_button");
-                    scanLeDevice(false);
-                    cancelPairing();
-                    displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
-                }
+                logi("onClick() :: cancel_search_button");
+                scanLeDevice(false);
+                cancelPairing();
+                displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
                 break;
 
 //            case R.id.connected_device_item: // TODO - Might change back to case R.id.connectBtn:
@@ -863,28 +845,22 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 //                }
 //                break;
             case R.id.connected_device_status_button: // TODO - Might change back to case R.id.connectBtn:
-                if (debug) {
-                    logi("onClick() :: connectBtn");
-                    if (!BluetoothSwitch.getInstance().isBluetoothON()) {
-                        mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_CONNECT;
-                        startBluetooth();
-                        return;
-                    }
-                    toggleConnection();
+                logi("onClick() :: connectBtn");
+                if (!BluetoothSwitch.getInstance().isBluetoothON()) {
+                    mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_CONNECT;
+                    startBluetooth();
+                    return;
                 }
+                toggleConnection();
                 break;
             // Delete Microbit
             case R.id.deleteBtn:
-                if (debug) {
-                    logi("onClick() :: deleteBtn");
-                    handleDeleteMicrobit();
-                }
+                logi("onClick() :: deleteBtn");
+                handleDeleteMicrobit();
                 break;
             case R.id.backBtn:
-                if (debug) {
-                    logi("onClick() :: backBtn");
-                    handleResetAll();
-                }
+                logi("onClick() :: backBtn");
+                handleResetAll();
                 break;
 
             default:
@@ -955,7 +931,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
     private void handlePairingFailed() {
 
-        if (debug) logi("handlePairingFailed() :: Start");
+        logi("handlePairingFailed() :: Start");
         MBApp.getApp().sendPairingStats(false, null);
         PopUp.show(this,
                 getString(R.string.pairingErrorMessage), //message
@@ -996,14 +972,14 @@ public class PairingActivity extends Activity implements View.OnClickListener {
      */
     private void scanLeDevice(final boolean enable) {
 
-        if (debug) logi("scanLeDevice() :: enable = " + enable);
+        logi("scanLeDevice() :: enable = " + enable);
         if (enable) {
             if (!setupBleController()) {
-                if (debug) logi("scanLeDevice() :: FAILED ");
+                logi("scanLeDevice() :: FAILED ");
                 return;
             }
             if (!mScanning) {
-                if (debug) logi("scanLeDevice ::   Searching For " + mNewDeviceName.toLowerCase());
+                logi("scanLeDevice ::   Searching For " + mNewDeviceName.toLowerCase());
                 // Stops scanning after a pre-defined scan period.
                 mScanning = true;
                 TextView textView = (TextView) findViewById(R.id.search_microbit_step_3_title);
@@ -1094,7 +1070,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
     public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
 
-        if (debug) logi("mLeScanCallback.onLeScan() [+]");
+        logi("mLeScanCallback.onLeScan() [+]");
 
 		/*
          * TODO : Part of HACK 20150729
@@ -1112,7 +1088,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         }
 
         if ((mNewDeviceName.isEmpty()) || (device.getName() == null)) {
-            if (debug)
                 logi("mLeScanCallback.onLeScan() ::   Cannot Compare " + device.getAddress() + " " + rssi + " " + Arrays.toString(scanRecord));
         } else {
             String s = device.getName().toLowerCase();
@@ -1120,8 +1095,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             //TODO Use pattern recognition instead
             s = s.replaceAll(":", "");
             if (mNewDeviceName.toLowerCase().equals(s)) {
-
-                if (debug)
                     logi("mLeScanCallback.onLeScan() ::   Found micro:bit -" + device.getName().toLowerCase() + " " + device.getAddress());
                 // Stop scanning as device is found.
                 scanLeDevice(false);
@@ -1144,8 +1117,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     }
                 });
             } else {
-
-                if (debug)
                     logi("mLeScanCallback.onLeScan() ::   Found - device.getName() == " + device.getName().toLowerCase());
             }
         }
@@ -1184,7 +1155,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            if (debug) logi("onKeyDown() :: Cancel");
+            logi("onKeyDown() :: Cancel");
             handleResetAll();
             return true;
         }
