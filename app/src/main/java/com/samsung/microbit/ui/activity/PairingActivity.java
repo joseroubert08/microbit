@@ -567,13 +567,11 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         if (image.getTag() != "1") {
             deviceCodeArray[pos] = "1";
             image.setBackground(getApplication().getResources().getDrawable(R.drawable.red_white_led_btn));
-            image.setContentDescription("" + ++pos + "on"); // TODO check this for status of button
             image.setTag("1");
             isOn = true;
 
         } else {
             deviceCodeArray[pos] = "0";
-            image.setContentDescription("" + ++pos + "off"); // TODO check this for status of button
             image.setBackground(getApplication().getResources().getDrawable(R.drawable.white_red_led_btn));
             image.setTag("0");
             isOn = false;
@@ -582,9 +580,29 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 deviceCodeArray[pos + 5] = "1";
             }
         }
+        image.setContentDescription("" + calculateLEDPosition(pos) + getLEDStatus(pos));
         return isOn;
     }
 
+    //TODO - fix accessibility
+    // Function to add 1 to the position in the array to correctly read out the LED position
+    private int calculateLEDPosition(int position) {
+        return ++position;
+    }
+
+
+    // To read out the status of the currently selected LED at a given position
+    private String getLEDStatus(int position) {
+        String statusRead;
+        if (deviceCodeArray[position].equals("1")) {
+            statusRead = "on";
+        } else {
+            statusRead = "off";
+        }
+        return statusRead;
+    }
+
+    // Get the drawable for the device connection status
     private Drawable getDrawableResource(int resID) {
         return ContextCompat.getDrawable(this, resID);
     }
@@ -608,20 +626,20 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             deviceConnectionStatusBtn.setBackgroundResource(R.drawable.grey_btn);
             deviceConnectionStatusBtn.setTextColor(Color.WHITE);
             deviceConnectionStatusBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, mDeviceDisconnectedImg, null);
-            deviceConnectionStatusBtn.setContentDescription("Micro:bit not connected " + connectedDevice.mName + "is " + getMicobitStatusForAccessibility(connectedDevice.mStatus));
+            deviceConnectionStatusBtn.setContentDescription("Micro:bit not connected " + connectedDevice.mName + "is " + getMicrobitStatusForAccessibility(connectedDevice.mStatus));
 
         } else {
             // Device is connected
             deviceConnectionStatusBtn.setBackgroundResource(R.drawable.white_btn_devices_status_connected);
             deviceConnectionStatusBtn.setTextColor(Color.BLACK);
             deviceConnectionStatusBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, mDeviceConnectedImg, null);
-            deviceConnectionStatusBtn.setContentDescription("Currently connected Micro:bit " + connectedDevice.mName + "is " + getMicobitStatusForAccessibility(connectedDevice.mStatus));
+            deviceConnectionStatusBtn.setContentDescription("Currently connected Micro:bit " + connectedDevice.mName + "is " + getMicrobitStatusForAccessibility(connectedDevice.mStatus));
         }
     }
 
     // Retrieve Micro:bit accessibility state
-    public String getMicobitStatusForAccessibility(boolean status) {
-        String statusRead = null;
+    public String getMicrobitStatusForAccessibility(boolean status) {
+        String statusRead;
         if (status) {
             statusRead = "on";
         } else {
@@ -633,8 +651,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private void updatePairedDeviceCard() {
         ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
 
-        // Drawable mDeviceDisconnectedImg = MBApp.getApp().getResources().getDrawable(R.drawable.device_status_disconnected, null);
-
         if (connectedDevice.mName == null) {
             // No device is Paired
             deviceConnectionStatusBtn.setBackgroundResource(R.drawable.grey_btn);
@@ -643,8 +659,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         } else {
             deviceConnectionStatusBtn.setText(connectedDevice.mName);
-            //  deviceConnectionStatusBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, mDeviceDisconnectedImg, null);
-
             updateConnectionStatus();
         }
     }
