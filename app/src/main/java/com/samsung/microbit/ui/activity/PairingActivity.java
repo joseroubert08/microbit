@@ -500,6 +500,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
+                // TODO - Checking to see if columns are filled in before showing other half of emoji (text)
                 if ((findViewById(R.id.ok_enter_pattern_step_2_btn).getVisibility() != View.VISIBLE)) {
                     findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
                     findViewById(R.id.oh_pretty_emoji).setVisibility(View.VISIBLE);
@@ -554,6 +555,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             v.setTag("0");
             deviceCodeArray[index] = "0";
             index -= 5;
+            v.setContentDescription("" + getLEDStatus(pos)); // TODO - calculate correct position
         }
         index = pos + 5;
         while (index < 25) {
@@ -561,6 +563,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             v.setBackground(getApplication().getResources().getDrawable(R.drawable.red_white_led_btn));
             v.setTag("1");
             index += 5;
+            v.setContentDescription("" + getLEDStatus(pos));
         }
 
     }
@@ -660,7 +663,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             deviceConnectionStatusBtn.setBackgroundResource(R.drawable.grey_btn);
             deviceConnectionStatusBtn.setText("-");
             deviceConnectionStatusBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-      //      deviceConnectionStatusBtn.setContentDescription("Micro:bit not connected " + connectedDevice.mName + "is " + getMicrobitStatusForAccessibility(connectedDevice.mStatus));
+            //      deviceConnectionStatusBtn.setContentDescription("Micro:bit not connected " + connectedDevice.mName + "is " + getMicrobitStatusForAccessibility(connectedDevice.mStatus));
 
         } else {
             deviceConnectionStatusBtn.setText(connectedDevice.mName);
@@ -799,8 +802,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode)
-        {
+        switch (requestCode) {
             case Constants.BLUETOOTH_PERMISSIONS_REQUESTED: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     proceedAfterBlePermissionGranted();
@@ -818,8 +820,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         }
     }
-    private void proceedAfterBlePermissionGranted()
-    {
+
+    private void proceedAfterBlePermissionGranted() {
         if (!BluetoothSwitch.getInstance().isBluetoothON()) {
             mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_PAIRING;
             startBluetooth();
@@ -831,6 +833,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private void requetPermission(String[] permissions, final int requestCode) {
         ActivityCompat.requestPermissions(this, permissions, requestCode);
     }
+
     View.OnClickListener bluetoothPermissionOKHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -854,6 +857,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     null, null);
         }
     };
+
     private void checkBluetoothPermissions() {
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PermissionChecker.PERMISSION_GRANTED) {
@@ -868,6 +872,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             proceedAfterBlePermissionGranted();
         }
     }
+
     @Override
     public void onClick(final View v) {
         switch (v.getId()) {
@@ -1174,14 +1179,14 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         }
 
         if ((mNewDeviceName.isEmpty()) || (device.getName() == null)) {
-                logi("mLeScanCallback.onLeScan() ::   Cannot Compare " + device.getAddress() + " " + rssi + " " + Arrays.toString(scanRecord));
+            logi("mLeScanCallback.onLeScan() ::   Cannot Compare " + device.getAddress() + " " + rssi + " " + Arrays.toString(scanRecord));
         } else {
             String s = device.getName().toLowerCase();
             //Replace all : to blank - Fix for #64
             //TODO Use pattern recognition instead
             s = s.replaceAll(":", "");
             if (mNewDeviceName.toLowerCase().equals(s)) {
-                    logi("mLeScanCallback.onLeScan() ::   Found micro:bit -" + device.getName().toLowerCase() + " " + device.getAddress());
+                logi("mLeScanCallback.onLeScan() ::   Found micro:bit -" + device.getName().toLowerCase() + " " + device.getAddress());
                 // Stop scanning as device is found.
                 scanLeDevice(false);
                 mNewDeviceAddress = device.getAddress();
@@ -1203,7 +1208,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     }
                 });
             } else {
-                    logi("mLeScanCallback.onLeScan() ::   Found - device.getName() == " + device.getName().toLowerCase());
+                logi("mLeScanCallback.onLeScan() ::   Found - device.getName() == " + device.getName().toLowerCase());
             }
         }
     }

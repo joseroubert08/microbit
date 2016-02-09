@@ -5,5 +5,5 @@
     android:layout_margin="16dp"
     android:gravity="start|top"
     android:text="@string/previous_devices"
-    android:textAppearance="?android:titleTextAppearance"
+    android:textAppearance="?android:textAppearanceMedium"
     android:textColor="@color/main_gray_color" />
