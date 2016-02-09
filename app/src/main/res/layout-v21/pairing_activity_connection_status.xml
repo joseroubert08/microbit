@@ -1,0 +1,9 @@
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/device_status_txt"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    android:gravity="start|top"
+    android:text="@string/previous_devices"
+    android:textAppearance="?android:titleTextAppearance"
+    android:textColor="@color/main_gray_color" />
