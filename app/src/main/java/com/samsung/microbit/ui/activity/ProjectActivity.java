@@ -69,11 +69,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
     private static ACTIVITY_STATE mActivityState = ACTIVITY_STATE.STATE_IDLE;
 
-    private List<Integer> mRequestPermission = new ArrayList<Integer>();
-
-    private int mRequestingPermission = -1 ;
-
-
     private enum ACTIVITY_STATE {
         STATE_IDLE,
         STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST,
@@ -105,15 +100,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
             int error = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
             String firmware = intent.getStringExtra(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE);
-            int getNotification = intent.getIntExtra(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, -1);
-
-            if (getNotification == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED ||
-                    getNotification == IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED)
-            {
-                logi("micro:bit application needs more permissions");
-                mRequestPermission.add(getNotification);
-                return;
-            }
 
             if (firmware != null && !firmware.isEmpty()){
                 Utils.updateFirmwareMicrobit(context, firmware);
@@ -129,14 +115,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                     if (error == 0){
                         MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.SUCCESS, device.mfirmware_version, null);
                         Utils.updateConnectionStartTime(context, System.currentTimeMillis());
-                        //Check if more permissions were needed and request in the Application
-                        if (!mRequestPermission.isEmpty())
-                        {
-                            setActivityState(ACTIVITY_STATE.STATE_IDLE);
-                            PopUp.hide();
-                            checkTelephonyPermissions();
-                            return;
-                        }
                     } else {
                         MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.FAIL, null, null);
                     }
@@ -173,72 +151,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         }
     };
 
-    View.OnClickListener notificationOKHandler = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            logi("notificationOKHandler");
-            PopUp.hide();
-            if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED)
-            {
-                String[] permissionsNeeded = {Manifest.permission.READ_PHONE_STATE};
-                requetPermission(permissionsNeeded, Constants.INCOMING_CALL_PERMISSIONS_REQUESTED);
-            }
-            if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED)
-            {
-                String[] permissionsNeeded = {Manifest.permission.RECEIVE_SMS};
-                requetPermission(permissionsNeeded, Constants.INCOMING_SMS_PERMISSIONS_REQUESTED);
-            }
-        }
-    };
-
-    View.OnClickListener checkMorePermissionsNeeded = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if(!mRequestPermission.isEmpty()){
-                checkTelephonyPermissions();
-            }
-        }
-    };
-
-    View.OnClickListener notificationCancelHandler = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            logi("notificationCancelHandler");
-            String msg = "Your program might not run properly" ;
-            if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED)
-            {
-                msg =  getString(R.string.telephony_permission_error);
-            }
-            else if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED)
-            {
-                msg =  getString(R.string.sms_permission_error);
-            }
-            PopUp.hide();
-            PopUp.show(MBApp.getContext(),
-                    msg,
-                    getString(R.string.permissions_needed_title),
-                    R.drawable.error_face, R.drawable.red_btn,
-                    PopUp.GIFF_ANIMATION_ERROR,
-                    PopUp.TYPE_ALERT,
-                    checkMorePermissionsNeeded, checkMorePermissionsNeeded);
-        }
-    };
-    private void checkTelephonyPermissions() {
-        if (!mRequestPermission.isEmpty()) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PermissionChecker.PERMISSION_GRANTED ||
-                (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PermissionChecker.PERMISSION_GRANTED)) {
-                mRequestingPermission = mRequestPermission.get(0);
-                mRequestPermission.remove(0);
-                PopUp.show(MBApp.getContext(),
-                        (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED) ? getString(R.string.telephony_permission) : getString(R.string.sms_permission),
-                        getString(R.string.permissions_needed_title),
-                        R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
-                        PopUp.TYPE_CHOICE,
-                        notificationOKHandler,
-                        notificationCancelHandler);
-            }
-        }
-    }
     private void setActivityState(ACTIVITY_STATE newState) {
         logi("Flash state old - " + mActivityState + " new - " + newState);
         mActivityState = newState;
@@ -359,37 +271,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             PopUp.GIFF_ANIMATION_ERROR,
                             PopUp.TYPE_ALERT,
                             null, null);
-                }
-            }
-            case Constants.INCOMING_CALL_PERMISSIONS_REQUESTED:{
-                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED ) {
-                    PopUp.show(MBApp.getContext(),
-                            getString(R.string.telephony_permission_error),
-                            getString(R.string.permissions_needed_title),
-                            R.drawable.error_face, R.drawable.red_btn,
-                            PopUp.GIFF_ANIMATION_ERROR,
-                            PopUp.TYPE_ALERT,
-                            checkMorePermissionsNeeded, checkMorePermissionsNeeded);
-                } else {
-                    if(!mRequestPermission.isEmpty()){
-                        checkTelephonyPermissions();
-                    }
-                }
-            }
-            break;
-            case Constants.INCOMING_SMS_PERMISSIONS_REQUESTED:{
-                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED ) {
-                    PopUp.show(MBApp.getContext(),
-                            getString(R.string.sms_permission_error),
-                            getString(R.string.permissions_needed_title),
-                            R.drawable.error_face, R.drawable.red_btn,
-                            PopUp.GIFF_ANIMATION_ERROR,
-                            PopUp.TYPE_ALERT,
-                            checkMorePermissionsNeeded, checkMorePermissionsNeeded);
-                } else {
-                    if(!mRequestPermission.isEmpty()){
-                        checkTelephonyPermissions();
-                    }
                 }
             }
             break;
@@ -585,7 +466,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         null, null);
                 IPCService.getInstance().bleDisconnect();
             } else {
-                mRequestPermission.clear();
                 setActivityState(ACTIVITY_STATE.MICROBIT_CONNECTING);
                 PopUp.show(MBApp.getContext(),
                         getString(R.string.init_connection),

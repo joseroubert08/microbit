@@ -343,11 +343,5 @@
     <string name="camera_permission">micro:bit is trying to launch Camera. We need Camera permissions to complete this action. \n Proceed?</string>
     <string name="camera_permission_error">We cannot complete the request from micro:bit without having Camera permission</string>
     <string name="title_activity_camera_activity_permission_checker">Camera permission checker</string>
-    <string name="telephony_permission">Connected micro:bit program needs to know the Incoming call status. We need Phone State permission to complete this action. \n Proceed?</string>
-    <string name="sms_permission">Connected micro:bit program needs to know the Incoming SMS status. We need SMS permission to complete this action. NOTE: Application will not send any SMS. \n Proceed?</string>
-
-    <string name="telephony_permission_error">Your connected micro:bit will not receive any Incoming call notification</string>
-    <string name="sms_permission_error">Your connected micro:bit will not receive any Incoming SMS notification</string>
-
 </resources>
 
