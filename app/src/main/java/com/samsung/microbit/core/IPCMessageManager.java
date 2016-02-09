@@ -23,6 +23,7 @@ public final class IPCMessageManager {
 	public static final String BUNDLE_DATA = "data";
 	public static final String BUNDLE_VALUE = "value";
 	public static final String BUNDLE_MICROBIT_FIRMWARE = "BUNDLE_MICROBIT_FIRMWARE";
+    public static final String BUNDLE_MICROBIT_REQUESTS = "BUNDLE_MICROBIT_REQUESTS";
 	public static final String BUNDLE_ERROR_CODE = "BUNDLE_ERROR_CODE";
 	public static final String BUNDLE_ERROR_MESSAGE = "BUNDLE_ERROR_MESSAGE";
 	public static final String BUNDLE_SERVICE_GUID = "BUNDLE_SERVICE_GUID";
@@ -45,6 +46,9 @@ public final class IPCMessageManager {
 	public static final int IPC_NOTIFICATION_GATT_CONNECTED = 4000;
 	public static final int IPC_NOTIFICATION_GATT_DISCONNECTED = 4001;
 	public static final int IPC_NOTIFICATION_CHARACTERISTIC_CHANGED = 4002;
+
+    public static final int IPC_NOTIFICATION_INCOMING_CALL_REQUESTED = 4003;
+    public static final int IPC_NOTIFICATION_INCOMING_SMS_REQUESTED = 4002;
 
 
 	private IncomingHandler incomingHandler = null;
