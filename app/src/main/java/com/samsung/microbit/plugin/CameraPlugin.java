@@ -17,7 +17,7 @@ import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.service.PluginService;
-import com.samsung.microbit.ui.activity.CameraActivity_OldAPI;
+import com.samsung.microbit.ui.activity.CameraActivityPermissionChecker;
 
 public class CameraPlugin {
 
@@ -151,9 +151,9 @@ public class CameraPlugin {
 	//This function should trigger an Activity that would be responsible of starting the camera app to take a picture.
 	//The same activity should also store the result of the camera app, if valid
 	private static void launchCameraForPic() {
-		Intent mIntent = new Intent(context, CameraActivity_OldAPI.class);
-		mIntent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_PIC");
-		mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Intent mIntent = new Intent(context, CameraActivityPermissionChecker.class);
+        mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        mIntent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_PIC");
 		context.startActivity(mIntent);
 	}
 
@@ -168,9 +168,9 @@ public class CameraPlugin {
     }
 
 	private static void launchCameraForVideo() {
-		Intent mIntent = new Intent(context, CameraActivity_OldAPI.class);
-		mIntent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_VIDEO");
-		mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Intent mIntent = new Intent(context, CameraActivityPermissionChecker.class);
+        mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        mIntent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_VIDEO");
 		context.startActivity(mIntent);
 	}
 

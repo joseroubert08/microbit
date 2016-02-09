@@ -47,7 +47,7 @@
         android:required="false" />
 
     <application
-        android:name="com.samsung.microbit.MBApp"
+        android:name=".MBApp"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -58,12 +58,12 @@
             android:label="@string/home_activity_name"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".ui.activity.ProjectActivity"
             android:parentActivityName=".ui.activity.HomeActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize">
+
             <!-- Register for the HEX file -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -87,7 +87,6 @@
                 <data android:pathPattern=".*\\.hex" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.activity.NotificationActivity"
             android:label="@string/device_details"
@@ -163,14 +162,21 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <receiver android:name=".core.PopUpServiceReceiver">
             <intent-filter>
-                <action android:name="com.samsung.microbit.core.SHOWFROMSERVICE"></action>
+                <action android:name="com.samsung.microbit.core.SHOWFROMSERVICE" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".ui.activity.CameraActivityPermissionChecker"
+            android:label="@string/title_activity_camera_activity_permission_checker"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
