@@ -340,4 +340,8 @@
     <string name="location_permission_pairing">We need location permission to search micro:bit and pair .\n Proceed?</string>
     <string name="location_permission_error">Cannot pair new micro:bit without having location permission.</string>
 
+    <string name="camera_permission">micro:bit is trying to launch Camera. We need Camera permissions to complete this action. \n Proceed?</string>
+    <string name="camera_permission_error">We cannot complete the request from micro:bit without having Camera permission</string>
+    <string name="title_activity_camera_activity_permission_checker">Camera permission checker</string>
 </resources>
+
