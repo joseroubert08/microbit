@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="16dp"
-            android:visibility="gone" />
+            android:src="@drawable/emoji_microbit_found" />
 
         <ProgressBar
             android:id="@+id/searching_progress_spinner"

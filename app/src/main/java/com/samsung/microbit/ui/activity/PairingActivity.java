@@ -563,7 +563,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             v.setBackground(getApplication().getResources().getDrawable(R.drawable.red_white_led_btn));
             v.setTag("1");
             index += 5;
-            v.setContentDescription("" + getLEDStatus(pos));
+            v.setContentDescription(""  + getLEDStatus(pos));
         }
 
     }
@@ -589,6 +589,11 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         }
         image.setContentDescription("" + calculateLEDPosition(pos) + getLEDStatus(pos));
         return isOn;
+    }
+
+    //
+    private int calculateLEDPositionFilledIn(int position) {
+        return position;
     }
 
     //TODO - fix accessibility
