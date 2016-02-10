@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.ui.PopUp;
 
@@ -57,23 +58,33 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
 
     private void startCameraActivity()
     {
-        Intent intent = new Intent(this, CameraActivity_OldAPI.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        switch (mRequestedState)
+        //Do not launch camera if in Do not Disturb Mode
+        //Check more details on #122
+        if (Utils.inZenMode(this))
         {
-            case LAUNCH_CAMERA_FOR_PIC:
-                intent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_PIC");
-                break;
-            case LAUNCH_CAMERA_FOR_VIDEO:
-                intent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_VIDEO");
-                break;
+            PopUp.show(MBApp.getContext(),
+                    getString(R.string.dnd_error_msg),
+                    getString(R.string.dnd_error_title),
+                    R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
+                    PopUp.TYPE_ALERT,
+                    null,
+                    null);
+        } else {
+            Intent intent = new Intent(this, CameraActivity_OldAPI.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            switch (mRequestedState) {
+                case LAUNCH_CAMERA_FOR_PIC:
+                    intent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_PIC");
+                    break;
+                case LAUNCH_CAMERA_FOR_VIDEO:
+                    intent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_VIDEO");
+                    break;
+            }
+
+            startActivity(intent);
         }
-
-        startActivity(intent);
-
         //Finish current activity
         finish();
-
     }
     private void checkPermissionsForCamera() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA )!= PermissionChecker.PERMISSION_GRANTED)

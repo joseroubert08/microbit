@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -69,7 +70,7 @@ public class Utils {
     protected void logi(String message) {
         if (debug) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
-        }
+       }
     }
 
     public static Utils getInstance() {
@@ -251,6 +252,23 @@ public class Utils {
             }
         });
         mMediaplayer.start();
+    }
+
+    public static boolean inZenMode(Context paramContext)
+    {
+        /*
+         /**
+         * Defines global zen mode.  ZEN_MODE_OFF, ZEN_MODE_IMPORTANT_INTERRUPTIONS,
+
+         public static final String ZEN_MODE = "zen_mode";
+         public static final int ZEN_MODE_OFF = 0;
+         public static final int ZEN_MODE_IMPORTANT_INTERRUPTIONS = 1;
+         public static final int ZEN_MODE_NO_INTERRUPTIONS = 2;
+         public static final int ZEN_MODE_ALARMS = 3;
+        */
+        int zenMode = Settings.Global.getInt(paramContext.getContentResolver(), "zen_mode", 0);
+        Log.i("MicroBit", "zen_mode : " + zenMode);
+        return (zenMode != 0);
     }
 
     private static void preparePhoneToPlayAudio()
