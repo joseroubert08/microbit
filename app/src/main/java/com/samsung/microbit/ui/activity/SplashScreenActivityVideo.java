@@ -89,7 +89,12 @@ public class SplashScreenActivityVideo extends Activity implements SurfaceHolder
 
     @Override
     protected void onDestroy() {
+
         super.onDestroy();
+        if (mediaPlayer != null){
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
     }
 
     @Override
@@ -149,7 +154,10 @@ public class SplashScreenActivityVideo extends Activity implements SurfaceHolder
     @Override
     public void onCompletion(MediaPlayer mp) {
         // only need to see splash screen on cold start
-        mediaPlayer.release();
+        if (mediaPlayer!= null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
         // close this activity
         finish();
     }

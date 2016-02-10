@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.Utils;
@@ -23,7 +24,7 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
     private Intent mIntent = null ;
     private boolean mOPenForPic = false ;
 
-    protected boolean debug = true;
+    protected boolean debug = BuildConfig.DEBUG;
 
 
     private enum  REQUEST_STATE{

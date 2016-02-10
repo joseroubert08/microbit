@@ -15,6 +15,7 @@ import android.provider.Settings;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
@@ -65,7 +66,7 @@ public class Utils {
     //private volatile SharedPreferences preferences;
 
     protected String TAG = "Utils";
-    protected boolean debug = true;
+    protected boolean debug = BuildConfig.DEBUG;
 
     protected void logi(String message) {
         if (debug) {
