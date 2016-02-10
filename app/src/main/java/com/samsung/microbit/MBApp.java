@@ -108,7 +108,6 @@ public class MBApp extends Application {
         if (mshareStat && echo != null){
             Log.d("MBApp", "sendViewEventStats " + viewEventString);
             String counterName = getString(R.string.stats_view_name , viewEventString);
-            // (String counterName, HashMap<String, String> eventLabels)
             HashMap <String, String> eventLabels = new HashMap<String,String>();
             eventLabels.put("bbc_site", "bitesize");
             echo.viewEvent(counterName, eventLabels);
@@ -121,95 +120,117 @@ public class MBApp extends Application {
 
     public void sendFlashStats(boolean success , String fileName, String hexsize, String binsize, String firmware)
     {
-        if (mshareStat && echo != null){
-            Log.d("MBApp", "sendFlashStats fileName=" + fileName + " hexsize=" + hexsize + "  binsize=" + binsize + " microbit_firmwwareversion= " + firmware);
-            HashMap <String, String> eventLabels = new HashMap<String,String>();
-            eventLabels.put("action_location" , "app");
-            eventLabels.put("bbc_site", "bitesize");
-            eventLabels.put("hex_file_size" , hexsize);
-            eventLabels.put("binary_size" , binsize);
-            eventLabels.put("firmware", firmware);
-            if (success){
-                echo.userActionEvent("success", "hex-file-flash", eventLabels);
+        try {
+            if (mshareStat && echo != null){
+                Log.d("MBApp", "sendFlashStats fileName=" + fileName + " hexsize=" + hexsize + "  binsize=" + binsize + " microbit_firmwwareversion= " + firmware);
+                HashMap <String, String> eventLabels = new HashMap<String,String>();
+                eventLabels.put("action_location" , "app");
+                eventLabels.put("bbc_site", "bitesize");
+                eventLabels.put("hex_file_size" , hexsize);
+                eventLabels.put("binary_size" , binsize);
+                eventLabels.put("firmware", firmware);
+                if (success){
+                    echo.userActionEvent("success", "hex-file-flash", eventLabels);
+                } else {
+                    echo.userActionEvent("fail", "hex-file-flash",eventLabels);
+                }
             } else {
-                echo.userActionEvent("fail", "hex-file-flash",eventLabels);
+                Log.d("MBApp", "Sharing of stats is disabled by user or Echo not initialised");
             }
-        } else {
-            Log.d("MBApp", "Sharing of stats is disabled by user or Echo not initialised");
+        }
+        catch (RuntimeException e){
+            Log.e("MBApp", "Sending stats exception " + e.getMessage());
         }
     }
 
     public void sendNavigationStats(String location, String button)
     {
-        if (mshareStat && echo != null){
-            HashMap <String, String> eventLabels = new HashMap<String,String>();
-            eventLabels.put("action_location", location);
-            eventLabels.put("button", button);
-            eventLabels.put("bbc_site", "bitesize");
-            echo.userActionEvent("click", "navigate", eventLabels);
-        } else {
-            Log.d("MBApp", "Sharing of stats is disabled by user or Echo not initialised");
+        try {
+            if (mshareStat && echo != null) {
+                HashMap<String, String> eventLabels = new HashMap<String, String>();
+                eventLabels.put("action_location", location);
+                eventLabels.put("button", button);
+                eventLabels.put("bbc_site", "bitesize");
+                echo.userActionEvent("click", "navigate", eventLabels);
+            } else {
+                Log.d("MBApp", "Sharing of stats is disabled by user or Echo not initialised");
+            }
+        }
+        catch (RuntimeException e){
+                Log.e("MBApp", "Sending stats exception " + e.getMessage());
         }
     }
 
     public void sendStatSharing(boolean enable)
     {
-        if (echo != null){
-            HashMap <String, String> eventLabels = new HashMap<String,String>();
-            eventLabels.put("bbc_site", "bitesize");
-            if (enable){
-                echo.userActionEvent("opt-in", "stats-tracking", eventLabels);
+        try {
+            if (echo != null) {
+                HashMap<String, String> eventLabels = new HashMap<String, String>();
+                eventLabels.put("bbc_site", "bitesize");
+                if (enable) {
+                    echo.userActionEvent("opt-in", "stats-tracking", eventLabels);
+                } else {
+                    echo.userActionEvent("opt-out", "stats-tracking", eventLabels);
+                }
             } else {
-                echo.userActionEvent("opt-out", "stats-tracking", eventLabels);
+                Log.d("MBApp", "Sharing of stats is disabled by user or Echo not initialised");
             }
-        } else {
-            Log.d("MBApp", "Sharing of stats is disabled by user or Echo not initialised");
+        } catch (RuntimeException e){
+            Log.e("MBApp", "Sending stats exception " + e.getMessage());
         }
     }
 
 
     public void sendPairingStats(boolean paired, String firmware)
     {
-        if (echo != null){
-            HashMap <String, String> eventLabels = new HashMap<String,String>();
-            eventLabels.put("bbc_site", "bitesize");
-            if (paired){
-                eventLabels.put("firmware", firmware);
-                echo.userActionEvent("success", "pair", eventLabels);
+        try {
+            if (echo != null) {
+                HashMap<String, String> eventLabels = new HashMap<String, String>();
+                eventLabels.put("bbc_site", "bitesize");
+                if (paired) {
+                    eventLabels.put("firmware", firmware);
+                    echo.userActionEvent("success", "pair", eventLabels);
+                } else {
+                    echo.userActionEvent("fail", "pair", eventLabels);
+                }
             } else {
-                echo.userActionEvent("fail", "pair", eventLabels);
+                Log.d("MBApp", "Sharing of stats is disabled by user or Echo not initialised");
             }
-        } else {
-            Log.d("MBApp", "Sharing of stats is disabled by user or Echo not initialised");
+        }
+        catch (RuntimeException e){
+            Log.e("MBApp", "Sending stats exception " + e.getMessage());
         }
     }
 
     public void sendConnectStats(Constants.CONNECTION_STATE connectionState, String firmware, String duration)
     {
-        if (echo != null){
-            HashMap <String, String> eventLabels = new HashMap<String,String>();
-            eventLabels.put("bbc_site", "bitesize");
-            switch (connectionState)
-            {
-                case SUCCESS:
-                    Log.d("MBApp", "Sending Connection stats - MSG(SUCCESS) - Firmware = " + firmware );
-                    eventLabels.put("firmware", firmware);
-                    echo.userActionEvent("success", "connect", eventLabels);
-                    break;
-                case FAIL:
-                    Log.d("MBApp", "Sending Connection stats - MSG(Failed)");
-                    echo.userActionEvent("fail", "connect", null);
-                    break;
-                case DISCONNECT:
-                    Log.d("MBApp", "Sending Connection stats - MSG(DISCONNECT) - Firmware = " + firmware  + " Duration =" + duration);
-                    eventLabels.put("firmware", firmware);
-                    eventLabels.put("duration", duration);
-                    echo.userActionEvent("disconnect", "connect", eventLabels);
-                    break;
+        try {
+            if (echo != null) {
+                HashMap<String, String> eventLabels = new HashMap<String, String>();
+                eventLabels.put("bbc_site", "bitesize");
+                switch (connectionState) {
+                    case SUCCESS:
+                        Log.d("MBApp", "Sending Connection stats - MSG(SUCCESS) - Firmware = " + firmware);
+                        eventLabels.put("firmware", firmware);
+                        echo.userActionEvent("success", "connect", eventLabels);
+                        break;
+                    case FAIL:
+                        Log.d("MBApp", "Sending Connection stats - MSG(Failed)");
+                        echo.userActionEvent("fail", "connect", null);
+                        break;
+                    case DISCONNECT:
+                        Log.d("MBApp", "Sending Connection stats - MSG(DISCONNECT) - Firmware = " + firmware + " Duration =" + duration);
+                        eventLabels.put("firmware", firmware);
+                        eventLabels.put("duration", duration);
+                        echo.userActionEvent("disconnect", "connect", eventLabels);
+                        break;
 
+                }
+            } else {
+                Log.d("MBApp", "Sharing of stats is disabled by user or Echo not initialised");
             }
-        } else {
-            Log.d("MBApp", "Sharing of stats is disabled by user or Echo not initialised");
+        } catch (RuntimeException e){
+            Log.e("MBApp", "Sending stats exception " + e.getMessage());
         }
     }
 
