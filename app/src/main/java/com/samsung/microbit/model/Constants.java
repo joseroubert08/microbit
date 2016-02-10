@@ -246,6 +246,7 @@ public class Constants {
     public static String RECORDING_VIDEO_AUDIO = "raw/en_gb_emma_recording_video_30sec";
     public static String PICTURE_TAKEN_AUDIO = "raw/en_gb_emma_photo_taken";
     public static String MAX_VIDEO_RECORDED = "raw/en_gb_emma_max_video";
+    public static String FIND_MY_PHONE_AUDIO = "raw/find_my_phone";
 
 
     public static int MAX_VIDEO_RECORDING_TIME = 30 * 1000 ; //Duration in ms

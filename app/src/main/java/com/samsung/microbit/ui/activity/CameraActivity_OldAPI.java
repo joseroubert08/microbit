@@ -78,6 +78,9 @@ public class CameraActivity_OldAPI extends Activity {
     private int mCurrentIconIndex = 0;
     private ArrayList<Drawable> mTakePhoto, mStartRecord, mStopRecord, mCurrentIconList;
     private Camera.Parameters mParameters = null;
+    private Boolean bActivityInBackground = false;
+    private Boolean bTakePicOnResume = false;
+    private Boolean bRecordVideoOnResume = false;
 
     private static final String TAG = "CameraActivity_OldAPI";
     private boolean debug = true;
@@ -511,12 +514,16 @@ public class CameraActivity_OldAPI extends Activity {
                     finish();
                 } else if (!mVideo && intent.getAction().equals("TAKE_PIC")) {
                     mfrontCamera = true;
-                    mButtonClick.callOnClick();
+                    takePic();
                 } else if (intent.getAction().equals("TOGGLE_CAMERA")) {
                     toggleCamera();
                 } else if (mVideo && !mIsRecording && intent.getAction().equals("START_VIDEO")) {
                     mfrontCamera = true;
-                    mButtonClick.callOnClick();
+                    if(bActivityInBackground) {
+                        bringActivityToFront();
+                        bRecordVideoOnResume = true;
+                    } else
+                        mButtonClick.callOnClick();
                 } else if (mVideo && mIsRecording && intent.getAction().equals("STOP_VIDEO")) {
                     mButtonClick.callOnClick();
                 } else {
@@ -528,16 +535,62 @@ public class CameraActivity_OldAPI extends Activity {
             }
         };
 
+        this.registerReceiver(mMessageReceiver, new IntentFilter("CLOSE"));
+
+        if (mVideo) {
+            this.registerReceiver(mMessageReceiver, new IntentFilter("START_VIDEO"));
+            this.registerReceiver(mMessageReceiver, new IntentFilter("STOP_VIDEO"));
+            this.registerReceiver(mMessageReceiver, new IntentFilter("TOGGLE_CAMERA"));
+        } else {
+            this.registerReceiver(mMessageReceiver, new IntentFilter("TAKE_PIC"));
+            this.registerReceiver(mMessageReceiver, new IntentFilter("TOGGLE_CAMERA"));
+        }
+
         logi("onCreate() :: Done");
     }
 
+    private void bringActivityToFront() {
+        Intent intent = new Intent(getApplicationContext(), CameraActivity_OldAPI.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        startActivity(intent);
+    }
+
     private void toggleCamera() {
-        if (mCamera == null) {
-            logi("Camera not open yet.");
-            return;
-        }
         mfrontCamera = !mfrontCamera;
-        recreate();
+        if(bActivityInBackground) {
+            bringActivityToFront();
+        } else {
+            recreate();
+        }
+    }
+
+    private void takePic() {
+        if(bActivityInBackground) {
+            bringActivityToFront();
+            bTakePicOnResume = true;
+        } else {
+            startTakePicCounter();
+        }
+    }
+
+    private void startTakePicCounter () {
+
+        final Toast toast = Toast.makeText(MBApp.getApp().getApplicationContext(),"bbb", Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+
+        new CountDownTimer(5000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                toast.setText("Ready in... " + millisUntilFinished / 1000);
+                toast.show();
+            }
+
+            public void onFinish() {
+                toast.setText("Ready");
+                toast.show();
+                mButtonClick.callOnClick();
+            }
+        }.start();
     }
 
     @Override
@@ -545,6 +598,8 @@ public class CameraActivity_OldAPI extends Activity {
         logi("onCreate() :: onResume");
 
         super.onResume();
+
+        bActivityInBackground = false;
         //This intent filter has to be set even if no camera is found otherwise the unregisterReceiver()
         //fails during the onPause()
         if (myOrientationEventListener.canDetectOrientation()) {
@@ -553,7 +608,7 @@ public class CameraActivity_OldAPI extends Activity {
         } else {
             logi("DetectOrientation Disabled");
         }
-        this.registerReceiver(mMessageReceiver, new IntentFilter("CLOSE"));
+
         mCameraIdx = getCurrentCamera();
         logi("mCameraIdx = " + mCameraIdx);
         try {
@@ -565,20 +620,19 @@ public class CameraActivity_OldAPI extends Activity {
             mPreview.setCamera(mCamera, mCameraIdx);
             logi("Step 3");
 
-            if (mVideo) {
-                this.registerReceiver(mMessageReceiver, new IntentFilter("START_VIDEO"));
-                this.registerReceiver(mMessageReceiver, new IntentFilter("STOP_VIDEO"));
-                this.registerReceiver(mMessageReceiver, new IntentFilter("TOGGLE_CAMERA"));
-            } else {
-                this.registerReceiver(mMessageReceiver, new IntentFilter("TAKE_PIC"));
-                this.registerReceiver(mMessageReceiver, new IntentFilter("TOGGLE_CAMERA"));
-            }
-
             logi("Step 3");
             mPreview.restartCameraPreview();
             logi("Step 4");
             updateCameraRotation();
             logi("onCreate() :: onResume # ");
+
+            if(bTakePicOnResume) {
+                bTakePicOnResume = false;
+                startTakePicCounter();
+            } else if(bRecordVideoOnResume) {
+                bRecordVideoOnResume = false;
+                mButtonClick.callOnClick();
+            }
 
         } catch (RuntimeException ex) {
             logi(ex.toString());
@@ -601,8 +655,7 @@ public class CameraActivity_OldAPI extends Activity {
             logi("DetectOrientation Disabled");
             myOrientationEventListener.disable();
         }
-        this.unregisterReceiver(
-                mMessageReceiver);
+
         if (mCamera != null) {
             mCamera.stopPreview();
             mPreview.setCamera(null, -1);
@@ -610,6 +663,8 @@ public class CameraActivity_OldAPI extends Activity {
             mCamera = null;
         }
         super.onPause();
+
+        bActivityInBackground = true;
     }
 
     private void resetCam() {
@@ -687,6 +742,9 @@ public class CameraActivity_OldAPI extends Activity {
         //Informing microbit that the mCamera is active now
         CmdArg cmd = new CmdArg(0, "Camera off");
         CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);
+
+        this.unregisterReceiver(
+                mMessageReceiver);
 
         super.onDestroy();
     }

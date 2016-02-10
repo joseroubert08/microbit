@@ -124,23 +124,7 @@ public class CameraPlugin {
                 launchCameraForVideo();
                 break;
             case Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO:
-                final Toast toast = Toast.makeText(MBApp.getApp().getApplicationContext(),"bbb", Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.CENTER, 0, 0);
-
-                new CountDownTimer(5000, 1000) {
-
-                    public void onTick(long millisUntilFinished) {
-                        toast.setText("Ready in... " + millisUntilFinished / 1000);
-                        toast.show();
-                    }
-
-                    public void onFinish() {
-                        toast.setText("Ready");
-                        toast.show();
-                        takePic();
-
-                    }
-                }.start();
+                takePic();
                 break;
             case Constants.SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE:
                 recVideoStart();

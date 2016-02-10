@@ -538,6 +538,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         PopUp.TYPE_CHOICE,
                         diskStoragePermissionOKHandler,
                         diskStoragePermissionCancelHandler);
+            } else {
+                if (mPrefs.getBoolean("firstrun", true)) {
+                    mPrefs.edit().putBoolean("firstrun", false).commit();
+                    //First Run. Install the Sample applications
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Utils.installSamples();
+                        }
+                    }).start();
+                }
             }
         }
     }
