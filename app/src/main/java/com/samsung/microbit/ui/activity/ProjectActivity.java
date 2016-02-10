@@ -309,9 +309,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
         TextView connectedIndicatorText = (TextView) findViewById(R.id.connectedIndicatorText);
         connectedIndicatorText.setText(connectedIndicatorText.getText());
-        connectedIndicatorText.setTypeface(MBApp.getApp().getTypeface());    // TODO - check
+        connectedIndicatorText.setTypeface(MBApp.getApp().getTypeface());
         TextView deviceName1 = (TextView) findViewById(R.id.deviceName);
-        deviceName1.setContentDescription(deviceName1.getText()); // TODO - check
+        deviceName1.setContentDescription(deviceName1.getText());
         deviceName1.setTypeface(MBApp.getApp().getTypeface());
         deviceName1.setOnClickListener(this);
         ImageView connectedIndicatorIcon = (ImageView) findViewById(R.id.connectedIndicatorIcon);
@@ -520,7 +520,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 }
                 break;
             case R.id.deviceName:
-                // Toast.makeText(this, "Back to connect screen", Toast.LENGTH_SHORT).show(); // - TODO - check navigation flow
+                // Toast.makeText(this, "Back to connect screen", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, PairingActivity.class);
                 startActivity(intent);
                 break;
@@ -808,7 +808,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                     getString(R.string.flashing_aborted), //message
                                     getString(R.string.flashing_aborted_title),
                                     R.drawable.error_face, R.drawable.red_btn,
-                                    PopUp.GIFF_ANIMATION_ERROR, /* TODO - error flashing */
+                                    PopUp.GIFF_ANIMATION_ERROR,
                                     PopUp.TYPE_ALERT, //type of popup.
                                     popupOkHandler,//override click listener for ok button
                                     popupOkHandler);//pass null to use default listener

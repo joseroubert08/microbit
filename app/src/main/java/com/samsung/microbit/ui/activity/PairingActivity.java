@@ -69,7 +69,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         PAIRING_STATE_TIP,
         PAIRING_STATE_PATTERN_EMPTY,
         PAIRING_STATE_SEARCHING,
-        PAIRING_STATE_HOW_TO_PAIR_TWO, // TODO - new state
+        PAIRING_STATE_HOW_TO_PAIR_TWO,
         PAIRING_STATE_ERROR
     }
 
@@ -749,7 +749,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
                 // test
                 findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.GONE);
-                findViewById(R.id.oh_pretty_emoji).setVisibility(View.INVISIBLE); // TODO - change the timing for when emoji is visible
+                findViewById(R.id.oh_pretty_emoji).setVisibility(View.INVISIBLE);
 
                 displayLedGrid();
                 break;
@@ -940,19 +940,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 cancelPairing();
                 displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
                 break;
-
-//            case R.id.connected_device_item: // TODO - Might change back to case R.id.connectBtn:
-//                if (debug) {
-//                    logi("onClick() :: connectBtn");
-//                    if (!BluetoothSwitch.getInstance().isBluetoothON()) {
-//                        mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_CONNECT;
-//                        startBluetooth();
-//                        return;
-//                    }
-//                    toggleConnection();
-//                }
-//                break;
-            case R.id.connected_device_status_button: // TODO - Might change back to case R.id.connectBtn:
+            case R.id.connected_device_status_button:
                 logi("onClick() :: connectBtn");
                 if (!BluetoothSwitch.getInstance().isBluetoothON()) {
                     mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_CONNECT;
