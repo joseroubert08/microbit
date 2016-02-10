@@ -55,14 +55,14 @@ public class CameraPlugin {
                 mWakeLock.acquire(5*1000);
                 m_CurrentState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE ;
                 m_NextState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE ;
-                Utils.playAudio(Utils.getLaunchCameraAudio() , m_OnCompletionListener);
+                Utils.playAudio(Utils.getLaunchCameraPhotoMode() , m_OnCompletionListener);
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE:
                 mWakeLock.acquire(5*1000);
                 m_CurrentState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE ;
                 m_NextState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE ;
-                Utils.playAudio(Utils.getLaunchCameraAudio(), m_OnCompletionListener);
+                Utils.playAudio(Utils.getLaunchCameraVideoMode(), m_OnCompletionListener);
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO:
