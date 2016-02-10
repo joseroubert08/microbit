@@ -764,7 +764,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     if (tvTitle != null) {
                         tvTitle.setText(R.string.searchingTitle);
                         findViewById(R.id.searching_progress_spinner).setVisibility(View.VISIBLE);
-                        findViewById(R.id.searching_microbit_found_giffview).setBackgroundResource(R.drawable.emoji_microbit_found);
+                     //   findViewById(R.id.searching_microbit_found_giffview).setBackgroundResource(R.drawable.emoji_microbit_found);
                         findViewById(R.id.searching_microbit_found_giffview).setVisibility(View.GONE);
                         tvSearchingStep.setText(R.string.searching_tip_step_text);
                         tvSearchingInstructions.setText(R.string.searching_tip_text_instructions);
