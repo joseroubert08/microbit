@@ -55,12 +55,8 @@ public class MBApp extends Application {
         config.put(EchoConfigKeys.COMSCORE_DEBUG_MODE, "1");
         // Send Comscore events to EchoChamber
         config.put(EchoConfigKeys.COMSCORE_URL, "https://sb.scorecardresearch.com/p2");
-        //config.put(EchoConfigKeys.COMSCORE_URL, "http://data.bbc.co.uk/v1/analytics-echo-chamber-inbound/comscore");
-        config.put(EchoConfigKeys.COMSCORE_SITE, "test");
         //Enable debug mode
         config.put(EchoConfigKeys.ECHO_DEBUG, "1");
-
-
 
         echo = new EchoClient(
                 "microbit", //getString(R.string.app_name),   // App Name
