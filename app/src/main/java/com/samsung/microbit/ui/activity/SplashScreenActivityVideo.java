@@ -9,19 +9,21 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.VideoView;
 
 import com.samsung.microbit.R;
 
-public class SplashScreenActivityVideo extends Activity {
+import java.io.IOException;
+
+public class SplashScreenActivityVideo extends Activity implements SurfaceHolder.Callback, MediaPlayer.OnCompletionListener {
 
     // Splash screen timer (6 second video) extra second for smooth transition
     private static int SPLASH_TIME_OUT = 7000;
 
     MediaPlayer mediaPlayer;
-    private VideoView videoViewSplashScreen;
+    private SurfaceView mSurfaceView;
     private String splashScreenPath;
     SurfaceHolder surfaceHolder;
 
@@ -35,22 +37,12 @@ public class SplashScreenActivityVideo extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_splash_screen_video);
-        videoViewSplashScreen = (VideoView) findViewById(R.id.video_view_splash_screen);
+        // Get the surface
+        mSurfaceView = (SurfaceView) findViewById(R.id.video_view_splash_screen);
 
-        mediaPlayer = new MediaPlayer();
-
-        // Find data source - location of splash screen
-        splashScreenPath = "android.resource://" + getPackageName() + "/" + R.raw.splash_screen_v1;
-
-        Uri uri = Uri.parse(splashScreenPath);
-
-        mediaPlayer.setDisplay(surfaceHolder);
-
-        // Pass to the VideoView
-        videoViewSplashScreen.setVideoURI(uri);
-
-        // Play the splash screen
-        videoViewSplashScreen.start();
+        // Setup surface holder
+        surfaceHolder = mSurfaceView.getHolder();
+        surfaceHolder.addCallback(this);
 
         new Handler().postDelayed(new Runnable() {
 
@@ -98,5 +90,67 @@ public class SplashScreenActivityVideo extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+
+        // Mediaplayer
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setOnCompletionListener(this);
+        // Find data source - location of splash screen
+        splashScreenPath = "android.resource://" + getPackageName() + "/" + R.raw.splash_screen_v1;
+
+        // Parse the location of the video
+        Uri uri = Uri.parse(splashScreenPath);
+        try {
+            mediaPlayer.setDataSource(this, uri);
+            mediaPlayer.prepare();
+            mediaPlayer.setDisplay(surfaceHolder);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Get the dimensions of the video
+        int videoWidth = mediaPlayer.getVideoWidth();
+        int videoHeight = mediaPlayer.getVideoHeight();
+
+        //Get the width of the screen
+        int screenWidth = getWindowManager().getDefaultDisplay().getWidth();
+
+        // Get the SurfaceView layout parameters
+        android.view.ViewGroup.LayoutParams lp = mSurfaceView.getLayoutParams();
+
+        // Set the width of the SurfaceView to the width of the screen
+        lp.width = screenWidth;
+
+        // Set the height of the SurfaceView to match the aspect ratio of the video
+        //be sure to cast these as floats otherwise the calculation will likely be 0
+        lp.height = (int) (((float) videoHeight / (float) videoWidth) * (float) screenWidth);
+
+        //Commit the layout parameters
+        mSurfaceView.setLayoutParams(lp);
+
+        //Start video
+        mediaPlayer.start();
+
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        // only need to see splash screen on cold start
+        mediaPlayer.release();
+        // close this activity
+        finish();
     }
 }

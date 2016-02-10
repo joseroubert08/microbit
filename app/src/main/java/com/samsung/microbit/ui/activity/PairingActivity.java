@@ -73,6 +73,12 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         PAIRING_STATE_ERROR
     }
 
+    boolean columnOneHit;
+    boolean columnTwoHit;
+    boolean columnThreeHit;
+    boolean columnFourHit;
+    boolean columnFiveHit;
+
     private static PAIRING_STATE mState = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
     private static String mNewDeviceName;
     private static String mNewDeviceCode;
@@ -495,7 +501,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     }
 
     private void displayLedGrid() {
-        GridView gridview = (GridView) findViewById(R.id.enter_pattern_step_2_gridview);
+
+        final GridView gridview = (GridView) findViewById(R.id.enter_pattern_step_2_gridview);
         gridview.setAdapter(new LEDAdapter(this, deviceCodeArray));
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
@@ -503,7 +510,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 // TODO - Checking to see if columns are filled in before showing other half of emoji (text)
                 if ((findViewById(R.id.ok_enter_pattern_step_2_btn).getVisibility() != View.VISIBLE)) {
                     findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
-                    findViewById(R.id.oh_pretty_emoji).setVisibility(View.VISIBLE);
+                    findViewById(R.id.oh_pretty_emoji).setVisibility(View.VISIBLE); //TODO - put back
                 }
 
                 boolean isOn = toggleLED((ImageView) v, position);
@@ -512,9 +519,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
                 if (!Arrays.asList(deviceCodeArray).contains("1")) {
                     findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.INVISIBLE);
-                    findViewById(R.id.oh_pretty_emoji).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.oh_pretty_emoji).setVisibility(View.INVISIBLE); //TODO - put back
                 }
             }
+
         });
 
         if (!Arrays.asList(deviceCodeArray).contains("1")) {
@@ -524,6 +532,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
             findViewById(R.id.oh_pretty_emoji).setVisibility(View.VISIBLE);
         }
+    }
+
+    private void showSuccessfulPatternEntry() {
+        Toast.makeText(this, "less than 5", Toast.LENGTH_SHORT).show();
     }
 
     private void generateName() {
@@ -563,7 +575,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             v.setBackground(getApplication().getResources().getDrawable(R.drawable.red_white_led_btn));
             v.setTag("1");
             index += 5;
-            v.setContentDescription(""  + getLEDStatus(pos));
+            v.setContentDescription("" + getLEDStatus(pos));
         }
 
     }
