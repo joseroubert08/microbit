@@ -222,6 +222,10 @@ public class Utils {
         return Constants.MAX_VIDEO_RECORDED;
     }
 
+    public static String getFindMyPhoneAudio()
+    {
+        return Constants.FIND_MY_PHONE_AUDIO;
+    }
     public static void playAudio(String filename, final MediaPlayer.OnCompletionListener callBack )
     {
         Resources resources = MBApp.getApp().getApplicationContext().getResources();
