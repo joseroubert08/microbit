@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
@@ -43,25 +42,6 @@ public class SplashScreenActivityVideo extends Activity implements SurfaceHolder
         // Setup surface holder
         surfaceHolder = mSurfaceView.getHolder();
         surfaceHolder.addCallback(this);
-
-        new Handler().postDelayed(new Runnable() {
-
-            /*
-             * Showing splash screen with a timer. This will be useful when you
-             * want to show case your app logo / company
-             */
-
-            @Override
-            public void run() {
-                // This method will be executed once the timer is over
-                // Start your app main activity
-                Intent i = new Intent(SplashScreenActivityVideo.this, HomeActivity.class);
-                startActivity(i);
-
-                // close this activity
-                finish();
-            }
-        }, SPLASH_TIME_OUT);
     }
 
     @Override
@@ -152,12 +132,19 @@ public class SplashScreenActivityVideo extends Activity implements SurfaceHolder
     }
 
     @Override
+    public void onBackPressed() {
+        //Do nothing here. We need it to be non-cancellable
+    }
+
+    @Override
     public void onCompletion(MediaPlayer mp) {
         // only need to see splash screen on cold start
         if (mediaPlayer!= null) {
             mediaPlayer.release();
             mediaPlayer = null;
         }
+        Intent i = new Intent(SplashScreenActivityVideo.this, HomeActivity.class);
+        startActivity(i);
         // close this activity
         finish();
     }
