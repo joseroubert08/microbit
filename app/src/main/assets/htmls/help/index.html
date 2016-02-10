@@ -2,8 +2,6 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Untitled Page</title>
-<meta name="generator" content="WYSIWYG Web Builder 11 Trial Version - http://www.wysiwygwebbuilder.com">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="default/jquery.mobile.theme-1.4.5.css" rel="stylesheet">
 <link href="default/jquery.mobile.icons-1.4.5.min.css" rel="stylesheet">
@@ -15,39 +13,27 @@
 $(document).on("mobileinit", function()
 {
    $.mobile.ajaxEnabled = false;
+   $.mobile.changePage.defaults.changeHash = false;
+   $.mobile.hashListeningEnabled = false;
+   $.mobile.pushStateEnabled = false;
 });
 </script>
 <script src="jquery.mobile-1.4.5.min.js"></script>
 </head>
+
 <body>
 <div data-role="page" data-theme="a" data-title="Untitled Page" id="index">
+<div data-role="panel" id="Panel1_panel" data-position="left" data-display="reveal">
+<ul data-role="listview" id="Panel1" style="margin-top:0px;margin-bottom:0px;margin-bottom:15px;">
+<li><a href="./main.html" target="content_frame"><strong>Home</strong></a></li>
+<li><a href="./faq.html" target="content_frame"><strong>Frequently asked questions</strong></a></li>
+<li><a href="./troubleshooting.html" target="content_frame"><strong>Troubleshooting</strong></a></li>
+</ul>
+<a data-role="button" href="#" data-rel="close">Close panel</a>
+</div>
 <div class="ui-content" role="main">
-<a data-role="button" data-icon="bars" data-iconpos="left" href="#NestedMenu1_menu" data-rel="popup" id="NestedMenu1">Help</a>
-<div data-role="popup" id="NestedMenu1_menu">
-<div style="margin: 0px; width: 250px;" data-role="collapsibleset" data-content-theme="a" data-theme="b" data-expanded-icon="arrow-d" data-collapsed-icon="arrow-r">
-<div data-role="collapsible" data-inset="false">
-<h2>Help</h2>
-<ul data-role="listview">
-<li><a href="">Pair your micro:bit</a></li>
-<li><a href="">Connect your micro:bit</a></li>
-<li><a href="">Flash programs</a></li>
-<li><a href="">Run programs</a></li>
-<li><a href="">Trobuleshooting</a></li>
-<li><a href="">Change micro:bit</a></li>
-</ul>
-</div>
-<div data-role="collapsible" data-inset="false">
-<h2>About</h2>
-<ul data-role="listview">
-<li><a href="">Application Version</a></li>
-<li><a href="">Licenses</a></li>
-<li><a href="">FAQ</a></li>
-</ul>
-</div>
-</div>
-</div>
-
-<iframe name="content_frame" id="InlineFrame1" style="" src=""></iframe>
+<a data-role="button" data-icon="bars" data-iconpos="left" href="#Panel1_panel" id="Panel1_button">Help</a>
+<iframe name="content_frame" id="InlineFrame1" style="" src="./main.html"></iframe>
 </div>
 </div>
 </body>
