@@ -11,7 +11,6 @@
     <color name="light_gray_color">#dcdcdc</color>
     <color name="darkgray_color">#414141</color>
     <color name="main_gray_color">#383838</color>
-    <!-- TODO - confirm grey highlight color -->
     <color name="grey_highlight">#424242</color>
     <color name="ok_button_up">#00EC00</color>
     <color name="ok_button_down">#3A871F</color>

@@ -11,11 +11,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:lines="3"
+        android:maxLines="3"
         android:paddingBottom="16dp"
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
-        android:lines="3"
-        android:maxLines="3"
         android:text="@string/searching_tip_step_text"
         android:textAppearance="?android:textAppearanceMedium"
         android:textColor="@color/white_color" />
@@ -24,7 +24,7 @@
         android:id="@+id/searching_microbit_step_instructions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/where_are_you_emoji"
+        android:layout_alignBottom="@+id/searching_emoji"
         android:contentDescription="@string/desc_searching_tip_text"
         android:lines="2"
         android:maxLines="2"
@@ -35,7 +35,7 @@
         android:textColor="@color/white_color" />
 
     <ImageView
-        android:id="@+id/where_are_you_emoji"
+        android:id="@+id/searching_emoji"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -43,6 +43,5 @@
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
         android:src="@drawable/ooh_pretty_emoji"
-        android:visibility="invisible"/>
-    <!-- TODO - change icon to match Step 4 (where are you) -->
+        android:visibility="invisible" />
 </RelativeLayout>

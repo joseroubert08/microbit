@@ -45,24 +45,20 @@ public class LEDAdapter extends BaseAdapter {
         }
 
         if (mDeviceCodeArray[position].equals("1")) {
-            imageView.setContentDescription("" + calculateLEDPosition(position) + "on");
             imageView.setBackground(mContext.getResources().getDrawable(R.drawable.red_white_led_btn));
 
         } else {
-
-            imageView.setContentDescription("" + calculateLEDPosition(position) + "off");
             imageView.setBackground(mContext.getResources().getDrawable(R.drawable.white_red_led_btn));
 
             int startIndex = position - 5;
             while (startIndex >= 0) {
                 if (mDeviceCodeArray[startIndex].equals("1")) {
-                    imageView.setContentDescription("" + calculateLEDPosition(position) + "on"); // TODO check this for status of button
                     imageView.setBackground(mContext.getResources().getDrawable(R.drawable.red_white_led_btn));
                 }
-
                 startIndex -= 5;
             }
         }
+        imageView.setContentDescription("" + calculateLEDPosition(position) + getLEDStatus(position));
 
         return imageView;
     }
@@ -72,5 +68,15 @@ public class LEDAdapter extends BaseAdapter {
         return ++position;
     }
 
+    // To read out the status of the currently selected LED at a given position
+    private String getLEDStatus(int position) {
+        String statusRead;
 
+        if (mDeviceCodeArray[position].equals("1")) {
+            statusRead = "on";
+        } else {
+            statusRead = "off";
+        }
+        return statusRead;
+    }
 }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.samsung.microbit.R;
 
@@ -24,6 +25,13 @@ public class HelpWebView extends Activity {
         webView.getSettings().setUseWideViewPort(true);
         webView.getSettings().setLoadWithOverviewMode(true);
 
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return false;
+
+            }
+        });
         //Check parameters Before load
         Intent intent = getIntent();
         String url = intent.getStringExtra("url");

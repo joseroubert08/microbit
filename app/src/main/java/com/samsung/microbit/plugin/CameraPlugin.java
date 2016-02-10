@@ -4,20 +4,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.util.Log;
-import android.view.Gravity;
-import android.widget.Toast;
 
-import com.samsung.microbit.MBApp;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.service.PluginService;
-import com.samsung.microbit.ui.activity.CameraActivity_OldAPI;
+import com.samsung.microbit.ui.activity.CameraActivityPermissionChecker;
 
 public class CameraPlugin {
 
@@ -55,14 +51,14 @@ public class CameraPlugin {
                 mWakeLock.acquire(5*1000);
                 m_CurrentState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE ;
                 m_NextState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE ;
-                Utils.playAudio(Utils.getLaunchCameraAudio() , m_OnCompletionListener);
+                Utils.playAudio(Utils.getLaunchCameraPhotoMode() , m_OnCompletionListener);
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE:
                 mWakeLock.acquire(5*1000);
                 m_CurrentState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE ;
                 m_NextState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE ;
-                Utils.playAudio(Utils.getLaunchCameraAudio(), m_OnCompletionListener);
+                Utils.playAudio(Utils.getLaunchCameraVideoMode(), m_OnCompletionListener);
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO:
@@ -124,23 +120,7 @@ public class CameraPlugin {
                 launchCameraForVideo();
                 break;
             case Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO:
-                final Toast toast = Toast.makeText(MBApp.getApp().getApplicationContext(),"bbb", Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.CENTER, 0, 0);
-
-                new CountDownTimer(5000, 1000) {
-
-                    public void onTick(long millisUntilFinished) {
-                        toast.setText("Ready in... " + millisUntilFinished / 1000);
-                        toast.show();
-                    }
-
-                    public void onFinish() {
-                        toast.setText("Ready");
-                        toast.show();
-                        takePic();
-
-                    }
-                }.start();
+                takePic();
                 break;
             case Constants.SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE:
                 recVideoStart();
@@ -151,9 +131,9 @@ public class CameraPlugin {
 	//This function should trigger an Activity that would be responsible of starting the camera app to take a picture.
 	//The same activity should also store the result of the camera app, if valid
 	private static void launchCameraForPic() {
-		Intent mIntent = new Intent(context, CameraActivity_OldAPI.class);
-		mIntent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_PIC");
-		mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Intent mIntent = new Intent(context, CameraActivityPermissionChecker.class);
+        mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        mIntent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_PIC");
 		context.startActivity(mIntent);
 	}
 
@@ -168,9 +148,9 @@ public class CameraPlugin {
     }
 
 	private static void launchCameraForVideo() {
-		Intent mIntent = new Intent(context, CameraActivity_OldAPI.class);
-		mIntent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_VIDEO");
-		mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Intent mIntent = new Intent(context, CameraActivityPermissionChecker.class);
+        mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        mIntent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_VIDEO");
 		context.startActivity(mIntent);
 	}
 

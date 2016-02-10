@@ -1459,6 +1459,10 @@ public abstract class DfuBaseService extends IntentService {
 				loge("An exception occurred while opening file", e);
 				updateProgressNotification(ERROR_FILE_NOT_FOUND);
 				return null;
+			} catch (final HexFileValidationException e) {
+                loge("HexFileValidationException - ", e);
+                updateProgressNotification(ERROR_FILE_INVALID);
+                return null;
 			} catch (final IOException e) {
 				loge("An exception occurred while calculating file size", e);
 				updateProgressNotification(ERROR_FILE_ERROR);

@@ -11,9 +11,11 @@ import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
@@ -64,12 +66,12 @@ public class Utils {
     //private volatile SharedPreferences preferences;
 
     protected String TAG = "Utils";
-    protected boolean debug = true;
+    protected boolean debug = BuildConfig.DEBUG;
 
     protected void logi(String message) {
         if (debug) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
-        }
+       }
     }
 
     public static Utils getInstance() {
@@ -109,10 +111,12 @@ public class Utils {
         int totalPrograms = 0;
         if (sdcardDownloads.exists()) {
             File files[] = sdcardDownloads.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                String fileName = files[i].getName();
-                if (fileName.endsWith(".hex")) {
-                    ++totalPrograms;
+            if (files != null) {
+                for (int i = 0; i < files.length; i++) {
+                    String fileName = files[i].getName();
+                    if (fileName.endsWith(".hex")) {
+                        ++totalPrograms;
+                    }
                 }
             }
         }
@@ -191,11 +195,15 @@ public class Utils {
         }
     }
 
-    public static String getLaunchCameraAudio()
+    public static String getLaunchCameraPhotoMode()
     {
-        return Constants.LAUNCH_CAMERA_AUDIO;
+        return Constants.LAUNCH_CAMERA_AUDIO_PHOTO;
     }
 
+    public static String getLaunchCameraVideoMode()
+    {
+        return Constants.LAUNCH_CAMERA_AUDIO_VIDEO;
+    }
     public static String geTakingPhotoAudio()
     {
         return Constants.TAKING_PHOTO_AUDIO;
@@ -215,6 +223,10 @@ public class Utils {
         return Constants.MAX_VIDEO_RECORDED;
     }
 
+    public static String getFindMyPhoneAudio()
+    {
+        return Constants.FIND_MY_PHONE_AUDIO;
+    }
     public static void playAudio(String filename, final MediaPlayer.OnCompletionListener callBack )
     {
         Resources resources = MBApp.getApp().getApplicationContext().getResources();
@@ -249,6 +261,23 @@ public class Utils {
             }
         });
         mMediaplayer.start();
+    }
+
+    public static boolean inZenMode(Context paramContext)
+    {
+        /*
+         /**
+         * Defines global zen mode.  ZEN_MODE_OFF, ZEN_MODE_IMPORTANT_INTERRUPTIONS,
+
+         public static final String ZEN_MODE = "zen_mode";
+         public static final int ZEN_MODE_OFF = 0;
+         public static final int ZEN_MODE_IMPORTANT_INTERRUPTIONS = 1;
+         public static final int ZEN_MODE_NO_INTERRUPTIONS = 2;
+         public static final int ZEN_MODE_ALARMS = 3;
+        */
+        int zenMode = Settings.Global.getInt(paramContext.getContentResolver(), "zen_mode", 0);
+        Log.i("MicroBit", "zen_mode : " + zenMode);
+        return (zenMode != 0);
     }
 
     private static void preparePhoneToPlayAudio()
@@ -407,7 +436,7 @@ public class Utils {
         SharedPreferences pairedDevicePref = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
         if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
             String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
-            Log.e("Utils","Updating the microbit firmware");
+            Log.v("Utils","Updating the microbit firmware");
             ConnectedDevice deviceInSharedPref = new ConnectedDevice();
             Gson gson = new Gson();
             deviceInSharedPref = gson.fromJson(pairedDeviceString, ConnectedDevice.class);

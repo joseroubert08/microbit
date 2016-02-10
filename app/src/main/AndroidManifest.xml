@@ -16,7 +16,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.samsung.microbit"
     android:versionCode="1"
-    android:versionName="1.4">
+    android:versionName="1.4.1">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -30,6 +30,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
+    <!-- <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" /> -->
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
@@ -46,7 +47,7 @@
         android:required="false" />
 
     <application
-        android:name="com.samsung.microbit.MBApp"
+        android:name=".MBApp"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -57,12 +58,12 @@
             android:label="@string/home_activity_name"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".ui.activity.ProjectActivity"
             android:parentActivityName=".ui.activity.HomeActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize">
+
             <!-- Register for the HEX file -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -86,7 +87,6 @@
                 <data android:pathPattern=".*\\.hex" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.activity.NotificationActivity"
             android:label="@string/device_details"
@@ -117,22 +117,19 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
         <activity
-            android:name=".ui.activity.GeneralWebView"
-            android:configChanges="orientation|screenSize"
-            android:label="General Webview"
-            android:parentActivityName=".ui.activity.HomeActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize">
-            >
-        </activity>
-        <activity
             android:name=".ui.activity.HelpWebView"
             android:configChanges="orientation|screenSize"
             android:label="Help Webview"
             android:launchMode="singleTask"
             android:parentActivityName=".ui.activity.HomeActivity"
             android:screenOrientation="portrait">
-            ></activity>
+            >
+        </activity>
+        <activity
+            android:name=".ui.activity.CameraActivityPermissionChecker"
+            android:label="@string/title_activity_camera_activity_permission_checker"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <service
             android:name=".service.DfuService"
@@ -156,18 +153,20 @@
                 <action android:name="com.samsung.microbit.service.IPCService" />
             </intent-filter>
         </service>
-
         <activity
-            android:name=".ui.activity.SplashScreenActivity"
-            android:screenOrientation="portrait">
+            android:name=".ui.activity.SplashScreenActivityVideo"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <receiver android:name=".core.PopUpServiceReceiver">
             <intent-filter>
-                <action android:name="com.samsung.microbit.core.SHOWFROMSERVICE"></action>
+                <action android:name="com.samsung.microbit.core.SHOWFROMSERVICE" />
             </intent-filter>
         </receiver>
     </application>

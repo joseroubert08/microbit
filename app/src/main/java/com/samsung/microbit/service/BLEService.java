@@ -28,7 +28,7 @@ import java.util.UUID;
 public class BLEService extends BLEBaseService {
 
 	protected String TAG = "BLEService";
-	protected boolean debug = true;
+	protected boolean debug = BuildConfig.DEBUG;
 	protected boolean firstRun = true;
 
 	protected void logi(String message) {

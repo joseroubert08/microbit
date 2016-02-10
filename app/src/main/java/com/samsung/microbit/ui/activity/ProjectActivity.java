@@ -1,5 +1,6 @@
 package com.samsung.microbit.ui.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -8,11 +9,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.content.PermissionChecker;
 import android.text.Spannable;
 import android.util.Log;
 import android.view.Menu;
@@ -23,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.IPCMessageManager;
@@ -59,7 +65,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
     private DFUResultReceiver dfuResultReceiver;
     private int projectListSortOrder = 0;
 
-    protected boolean debug = true;
+    protected boolean debug = BuildConfig.DEBUG;
     protected String TAG = "ProjectActivity";
 
     private static ACTIVITY_STATE mActivityState = ACTIVITY_STATE.STATE_IDLE;
@@ -211,7 +217,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         createProject.setTypeface(MBApp.getApp().getTypeface());
 
         projectListView = (ListView) findViewById(R.id.projectListView);
-        updateProjectsListSortOrder(true);
+        checkMinimumPermissionsForThisScreen();
 
 		/* *************************************************
          * TODO setup to Handle BLE Notification
@@ -239,14 +245,74 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         }
 
     }
-
+    private void requetPermission(String[] permissions, final int requestCode) {
+        ActivityCompat.requestPermissions(this, permissions, requestCode);
+    }
+    View.OnClickListener diskStoragePermissionOKHandler = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            logi("diskStoragePermissionOKHandler");
+            PopUp.hide();
+            String[] permissionsNeeded = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+            requetPermission(permissionsNeeded, Constants.APP_STORAGE_PERMISSIONS_REQUESTED);
+        }
+    };
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode)
+        {
+            case Constants.APP_STORAGE_PERMISSIONS_REQUESTED: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    updateProjectsListSortOrder(true);
+                } else {
+                    PopUp.show(MBApp.getContext(),
+                            getString(R.string.storage_permission_for_programs_error),
+                            getString(R.string.permissions_needed_title),
+                            R.drawable.error_face, R.drawable.red_btn,
+                            PopUp.GIFF_ANIMATION_ERROR,
+                            PopUp.TYPE_ALERT,
+                            null, null);
+                }
+            }
+            break;
+         }
+    }
+    View.OnClickListener diskStoragePermissionCancelHandler = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            logi("diskStoragePermissionCancelHandler");
+            PopUp.hide();
+            PopUp.show(MBApp.getContext(),
+                    getString(R.string.storage_permission_for_programs_error),
+                    getString(R.string.permissions_needed_title),
+                    R.drawable.error_face, R.drawable.red_btn,
+                    PopUp.GIFF_ANIMATION_ERROR,
+                    PopUp.TYPE_ALERT,
+                    null, null);
+        }
+    };
+    private void checkMinimumPermissionsForThisScreen() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PermissionChecker.PERMISSION_GRANTED ||
+                (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PermissionChecker.PERMISSION_GRANTED)) {
+            PopUp.show(MBApp.getContext(),
+                    getString(R.string.storage_permission_for_programs),
+                    getString(R.string.permissions_needed_title),
+                    R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
+                    PopUp.TYPE_CHOICE,
+                    diskStoragePermissionOKHandler,
+                    diskStoragePermissionCancelHandler);
+        } else {
+            //We have required permission. Update the list directly
+            updateProjectsListSortOrder(true);
+        }
+    }
     private void setConnectedDeviceText() {
 
         TextView connectedIndicatorText = (TextView) findViewById(R.id.connectedIndicatorText);
         connectedIndicatorText.setText(connectedIndicatorText.getText());
-        connectedIndicatorText.setTypeface(MBApp.getApp().getTypeface());    // TODO - check
+        connectedIndicatorText.setTypeface(MBApp.getApp().getTypeface());
         TextView deviceName1 = (TextView) findViewById(R.id.deviceName);
-        deviceName1.setContentDescription(deviceName1.getText()); // TODO - check
+        deviceName1.setContentDescription(deviceName1.getText());
         deviceName1.setTypeface(MBApp.getApp().getTypeface());
         deviceName1.setOnClickListener(this);
         ImageView connectedIndicatorIcon = (ImageView) findViewById(R.id.connectedIndicatorIcon);
@@ -455,7 +521,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 }
                 break;
             case R.id.deviceName:
-                // Toast.makeText(this, "Back to connect screen", Toast.LENGTH_SHORT).show(); // - TODO - check navigation flow
+                // Toast.makeText(this, "Back to connect screen", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, PairingActivity.class);
                 startActivity(intent);
                 break;
@@ -743,7 +809,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                     getString(R.string.flashing_aborted), //message
                                     getString(R.string.flashing_aborted_title),
                                     R.drawable.error_face, R.drawable.red_btn,
-                                    PopUp.GIFF_ANIMATION_ERROR, /* TODO - error flashing */
+                                    PopUp.GIFF_ANIMATION_ERROR,
                                     PopUp.TYPE_ALERT, //type of popup.
                                     popupOkHandler,//override click listener for ok button
                                     popupOkHandler);//pass null to use default listener

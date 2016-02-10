@@ -10,12 +10,14 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
 
+import com.samsung.microbit.BuildConfig;
+
 import java.util.List;
 
 public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 
     private static final String TAG = "CameraPreview";
-    private boolean debug = true;
+    private boolean debug = BuildConfig.DEBUG;
 
     void logi(String message) {
         if (debug) {

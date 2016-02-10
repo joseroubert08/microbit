@@ -13,6 +13,6 @@ function SearchPage(url, title, keywords, description)
 function SearchDatabase()
 {
    database_length = 0;
-   this[database_length++] = new SearchPage("index.html", "Untitled Page", "untitled page help pair your micro bit connect flash programs run trobuleshooting change about application version licenses faq ", "");
+   this[database_length++] = new SearchPage("index.html", "Untitled Page", "untitled page item close panel ", "");
    return this;
 }

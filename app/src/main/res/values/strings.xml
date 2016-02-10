@@ -28,8 +28,8 @@
 
     <string name="privacy_policy_url">https://www.microbit.co.uk/</string>
     <string name="terms_of_use_url">https://www.microbit.co.uk/</string>
-    <string name="about_url">https://www.microbit.co.uk/</string>
-    <string name="feedback_email_address">learning.makeitdigital@bbc.co.uk</string>
+    <string name="about_url">https://www.microbit.co.uk/mobile</string>
+    <string name="feedback_email_address">microbitsupport@bbc.co.uk</string>
 
     <string name="remote_config_url">https://files.microbit.co.uk/appconfig/microbit/android/%s/config.json</string>
 
@@ -191,7 +191,7 @@
     <string name="loading_page_msg">Please wait. Page is loading...</string>
 
     <!-- Popup message -->
-    <string name="delete_project_message">Are you sure you want to want to remove this file?\r\nThe file will be permanently removed from this application.</string>
+    <string name="delete_project_message">Are you sure you want to remove this file?\r\nThe file will be permanently removed from this application.</string>
     <string name="delete_project_title">Delete project?</string>
     <string name="record_audio">Record Audio?</string>
     <string name="audio_recorder_notification">micro:bit Audio Recorder</string>
@@ -329,4 +329,22 @@
     <string name="stats_view_name">kl.education.microbit.%s.page</string>
     <string name="cancel_searching_btn_txt">Cancel</string>
 
+
+    <!-- Strings for permissions-->
+    <string name="permissions_needed_title">More permission needed</string>
+    <string name="storage_permission_for_samples">We need storage permission to copy sample program files on your device. This will help you try your micro:bit straight away.\n Proceed?</string>
+    <string name="storage_permission_for_samples_error">No sample files will be installed.</string>
+    <string name="storage_permission_for_programs">We need storage permission to list all the program files saved on your device.\n Proceed?</string>
+    <string name="storage_permission_for_programs_error">Cannot display any program files.</string>
+
+    <string name="location_permission_pairing">We need location permission to search micro:bit and pair .\n Proceed?</string>
+    <string name="location_permission_error">Cannot pair new micro:bit without having location permission.</string>
+
+    <string name="camera_permission">micro:bit is trying to launch Camera. We need Camera permissions to complete this action. \n Proceed?</string>
+    <string name="camera_permission_error">We cannot complete the request from micro:bit without having Camera permission</string>
+    <string name="title_activity_camera_activity_permission_checker">Camera permission checker</string>
+
+    <string name="dnd_error_title">Cannot Complete Action</string>
+    <string name="dnd_error_msg">Please disable the Do Not Disturb mode. Camera feature cannot be used in this mode</string>
 </resources>
+

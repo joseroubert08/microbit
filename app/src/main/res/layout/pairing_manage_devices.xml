@@ -33,20 +33,8 @@
             android:nextFocusDown="@+id/img_pair_microbit"
             android:text="@string/manage_and_remove_microbit"
             android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/main_gray_color"
             android:textStyle="bold" />
-
-        <!--<TextView-->
-        <!--android:id="@+id/subtitle_manage_microbit"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="start|top"-->
-        <!--android:contentDescription="@string/desc_subtitle_manage_and_remove_microbits_label"-->
-        <!--android:gravity="start"-->
-        <!--android:lines="2"-->
-        <!--android:maxLines="2"-->
-        <!--android:nextFocusDown="@+id/img_pair_microbit"-->
-        <!--android:text="@string/subtitle_manage_and_remove_microbits_label"-->
-        <!--android:textAppearance="?android:textAppearanceMedium" />-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -67,7 +55,8 @@
                 android:minLines="3"
                 android:nextFocusDown="@id/flash_projects_title_txt"
                 android:text="@string/manage_microbit_txt"
-                android:textAppearance="?android:textAppearanceMedium" />
+                android:textAppearance="?android:textAppearanceMedium"
+                android:textColor="@color/main_gray_color" />
         </LinearLayout>
 
         <!-- Bluetooth settings -->
@@ -88,7 +77,8 @@
                 android:minLines="3"
                 android:nextFocusDown="@id/flash_projects_title_txt"
                 android:text="@string/connect_microbit_problems_message"
-                android:textAppearance="?android:textAppearanceMedium" />
+                android:textAppearance="?android:textAppearanceMedium"
+                android:textColor="@color/main_gray_color" />
 
             <ImageView
                 android:id="@+id/img_pair_microbit"

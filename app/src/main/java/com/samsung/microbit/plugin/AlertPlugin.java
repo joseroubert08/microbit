@@ -12,6 +12,7 @@ import android.os.Vibrator;
 import android.util.Log;
 
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.ui.PopUp;
@@ -152,8 +153,14 @@ public class AlertPlugin {
 
 	private static void findPhone() {
         showDialog(context.getString(R.string.findphone_via_microbit));
-		Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-		playSound(ringtone, 0, true, true);
+        if(mVibrator==null)
+            mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+
+        if(mVibrator!=null && mVibrator.hasVibrator()) {
+            mVibrator.cancel();
+            mVibrator.vibrate(5*1000);
+        }
+        Utils.playAudio(Utils.getFindMyPhoneAudio(),null);
 	}
 
 	private static void vibrate(int duration) {
