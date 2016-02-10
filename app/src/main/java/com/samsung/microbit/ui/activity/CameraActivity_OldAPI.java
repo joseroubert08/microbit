@@ -21,6 +21,7 @@ import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
@@ -379,7 +380,32 @@ public class CameraActivity_OldAPI extends Activity {
     }
 
     private int getRotationCameraCorrection(int current_rotation) {
-        return (current_rotation + 270) % 360;
+        int degree = (current_rotation + 270) % 360;
+
+        int result;
+        String model =  Build.MODEL;
+
+        if(model.contains("Nexus 5X")) {
+            //Workaround for Nexus 5X camera issue
+            //TODO: Use Camera API 2 to fix this correctly
+            result = (mOrientationOffset + degree) % 360;
+
+            if (!mfrontCamera) {
+                if (result == 0)
+                    result += 180;
+                else if (result == 180)
+                    result = 0;
+            }
+
+        } else {
+            if (mfrontCamera) {
+                result = (mOrientationOffset + degree) % 360;
+            } else { // back-facing
+                result = (mOrientationOffset - degree + 360) % 360;
+            }
+        }
+
+        return result;
     }
 
     private void sendCameraError() {
