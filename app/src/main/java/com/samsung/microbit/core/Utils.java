@@ -194,11 +194,15 @@ public class Utils {
         }
     }
 
-    public static String getLaunchCameraAudio()
+    public static String getLaunchCameraPhotoMode()
     {
-        return Constants.LAUNCH_CAMERA_AUDIO;
+        return Constants.LAUNCH_CAMERA_AUDIO_PHOTO;
     }
 
+    public static String getLaunchCameraVideoMode()
+    {
+        return Constants.LAUNCH_CAMERA_AUDIO_VIDEO;
+    }
     public static String geTakingPhotoAudio()
     {
         return Constants.TAKING_PHOTO_AUDIO;
