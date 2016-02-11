@@ -565,18 +565,23 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         while (index >= 0) {
             v = (ImageView) parent.getChildAt(index);
             v.setBackground(getApplication().getResources().getDrawable(R.drawable.white_red_led_btn));
-            v.setTag("0");
+            v.setTag(R.id.ledState, 0);
+            v.setSelected(false);
             deviceCodeArray[index] = "0";
+            int position = (Integer)v.getTag(R.id.position);
+            v.setContentDescription("" + position + getLEDStatus(index)); // TODO - calculate correct position
             index -= 5;
-            v.setContentDescription("" + getLEDStatus(pos)); // TODO - calculate correct position
         }
         index = pos + 5;
         while (index < 25) {
             v = (ImageView) parent.getChildAt(index);
             v.setBackground(getApplication().getResources().getDrawable(R.drawable.red_white_led_btn));
-            v.setTag("1");
+            v.setTag(R.id.ledState, 1);
+            v.setSelected(false);
+            deviceCodeArray[index] = "1";
+            int position = (Integer)v.getTag(R.id.position);
+            v.setContentDescription("" + position + getLEDStatus(index));
             index += 5;
-            v.setContentDescription("" + getLEDStatus(pos));
         }
 
     }
@@ -584,37 +589,29 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private boolean toggleLED(ImageView image, int pos) {
         boolean isOn;
         //Toast.makeText(this, "Pos :" +  pos, Toast.LENGTH_SHORT).show();
-        if (image.getTag() != "1") {
+        int state = (Integer)image.getTag(R.id.ledState);
+        if (state != 1) {
             deviceCodeArray[pos] = "1";
             image.setBackground(getApplication().getResources().getDrawable(R.drawable.red_white_led_btn));
-            image.setTag("1");
+            image.setTag(R.id.ledState,1);
             isOn = true;
 
         } else {
             deviceCodeArray[pos] = "0";
             image.setBackground(getApplication().getResources().getDrawable(R.drawable.white_red_led_btn));
-            image.setTag("0");
+            image.setTag(R.id.ledState,0);
             isOn = false;
             // Update the code to consider the still ON LED below the toggled one
             if (pos < 20) {
                 deviceCodeArray[pos + 5] = "1";
             }
         }
-        image.setContentDescription("" + calculateLEDPosition(pos) + getLEDStatus(pos));
+
+        image.setSelected(false);
+        int position = (Integer)image.getTag(R.id.position);
+        image.setContentDescription("" + position + getLEDStatus(pos));
         return isOn;
     }
-
-    //
-    private int calculateLEDPositionFilledIn(int position) {
-        return position;
-    }
-
-    //TODO - fix accessibility
-    // Function to add 1 to the position in the array to correctly read out the LED position
-    private int calculateLEDPosition(int position) {
-        return ++position;
-    }
-
 
     // To read out the status of the currently selected LED at a given position
     private String getLEDStatus(int position) {
