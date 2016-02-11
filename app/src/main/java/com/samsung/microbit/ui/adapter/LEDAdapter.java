@@ -58,7 +58,12 @@ public class LEDAdapter extends BaseAdapter {
                 startIndex -= 5;
             }
         }
-        imageView.setContentDescription("" + calculateLEDPosition(position) + getLEDStatus(position));
+
+        int pos = calculateLEDPosition(position);
+        imageView.setTag(R.id.position, pos);
+        imageView.setTag(R.id.ledState, 0);
+        imageView.setSelected(false);
+        imageView.setContentDescription("" + pos + getLEDStatus(position));
 
         return imageView;
     }

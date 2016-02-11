@@ -74,12 +74,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         PAIRING_STATE_ERROR
     }
 
-    boolean columnOneHit;
-    boolean columnTwoHit;
-    boolean columnThreeHit;
-    boolean columnFourHit;
-    boolean columnFiveHit;
-
     private static PAIRING_STATE mState = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
     private static String mNewDeviceName;
     private static String mNewDeviceCode;
@@ -135,6 +129,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         STATE_DISCONNECTING
     }
 
+    private List<Integer> mRequestPermission = new ArrayList<Integer>();
+
+    private int mRequestingPermission = -1 ;
 
     private static ACTIVITY_STATE mActivityState = ACTIVITY_STATE.STATE_IDLE;
     private int selectedDeviceForConnect = 0;
@@ -213,19 +210,34 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
             int error = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
             String firmware = intent.getStringExtra(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE);
-
+            int getNotification = intent.getIntExtra(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, -1);
             if (firmware != null && !firmware.isEmpty()) {
                 Utils.updateFirmwareMicrobit(context, firmware);
                 return;
             }
             updatePairedDeviceCard();
-
             if (mActivityState == ACTIVITY_STATE.STATE_DISCONNECTING || mActivityState == ACTIVITY_STATE.STATE_CONNECTING) {
+
+                if (getNotification == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED ||
+                        getNotification == IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED)
+                {
+                    logi("micro:bit application needs more permissions");
+                    mRequestPermission.add(getNotification);
+                    return;
+                }
                 ConnectedDevice device = Utils.getPairedMicrobit(context);
                 if (mActivityState == ACTIVITY_STATE.STATE_CONNECTING) {
                     if (error == 0) {
                         MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.SUCCESS, device.mfirmware_version, null);
                         Utils.updateConnectionStartTime(context, System.currentTimeMillis());
+                        //Check if more permissions were needed and request in the Application
+                        if (!mRequestPermission.isEmpty())
+                        {
+                            mActivityState = ACTIVITY_STATE.STATE_IDLE;
+                            PopUp.hide();
+                            checkTelephonyPermissions();
+                            return;
+                        }
                     } else {
                         MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.FAIL, null, null);
                     }
@@ -262,6 +274,74 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         }
     };
+    View.OnClickListener notificationOKHandler = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            logi("notificationOKHandler");
+            PopUp.hide();
+            if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED)
+            {
+                String[] permissionsNeeded = {Manifest.permission.READ_PHONE_STATE};
+                requetPermission(permissionsNeeded, Constants.INCOMING_CALL_PERMISSIONS_REQUESTED);
+            }
+            if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED)
+            {
+                String[] permissionsNeeded = {Manifest.permission.RECEIVE_SMS};
+                requetPermission(permissionsNeeded, Constants.INCOMING_SMS_PERMISSIONS_REQUESTED);
+            }
+        }
+    };
+
+    View.OnClickListener checkMorePermissionsNeeded = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(!mRequestPermission.isEmpty()){
+                checkTelephonyPermissions();
+            } else {
+                PopUp.hide();
+            }
+        }
+    };
+
+    View.OnClickListener notificationCancelHandler = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            logi("notificationCancelHandler");
+            String msg = "Your program might not run properly" ;
+            if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED)
+            {
+                msg =  getString(R.string.telephony_permission_error);
+            }
+            else if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED)
+            {
+                msg =  getString(R.string.sms_permission_error);
+            }
+            PopUp.hide();
+            PopUp.show(MBApp.getContext(),
+                    msg,
+                    getString(R.string.permissions_needed_title),
+                    R.drawable.error_face, R.drawable.red_btn,
+                    PopUp.GIFF_ANIMATION_ERROR,
+                    PopUp.TYPE_ALERT,
+                    checkMorePermissionsNeeded, checkMorePermissionsNeeded);
+        }
+    };
+    private void checkTelephonyPermissions() {
+        if (!mRequestPermission.isEmpty()) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PermissionChecker.PERMISSION_GRANTED ||
+                    (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PermissionChecker.PERMISSION_GRANTED)) {
+                mRequestingPermission = mRequestPermission.get(0);
+                mRequestPermission.remove(0);
+                PopUp.show(MBApp.getContext(),
+                        (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED) ? getString(R.string.telephony_permission) : getString(R.string.sms_permission),
+                        getString(R.string.permissions_needed_title),
+                        R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
+                        PopUp.TYPE_CHOICE,
+                        notificationOKHandler,
+                        notificationCancelHandler);
+            }
+        }
+    }
     // *************************************************
 
     // DEBUG
@@ -565,18 +645,23 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         while (index >= 0) {
             v = (ImageView) parent.getChildAt(index);
             v.setBackground(getApplication().getResources().getDrawable(R.drawable.white_red_led_btn));
-            v.setTag("0");
+            v.setTag(R.id.ledState, 0);
+            v.setSelected(false);
             deviceCodeArray[index] = "0";
+            int position = (Integer)v.getTag(R.id.position);
+            v.setContentDescription("" + position + getLEDStatus(index)); // TODO - calculate correct position
             index -= 5;
-            v.setContentDescription("" + getLEDStatus(pos)); // TODO - calculate correct position
         }
         index = pos + 5;
         while (index < 25) {
             v = (ImageView) parent.getChildAt(index);
             v.setBackground(getApplication().getResources().getDrawable(R.drawable.red_white_led_btn));
-            v.setTag("1");
+            v.setTag(R.id.ledState, 1);
+            v.setSelected(false);
+            deviceCodeArray[index] = "1";
+            int position = (Integer)v.getTag(R.id.position);
+            v.setContentDescription("" + position + getLEDStatus(index));
             index += 5;
-            v.setContentDescription("" + getLEDStatus(pos));
         }
 
     }
@@ -584,37 +669,29 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private boolean toggleLED(ImageView image, int pos) {
         boolean isOn;
         //Toast.makeText(this, "Pos :" +  pos, Toast.LENGTH_SHORT).show();
-        if (image.getTag() != "1") {
+        int state = (Integer)image.getTag(R.id.ledState);
+        if (state != 1) {
             deviceCodeArray[pos] = "1";
             image.setBackground(getApplication().getResources().getDrawable(R.drawable.red_white_led_btn));
-            image.setTag("1");
+            image.setTag(R.id.ledState,1);
             isOn = true;
 
         } else {
             deviceCodeArray[pos] = "0";
             image.setBackground(getApplication().getResources().getDrawable(R.drawable.white_red_led_btn));
-            image.setTag("0");
+            image.setTag(R.id.ledState,0);
             isOn = false;
             // Update the code to consider the still ON LED below the toggled one
             if (pos < 20) {
                 deviceCodeArray[pos + 5] = "1";
             }
         }
-        image.setContentDescription("" + calculateLEDPosition(pos) + getLEDStatus(pos));
+
+        image.setSelected(false);
+        int position = (Integer)image.getTag(R.id.position);
+        image.setContentDescription("" + position + getLEDStatus(pos));
         return isOn;
     }
-
-    //
-    private int calculateLEDPositionFilledIn(int position) {
-        return position;
-    }
-
-    //TODO - fix accessibility
-    // Function to add 1 to the position in the array to correctly read out the LED position
-    private int calculateLEDPosition(int position) {
-        return ++position;
-    }
-
 
     // To read out the status of the currently selected LED at a given position
     private String getLEDStatus(int position) {
@@ -765,7 +842,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     if (tvTitle != null) {
                         tvTitle.setText(R.string.searchingTitle);
                         findViewById(R.id.searching_progress_spinner).setVisibility(View.VISIBLE);
-                     //   findViewById(R.id.searching_microbit_found_giffview).setBackgroundResource(R.drawable.emoji_microbit_found);
                         findViewById(R.id.searching_microbit_found_giffview).setVisibility(View.GONE);
                         tvSearchingStep.setText(R.string.searching_tip_step_text);
                         tvSearchingInstructions.setText(R.string.searching_tip_text_instructions);
@@ -796,6 +872,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             boolean currentState = currentDevice.mStatus;
             if (!currentState) {
                 mActivityState = ACTIVITY_STATE.STATE_CONNECTING;
+                mRequestPermission.clear();
                 PopUp.show(MBApp.getContext(),
                         getString(R.string.init_connection),
                         "",
@@ -835,7 +912,38 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 }
             }
             break;
-
+            case Constants.INCOMING_CALL_PERMISSIONS_REQUESTED:{
+                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED ) {
+                    PopUp.show(MBApp.getContext(),
+                            getString(R.string.telephony_permission_error),
+                            getString(R.string.permissions_needed_title),
+                            R.drawable.error_face, R.drawable.red_btn,
+                            PopUp.GIFF_ANIMATION_ERROR,
+                            PopUp.TYPE_ALERT,
+                            checkMorePermissionsNeeded, checkMorePermissionsNeeded);
+                } else {
+                    if(!mRequestPermission.isEmpty()){
+                        checkTelephonyPermissions();
+                    }
+                }
+            }
+            break;
+            case Constants.INCOMING_SMS_PERMISSIONS_REQUESTED:{
+                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED ) {
+                    PopUp.show(MBApp.getContext(),
+                            getString(R.string.sms_permission_error),
+                            getString(R.string.permissions_needed_title),
+                            R.drawable.error_face, R.drawable.red_btn,
+                            PopUp.GIFF_ANIMATION_ERROR,
+                            PopUp.TYPE_ALERT,
+                            checkMorePermissionsNeeded, checkMorePermissionsNeeded);
+                } else {
+                    if(!mRequestPermission.isEmpty()){
+                        checkTelephonyPermissions();
+                    }
+                }
+            }
+            break;
         }
     }
 

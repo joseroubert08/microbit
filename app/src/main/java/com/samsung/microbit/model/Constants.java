@@ -252,6 +252,9 @@ public class Constants {
     public static int MAX_VIDEO_RECORDING_TIME = 30 * 1000 ; //Duration in ms
     public static int MAX_VIDEO_FILE_SIZE = 100 * 1024 * 1024 ; //Size in bytes
 
+	public static int PIC_COUNTER_DURATION = 5 * 1000 ; //Duration in ms
+	public static int PIC_COUNTER_INTERVAL = 900 ; //Duration in ms
+
     public static String MEDIA_OUTPUT_FOLDER = "bbc-microbit";
 
     //For stats
@@ -264,4 +267,6 @@ public class Constants {
     public static final int APP_STORAGE_PERMISSIONS_REQUESTED = 0x01;
     public static final int BLUETOOTH_PERMISSIONS_REQUESTED = 0x02;
     public static final int CAMERA_PERMISSIONS_REQUESTED = 0x03;
+    public static final int INCOMING_CALL_PERMISSIONS_REQUESTED = 0x03;
+    public static final int INCOMING_SMS_PERMISSIONS_REQUESTED = 0x04;
 }
