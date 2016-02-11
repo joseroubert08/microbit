@@ -129,7 +129,7 @@
             android:name=".ui.activity.CameraActivityPermissionChecker"
             android:label="@string/title_activity_camera_activity_permission_checker"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <service
             android:name=".service.DfuService"

@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.samsung.microbit.ui.activity.PopUpActivity;
 

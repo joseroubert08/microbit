@@ -34,7 +34,7 @@
             android:layout_margin="16dp"
             android:baselineAlignBottom="true"
             android:scaleType="centerInside"
-            android:visibility="gone"/>
+            android:visibility="gone" />
     </LinearLayout>
 
     <!-- Body of pop up - main text area, loader etc-->
@@ -73,14 +73,15 @@
             android:visibility="gone" />
 
         <!-- Connecting /disconnecting spinner -->
+        <!-- Keep the screen on during flashing and connecting-->
         <ProgressBar
             android:id="@+id/spinnerBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:keepScreenOn="true"
             android:paddingBottom="@dimen/popup_body_view_paddingVertical"
             android:paddingTop="@dimen/popup_body_view_paddingVertical"
             android:visibility="gone" />
-
         <!-- Subtitle text, messages about status-->
         <TextView
             android:id="@+id/messageTxt"
