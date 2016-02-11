@@ -297,6 +297,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         public void onClick(View v) {
             if(!mRequestPermission.isEmpty()){
                 checkTelephonyPermissions();
+            } else {
+                PopUp.hide();
             }
         }
     };
