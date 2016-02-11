@@ -155,7 +155,16 @@ public class BLEService extends BLEBaseService {
 
         BluetoothGattCharacteristic characteristic = readCharacteristic(microbit_requirements);
         while (characteristic !=null && characteristic.getValue() != null && characteristic.getValue().length != 0 ){
-            logi("microbit interested in  = " + Utils.parse(characteristic));
+            String service = Utils.parse(characteristic) ;
+            logi("microbit interested in  = " + service);
+            if (service.equalsIgnoreCase("4F-04-07-00")) //Incoming Call service
+            {
+                sendMicroBitNeedsCallNotification();
+            }
+            if (service.equalsIgnoreCase("4F-04-08-00")) //Incoming SMS service
+            {
+                sendMicroBitNeedsSmsNotification();
+            }
             characteristic = readCharacteristic(microbit_requirements);
         }
 
@@ -318,6 +327,24 @@ public class BLEService extends BLEBaseService {
         NameValuePair[] args = new NameValuePair[2];
         args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
         args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE, firmware);
+        sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
+    }
+
+    protected void sendMicroBitNeedsCallNotification()
+    {
+        logi("sendMicroBitNeedsCallNotification()");
+        NameValuePair[] args = new NameValuePair[2];
+        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED);
+        sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
+    }
+
+    protected void sendMicroBitNeedsSmsNotification()
+    {
+        logi("sendMicroBitNeedsSmsNotification()");
+        NameValuePair[] args = new NameValuePair[2];
+        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED);
         sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
     }
 	@Override
