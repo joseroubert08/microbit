@@ -185,11 +185,19 @@ public class IPCService extends Service {
 
 			String firmware = (String) msg.getData().getSerializable(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE);
 
+            int microbitRequest = -1 ;
+            if (msg.getData().getSerializable(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS) != null) {
+                microbitRequest = (int) msg.getData().getSerializable(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS);
+            }
+
+
 			Intent intent = new Intent(INTENT_BLE_NOTIFICATION);
 			intent.putExtra(NOTIFICATION_CAUSE, msg.arg1);
 			intent.putExtra(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
             intent.putExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE, error_message);
             intent.putExtra(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE, firmware);
+            intent.putExtra(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, microbitRequest);
+
 			LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 		} else if (msg.what == IPCMessageManager.MICROBIT_MESSAGE) {
 			if (debug) logi("handleIncomingMessage() :: IPCMessageManager.MICROBIT_MESSAGE msg.arg1 = " + msg.arg1);

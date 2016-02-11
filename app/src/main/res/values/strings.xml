@@ -346,5 +346,10 @@
 
     <string name="dnd_error_title">Cannot Complete Action</string>
     <string name="dnd_error_msg">Please disable the Do Not Disturb mode. Camera feature cannot be used in this mode</string>
+
+    <string name="telephony_permission">Connected micro:bit program needs to know the Incoming call status. We need Phone State permission to complete this action. \n Proceed?</string>
+    <string name="sms_permission">Connected micro:bit program needs to know the Incoming SMS status. We need SMS permission to complete this action. NOTE: Application will not send any SMS. \n Proceed?</string>
+    <string name="telephony_permission_error">Your connected micro:bit will not receive any Incoming call notification</string>
+    <string name="sms_permission_error">Your connected micro:bit will not receive any Incoming SMS notification</string>
 </resources>
 
