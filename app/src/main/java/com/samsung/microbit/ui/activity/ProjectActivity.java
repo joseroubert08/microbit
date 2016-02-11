@@ -109,6 +109,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             int getNotification = intent.getIntExtra(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, -1);
 
             setConnectedDeviceText();
+            if (firmware != null && !firmware.isEmpty()){
+                Utils.updateFirmwareMicrobit(context, firmware);
+                return;
+            }
 
             if (mActivityState == ACTIVITY_STATE.MICROBIT_CONNECTING || mActivityState == ACTIVITY_STATE.MICROBIT_DISCONNECTING) {
 
@@ -119,12 +123,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                     mRequestPermission.add(getNotification);
                     return;
                 }
-
-                if (firmware != null && !firmware.isEmpty()){
-                    Utils.updateFirmwareMicrobit(context, firmware);
-                    return;
-                }
-
                 ConnectedDevice device = Utils.getPairedMicrobit(context);
                 if (mActivityState == ACTIVITY_STATE.MICROBIT_CONNECTING)
                 {

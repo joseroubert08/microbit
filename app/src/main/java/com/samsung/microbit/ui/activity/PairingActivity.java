@@ -211,21 +211,20 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             int error = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
             String firmware = intent.getStringExtra(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE);
             int getNotification = intent.getIntExtra(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, -1);
-
-            if (getNotification == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED ||
-                    getNotification == IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED)
-            {
-                logi("micro:bit application needs more permissions");
-                mRequestPermission.add(getNotification);
-                return;
-            }
             if (firmware != null && !firmware.isEmpty()) {
                 Utils.updateFirmwareMicrobit(context, firmware);
                 return;
             }
             updatePairedDeviceCard();
-
             if (mActivityState == ACTIVITY_STATE.STATE_DISCONNECTING || mActivityState == ACTIVITY_STATE.STATE_CONNECTING) {
+
+                if (getNotification == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED ||
+                        getNotification == IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED)
+                {
+                    logi("micro:bit application needs more permissions");
+                    mRequestPermission.add(getNotification);
+                    return;
+                }
                 ConnectedDevice device = Utils.getPairedMicrobit(context);
                 if (mActivityState == ACTIVITY_STATE.STATE_CONNECTING) {
                     if (error == 0) {
