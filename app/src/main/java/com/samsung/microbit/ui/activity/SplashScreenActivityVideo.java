@@ -90,7 +90,6 @@ public class SplashScreenActivityVideo extends Activity implements SurfaceHolder
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
     }
 
     @Override
@@ -154,6 +153,4 @@ public class SplashScreenActivityVideo extends Activity implements SurfaceHolder
         // close this activity
         finish();
     }
-
-
 }

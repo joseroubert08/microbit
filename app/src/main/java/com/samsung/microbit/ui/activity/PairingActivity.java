@@ -73,6 +73,12 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         PAIRING_STATE_ERROR
     }
 
+    boolean columnOneHit;
+    boolean columnTwoHit;
+    boolean columnThreeHit;
+    boolean columnFourHit;
+    boolean columnFiveHit;
+
     private static PAIRING_STATE mState = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
     private static String mNewDeviceName;
     private static String mNewDeviceCode;
@@ -554,12 +560,14 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private void setCol(AdapterView<?> parent, int pos, boolean enabledlandscape) {
         int index = pos - 5;
         ImageView v;
+
         while (index >= 0) {
             v = (ImageView) parent.getChildAt(index);
             v.setBackground(getApplication().getResources().getDrawable(R.drawable.white_red_led_btn));
             v.setTag("0");
             deviceCodeArray[index] = "0";
             index -= 5;
+            v.setContentDescription("" + getLEDStatus(pos)); // TODO - calculate correct position
         }
         index = pos + 5;
         while (index < 25) {
@@ -567,7 +575,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             v.setBackground(getApplication().getResources().getDrawable(R.drawable.red_white_led_btn));
             v.setTag("1");
             index += 5;
+            v.setContentDescription("" + getLEDStatus(pos));
         }
+
     }
 
     private boolean toggleLED(ImageView image, int pos) {
@@ -670,7 +680,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             deviceConnectionStatusBtn.setBackgroundResource(R.drawable.grey_btn);
             deviceConnectionStatusBtn.setText("-");
             deviceConnectionStatusBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-                 // deviceConnectionStatusBtn.setContentDescription("Micro:bit not connected " + connectedDevice.mName + "is " + getMicrobitStatusForAccessibility(connectedDevice.mStatus));
+            //      deviceConnectionStatusBtn.setContentDescription("Micro:bit not connected " + connectedDevice.mName + "is " + getMicrobitStatusForAccessibility(connectedDevice.mStatus));
 
         } else {
             deviceConnectionStatusBtn.setText(connectedDevice.mName);
@@ -754,6 +764,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     if (tvTitle != null) {
                         tvTitle.setText(R.string.searchingTitle);
                         findViewById(R.id.searching_progress_spinner).setVisibility(View.VISIBLE);
+                     //   findViewById(R.id.searching_microbit_found_giffview).setBackgroundResource(R.drawable.emoji_microbit_found);
                         findViewById(R.id.searching_microbit_found_giffview).setVisibility(View.GONE);
                         tvSearchingStep.setText(R.string.searching_tip_step_text);
                         tvSearchingInstructions.setText(R.string.searching_tip_text_instructions);
