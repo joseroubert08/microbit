@@ -10,6 +10,7 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.Constants;
@@ -24,7 +25,7 @@ import com.samsung.microbit.plugin.TelephonyPlugin;
 public class PluginService extends Service {
 
 	static final String TAG = "PluginService";
-	private boolean debug = true;
+	private boolean debug = BuildConfig.DEBUG;
 
 	void logi(String message) {
 		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);

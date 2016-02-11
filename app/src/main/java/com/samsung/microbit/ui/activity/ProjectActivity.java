@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.IPCMessageManager;
@@ -64,7 +65,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
     private DFUResultReceiver dfuResultReceiver;
     private int projectListSortOrder = 0;
 
-    protected boolean debug = true;
+    protected boolean debug = BuildConfig.DEBUG;
     protected String TAG = "ProjectActivity";
 
     private static ACTIVITY_STATE mActivityState = ACTIVITY_STATE.STATE_IDLE;

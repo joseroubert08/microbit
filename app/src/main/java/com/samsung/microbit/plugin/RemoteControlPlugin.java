@@ -6,18 +6,19 @@ import android.media.AudioManager;
 import android.util.Log;
 import android.view.KeyEvent;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
+import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.Constants;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class RemoteControlPlugin {
 
 	private static Context context = null;
 
 	static final String TAG = "RemoteControlPlugin";
-	private static boolean debug = true;
+	private static boolean debug = BuildConfig.DEBUG;
 
 	static void logi(String message) {
 		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);

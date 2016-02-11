@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.core.BLEManager;
 import com.samsung.microbit.core.CharacteristicChangeListener;
 import com.samsung.microbit.core.UnexpectedConnectionEventListener;
@@ -33,7 +34,7 @@ public abstract class BLEBaseService extends Service {
 
 	public int actual_Error = 0 ;
 	protected String TAG = "BLEBaseService";
-	protected boolean debug = true;
+	protected boolean debug = BuildConfig.DEBUG;
 
 	protected void logi(String message) {
 		if (debug)

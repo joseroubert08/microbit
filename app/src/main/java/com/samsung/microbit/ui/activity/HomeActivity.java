@@ -32,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.RemoteConfig;
@@ -61,7 +62,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private MBApp app = null;
     protected String TAG = "HomeActivity";
-    protected boolean debug = true;
+    protected boolean debug = BuildConfig.DEBUG;
 
     /* Debug code*/
     private String urlToOpen = null;
@@ -319,7 +320,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onPause() {
         super.onPause();
         // Pause animation
-        //gifAnimationHelloEmoji.setFreezesAnimation(true);
+        gifAnimationHelloEmoji.setFreezesAnimation(true);
     }
 
     @Override

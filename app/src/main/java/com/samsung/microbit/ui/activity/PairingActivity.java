@@ -41,6 +41,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.IPCMessageManager;
@@ -264,7 +265,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     // *************************************************
 
     // DEBUG
-    protected boolean debug = true;
+    protected boolean debug = BuildConfig.DEBUG;
     protected String TAG = "PairingActivity";
 
     protected void logi(String message) {

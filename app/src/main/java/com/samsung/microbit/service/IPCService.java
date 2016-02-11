@@ -9,6 +9,7 @@ import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.CmdArg;
@@ -29,7 +30,7 @@ public class IPCService extends Service {
 	public static final String NOTIFICATION_CAUSE = "com.samsung.microbit.service.IPCService.CAUSE";
 
 	static final String TAG = "IPCService";
-	private boolean debug = true;
+	private boolean debug = BuildConfig.DEBUG;
 
 	void logi(String message) {
 		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);

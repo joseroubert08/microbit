@@ -41,6 +41,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.Toast;
 
+import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.Utils;
@@ -83,7 +84,7 @@ public class CameraActivity_OldAPI extends Activity {
     private Boolean bRecordVideoOnResume = false;
 
     private static final String TAG = "CameraActivity_OldAPI";
-    private boolean debug = true;
+    private boolean debug = BuildConfig.DEBUG;
 
 
     private MediaRecorder.OnInfoListener m_MediaInfoListner = new MediaRecorder.OnInfoListener() {

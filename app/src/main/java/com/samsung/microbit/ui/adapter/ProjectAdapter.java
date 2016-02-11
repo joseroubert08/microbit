@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.Utils;
@@ -34,7 +35,7 @@ public class ProjectAdapter extends BaseAdapter {
     int currentEditableRow = -1;
 
     protected String TAG = "ProjectAdapter";
-    protected boolean debug = true;
+    protected boolean debug = BuildConfig.DEBUG;
 
     protected void logi(String message) {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);

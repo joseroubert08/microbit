@@ -10,6 +10,8 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.util.Log;
 
+import com.samsung.microbit.BuildConfig;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -62,7 +64,7 @@ public class BLEManager {
 	protected UnexpectedConnectionEventListener unexpectedDisconnectionListener;
 
 	static final String TAG = "BLEManager";
-	private boolean debug = false;
+	private boolean debug = BuildConfig.DEBUG;
 
 	void logi(String message) {
 		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);

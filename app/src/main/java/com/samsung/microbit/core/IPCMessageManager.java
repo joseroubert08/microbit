@@ -14,6 +14,8 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.samsung.microbit.BuildConfig;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -73,7 +75,7 @@ public final class IPCMessageManager {
 	};
 
 	static final String TAG = "IPCMessageManager";
-	private boolean debug = false;
+	private boolean debug = BuildConfig.DEBUG;
 
 	void logi(String message) {
 		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
