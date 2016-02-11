@@ -579,17 +579,28 @@ public class CameraActivity_OldAPI extends Activity {
         final Toast toast = Toast.makeText(MBApp.getApp().getApplicationContext(),"bbb", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
 
-        new CountDownTimer(5000, 1000) {
+        //Toast.LENGTH_SHORT will keep the toast for 2s, our interval is 1s and calling toast.show()
+        //after 1s will cause some count to be missed. Only call toast.show() just before 2s interval.
+        //Also add delay to show the "Ready" toast.
+        new CountDownTimer(Constants.PIC_COUNTER_DURATION, Constants.PIC_COUNTER_INTERVAL) {
 
             public void onTick(long millisUntilFinished) {
-                toast.setText("Ready in... " + millisUntilFinished / 1000);
-                toast.show();
+                int count = (int) millisUntilFinished / Constants.PIC_COUNTER_INTERVAL;
+                toast.setText("Ready in... " + count);
+                if(count%2 != 0)
+                    toast.show();
             }
 
             public void onFinish() {
                 toast.setText("Ready");
                 toast.show();
-                mButtonClick.callOnClick();
+                mButtonClick.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mButtonClick.callOnClick();
+                    }
+
+                }, 200);
             }
         }.start();
     }

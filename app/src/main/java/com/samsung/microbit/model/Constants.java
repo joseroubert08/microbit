@@ -252,6 +252,9 @@ public class Constants {
     public static int MAX_VIDEO_RECORDING_TIME = 30 * 1000 ; //Duration in ms
     public static int MAX_VIDEO_FILE_SIZE = 100 * 1024 * 1024 ; //Size in bytes
 
+	public static int PIC_COUNTER_DURATION = 5 * 1000 ; //Duration in ms
+	public static int PIC_COUNTER_INTERVAL = 900 ; //Duration in ms
+
     public static String MEDIA_OUTPUT_FOLDER = "bbc-microbit";
 
     //For stats
