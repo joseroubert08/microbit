@@ -428,8 +428,11 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         TextView manageMicrobit = (TextView) findViewById(R.id.title_manage_microbit);
         manageMicrobit.setTypeface(MBApp.getApp().getTypeface());
 
-//        TextView manageSubtitleMicrobit = (TextView) findViewById(R.id.subtitle_manage_microbit);
+//        TextView manageSubtitleMicrobit = (TextView) findViewById(R.id.device_status_txt);
 //        manageSubtitleMicrobit.setTypeface(MBApp.getApp().getTypeface());
+
+        TextView manageMicorbitStatus = (TextView) findViewById(R.id.device_status_txt);
+        manageMicorbitStatus.setTypeface(MBApp.getApp().getTypeface());
 
         TextView descriptionManageMicrobit = (TextView) findViewById(R.id.description_manage_microbit);
         descriptionManageMicrobit.setTypeface(MBApp.getApp().getTypeface());
