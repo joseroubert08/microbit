@@ -2,18 +2,8 @@ package com.samsung.microbit;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.util.Log;
-
-import com.samsung.microbit.core.Utils;
-import com.samsung.microbit.model.Constants;
-
-import java.util.HashMap;
-
-import uk.co.bbc.echo.EchoClient;
-import uk.co.bbc.echo.EchoConfigKeys;
-import uk.co.bbc.echo.enumerations.ApplicationType;
 
 public class MBApp extends Application {
 
