@@ -461,7 +461,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void run() {
                     PopUp.show(MBApp.getContext(),
-                            "Samples will now be copied to your device. You can check them in the Flash section in sometime",
+                            "Samples will now be copied to your device. You can check them out in the Flash section.",
                             "Thank you",
                             R.drawable.message_face, R.drawable.blue_btn,
                             PopUp.GIFF_ANIMATION_NONE,
