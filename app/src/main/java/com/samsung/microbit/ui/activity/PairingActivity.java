@@ -178,6 +178,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     return;
                 } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDING) {
                     scanLeDevice(false);
+                    MBApp.getApp().sendPairingStats(false, null);
                     PopUp.show(MBApp.getContext(),
                             getString(R.string.pairing_failed_message), //message
                             getString(R.string.pairing_failed_title), //title
