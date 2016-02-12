@@ -44,6 +44,7 @@ import android.widget.Toast;
 import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.EchoClientManager;
 import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.ConnectedDevice;
@@ -177,6 +178,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     return;
                 } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDING) {
                     scanLeDevice(false);
+                    EchoClientManager.getInstance().sendPairingStats(false, null);
                     PopUp.show(MBApp.getContext(),
                             getString(R.string.pairing_failed_message), //message
                             getString(R.string.pairing_failed_title), //title
@@ -227,7 +229,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 ConnectedDevice device = Utils.getPairedMicrobit(context);
                 if (mActivityState == ACTIVITY_STATE.STATE_CONNECTING) {
                     if (error == 0) {
-                        MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.SUCCESS, device.mfirmware_version, null);
+                        EchoClientManager.getInstance().sendConnectStats(Constants.CONNECTION_STATE.SUCCESS, device.mfirmware_version, null);
                         Utils.updateConnectionStartTime(context, System.currentTimeMillis());
                         //Check if more permissions were needed and request in the Application
                         if (!mRequestPermission.isEmpty()) {
@@ -237,13 +239,13 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                             return;
                         }
                     } else {
-                        MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.FAIL, null, null);
+                        EchoClientManager.getInstance().sendConnectStats(Constants.CONNECTION_STATE.FAIL, null, null);
                     }
                 }
                 if (error == 0 && mActivityState == ACTIVITY_STATE.STATE_DISCONNECTING) {
                     long now = System.currentTimeMillis();
                     long connectionTime = (now - device.mlast_connection_time) / 1000; //Time in seconds
-                    MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.DISCONNECT, device.mfirmware_version, Long.toString(connectionTime));
+                    EchoClientManager.getInstance().sendConnectStats(Constants.CONNECTION_STATE.DISCONNECT, device.mfirmware_version, Long.toString(connectionTime));
                 }
                 PopUp.hide();
                 mActivityState = ACTIVITY_STATE.STATE_IDLE;
@@ -384,7 +386,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         MBApp.setContext(this);
 
         // Make sure to call this before any other userActionEvent is sent
-        MBApp.getApp().sendViewEventStats("pairingactivity");
+        EchoClientManager.getInstance().sendViewEventStats("pairingactivity");
 
         IntentFilter broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
         LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(localBroadcastReceiver, broadcastIntentFilter);
@@ -1124,7 +1126,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private void handlePairingFailed() {
 
         logi("handlePairingFailed() :: Start");
-        MBApp.getApp().sendPairingStats(false, null);
+        EchoClientManager.getInstance().sendPairingStats(false, null);
         PopUp.show(this,
                 getString(R.string.pairingErrorMessage), //message
                 getString(R.string.timeOut), //title
@@ -1138,7 +1140,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
     private void handlePairingSuccessful(final ConnectedDevice newDev) {
         logi("handlePairingSuccessful()");
-        MBApp.getApp().sendPairingStats(true, newDev.mfirmware_version);
+        EchoClientManager.getInstance().sendPairingStats(true, newDev.mfirmware_version);
         Utils.setPairedMicrobit(MBApp.getContext(), newDev);
         updatePairedDeviceCard();
         // Pop up to show pairing successful

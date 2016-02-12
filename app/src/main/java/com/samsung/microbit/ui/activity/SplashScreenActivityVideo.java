@@ -12,7 +12,9 @@ import android.view.SurfaceView;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.EchoClientManager;
 
 import java.io.IOException;
 
@@ -29,6 +31,11 @@ public class SplashScreenActivityVideo extends Activity implements SurfaceHolder
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        MBApp.setContext(this);
+
+        //Track fresh app launch
+        EchoClientManager.getInstance().sendAppStats();
 
         // Full screen splash screen
         requestWindowFeature(Window.FEATURE_NO_TITLE);
