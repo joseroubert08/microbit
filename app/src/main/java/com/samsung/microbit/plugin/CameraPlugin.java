@@ -64,13 +64,13 @@ public class CameraPlugin {
 			case Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO:
                 mWakeLock.acquire(5*1000);
                 m_NextState = Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO ;
-                Utils.playAudio(Utils.geTakingPhotoAudio(), m_OnCompletionListener);
+                performOnEnd();
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE:
                 mWakeLock.acquire(5*1000);
                 m_NextState = Constants.SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE ;
-                Utils.playAudio(Utils.getRecordingVideoAudio(), m_OnCompletionListener);
+                performOnEnd();
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_STOP_VIDEO_CAPTURE:

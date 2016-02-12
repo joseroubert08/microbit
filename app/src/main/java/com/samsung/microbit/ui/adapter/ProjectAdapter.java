@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.EchoClientManager;
 import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.Project;
 import com.samsung.microbit.ui.PopUp;
@@ -236,8 +237,8 @@ public class ProjectAdapter extends BaseAdapter {
             logi("deleteBtnClickListener() :: ");
             final int pos = (int) v.getTag();
             //Update Stats
-            if (MBApp.getApp().getEcho() != null) {
-                MBApp.getApp().getEcho().userActionEvent("click", "DeleteProject", null);
+            if (EchoClientManager.getInstance().getEcho() != null) {
+                EchoClientManager.getInstance().getEcho().userActionEvent("click", "DeleteProject", null);
             }
             PopUp.show(MBApp.getContext(),
                     MBApp.getContext().getString(R.string.delete_project_message),

@@ -35,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:background="@drawable/pairing_pin_screen_two" />
+            android:src="@drawable/pairing_pin_screen_two" />
     </LinearLayout>
 
     <include layout="@layout/pair_microbit_step_screen_two" />

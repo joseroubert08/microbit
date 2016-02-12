@@ -523,8 +523,9 @@ public class CameraActivity_OldAPI extends Activity {
                     if(bActivityInBackground) {
                         bringActivityToFront();
                         bRecordVideoOnResume = true;
-                    } else
-                        mButtonClick.callOnClick();
+                    } else {
+                        recordVideo();
+                    }
                 } else if (mVideo && mIsRecording && intent.getAction().equals("STOP_VIDEO")) {
                     mButtonClick.callOnClick();
                 } else {
@@ -576,6 +577,7 @@ public class CameraActivity_OldAPI extends Activity {
 
     private void startTakePicCounter () {
 
+        Utils.playAudio(Utils.geTakingPhotoAudio(), null);
         final Toast toast = Toast.makeText(MBApp.getApp().getApplicationContext(),"bbb", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
 
@@ -643,7 +645,7 @@ public class CameraActivity_OldAPI extends Activity {
                 startTakePicCounter();
             } else if(bRecordVideoOnResume) {
                 bRecordVideoOnResume = false;
-                mButtonClick.callOnClick();
+                recordVideo();
             }
 
         } catch (RuntimeException ex) {
@@ -652,6 +654,17 @@ public class CameraActivity_OldAPI extends Activity {
             sendCameraError();
             finish();
         }
+    }
+
+    private void recordVideo() {
+        Utils.playAudio(Utils.getRecordingVideoAudio(), null);
+        mButtonClick.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mButtonClick.callOnClick();
+            }
+
+        }, 200);
     }
 
     @Override

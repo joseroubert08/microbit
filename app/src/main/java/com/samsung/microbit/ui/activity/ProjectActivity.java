@@ -31,6 +31,7 @@ import android.widget.TextView;
 import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.EchoClientManager;
 import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.RemoteConfig;
 import com.samsung.microbit.core.Utils;
@@ -127,7 +128,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 if (mActivityState == ACTIVITY_STATE.MICROBIT_CONNECTING)
                 {
                     if (error == 0){
-                        MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.SUCCESS, device.mfirmware_version, null);
+                        EchoClientManager.getInstance().sendConnectStats(Constants.CONNECTION_STATE.SUCCESS, device.mfirmware_version, null);
                         Utils.updateConnectionStartTime(context, System.currentTimeMillis());
                         //Check if more permissions were needed and request in the Application
                         if (!mRequestPermission.isEmpty())
@@ -138,14 +139,14 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             return;
                         }
                     } else {
-                        MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.FAIL, null, null);
+                        EchoClientManager.getInstance().sendConnectStats(Constants.CONNECTION_STATE.FAIL, null, null);
                     }
                 }
                 if (error == 0  && mActivityState == ACTIVITY_STATE.MICROBIT_DISCONNECTING)
                 {
                     long now = System.currentTimeMillis();
                     long connectionTime =  (now - device.mlast_connection_time) /1000; //Time in seconds
-                    MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.DISCONNECT, device.mfirmware_version, Long.toString(connectionTime));
+                    EchoClientManager.getInstance().sendConnectStats(Constants.CONNECTION_STATE.DISCONNECT, device.mfirmware_version, Long.toString(connectionTime));
                 }
 
                 setActivityState(ACTIVITY_STATE.STATE_IDLE);
@@ -263,7 +264,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         RemoteConfig.getInstance().init();
 
         // Make sure to call this before any other userActionEvent is sent
-        MBApp.getApp().sendViewEventStats("projectactivity");
+        EchoClientManager.getInstance().sendViewEventStats("projectactivity");
 
         //Remove title bar
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -609,7 +610,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
         switch (v.getId()) {
             case R.id.createProject: {
-                MBApp.getApp().sendNavigationStats("home", "my-scripts");
+                EchoClientManager.getInstance().sendNavigationStats("home", "my-scripts");
                 String url = RemoteConfig.getInstance().getMyScriptsURL();
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(url));
@@ -830,7 +831,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                 LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
                                 dfuResultReceiver = null;
                                 //Update Stats
-                                MBApp.getApp().sendFlashStats(true , programToSend.name, m_HexFileSizeStats, m_BinSizeStats, m_MicroBitFirmware);
+                                EchoClientManager.getInstance().sendFlashStats(true , programToSend.name, m_HexFileSizeStats, m_BinSizeStats, m_MicroBitFirmware);
                                 PopUp.show(MBApp.getContext(),
                                         getString(R.string.flashing_success_message), //message
                                         getString(R.string.flashing_success_title), //title
@@ -909,7 +910,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         case DfuService.PROGRESS_VALIDATION_FAILED:
                             setActivityState(ACTIVITY_STATE.STATE_IDLE);
                             //Update Stats
-                            MBApp.getApp().sendFlashStats(false , programToSend.name, m_HexFileSizeStats, m_BinSizeStats, m_MicroBitFirmware);
+                            EchoClientManager.getInstance().sendFlashStats(false , programToSend.name, m_HexFileSizeStats, m_BinSizeStats, m_MicroBitFirmware);
                             PopUp.show(MBApp.getContext(),
                                     getString(R.string.flashing_verifcation_failed), //message
                                     getString(R.string.flashing_verifcation_failed_title),
@@ -925,7 +926,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         case DfuService.PROGRESS_ABORTED:
                             setActivityState(ACTIVITY_STATE.STATE_IDLE);
                             //Update Stats
-                            MBApp.getApp().sendFlashStats(false, programToSend.name, m_HexFileSizeStats, m_BinSizeStats, m_MicroBitFirmware);
+                            EchoClientManager.getInstance().sendFlashStats(false, programToSend.name, m_HexFileSizeStats, m_BinSizeStats, m_MicroBitFirmware);
                             PopUp.show(MBApp.getContext(),
                                     getString(R.string.flashing_aborted), //message
                                     getString(R.string.flashing_aborted_title),
@@ -966,7 +967,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(dfuResultReceiver);
                 dfuResultReceiver = null;
                 //Update Stats
-                MBApp.getApp().sendFlashStats(false, programToSend.name, m_HexFileSizeStats, m_BinSizeStats, m_MicroBitFirmware);
+                EchoClientManager.getInstance().sendFlashStats(false, programToSend.name, m_HexFileSizeStats, m_BinSizeStats, m_MicroBitFirmware);
                 PopUp.show(MBApp.getContext(),
                         error_message, //message
                         getString(R.string.flashing_failed_title), //title
