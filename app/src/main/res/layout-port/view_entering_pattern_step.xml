@@ -28,7 +28,7 @@
         android:paddingBottom="16dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:src="@drawable/ooh_pretty_emoji"
+        android:background="@drawable/emoji_entering_pattern"
         android:visibility="visible"/>
 
 </RelativeLayout>

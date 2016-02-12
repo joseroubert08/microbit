@@ -131,7 +131,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
     private List<Integer> mRequestPermission = new ArrayList<Integer>();
 
-    private int mRequestingPermission = -1 ;
+    private int mRequestingPermission = -1;
 
     private static ACTIVITY_STATE mActivityState = ACTIVITY_STATE.STATE_IDLE;
     private int selectedDeviceForConnect = 0;
@@ -219,8 +219,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             if (mActivityState == ACTIVITY_STATE.STATE_DISCONNECTING || mActivityState == ACTIVITY_STATE.STATE_CONNECTING) {
 
                 if (getNotification == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED ||
-                        getNotification == IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED)
-                {
+                        getNotification == IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED) {
                     logi("micro:bit application needs more permissions");
                     mRequestPermission.add(getNotification);
                     return;
@@ -231,8 +230,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                         MBApp.getApp().sendConnectStats(Constants.CONNECTION_STATE.SUCCESS, device.mfirmware_version, null);
                         Utils.updateConnectionStartTime(context, System.currentTimeMillis());
                         //Check if more permissions were needed and request in the Application
-                        if (!mRequestPermission.isEmpty())
-                        {
+                        if (!mRequestPermission.isEmpty()) {
                             mActivityState = ACTIVITY_STATE.STATE_IDLE;
                             PopUp.hide();
                             checkTelephonyPermissions();
@@ -279,13 +277,11 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         public void onClick(View v) {
             logi("notificationOKHandler");
             PopUp.hide();
-            if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED)
-            {
+            if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED) {
                 String[] permissionsNeeded = {Manifest.permission.READ_PHONE_STATE};
                 requetPermission(permissionsNeeded, Constants.INCOMING_CALL_PERMISSIONS_REQUESTED);
             }
-            if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED)
-            {
+            if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED) {
                 String[] permissionsNeeded = {Manifest.permission.RECEIVE_SMS};
                 requetPermission(permissionsNeeded, Constants.INCOMING_SMS_PERMISSIONS_REQUESTED);
             }
@@ -295,7 +291,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     View.OnClickListener checkMorePermissionsNeeded = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(!mRequestPermission.isEmpty()){
+            if (!mRequestPermission.isEmpty()) {
                 checkTelephonyPermissions();
             } else {
                 PopUp.hide();
@@ -307,14 +303,11 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         @Override
         public void onClick(View v) {
             logi("notificationCancelHandler");
-            String msg = "Your program might not run properly" ;
-            if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED)
-            {
-                msg =  getString(R.string.telephony_permission_error);
-            }
-            else if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED)
-            {
-                msg =  getString(R.string.sms_permission_error);
+            String msg = "Your program might not run properly";
+            if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED) {
+                msg = getString(R.string.telephony_permission_error);
+            } else if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED) {
+                msg = getString(R.string.sms_permission_error);
             }
             PopUp.hide();
             PopUp.show(MBApp.getContext(),
@@ -326,6 +319,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     checkMorePermissionsNeeded, checkMorePermissionsNeeded);
         }
     };
+
     private void checkTelephonyPermissions() {
         if (!mRequestPermission.isEmpty()) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PermissionChecker.PERMISSION_GRANTED ||
@@ -588,30 +582,24 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                // TODO - Checking to see if columns are filled in before showing other half of emoji (text)
-                if ((findViewById(R.id.ok_enter_pattern_step_2_btn).getVisibility() != View.VISIBLE)) {
-                    findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
-                    findViewById(R.id.oh_pretty_emoji).setVisibility(View.VISIBLE); //TODO - put back
-                }
-
                 boolean isOn = toggleLED((ImageView) v, position);
                 setCol(parent, position, isOn);
-                //Toast.makeText(MBApp.getContext(), "LED Clicked: " + position, Toast.LENGTH_SHORT).show();
 
-                if (!Arrays.asList(deviceCodeArray).contains("1")) {
-                    findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.INVISIBLE);
-                    findViewById(R.id.oh_pretty_emoji).setVisibility(View.INVISIBLE); //TODO - put back
-                }
+                checkPatternSuccess();
             }
 
         });
 
-        if (!Arrays.asList(deviceCodeArray).contains("1")) {
-            findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.INVISIBLE);
-            findViewById(R.id.oh_pretty_emoji).setVisibility(View.INVISIBLE);
+        checkPatternSuccess();
+    }
+
+    private void checkPatternSuccess() {
+        if (deviceCodeArray[20] == "1" && deviceCodeArray[21] == "1" && deviceCodeArray[22] == "1" && deviceCodeArray[23] == "1" && deviceCodeArray[24] == "1") {
+            findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
+            findViewById(R.id.oh_pretty_emoji).setBackgroundResource(R.drawable.emoji_entering_pattern_valid_pattern);
         } else {
             findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
-            findViewById(R.id.oh_pretty_emoji).setVisibility(View.VISIBLE);
+            findViewById(R.id.oh_pretty_emoji).setBackgroundResource(R.drawable.emoji_entering_pattern);
         }
     }
 
@@ -648,7 +636,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             v.setTag(R.id.ledState, 0);
             v.setSelected(false);
             deviceCodeArray[index] = "0";
-            int position = (Integer)v.getTag(R.id.position);
+            int position = (Integer) v.getTag(R.id.position);
             v.setContentDescription("" + position + getLEDStatus(index)); // TODO - calculate correct position
             index -= 5;
         }
@@ -659,7 +647,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             v.setTag(R.id.ledState, 1);
             v.setSelected(false);
             deviceCodeArray[index] = "1";
-            int position = (Integer)v.getTag(R.id.position);
+            int position = (Integer) v.getTag(R.id.position);
             v.setContentDescription("" + position + getLEDStatus(index));
             index += 5;
         }
@@ -669,17 +657,17 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private boolean toggleLED(ImageView image, int pos) {
         boolean isOn;
         //Toast.makeText(this, "Pos :" +  pos, Toast.LENGTH_SHORT).show();
-        int state = (Integer)image.getTag(R.id.ledState);
+        int state = (Integer) image.getTag(R.id.ledState);
         if (state != 1) {
             deviceCodeArray[pos] = "1";
             image.setBackground(getApplication().getResources().getDrawable(R.drawable.red_white_led_btn));
-            image.setTag(R.id.ledState,1);
+            image.setTag(R.id.ledState, 1);
             isOn = true;
 
         } else {
             deviceCodeArray[pos] = "0";
             image.setBackground(getApplication().getResources().getDrawable(R.drawable.white_red_led_btn));
-            image.setTag(R.id.ledState,0);
+            image.setTag(R.id.ledState, 0);
             isOn = false;
             // Update the code to consider the still ON LED below the toggled one
             if (pos < 20) {
@@ -688,7 +676,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         }
 
         image.setSelected(false);
-        int position = (Integer)image.getTag(R.id.position);
+        int position = (Integer) image.getTag(R.id.position);
         image.setContentDescription("" + position + getLEDStatus(pos));
         return isOn;
     }
@@ -825,9 +813,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 findViewById(R.id.cancel_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
                 findViewById(R.id.enter_pattern_step_2_title).setVisibility(View.VISIBLE);
 
-                // test
                 findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.GONE);
-                findViewById(R.id.oh_pretty_emoji).setVisibility(View.INVISIBLE);
+                findViewById(R.id.oh_pretty_emoji).setVisibility(View.VISIBLE);
 
                 displayLedGrid();
                 break;
@@ -912,8 +899,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 }
             }
             break;
-            case Constants.INCOMING_CALL_PERMISSIONS_REQUESTED:{
-                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED ) {
+            case Constants.INCOMING_CALL_PERMISSIONS_REQUESTED: {
+                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     PopUp.show(MBApp.getContext(),
                             getString(R.string.telephony_permission_error),
                             getString(R.string.permissions_needed_title),
@@ -922,14 +909,14 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                             PopUp.TYPE_ALERT,
                             checkMorePermissionsNeeded, checkMorePermissionsNeeded);
                 } else {
-                    if(!mRequestPermission.isEmpty()){
+                    if (!mRequestPermission.isEmpty()) {
                         checkTelephonyPermissions();
                     }
                 }
             }
             break;
-            case Constants.INCOMING_SMS_PERMISSIONS_REQUESTED:{
-                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED ) {
+            case Constants.INCOMING_SMS_PERMISSIONS_REQUESTED: {
+                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     PopUp.show(MBApp.getContext(),
                             getString(R.string.sms_permission_error),
                             getString(R.string.permissions_needed_title),
@@ -938,7 +925,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                             PopUp.TYPE_ALERT,
                             checkMorePermissionsNeeded, checkMorePermissionsNeeded);
                 } else {
-                    if(!mRequestPermission.isEmpty()){
+                    if (!mRequestPermission.isEmpty()) {
                         checkTelephonyPermissions();
                     }
                 }
