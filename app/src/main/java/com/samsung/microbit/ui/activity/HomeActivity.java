@@ -100,7 +100,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             app = (MBApp) MBApp.getApp().getApplicationContext();
 
         LinearLayout connectBarView = (LinearLayout) findViewById(R.id.connectBarView);
-        connectBarView.getBackground().setAlpha(128);
+        //connectBarView.getBackground().setAlpha(128);
 
         // Font Style for buttons
         Button connectButton = (Button) findViewById(R.id.connect_device_btn);
