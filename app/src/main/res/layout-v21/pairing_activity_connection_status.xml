@@ -6,4 +6,5 @@
     android:gravity="start|top"
     android:text="@string/previous_devices"
     android:textAppearance="?android:textAppearanceMedium"
-    android:textColor="@color/main_gray_color" />
+    android:textColor="@color/main_gray_color"
+    android:textStyle="bold" />

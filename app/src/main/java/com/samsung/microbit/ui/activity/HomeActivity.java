@@ -254,6 +254,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        RemoteConfig.getInstance().destroy();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will

@@ -150,6 +150,18 @@ public class RemoteConfig
         }
     }
 
+
+    public void destroy() {
+        HttpResponseCache cache = HttpResponseCache.getInstalled();
+        if (cache != null) {
+            try {
+                cache.close();
+            } catch (IOException e) {
+                Log.i("RemoteConfig", "HTTP response cache close failed:" + e);
+            }
+        }
+    }
+
     private boolean getStoredValues(Context context)
     {
         //Get values previously stored in the sharedpreference

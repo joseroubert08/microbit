@@ -24,6 +24,9 @@ public class HelpWebView extends Activity {
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setUseWideViewPort(true);
         webView.getSettings().setLoadWithOverviewMode(true);
+        webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setDisplayZoomControls(false);
+
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
