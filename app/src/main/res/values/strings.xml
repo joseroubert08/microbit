@@ -332,7 +332,7 @@
 
     <!-- Strings for permissions-->
     <string name="permissions_needed_title">More permission needed</string>
-    <string name="storage_permission_for_samples">We need storage permission to copy sample program files on your device. This will help you try your micro:bit straight away.\n Proceed?</string>
+    <string name="storage_permission_for_samples">We need storage permission to copy sample program files to your device. This will help you try your micro:bit straight away.\n Proceed?</string>
     <string name="storage_permission_for_samples_error">No sample files will be installed.</string>
     <string name="storage_permission_for_programs">We need storage permission to list all the program files saved on your device.\n Proceed?</string>
     <string name="storage_permission_for_programs_error">Cannot display any program files.</string>
