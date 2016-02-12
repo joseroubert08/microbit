@@ -600,13 +600,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
             findViewById(R.id.oh_pretty_emoji).setBackgroundResource(R.drawable.emoji_entering_pattern_valid_pattern);
         } else {
-            findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
+            findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.INVISIBLE);
             findViewById(R.id.oh_pretty_emoji).setBackgroundResource(R.drawable.emoji_entering_pattern);
         }
-    }
-
-    private void showSuccessfulPatternEntry() {
-        Toast.makeText(this, "less than 5", Toast.LENGTH_SHORT).show();
     }
 
     private void generateName() {
