@@ -263,7 +263,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                         public void run() {
                             PopUp.show(MBApp.getContext(),
                                     MBApp.getContext().getString(R.string.micro_bit_reset_msg),
-                                    displayTitle,
+                                    MBApp.getContext().getString(R.string.general_error_title),
                                     R.drawable.error_face, R.drawable.red_btn,
                                     PopUp.GIFF_ANIMATION_ERROR,
                                     PopUp.TYPE_ALERT, null, null);
@@ -426,13 +426,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         appBarTitle.setTypeface(MBApp.getApp().getTypeface());
 
         TextView manageMicrobit = (TextView) findViewById(R.id.title_manage_microbit);
-        manageMicrobit.setTypeface(MBApp.getApp().getTypeface());
-
-//        TextView manageSubtitleMicrobit = (TextView) findViewById(R.id.device_status_txt);
-//        manageSubtitleMicrobit.setTypeface(MBApp.getApp().getTypeface());
+        manageMicrobit.setTypeface(MBApp.getApp().getTypefaceBold());
 
         TextView manageMicorbitStatus = (TextView) findViewById(R.id.device_status_txt);
-        manageMicorbitStatus.setTypeface(MBApp.getApp().getTypeface());
+        manageMicorbitStatus.setTypeface(MBApp.getApp().getTypefaceBold());
 
         TextView descriptionManageMicrobit = (TextView) findViewById(R.id.description_manage_microbit);
         descriptionManageMicrobit.setTypeface(MBApp.getApp().getTypeface());
@@ -441,7 +438,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         pairButton.setTypeface(MBApp.getApp().getTypeface());
 
         TextView problemsMicrobit = (TextView) findViewById(R.id.connect_microbit_problems_message);
-        problemsMicrobit.setTypeface(MBApp.getApp().getTypeface());
+        problemsMicrobit.setTypeface(MBApp.getApp().getTypefaceBold());
 
         // How to pair your micro:bit - Screen #1
         TextView pairTipTitle = (TextView) findViewById(R.id.pairTipTitle);

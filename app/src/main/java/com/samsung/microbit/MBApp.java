@@ -21,6 +21,9 @@ public class MBApp extends Application {
         return Typeface.createFromAsset(getAssets(), "fonts/GT-Walsheim.otf");
     }
 
+    public Typeface getTypefaceBold(){
+        return Typeface.createFromAsset(getAssets(), "fonts/GT-Walsheim-Bold.otf");
+    }
     public static Context getContext() { return MBApp.mContext; }
 
     public static void setContext(Context ctx) { MBApp.mContext = ctx; }
