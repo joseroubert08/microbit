@@ -263,7 +263,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                         public void run() {
                             PopUp.show(MBApp.getContext(),
                                     MBApp.getContext().getString(R.string.micro_bit_reset_msg),
-                                    displayTitle,
+                                    MBApp.getContext().getString(R.string.general_error_title),
                                     R.drawable.error_face, R.drawable.red_btn,
                                     PopUp.GIFF_ANIMATION_ERROR,
                                     PopUp.TYPE_ALERT, null, null);
