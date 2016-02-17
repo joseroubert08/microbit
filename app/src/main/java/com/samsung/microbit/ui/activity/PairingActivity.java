@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -1339,9 +1340,63 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         mNewDeviceView.setVisibility(View.GONE);
         mPairSearchView.setVisibility(View.GONE);
         mConnectDeviceView.setVisibility(View.GONE);
+        unbindDrawables(findViewById(R.id.connected_device_status_button));
+        unbindDrawables(findViewById(R.id.pairButtonView));
+        unbindDrawables(findViewById(R.id.pairTipView));
+        unbindDrawables(findViewById(R.id.pair_tip_screen_two));
+        unbindDrawables(findViewById(R.id.connectDeviceView)); // Connect device view
+//        unbindDrawables(findViewById(R.id.newDeviceView));
+        unbindDrawables(findViewById(R.id.pairSearchView));
+        unbindDrawables(findViewById(R.id.flash_projects_title_txt));
+        unbindDrawables(findViewById(R.id.title_manage_microbit));
+        unbindDrawables(findViewById(R.id.device_status_txt));
+        unbindDrawables(findViewById(R.id.description_manage_microbit));
+        unbindDrawables(findViewById(R.id.pairButton));
+        unbindDrawables(findViewById(R.id.connect_microbit_problems_message));
+        unbindDrawables(findViewById(R.id.pairTipTitle));
+        unbindDrawables(findViewById(R.id.pair_tip_step_1_step));
+        unbindDrawables(findViewById(R.id.pair_tip_step_1_instructions));
+
+        unbindDrawables(findViewById(R.id.cancel_tip_step_1_btn));
+        unbindDrawables(findViewById(R.id.ok_tip_step_1_btn));
+        unbindDrawables(findViewById(R.id.how_to_pair_screen_two_title));
+        unbindDrawables(findViewById(R.id.pair_tip_step_3_step));
+        unbindDrawables(findViewById(R.id.pair_tip_step_3_instructions));
+        unbindDrawables(findViewById(R.id.pair_tip_step_4_step));
+        unbindDrawables(findViewById(R.id.pair_tip_step_4_instructions));
+        unbindDrawables(findViewById(R.id.cancel_tip_step_3_btn));
+        unbindDrawables(findViewById(R.id.ok_tip_step_3_btn));
+        unbindDrawables(findViewById(R.id.enter_pattern_step_2_title));
+        unbindDrawables(findViewById(R.id.pair_enter_pattern_step_2_instructions));
+        unbindDrawables(findViewById(R.id.oh_pretty_emoji));
+        unbindDrawables(findViewById(R.id.cancel_enter_pattern_step_2_btn));
+        unbindDrawables(findViewById(R.id.ok_enter_pattern_step_2_btn));
+        unbindDrawables(findViewById(R.id.search_microbit_step_3_title));
+        unbindDrawables(findViewById(R.id.searching_microbit_step));
+        unbindDrawables(findViewById(R.id.searching_microbit_step_instructions));
+        unbindDrawables(findViewById(R.id.cancel_search_microbit_step_3_btn));
+        unbindDrawables(findViewById(R.id.searching_progress_spinner));
+
+        System.gc();
         unregisterReceiver(mPairReceiver);
     }
 
+    private void unbindDrawables(View view) {
+
+        if(view == null)
+            return;
+
+        if (view.getBackground() != null) {
+            view.getBackground().setCallback(null);
+        }
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                unbindDrawables(((ViewGroup) view).getChildAt(i));
+            }
+            ((ViewGroup) view).removeAllViews();
+            view.setBackgroundResource(0);
+        }
+    }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {

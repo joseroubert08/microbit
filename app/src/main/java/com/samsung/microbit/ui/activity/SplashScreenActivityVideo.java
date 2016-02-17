@@ -9,6 +9,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -79,11 +81,26 @@ public class SplashScreenActivityVideo extends Activity implements SurfaceHolder
 
         super.onDestroy();
         if (mediaPlayer != null){
+            mediaPlayer.reset();
             mediaPlayer.release();
             mediaPlayer = null;
         }
+        unbindDrawables(mSurfaceView);
+        System.gc();
     }
 
+    private void unbindDrawables(View view) {
+        if (view.getBackground() != null) {
+            view.getBackground().setCallback(null);
+        }
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                unbindDrawables(((ViewGroup) view).getChildAt(i));
+            }
+            ((ViewGroup) view).removeAllViews();
+            view.setBackgroundResource(0);
+        }
+    }
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
 
