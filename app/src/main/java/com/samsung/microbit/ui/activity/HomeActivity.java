@@ -25,6 +25,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -99,7 +100,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (app == null)
             app = (MBApp) MBApp.getApp().getApplicationContext();
 
-        LinearLayout connectBarView = (LinearLayout) findViewById(R.id.connectBarView);
+        //LinearLayout connectBarView = (LinearLayout) findViewById(R.id.connectBarView);
         //connectBarView.getBackground().setAlpha(128);
 
         // Font Style for buttons
@@ -259,8 +260,44 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onDestroy() {
         super.onDestroy();
         RemoteConfig.getInstance().destroy();
+        unbindDrawables(gifAnimationHelloEmoji);
+        unbindDrawables(findViewById(R.id.connect_device_btn));
+        unbindDrawables(findViewById(R.id.flash_microbit_btn));
+        unbindDrawables(findViewById(R.id.create_code_btn));
+        unbindDrawables(findViewById(R.id.discover_btn));
+
+        unbindDrawables(findViewById(R.id.img_toolbar_bbc_logo));
+        unbindDrawables(findViewById(R.id.toolbar));
+        unbindDrawables(findViewById(R.id.nav_view));
+        unbindDrawables(findViewById(R.id.drawer_layout));
+        unbindDrawables(findViewById(R.id.btn_nav_menu));
+        unbindDrawables(findViewById(R.id.btn_about));
+        unbindDrawables(findViewById(R.id.btn_help));
+        unbindDrawables(findViewById(R.id.btn_privacy_cookies));
+        unbindDrawables(findViewById(R.id.btn_terms_conditions));
+        unbindDrawables(findViewById(R.id.btn_send_feedback));
+        unbindDrawables(findViewById(R.id.share_statistics_title));
+        unbindDrawables(findViewById(R.id.share_statistics_description));
+        unbindDrawables(findViewById(R.id.share_statistics_status));
+
+        System.gc();
     }
 
+    private void unbindDrawables(View view) {
+        if(view == null)
+            return;
+
+        if (view.getBackground() != null) {
+            view.getBackground().setCallback(null);
+        }
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                unbindDrawables(((ViewGroup) view).getChildAt(i));
+            }
+            ((ViewGroup) view).removeAllViews();
+            view.setBackgroundResource(0);
+        }
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will

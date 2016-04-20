@@ -88,9 +88,11 @@ public class PopUp {
             } else if (intent.getAction().equals(PopUpActivity.INTENT_ACTION_CREATED)) {
                 Log.d("PopUp", "INTENT_ACTION_CREATED size queue = " + pendingQueue.size());
                 PendingRequest request = pendingQueue.poll();
-                current_type = request.intent.getIntExtra(PopUpActivity.INTENT_EXTRA_TYPE, 0);
-                okPressListener = request.okListener;
-                cancelPressListener = request.cancelListener;
+                if(request != null) {
+                    current_type = request.intent.getIntExtra(PopUpActivity.INTENT_EXTRA_TYPE, 0);
+                    okPressListener = request.okListener;
+                    cancelPressListener = request.cancelListener;
+                }
                 is_current_request_pending = false;
                 processNextPendingRequest();
             }
