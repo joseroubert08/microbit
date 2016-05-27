@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?><!-- Paired micro:bits -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/prevDeviceView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="top"
+    android:divider="?android:dividerVertical"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:showDividers="end"
+    tools:showIn="@layout/view_connect_microbit">
+
+    <!-- Connection status-->
+    <include layout="@layout/pairing_activity_connection_status" />
+
+    <Button
+        android:id="@+id/connected_device_status_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/grey_btn"
+        android:contentDescription="@null"
+        android:drawablePadding="16dp"
+        android:drawableRight="@drawable/device_status_disconnected"
+        android:gravity="start|center_vertical"
+        android:importantForAccessibility="yes"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:textAppearance="?android:textAppearanceMedium" />
+</LinearLayout>

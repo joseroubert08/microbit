@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?><!-- steps and instructions -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/pairTipButtonText"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:showIn="@layout/view_pairing_tip_screen_two">
+
+    <TextView
+        android:id="@+id/pair_tip_step_3_step"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/desc_step_connect_tip_text_step_three"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:text="@string/step_connect_tip_text_step_three"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@color/white_color"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/pair_tip_step_3_instructions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/desc_step_connect_tip_text_step_three_text"
+        android:lines="3"
+        android:maxLines="3"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:text="@string/step_connect_tip_text_step_three_text"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@color/white_color" />
+
+    <TextView
+        android:id="@+id/pair_tip_step_4_step"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/desc_step_connect_tip_text_step_four"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:text="@string/step_connect_tip_text_step_four"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@color/white_color"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/pair_tip_step_4_instructions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/desc_step_connect_tip_text_step_four_text"
+        android:lines="3"
+        android:maxLines="3"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:text="@string/step_connect_tip_text_step_four_text"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@color/white_color" />
+
+</LinearLayout>

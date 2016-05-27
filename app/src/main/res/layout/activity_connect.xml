@@ -1,0 +1,19 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_pairing_activity_screen"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg"
+    android:visibility="visible">
+
+    <!-- Connecting micro:bit screen -->
+    <include layout="@layout/view_connect_microbit" />
+    <!-- device pairing tip screen (Step 1 and 2) -->
+    <include layout="@layout/view_pairing_tip" />
+    <!-- enter the pattern screen-->
+    <include layout="@layout/view_pairing_pattern" />
+    <!-- device pairing tip screen two (steps 3 and 4) -->
+    <include layout="@layout/view_pairing_tip_screen_two" />
+    <!-- searching for micro:bit screen-->
+    <include layout="@layout/view_pairing_searching" />
+</LinearLayout>
+

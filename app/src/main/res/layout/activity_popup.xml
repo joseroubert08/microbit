@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/pop_up_background"
+    android:orientation="vertical"
+    android:paddingEnd="16dp"
+    android:paddingStart="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical">
+
+        <!-- Non animated images for flashing-->
+        <ImageView
+            android:id="@+id/image_icon"
+            android:layout_width="@dimen/popup_icon_size"
+            android:layout_height="@dimen/popup_icon_size"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/popup_header_section_marginTop"
+            android:scaleType="centerInside"
+            android:src="@drawable/overwrite_face"
+            android:visibility="gone" />
+
+        <!-- Loading Giffs -->
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/pop_up_gif_image_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/popup_header_section_marginTop"
+            android:baselineAlignBottom="true"
+            android:scaleType="centerInside"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- Body of pop up - main text area, loader etc-->
+    <LinearLayout
+        android:id="@+id/pop_body_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
+
+        <!-- Pop up  title-->
+        <TextView
+            android:id="@+id/flash_projects_title_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="@string/popup_title"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:textColor="@color/white_color"
+            android:visibility="gone" />
+
+        <!-- Flashing progress bar -->
+        <!-- Connecting /disconnecting spinner -->
+        <!-- Keep the screen on during flashing and connecting-->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/popup_progressbar_height"
+            android:indeterminate="false"
+            android:max="100"
+            android:keepScreenOn="true"
+            android:paddingBottom="@dimen/popup_body_view_paddingVertical"
+            android:paddingTop="@dimen/popup_body_view_paddingVertical"
+            android:progress="0"
+            android:progressDrawable="@drawable/blue_progress_bar"
+            android:visibility="gone" />
+
+        <!-- Connecting /disconnecting spinner -->
+        <!-- Keep the screen on during flashing and connecting-->
+        <ProgressBar
+            android:id="@+id/spinnerBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:keepScreenOn="true"
+            android:paddingBottom="@dimen/popup_body_view_paddingVertical"
+            android:paddingTop="@dimen/popup_body_view_paddingVertical"
+            android:visibility="gone" />
+        <!-- Subtitle text, messages about status-->
+        <TextView
+            android:id="@+id/messageTxt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingBottom="@dimen/popup_body_view_paddingVertical"
+            android:paddingTop="@dimen/popup_body_view_paddingVertical"
+            android:text="@string/pop_up_subtitle_text"
+            android:textAlignment="center"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/white_color"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <!-- User confirmation [OK, cancel etc] -->
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/popup_bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <!-- User Cancel  -->
+        <Button
+            android:id="@+id/imageButtonCancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"
+            android:background="@drawable/cancel_btn"
+            android:drawableEnd="@drawable/cancel_step_pairing_btn"
+            android:gravity="center_vertical|start"
+            android:onClick="onClick"
+            android:text="@string/txt_cancel_btn"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black_color"
+            android:visibility="gone" />
+
+        <!-- User OK with Cancel  -->
+        <Button
+            android:id="@+id/imageButtonOk"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"
+            android:background="@drawable/green_btn"
+            android:drawableEnd="@drawable/ic_done_black"
+            android:gravity="center_vertical|start"
+            android:onClick="onClick"
+            android:text="@string/ok_button_label"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black_color"
+            android:visibility="gone" />
+
+        <!-- User OK  -->
+        <Button
+            android:id="@+id/affirmationOKBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@drawable/popup_ok_button"
+            android:onClick="onClick"
+            android:padding="32dp"
+            android:text="@string/ok_button_label"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:visibility="gone" />
+    </LinearLayout>
+</RelativeLayout>
+
+
