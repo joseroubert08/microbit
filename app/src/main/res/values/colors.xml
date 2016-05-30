@@ -11,7 +11,9 @@
     <color name="light_gray_color">#dcdcdc</color>
     <color name="darkgray_color">#414141</color>
     <color name="main_gray_color">#383838</color>
+    <color name="main_gray_transparent_color">#d0383838</color>
     <color name="grey_highlight">#424242</color>
+    <color name="grey_transparent_highlight">#d0424242</color>
     <color name="ok_button_up">#00EC00</color>
     <color name="ok_button_down">#3A871F</color>
 
