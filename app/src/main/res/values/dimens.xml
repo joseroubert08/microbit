@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Gray transparent button -->
+    <dimen name="grey_button_padding">8dp</dimen>
+    <dimen name="grey_button_radius">7dp</dimen>
+</resources>
