@@ -303,8 +303,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         flashProjectsTitle.setTypeface(MBApp.getApp().getTypeface());
 
         // Create projects
-        Button createProject = (Button) findViewById(R.id.createProject);
-        createProject.setTypeface(MBApp.getApp().getTypeface());
+        TextView createProjectText = (TextView) findViewById(R.id.custom_button_text);
+        createProjectText.setTypeface(MBApp.getApp().getTypeface());
 
         projectListView = (ListView) findViewById(R.id.projectListView);
         checkMinimumPermissionsForThisScreen();

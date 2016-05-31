@@ -47,18 +47,5 @@
         android:alpha="0.5"
         android:background="@color/gray_color" />
 
-    <Button
-        android:id="@+id/createProject"
-        style="@style/p1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:background="@drawable/yellow_btn"
-        android:contentDescription="@string/txt_my_scripts_btn"
-        android:drawableEnd="@drawable/my_scripts"
-        android:gravity="center_vertical|start"
-        android:onClick="onClick"
-        android:text="@string/my_scripts"
-        android:textAppearance="?android:textAppearance"
-        android:textColor="@color/black_color" />
+    <include layout="@layout/custom_projects_button" />
 </LinearLayout>

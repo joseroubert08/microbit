@@ -3,4 +3,15 @@
     <!-- Gray transparent button -->
     <dimen name="grey_button_padding">8dp</dimen>
     <dimen name="grey_button_radius">7dp</dimen>
+
+    <!-- Flash Activity custom button -->
+    <dimen name="custom_button_padding">16dp</dimen>
+    <dimen name="custom_button_start_margin">8dp</dimen>
+    <dimen name="custom_button_end_margin">16dp</dimen>
+    <dimen name="custom_button_image_margin">10dp</dimen>
+    <dimen name="custom_button_margin">16dp</dimen>
+    <dimen name="image_delete_button_margin_end">8dp</dimen>
+
+    <!-- p1 font size -->
+    <dimen name="p1_font_size">16dp</dimen>
 </resources>

@@ -89,4 +89,16 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">?android:dividerVertical</item>
     </style>
+
+    <!-- My scripts custom button -->
+    <style name="custom_button_text">
+        <item name="android:textSize">@dimen/p1_font_size</item>
+        <item name="android:textAppearance">?android:textAppearance</item>
+        <item name="android:textColor">@color/black_color</item>
+    </style>
+
+    <style name="custom_button_image">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
 </resources>

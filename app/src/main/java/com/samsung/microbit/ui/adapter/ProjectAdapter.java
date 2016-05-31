@@ -27,6 +27,8 @@ import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.activity.ProjectActivity;
 import com.samsung.microbit.ui.control.ExtendedEditText;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 public class ProjectAdapter extends BaseAdapter {
@@ -336,27 +338,31 @@ public class ProjectAdapter extends BaseAdapter {
 
         //appNameEdit.setOnClickListener(appNameClickListener);
 
-        Button sendBtn = (Button) convertView.findViewById(R.id.sendBtn);
-        sendBtn.setTypeface(MBApp.getApp().getTypeface());
-        sendBtn.setTag(position);
-        sendBtn.setOnClickListener(sendBtnClickListener);
+        TextView flashBtnText = (TextView) convertView.findViewById(R.id.project_item_text);
+        flashBtnText.setTypeface(MBApp.getApp().getTypeface());
+        LinearLayout sendBtnLayout = (LinearLayout) convertView.findViewById(R.id.sendBtn);
+        sendBtnLayout.setTag(position);
+        sendBtnLayout.setOnClickListener(sendBtnClickListener);
 
         ImageButton deleteBtn = (ImageButton) convertView.findViewById(R.id.deleteBtn);
         deleteBtn.setTag(position);
         deleteBtn.setOnClickListener(deleteBtnClickListener);
         deleteBtn.setEnabled(true);
 
-        if (project.runStatus) {
-            sendBtn.setText("");
-            Drawable myIcon = convertView.getResources().getDrawable(R.drawable.green_btn);
-            sendBtn.setBackground(myIcon);
-        } else {
-            sendBtn.setText(R.string.flash);
-            Drawable myIcon = convertView.getResources().getDrawable(R.drawable.blue_btn);
-            sendBtn.setBackground(myIcon);
-        }
 
-        sendBtn.setClickable(true);
+        Drawable myIcon;
+        if (project.runStatus) {
+            flashBtnText.setText("");
+            myIcon = convertView.getResources().getDrawable(R.drawable.green_btn);
+        } else {
+            flashBtnText.setText(R.string.flash);
+            myIcon = convertView.getResources().getDrawable(R.drawable.blue_btn);
+        }
+        sendBtnLayout.setBackground(myIcon);
+        final int padding = (int) convertView.getResources().getDimension(R.dimen.custom_button_padding);
+        sendBtnLayout.setPadding(padding, padding, padding, padding);
+
+        sendBtnLayout.setClickable(true);
         return convertView;
     }
 }

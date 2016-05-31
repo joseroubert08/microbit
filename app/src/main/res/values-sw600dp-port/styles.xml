@@ -69,7 +69,7 @@
     <!--p1 font style -->
     <style name="p1" parent="@android:style/TextAppearance">
         <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">22sp</item>
     </style>
 
     <!--p2 font style -->
@@ -107,5 +107,23 @@
         <item name="android:textAlignment">center</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:visibility">visible</item>
+    </style>
+
+    <style name="custom_button_layout">
+        <item name="android:padding">@dimen/custom_button_padding</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="custom_button_text">
+        <item name="android:textSize">@dimen/p1_font_size</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/custom_button_text</item>
+        <item name="android:textAppearance">?android:textAppearance</item>
+    </style>
+
+    <style name="custom_button_image">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginEnd">@dimen/custom_button_image_margin</item>
     </style>
 </resources>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/createProject"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/custom_button_margin"
+    android:background="@drawable/yellow_btn"
+    android:gravity="center_vertical"
+    android:onClick="onClick">
+
+    <TextView
+        android:id="@+id/custom_button_text"
+        style="@style/custom_button_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="start"
+        android:text="@string/my_scripts" />
+
+    <ImageView
+        style="@style/custom_button_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/txt_my_scripts_btn"
+        android:src="@drawable/my_scripts" />
+</LinearLayout>
