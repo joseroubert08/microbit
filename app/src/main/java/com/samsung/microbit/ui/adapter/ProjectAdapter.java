@@ -27,8 +27,6 @@ import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.activity.ProjectActivity;
 import com.samsung.microbit.ui.control.ExtendedEditText;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
 
 public class ProjectAdapter extends BaseAdapter {
@@ -36,6 +34,7 @@ public class ProjectAdapter extends BaseAdapter {
     private List<Project> projects;
     private ProjectActivity projectActivity;
     int currentEditableRow = -1;
+    private int mSendBtnLayoutPadding = 0;
 
     protected String TAG = "ProjectAdapter";
     protected boolean debug = BuildConfig.DEBUG;
@@ -266,6 +265,8 @@ public class ProjectAdapter extends BaseAdapter {
 
         this.projectActivity = projectActivity;
         projects = list;
+
+        mSendBtnLayoutPadding = (int) projectActivity.getResources().getDimension(R.dimen.custom_button_padding);
     }
 
     @Override
@@ -359,8 +360,7 @@ public class ProjectAdapter extends BaseAdapter {
             myIcon = convertView.getResources().getDrawable(R.drawable.blue_btn);
         }
         sendBtnLayout.setBackground(myIcon);
-        final int padding = (int) convertView.getResources().getDimension(R.dimen.custom_button_padding);
-        sendBtnLayout.setPadding(padding, padding, padding, padding);
+        sendBtnLayout.setPadding(mSendBtnLayoutPadding, mSendBtnLayoutPadding, mSendBtnLayoutPadding, mSendBtnLayoutPadding);
 
         sendBtnLayout.setClickable(true);
         return convertView;

@@ -32,4 +32,7 @@
     <color name="accent_material_light_1">#d7dbdb</color>
     <color name="gray_green">#394535</color>
 
+    <color name="custom_button_text">#525252</color>
+    <color name="custom_button_background">#41644a</color>
+
 </resources>
