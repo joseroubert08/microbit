@@ -39,13 +39,7 @@
     </LinearLayout>
 
     <!-- View my scripts -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:alpha="0.5"
-        android:background="@color/gray_color" />
+    <include layout="@layout/view_divider" />
 
     <include layout="@layout/custom_projects_button" />
 </LinearLayout>

@@ -6,7 +6,7 @@
     <dimen name="activity_top_margin">24dp</dimen>
 
     <!-- Generic margin TODO maybe rename -->
-    <dimen name="widget_margin">5dp</dimen>
+    <dimen name="widget_margin">12dp</dimen>
     <dimen name="content_margin">16dp</dimen>
 
     <!-- Generic Buttons TODO maybe remove-->
@@ -86,19 +86,27 @@
 
     <!-- Main Activity Buttons -->
     <dimen name="button_icon_padding">20dp</dimen>
-    <dimen name="button_margin">10dp</dimen>
+    <dimen name="button_margin">9dp</dimen>
     <dimen name="button_padding_top">30dp</dimen>
+    <dimen name="buttons_layout_margin">15dp</dimen>
 
     <!-- Flash Activity custom button -->
-    <dimen name="custom_button_padding">18dp</dimen>
+    <dimen name="custom_button_padding">20dp</dimen>
     <dimen name="custom_button_start_margin">8dp</dimen>
     <dimen name="custom_button_end_margin">16dp</dimen>
     <dimen name="custom_button_image_margin">25dp</dimen>
     <dimen name="custom_button_margin">32dp</dimen>
-    <dimen name="image_delete_button_padding">18dp</dimen>
+    <dimen name="delete_button_width_padding">26dp</dimen>
+    <dimen name="delete_button_height_padding">21dp</dimen>
+    <dimen name="project_item_buttons_size">72dp</dimen>
 
     <!-- p1 font size -->
     <dimen name="p1_font_size">20sp</dimen>
 
+    <!-- Project items text size -->
+    <dimen name="project_items_text_size">24sp</dimen>
+
+    <!-- Divider -->
+    <dimen name="view_divider_margin">0dp</dimen>
 
 </resources>

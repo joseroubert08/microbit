@@ -306,10 +306,10 @@ public class ProjectAdapter extends BaseAdapter {
         if (actionBarLayout != null) {
             if (project.actionBarExpanded) {
                 actionBarLayout.setVisibility(View.VISIBLE);
-                appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getContext(), R.drawable.down_arrow), null);
+                appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getContext(), R.drawable.ic_arrow_down), null);
             } else {
                 actionBarLayout.setVisibility(View.GONE);
-                appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getContext(), R.drawable.side_arrow), null);
+                appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getContext(), R.drawable.ic_arrow_left), null);
             }
         }
 
