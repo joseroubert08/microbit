@@ -112,13 +112,13 @@
     <dimen name="view_divider_margin">0dp</dimen>
 
     <!-- Connect screen -->
-    <dimen name="pairing_connection_header_text_size">28sp</dimen>
+    <dimen name="pairing_connection_header_text_size">24sp</dimen>
     <dimen name="connection_description_text_size">20sp</dimen>
     <dimen name="connection_smile_image_height">200dp</dimen>
     <dimen name="pairing_connection_header_margin_bottom">16dp</dimen>
     <dimen name="connections_container_layout_padding">16dp</dimen>
     <dimen name="connections_container_layout_margin">16dp</dimen>
     <dimen name="description_and_smile_layout_padding">40dp</dimen>
-    <dimen name="connection_having_problem_text_size">22sp</dimen>
+    <dimen name="connection_having_problem_text_size">20sp</dimen>
 
 </resources>
