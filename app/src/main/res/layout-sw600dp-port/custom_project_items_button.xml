@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/sendBtn"
-    style="@style/custom_button_layout"
+    android:gravity="center"
     android:layout_width="0dp"
     android:layout_height="@dimen/project_item_buttons_size"
     android:layout_marginEnd="@dimen/custom_button_end_margin"

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/sendBtn"
     android:layout_width="0dp"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/project_item_buttons_size"
     android:layout_marginEnd="@dimen/custom_button_end_margin"
     android:layout_marginStart="@dimen/custom_button_start_margin"
     android:layout_weight="1"

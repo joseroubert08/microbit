@@ -278,7 +278,8 @@
     <string name="manage_microbit_txt">To remove a paired micro:bit, \ngo to the bluetooth section \nin your device settings</string>
     <string name="desc_manage_microbit_txt">To remove a paired micro:bit, go to the bluetooth section in your device settings</string>
     <string name="desc_connect_microbit_problems_message">Having problems? Try the help page.</string>
-    <string name="connect_microbit_problems_message">Having problems? \nTry the help page.</string>
+    <string name="connect_microbit_problems_message_two_lines">Having problems? \nTry the help page.</string>
+    <string name="connect_microbit_problems_message">Having problems? Try the help page.</string>
     <string name="desc_manage_microbits">To remove a paired micro:bit, go to the bluetooth section in your device settings</string>
     <string name="desc_manage_and_remove_microbits_label">How do I remove a paired micro:bit?</string>
     <string name="subtitle_manage_and_remove_microbits_label">Follow the on-screen instructions to</string>

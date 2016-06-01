@@ -35,6 +35,7 @@
         android:id="@+id/actionBarForProgram"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/custom_button_start_margin"
         android:layout_below="@id/appNameEdit"
         android:orientation="horizontal">
 

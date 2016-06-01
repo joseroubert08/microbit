@@ -1,6 +1,7 @@
 <resources>
+
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-         <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
+        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
         <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
     </style>
 
@@ -9,7 +10,9 @@
         <item name="windowNoTitle">true</item>
         <item name="android:textAllCaps">false</item>
     </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
@@ -90,6 +93,11 @@
         <item name="android:background">?android:dividerVertical</item>
     </style>
 
+    <style name="match_width_parent_wrap_height_content">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
     <!-- Buttons style -->
     <style name="button_style">
         <item name="android:layout_width">0dp</item>
@@ -125,5 +133,44 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginEnd">@dimen/custom_button_image_margin</item>
+    </style>
+
+    <!-- Pairing activity connection styles -->
+    <style name="white_header_text_style" parent="match_width_parent_wrap_height_content">
+        <item name="android:textSize">@dimen/pairing_connection_header_text_size</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:gravity">start|top</item>
+        <item name="android:layout_marginBottom">16dp</item>
+    </style>
+
+    <style name="connection_description_and_smile_layout_style" parent="match_width_parent_wrap_height_content">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingBottom">@dimen/description_and_smile_layout_padding</item>
+        <item name="android:paddingTop">@dimen/description_and_smile_layout_padding</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="connection_description_text_style">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">bottom</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:focusable">true</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">@dimen/connection_description_text_size</item>
+    </style>
+
+    <style name="connection_smile_image_style">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">@dimen/connection_smile_image_height</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:importantForAccessibility">no</item>
+    </style>
+
+    <style name="connection_transparent_layout_style" parent="match_width_parent_wrap_height_content">
+        <item name="android:background">@drawable/grey_transparent_container</item>
+        <item name="android:padding">@dimen/connections_container_layout_padding</item>
+        <item name="android:orientation">vertical</item>
     </style>
 </resources>
