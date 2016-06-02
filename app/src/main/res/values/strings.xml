@@ -149,12 +149,14 @@
     <string name="desc_step_connect_tip_text_step_four_text">When you see the success message, press RESET and you\'re done!</string>
     <string name="desc_step_connect_tip_text_step_three">Step 3</string>
     <string name="step_connect_tip_text_step_three_text">When asked, press button A \nand enter your PIN</string>
+    <string name="step_connect_tip_text_step_three_text_one_line">When asked, press button A and enter your PIN</string>
     <string name="desc_step_connect_tip_text_step_three_text">When asked, press button A and enter your PIN</string>
     <string name="desc_step_connect_tip_text_step_four">Step 4</string>
     <string name="searching_microbit_found_message">Open your notification drawer \nand enter your Pin</string>
     <string name="desc_searching_microbit_found_message">Open your notification drawer and enter your Pin</string>
     <string name="step_connect_tip_text_step_two">Step 2</string>
     <string name="connect_tip_text">Hold the A and B buttons,\nthen PRESS RESET</string>
+    <string name="connect_tip_text_one_line">Hold the A and B buttons, then PRESS RESET</string>
     <string name="desc_connect_tip_text">Hold the A and B buttons, then PRESS RESET</string>
     <string name="desc_connect_tip_text_step">Step one</string>
     <string name="connect_tip_text_step_text">Hold the A and B buttons,\nthen PRESS RESET</string>
@@ -163,6 +165,7 @@
     <string name="desc_connect_tip_text_step_two_text">When asked, enter your personal identification pattern </string>
     <string name="step_enter_pattern_tip_text">Step 2</string>
     <string name="enter_pattern_tip_text">Copy the pattern from \nyour micro:bit onto this grid</string>
+    <string name="enter_pattern_tip_text_one_line">Copy the pattern from your micro:bit onto this grid</string>
     <string name="desc_enter_pattern_tip_step_two">Step two</string>
     <string name="desc_enter_pattern_tip_text">Copy the pattern from your micro:bit onto this grid</string>
     <string name="searching_tip_text_instructions">(you only have 30 seconds)</string>
@@ -276,6 +279,7 @@
     <string name="content_description_toolbar_home">Open Menu</string>
     <string name="content_description_toolbar_logo">BBC Micro:bit</string>
     <string name="manage_microbit_txt">To remove a paired micro:bit, \ngo to the bluetooth section \nin your device settings</string>
+    <string name="manage_microbit_txt_one_line">To remove a paired micro:bit, go to the bluetooth section in your device settings</string>
     <string name="desc_manage_microbit_txt">To remove a paired micro:bit, go to the bluetooth section in your device settings</string>
     <string name="desc_connect_microbit_problems_message">Having problems? Try the help page.</string>
     <string name="connect_microbit_problems_message_two_lines">Having problems? \nTry the help page.</string>

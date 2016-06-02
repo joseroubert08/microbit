@@ -44,11 +44,11 @@
 
 	<!-- Connect UI -->
 	<dimen name="connect_device_name_width">380dp</dimen>
-	<dimen name="led_gap">10dp</dimen>
-	<integer name="led_size">45</integer>
+	<dimen name="led_gap">24dp</dimen>
+	<integer name="led_size">64</integer>
 	<dimen name="divider_margin">20dp</dimen>
 	<dimen name="connect_ui_land_width">600dp</dimen>
-	<dimen name="led_grid_width">265dp</dimen>
+	<dimen name="led_grid_width">420dp</dimen>
 	<dimen name="mbit_tip_img_size">175dp</dimen>
 	<dimen name="button_gap_margin">75dp</dimen>
     <dimen name="connect_lv_btn_width">80dp</dimen>

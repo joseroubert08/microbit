@@ -7,6 +7,19 @@
     tools:showIn="@layout/view_pairing_pattern">
 
     <TextView
+    android:id="@+id/pair_enter_pattern_step_2"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:contentDescription="@string/desc_connect_tip_text_step_two"
+    android:paddingEnd="16dp"
+    android:paddingStart="16dp"
+    android:layout_above="@+id/pair_enter_pattern_step_2_instructions"
+    android:text="@string/step_connect_tip_text_step_two"
+    android:textAppearance="?android:textAppearanceMedium"
+    android:textColor="@color/white_color"
+    android:textStyle="bold" />
+
+    <TextView
         android:id="@+id/pair_enter_pattern_step_2_instructions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -443,19 +443,13 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         // How to pair your micro:bit - Screen #1
         TextView pairTipTitle = (TextView) findViewById(R.id.pairTipTitle);
-        pairTipTitle.setTypeface(MBApp.getApp().getTypeface());
+        pairTipTitle.setTypeface(MBApp.getApp().getTypefaceBold());
 
         TextView stepOneTitle = (TextView) findViewById(R.id.pair_tip_step_1_step);
-        stepOneTitle.setTypeface(MBApp.getApp().getTypeface());
+        stepOneTitle.setTypeface(MBApp.getApp().getTypefaceBold());
 
         TextView stepOneInstructions = (TextView) findViewById(R.id.pair_tip_step_1_instructions);
         stepOneInstructions.setTypeface(MBApp.getApp().getTypeface());
-
-//        TextView stepTwoHowToPairTitle = (TextView) findViewById(R.id.pair_tip_step_2_step);
-//        stepTwoHowToPairTitle.setTypeface(MBApp.getApp().getTypeface());
-
-//        TextView stepTwoHowToPairInstructions = (TextView) findViewById(R.id.pair_tip_step_2_instructions);
-//        stepTwoHowToPairInstructions.setTypeface(MBApp.getApp().getTypeface());
 
         Button cancelPairButton = (Button) findViewById(R.id.cancel_tip_step_1_btn);
         cancelPairButton.setTypeface(MBApp.getApp().getTypeface());
@@ -465,16 +459,16 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         // How to pair your micro:bit - Screen #2
         TextView howToPairStepThreeTitle = (TextView) findViewById(R.id.how_to_pair_screen_two_title);
-        howToPairStepThreeTitle.setTypeface(MBApp.getApp().getTypeface());
+        howToPairStepThreeTitle.setTypeface(MBApp.getApp().getTypefaceBold());
 
         TextView howToPairStepThreeStep = (TextView) findViewById(R.id.pair_tip_step_3_step);
-        howToPairStepThreeStep.setTypeface(MBApp.getApp().getTypeface());
+        howToPairStepThreeStep.setTypeface(MBApp.getApp().getTypefaceBold());
 
         TextView howToPairStepThreeText = (TextView) findViewById(R.id.pair_tip_step_3_instructions);
         howToPairStepThreeText.setTypeface(MBApp.getApp().getTypeface());
 
         TextView howToPairStepFourTitle = (TextView) findViewById(R.id.pair_tip_step_4_step);
-        howToPairStepFourTitle.setTypeface(MBApp.getApp().getTypeface());
+        howToPairStepFourTitle.setTypeface(MBApp.getApp().getTypefaceBold());
 
         TextView howToPairStepFourText = (TextView) findViewById(R.id.pair_tip_step_4_instructions);
         howToPairStepFourText.setTypeface(MBApp.getApp().getTypeface());
@@ -487,10 +481,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         // Step 2 - Enter Pattern
         TextView enterPatternTitle = (TextView) findViewById(R.id.enter_pattern_step_2_title);
-        enterPatternTitle.setTypeface(MBApp.getApp().getTypeface());
+        enterPatternTitle.setTypeface(MBApp.getApp().getTypefaceBold());
 
-//        TextView stepTwoTitle = (TextView) findViewById(R.id.pair_enter_pattern_step_2);
-//        stepTwoTitle.setTypeface(MBApp.getApp().getTypeface());
+        TextView stepTwoTitle = (TextView) findViewById(R.id.pair_enter_pattern_step_2);
+        stepTwoTitle.setTypeface(MBApp.getApp().getTypefaceBold());
 
         TextView stepTwoInstructions = (TextView) findViewById(R.id.pair_enter_pattern_step_2_instructions);
         stepTwoInstructions.setTypeface(MBApp.getApp().getTypeface());
@@ -506,10 +500,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         // Step 3 - Searching for micro:bit
         TextView searchMicrobitTitle = (TextView) findViewById(R.id.search_microbit_step_3_title);
-        searchMicrobitTitle.setTypeface(MBApp.getApp().getTypeface());
+        searchMicrobitTitle.setTypeface(MBApp.getApp().getTypefaceBold());
 
         TextView stepThreeTitle = (TextView) findViewById(R.id.searching_microbit_step);
-        stepThreeTitle.setTypeface(MBApp.getApp().getTypeface());
+        stepThreeTitle.setTypeface(MBApp.getApp().getTypefaceBold());
 
         TextView stepThreeInstructions = (TextView) findViewById(R.id.searching_microbit_step_instructions);
         stepThreeInstructions.setTypeface(MBApp.getApp().getTypeface());

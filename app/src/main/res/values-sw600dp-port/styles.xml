@@ -140,7 +140,7 @@
         <item name="android:textSize">@dimen/pairing_connection_header_text_size</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:gravity">start|top</item>
-        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:layout_marginBottom">@dimen/white_header_text_margin_bottom</item>
     </style>
 
     <style name="pairing_step_header_style" parent="white_header_text_style">
@@ -189,7 +189,7 @@
         <item name="android:layout_width">@dimen/pairing_step_button_width</item>
         <item name="android:layout_height">@dimen/pairing_step_button_height</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:layout_margin">@dimen/pairing_step_button_margin</item>
+        <item name="android:layout_margin">@dimen/pairing_step_buttons_space_margin</item>
         <item name="android:textSize">@dimen/pairing_step_button_text_size</item>
         <item name="android:textColor">@color/custom_button_text</item>
         <item name="android:textAllCaps">true</item>
@@ -203,5 +203,46 @@
         <item name="android:layout_gravity">bottom</item>
         <item name="android:layout_marginTop">@dimen/pairing_step_buttons_layout_margin</item>
         <item name="android:layout_marginBottom">@dimen/pairing_step_buttons_layout_margin</item>
+        <item name="android:paddingStart">6dp</item>
+        <item name="android:paddingEnd">6dp</item>
     </style>
+
+    <!-- Pairing step text styles -->
+    <style name="pairing_step_title_style" parent="white_header_text_style">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="pairing_step_tip_text_style" parent="white_header_text_style">
+        <item name="android:textSize">@dimen/pairing_step_tip_text_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="pairing_step_tip_layout_style" parent="match_width_parent_wrap_height_content">
+        <item name="android:gravity">bottom</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingEnd">@dimen/pairing_step_tip_layout_width_padding</item>
+        <item name="android:paddingStart">@dimen/pairing_step_tip_layout_width_padding</item>
+        <item name="android:paddingBottom">@dimen/pairing_step_tip_layout_height_padding</item>
+        <item name="android:paddingTop">@dimen/pairing_step_tip_layout_height_padding</item>
+    </style>
+
+    <!-- Pairing step layout styles -->
+    <style name="pairing_step_layout_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/black_color</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="pairing_step_central_image_layout_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_weight">3</item>
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:scrollbars">none</item>
+    </style>
+
 </resources>

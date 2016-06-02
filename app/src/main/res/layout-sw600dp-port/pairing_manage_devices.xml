@@ -28,7 +28,7 @@
                 style="@style/connection_description_text_style"
                 android:contentDescription="@string/desc_manage_microbit_txt"
                 android:nextFocusDown="@id/flash_projects_title_txt"
-                android:text="@string/manage_microbit_txt" />
+                android:text="@string/manage_microbit_txt_one_line" />
 
             <ImageView
                 android:id="@+id/img_pair_microbit"
