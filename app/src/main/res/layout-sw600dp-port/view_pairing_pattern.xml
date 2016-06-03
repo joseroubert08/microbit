@@ -7,6 +7,9 @@
     <TextView
         android:id="@+id/enter_pattern_step_2_title"
         style="@style/pairing_step_header_style"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:layout_marginTop="@dimen/pairing_step_two_header_margin_top"
         android:text="@string/new_devices_pattern_null" />
 
     <!-- Grid to enter pattern -->

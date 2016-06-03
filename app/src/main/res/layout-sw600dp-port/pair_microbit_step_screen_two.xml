@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/pairTipButtonText"
     style="@style/pairing_step_tip_layout_style"
+    android:paddingEnd="@dimen/pairing_step_tip_layout_width_padding"
+    android:paddingTop="@dimen/pairing_step_two_tip_layout_padding_top"
     tools:showIn="@layout/view_pairing_tip_screen_two">
 
     <TextView

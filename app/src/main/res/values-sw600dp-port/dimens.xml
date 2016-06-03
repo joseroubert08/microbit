@@ -137,5 +137,14 @@
     <dimen name="pairing_step_tip_layout_width_padding">36dp</dimen>
     <dimen name="pairing_step_two_image_layout_margin">18dp</dimen>
     <dimen name="pairing_step_two_image_layout_padding">20dp</dimen>
+    <dimen name="pairing_step_two_tip_layout_padding_top">16dp</dimen>
+    <dimen name="pairing_step_two_header_margin_top">30dp</dimen>
+    <dimen name="searching_device_step_layout_indentation">18dp</dimen>
+
+    <!-- Popup screens -->
+    <dimen name="popup_gif_size">200dp</dimen>
+    <dimen name="popup_text_layout_padding_top">96dp</dimen>
+    <dimen name="popup_round_button_padding">36dp</dimen>
+    <dimen name="popup_round_button_margin">16dp</dimen>
 
 </resources>

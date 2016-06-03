@@ -26,4 +26,7 @@
 
     <!-- Divider -->
     <dimen name="view_divider_margin">16dp</dimen>
+
+    <!-- Popup screens -->
+    <dimen name="popup_gif_size">150dp</dimen>
 </resources>

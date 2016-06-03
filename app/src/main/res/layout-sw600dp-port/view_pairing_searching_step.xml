@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?><!--  instructions -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/pairingPatternTipView"
+    android:id="@+id/searching_tip_step_3_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="bottom"
-    tools:showIn="@layout/view_pairing_pattern">
+    tools:showIn="@layout/view_pairing_searching">
 
     <LinearLayout
         style="@style/pairing_step_tip_layout_style"
+        android:paddingStart="@dimen/searching_device_step_layout_indentation"
         android:layout_width="0dp"
         android:layout_weight="4">
 
         <TextView
-            android:id="@+id/pair_enter_pattern_step_2"
-            style="@style/pairing_step_title_style"
-            android:text="Step 2" />
+            android:id="@+id/searching_microbit_step"
+            style="@style/pairing_step_tip_text_style"
+            android:text="@string/searching_tip_step_text" />
 
         <TextView
-            android:id="@+id/pair_enter_pattern_step_2_instructions"
+            android:id="@+id/searching_microbit_step_instructions"
             style="@style/pairing_step_tip_text_style"
-            android:contentDescription="@string/desc_enter_pattern_tip_text"
-            android:text="@string/enter_pattern_tip_text_one_line" />
+            android:contentDescription="@string/desc_searching_tip_text"
+            android:text="@string/searching_tip_text_instructions" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_weight="5"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/pairing_step_two_image_layout_margin"
-        android:layout_marginEnd="@dimen/pairing_step_two_image_layout_margin"
+        android:layout_weight="5"
+        android:padding="@dimen/searching_device_step_layout_indentation"
         android:gravity="end|bottom">
 
         <ImageView
-            android:id="@+id/oh_pretty_emoji"
+            android:id="@+id/searching_emoji"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/emoji_entering_pattern_valid_pattern" />
+            android:src="@drawable/ic_where_are_you" />
     </LinearLayout>
 </LinearLayout>
