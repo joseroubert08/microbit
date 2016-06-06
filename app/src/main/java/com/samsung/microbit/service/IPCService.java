@@ -10,8 +10,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.samsung.microbit.BuildConfig;
+import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.core.IPCMessageManager;
-import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.NameValuePair;
@@ -173,9 +173,9 @@ public class IPCService extends Service {
 			if (msg.arg1 == IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED ||
 				msg.arg1 == IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED) {
 
-				ConnectedDevice cd = Utils.getPairedMicrobit(this);
+				ConnectedDevice cd = BluetoothUtils.getPairedMicrobit(this);
 				cd.mStatus = (msg.arg1 == IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED);
-				Utils.setPairedMicrobit(this, cd);
+				BluetoothUtils.setPairedMicroBit(this, cd);
 			}
 
 

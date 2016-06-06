@@ -20,12 +20,11 @@ import android.widget.TextView;
 import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.EchoClientManager;
-import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.Project;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.activity.ProjectActivity;
 import com.samsung.microbit.ui.control.ExtendedEditText;
+import com.samsung.microbit.utils.FileUtils;
 
 import java.util.List;
 
@@ -226,19 +225,17 @@ public class ProjectAdapter extends BaseAdapter {
         public void onClick(View v) {
             logi("sendBtnClickListener() :: ");
             projectActivity.onClick(v);
-
         }
     };
 
     private View.OnClickListener deleteBtnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
             logi("deleteBtnClickListener() :: ");
             final int pos = (int) v.getTag();
             //Update Stats
-            if (EchoClientManager.getInstance().getEcho() != null) {
-                EchoClientManager.getInstance().getEcho().userActionEvent("click", "DeleteProject", null);
+            if (MBApp.getApp().getEchoClientManager().getEcho() != null) {
+                MBApp.getApp().getEchoClientManager().getEcho().userActionEvent("click", "DeleteProject", null);
             }
             PopUp.show(MBApp.getContext(),
                     MBApp.getContext().getString(R.string.delete_project_message),
@@ -251,7 +248,7 @@ public class ProjectAdapter extends BaseAdapter {
                         public void onClick(View v) {
                             PopUp.hide();
                             Project proj = projects.get(pos);
-                            if (Utils.deleteFile(proj.filePath)) {
+                            if (FileUtils.deleteFile(proj.filePath)) {
                                 projects.remove(pos);
                                 notifyDataSetChanged();
                             }

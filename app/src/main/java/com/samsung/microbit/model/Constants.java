@@ -239,16 +239,6 @@ public class Constants {
     public static int REQUEST_ENABLE_BT = 12345 ; //Magic number
     public static int POPUP_CREATE_REQUEST = 45809 ; //Magic number
 
-	public static String LAUNCH_CAMERA_AUDIO_PHOTO = "raw/en_gb_emma_launching_camera_photo";
-    public static String LAUNCH_CAMERA_AUDIO_VIDEO = "raw/en_gb_emma_launching_camera_video";
-
-    public static String TAKING_PHOTO_AUDIO = "raw/en_gb_emma_taking_photo";
-    public static String RECORDING_VIDEO_AUDIO = "raw/en_gb_emma_recording_video_30sec";
-    public static String PICTURE_TAKEN_AUDIO = "raw/en_gb_emma_photo_taken";
-    public static String MAX_VIDEO_RECORDED = "raw/en_gb_emma_max_video";
-    public static String FIND_MY_PHONE_AUDIO = "raw/find_my_phone";
-
-
     public static int MAX_VIDEO_RECORDING_TIME = 30 * 1000 ; //Duration in ms
     public static int MAX_VIDEO_FILE_SIZE = 100 * 1024 * 1024 ; //Size in bytes
 

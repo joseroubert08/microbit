@@ -12,9 +12,10 @@ import android.os.Vibrator;
 import android.util.Log;
 
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.Constants;
+import com.samsung.microbit.model.RawConstants;
+import com.samsung.microbit.presentation.PlayAudioPresenter;
 import com.samsung.microbit.ui.PopUp;
 
 import java.io.IOException;
@@ -24,6 +25,8 @@ import java.util.TimerTask;
 public class AlertPlugin {
 
 	private static Context context = null;
+
+    private static PlayAudioPresenter playAudioPresenter = new PlayAudioPresenter();
 
 	private static AlertDialog customDialog = null;
     private static Ringtone mRingtone = null;
@@ -57,6 +60,7 @@ public class AlertPlugin {
         mTimer = new Timer();
 
         mRingtone = RingtoneManager.getRingtone(context, alarm);
+
         if(isAlarm)
             mRingtone.setStreamType(AudioManager.STREAM_ALARM);
         mRingtone.play();
@@ -160,7 +164,9 @@ public class AlertPlugin {
             mVibrator.cancel();
             mVibrator.vibrate(5*1000);
         }
-        Utils.playAudio(Utils.getFindMyPhoneAudio(),null);
+
+        playAudioPresenter.setNotificationForPlay(RawConstants.FIND_MY_PHONE_AUDIO);
+        playAudioPresenter.start();
 	}
 
 	private static void vibrate(int duration) {

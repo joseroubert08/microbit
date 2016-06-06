@@ -16,7 +16,6 @@ import android.view.WindowManager;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.EchoClientManager;
 
 import java.io.IOException;
 
@@ -37,7 +36,7 @@ public class SplashScreenActivityVideo extends Activity implements SurfaceHolder
         MBApp.setContext(this);
 
         //Track fresh app launch
-        EchoClientManager.getInstance().sendAppStats();
+        MBApp.getApp().getEchoClientManager().sendAppStats();
 
         // Full screen splash screen
         requestWindowFeature(Window.FEATURE_NO_TITLE);

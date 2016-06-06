@@ -15,13 +15,14 @@ import android.util.Log;
 
 import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.BLEManager;
+import com.samsung.microbit.core.bluetooth.BLEManager;
 import com.samsung.microbit.core.IPCMessageManager;
-import com.samsung.microbit.core.Utils;
+import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.model.NameValuePair;
+import com.samsung.microbit.utils.ErrorUtils;
 
 import java.util.UUID;
 
@@ -83,7 +84,7 @@ public class BLEService extends BLEBaseService {
 	protected String getDeviceAddress() {
 
 		logi("getDeviceAddress()");
-		ConnectedDevice currentDevice = Utils.getPairedMicrobit(this);
+		ConnectedDevice currentDevice = BluetoothUtils.getPairedMicrobit(this);
 		String pairedDeviceName = currentDevice.mAddress;
 		if (pairedDeviceName == null) {
 			setNotification(false, 2);
@@ -155,7 +156,7 @@ public class BLEService extends BLEBaseService {
 
         BluetoothGattCharacteristic characteristic = readCharacteristic(microbit_requirements);
         while (characteristic !=null && characteristic.getValue() != null && characteristic.getValue().length != 0 ){
-            String service = Utils.parse(characteristic) ;
+            String service = BluetoothUtils.parse(characteristic) ;
             logi("microbit interested in  = " + service);
             if (service.equalsIgnoreCase("4F-04-07-00")) //Incoming Call service
             {
@@ -363,7 +364,7 @@ public class BLEService extends BLEBaseService {
 
 		args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
 		args[1] = new NameValuePair(IPCMessageManager.BUNDLE_DEVICE_ADDRESS, deviceAddress);
-		args[2] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_MESSAGE, Utils.broadcastGetErrorMessage(actual_Error));
+		args[2] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_MESSAGE, ErrorUtils.broadcastGetErrorMessage(actual_Error));
 
 		if (!isConnected) {
 			logi("setNotification() :: !isConnected");

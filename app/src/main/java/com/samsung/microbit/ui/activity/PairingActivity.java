@@ -45,9 +45,8 @@ import android.widget.Toast;
 import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.EchoClientManager;
+import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.core.IPCMessageManager;
-import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.service.IPCService;
@@ -179,7 +178,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     return;
                 } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDING) {
                     scanLeDevice(false);
-                    EchoClientManager.getInstance().sendPairingStats(false, null);
+                    MBApp.getApp().getEchoClientManager().sendPairingStats(false, null);
                     PopUp.show(MBApp.getContext(),
                             getString(R.string.pairing_failed_message), //message
                             getString(R.string.pairing_failed_title), //title
@@ -215,7 +214,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             String firmware = intent.getStringExtra(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE);
             int getNotification = intent.getIntExtra(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, -1);
             if (firmware != null && !firmware.isEmpty()) {
-                Utils.updateFirmwareMicrobit(context, firmware);
+                BluetoothUtils.updateFirmwareMicrobit(context, firmware);
                 return;
             }
             updatePairedDeviceCard();
@@ -227,11 +226,11 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     mRequestPermission.add(getNotification);
                     return;
                 }
-                ConnectedDevice device = Utils.getPairedMicrobit(context);
+                ConnectedDevice device = BluetoothUtils.getPairedMicrobit(context);
                 if (mActivityState == ACTIVITY_STATE.STATE_CONNECTING) {
                     if (error == 0) {
-                        EchoClientManager.getInstance().sendConnectStats(Constants.CONNECTION_STATE.SUCCESS, device.mfirmware_version, null);
-                        Utils.updateConnectionStartTime(context, System.currentTimeMillis());
+                        MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.CONNECTION_STATE.SUCCESS, device.mfirmware_version, null);
+                        BluetoothUtils.updateConnectionStartTime(context, System.currentTimeMillis());
                         //Check if more permissions were needed and request in the Application
                         if (!mRequestPermission.isEmpty()) {
                             mActivityState = ACTIVITY_STATE.STATE_IDLE;
@@ -240,13 +239,13 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                             return;
                         }
                     } else {
-                        EchoClientManager.getInstance().sendConnectStats(Constants.CONNECTION_STATE.FAIL, null, null);
+                        MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.CONNECTION_STATE.FAIL, null, null);
                     }
                 }
                 if (error == 0 && mActivityState == ACTIVITY_STATE.STATE_DISCONNECTING) {
                     long now = System.currentTimeMillis();
                     long connectionTime = (now - device.mlast_connection_time) / 1000; //Time in seconds
-                    EchoClientManager.getInstance().sendConnectStats(Constants.CONNECTION_STATE.DISCONNECT, device.mfirmware_version, Long.toString(connectionTime));
+                    MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.CONNECTION_STATE.DISCONNECT, device.mfirmware_version, Long.toString(connectionTime));
                 }
                 PopUp.hide();
                 mActivityState = ACTIVITY_STATE.STATE_IDLE;
@@ -387,7 +386,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         MBApp.setContext(this);
 
         // Make sure to call this before any other userActionEvent is sent
-        EchoClientManager.getInstance().sendViewEventStats("pairingactivity");
+        MBApp.getApp().getEchoClientManager().sendViewEventStats("pairingactivity");
 
         IntentFilter broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
         LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(localBroadcastReceiver, broadcastIntentFilter);
@@ -691,7 +690,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     }
 
     private void updateConnectionStatus() {
-        ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
+        ConnectedDevice connectedDevice = BluetoothUtils.getPairedMicrobit(this);
         Drawable mDeviceDisconnectedImg;
         Drawable mDeviceConnectedImg;
 
@@ -732,7 +731,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     }
 
     private void updatePairedDeviceCard() {
-        ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
+        ConnectedDevice connectedDevice = BluetoothUtils.getPairedMicrobit(this);
 
         if (connectedDevice.mName == null) {
             // No device is Paired
@@ -847,7 +846,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     }
 
     public void toggleConnection() {
-        ConnectedDevice currentDevice = Utils.getPairedMicrobit(this);
+        ConnectedDevice currentDevice = BluetoothUtils.getPairedMicrobit(this);
         if (currentDevice.mAddress != null) {
             boolean currentState = currentDevice.mStatus;
             if (!currentState) {
@@ -1073,7 +1072,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                         PopUp.hide();
                         //Unpair the device for secure BLE
                         unpairDeivce();
-                        Utils.setPairedMicrobit(MBApp.getContext(), null);
+                        BluetoothUtils.setPairedMicroBit(MBApp.getContext(), null);
                         updatePairedDeviceCard();
                     }
                 },//override click listener for ok button
@@ -1081,7 +1080,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     }
 
     private void unpairDeivce() {
-        ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
+        ConnectedDevice connectedDevice = BluetoothUtils.getPairedMicrobit(this);
         String addressToDelete = connectedDevice.mAddress;
         // Get the paired devices and put them in a Set
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -1117,7 +1116,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private void handlePairingFailed() {
 
         logi("handlePairingFailed() :: Start");
-        EchoClientManager.getInstance().sendPairingStats(false, null);
+        MBApp.getApp().getEchoClientManager().sendPairingStats(false, null);
         PopUp.show(this,
                 getString(R.string.pairingErrorMessage), //message
                 getString(R.string.timeOut), //title
@@ -1131,8 +1130,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
     private void handlePairingSuccessful(final ConnectedDevice newDev) {
         logi("handlePairingSuccessful()");
-        EchoClientManager.getInstance().sendPairingStats(true, newDev.mfirmware_version);
-        Utils.setPairedMicrobit(MBApp.getContext(), newDev);
+        MBApp.getApp().getEchoClientManager().sendPairingStats(true, newDev.mfirmware_version);
+        BluetoothUtils.setPairedMicroBit(MBApp.getContext(), newDev);
         updatePairedDeviceCard();
         // Pop up to show pairing successful
         PopUp.show(MBApp.getContext(),

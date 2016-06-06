@@ -14,7 +14,7 @@ import android.view.View;
 import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.Utils;
+import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.ui.PopUp;
 
@@ -61,7 +61,7 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
     {
         //Do not launch camera if in Do not Disturb Mode
         //Check more details on #122
-        if (Utils.inZenMode(this))
+        if (BluetoothUtils.inZenMode(this))
         {
             PopUp.show(MBApp.getContext(),
                     getString(R.string.dnd_error_msg),

@@ -13,10 +13,10 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.samsung.microbit.BuildConfig;
-import com.samsung.microbit.core.BLEManager;
-import com.samsung.microbit.core.CharacteristicChangeListener;
-import com.samsung.microbit.core.UnexpectedConnectionEventListener;
-import com.samsung.microbit.core.Utils;
+import com.samsung.microbit.core.bluetooth.BLEManager;
+import com.samsung.microbit.core.bluetooth.CharacteristicChangeListener;
+import com.samsung.microbit.core.bluetooth.UnexpectedConnectionEventListener;
+import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 
 import java.util.List;
 import java.util.UUID;
@@ -328,7 +328,7 @@ public abstract class BLEBaseService extends Service {
 		if (bleManager != null) {
 			rc = bleManager.writeCharacteristic(characteristic);
 			rc = interpretCode(rc);
-            logi("Data written to " + characteristic.getUuid() + " value : (0x)" + Utils.parse(characteristic)  + " Return Value = 0x" + Integer.toHexString(rc));
+            logi("Data written to " + characteristic.getUuid() + " value : (0x)" + BluetoothUtils.parse(characteristic)  + " Return Value = 0x" + Integer.toHexString(rc));
 		}
 		return rc;
 	}

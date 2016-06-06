@@ -9,9 +9,10 @@ import android.os.PowerManager;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.Constants;
+import com.samsung.microbit.model.RawConstants;
+import com.samsung.microbit.presentation.PlayAudioPresenter;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.activity.CameraActivityPermissionChecker;
 
@@ -27,7 +28,7 @@ public class CameraPlugin {
     private static PowerManager mPowerManager;
     private static PowerManager.WakeLock mWakeLock;
 
-
+    private static PlayAudioPresenter playAudioPresenter = new PlayAudioPresenter();
 
     private static MediaPlayer.OnCompletionListener m_OnCompletionListener = new MediaPlayer.OnCompletionListener()
     {
@@ -51,14 +52,20 @@ public class CameraPlugin {
                 mWakeLock.acquire(5*1000);
                 m_CurrentState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE ;
                 m_NextState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE ;
-                Utils.playAudio(Utils.getLaunchCameraPhotoMode() , m_OnCompletionListener);
+
+                playAudioPresenter.setNotificationForPlay(RawConstants.LAUNCH_CAMERA_AUDIO_PHOTO);
+                playAudioPresenter.setCallBack(m_OnCompletionListener);
+                playAudioPresenter.start();
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE:
                 mWakeLock.acquire(5*1000);
                 m_CurrentState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE ;
                 m_NextState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE ;
-                Utils.playAudio(Utils.getLaunchCameraVideoMode(), m_OnCompletionListener);
+
+                playAudioPresenter.setNotificationForPlay(RawConstants.LAUNCH_CAMERA_AUDIO_VIDEO);
+                playAudioPresenter.setCallBack(m_OnCompletionListener);
+                playAudioPresenter.start();
 				break;
 
 			case Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO:

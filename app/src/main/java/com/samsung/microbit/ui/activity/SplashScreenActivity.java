@@ -9,7 +9,6 @@ import android.view.MenuItem;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.EchoClientManager;
 
 public class SplashScreenActivity extends Activity {
 
@@ -24,7 +23,7 @@ public class SplashScreenActivity extends Activity {
         MBApp.setContext(this);
 
         //Track fresh app launch
-        EchoClientManager.getInstance().sendAppStats();
+        MBApp.getApp().getEchoClientManager().sendAppStats();
 
         new Handler().postDelayed(new Runnable() {
 

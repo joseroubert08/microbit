@@ -16,12 +16,12 @@ import com.samsung.microbit.ui.activity.PopUpActivity;
 public class PopUpServiceReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        PopUp.show(MBApp.getContext(), intent.getStringExtra(PopUpActivity.INTENT_EXTRA_MESSAGE),
-                                        intent.getStringExtra(PopUpActivity.INTENT_EXTRA_TITLE),
-                                        intent.getIntExtra(PopUpActivity.INTENT_EXTRA_ICON, 0),
-                                        intent.getIntExtra(PopUpActivity.INTENT_EXTRA_ICONBG, 0),
+        PopUp.show(MBApp.getApp(), intent.getStringExtra(PopUpActivity.INTENT_EXTRA_MESSAGE),
+                intent.getStringExtra(PopUpActivity.INTENT_EXTRA_TITLE),
+                intent.getIntExtra(PopUpActivity.INTENT_EXTRA_ICON, 0),
+                intent.getIntExtra(PopUpActivity.INTENT_EXTRA_ICONBG, 0),
                 intent.getIntExtra(PopUpActivity.INTENT_GIFF_ANIMATION_CODE, 0), /* Default 0 */
-                                        intent.getIntExtra(PopUpActivity.INTENT_EXTRA_TYPE, PopUp.TYPE_MAX),
-                                        null, null);
+                intent.getIntExtra(PopUpActivity.INTENT_EXTRA_TYPE, PopUp.TYPE_MAX),
+                null, null);
     }
 }
