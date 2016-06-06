@@ -14,7 +14,7 @@
         android:gravity="start|center_vertical"
         android:longClickable="true"
         android:textSize="@dimen/project_items_text_size"
-        android:textColor="@color/white_color" />
+        android:textColor="@android:color/white" />
 
     <com.samsung.microbit.ui.control.ExtendedEditText
         android:id="@+id/appNameEdit"
@@ -27,7 +27,7 @@
         android:focusableInTouchMode="true"
         android:gravity="start|center_vertical"
         android:inputType="textNoSuggestions|textVisiblePassword"
-        android:textColor="@color/black_color"
+        android:textColor="@android:color/black"
         android:textSize="@dimen/project_items_text_size"
         android:visibility="invisible" />
 

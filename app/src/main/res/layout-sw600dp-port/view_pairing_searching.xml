@@ -19,16 +19,16 @@
             android:id="@+id/searching_microbit_found_giffview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_margin="@dimen/pairing_step_gif_view_margin"
             android:visibility="gone"
             android:src="@drawable/emoji_microbit_found"/>
 
         <ProgressBar
             android:id="@+id/searching_progress_spinner"
             android:indeterminateDrawable="@drawable/white_progress_bar"
-            android:layout_width="164dp"
-            android:layout_height="164dp"
-            android:indeterminateDuration="1000"
+            android:layout_width="@dimen/pairing_step_cycle_progress_bar_size"
+            android:layout_height="@dimen/pairing_step_cycle_progress_bar_size"
+            android:indeterminateDuration="@integer/pairing_step_cycle_progress_bar_duration"
             android:visibility="gone"/>
     </LinearLayout>
 

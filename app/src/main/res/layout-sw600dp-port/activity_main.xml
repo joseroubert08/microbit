@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:padding="@dimen/main_activity_layout_padding"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".HomeActivity"
     tools:showIn="@layout/app_bar_main">
@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="16dp"
+            android:layout_margin="@dimen/main_activity_gif_image_margin"
             android:contentDescription="@string/desc_homescreen_logo_img"
             android:foregroundGravity="center"
             android:labelFor="@drawable/bbc_microbit_vertical"

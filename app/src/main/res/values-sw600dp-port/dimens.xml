@@ -87,11 +87,13 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="fab_margin">16dp</dimen>
 
-    <!-- Main Activity Buttons -->
+    <!-- Main Activity -->
     <dimen name="button_icon_padding">20dp</dimen>
     <dimen name="button_margin">9dp</dimen>
     <dimen name="button_padding_top">30dp</dimen>
     <dimen name="buttons_layout_margin">6dp</dimen>
+    <dimen name="main_activity_layout_padding">16dp</dimen>
+    <dimen name="main_activity_gif_image_margin">16dp</dimen>
 
     <!-- Flash Activity custom button -->
     <dimen name="custom_button_padding">20dp</dimen>
@@ -106,8 +108,9 @@
     <!-- p1 font size -->
     <dimen name="p1_font_size">20sp</dimen>
 
-    <!-- Project items text size -->
+    <!-- Project items -->
     <dimen name="project_items_text_size">24sp</dimen>
+    <dimen name="project_items_layout_margin">16dp</dimen>
 
     <!-- Divider -->
     <dimen name="view_divider_margin">0dp</dimen>
@@ -140,6 +143,9 @@
     <dimen name="pairing_step_two_tip_layout_padding_top">16dp</dimen>
     <dimen name="pairing_step_two_header_margin_top">30dp</dimen>
     <dimen name="searching_device_step_layout_indentation">18dp</dimen>
+    <dimen name="pairing_step_gif_view_margin">16dp</dimen>
+    <dimen name="pairing_step_cycle_progress_bar_size">164dp</dimen>
+    <integer name="pairing_step_cycle_progress_bar_duration">1000</integer>
 
     <!-- Popup screens -->
     <dimen name="popup_gif_size">200dp</dimen>
