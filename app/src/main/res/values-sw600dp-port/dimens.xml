@@ -139,10 +139,11 @@
     <dimen name="pairing_step_tip_layout_height_padding">50dp</dimen>
     <dimen name="pairing_step_tip_layout_width_padding">36dp</dimen>
     <dimen name="pairing_step_two_image_layout_margin">18dp</dimen>
-    <dimen name="pairing_step_two_image_layout_padding">20dp</dimen>
     <dimen name="pairing_step_two_tip_layout_padding_top">16dp</dimen>
     <dimen name="pairing_step_two_header_margin_top">30dp</dimen>
-    <dimen name="searching_device_step_layout_indentation">18dp</dimen>
+    <dimen name="pairing_step_image_padding">36dp</dimen>
+    <dimen name="pairing_step_image_width">280dp</dimen>
+    <dimen name="pairing_step_image_height">210dp</dimen>
     <dimen name="pairing_step_gif_view_margin">16dp</dimen>
     <dimen name="pairing_step_cycle_progress_bar_size">164dp</dimen>
     <integer name="pairing_step_cycle_progress_bar_duration">1000</integer>

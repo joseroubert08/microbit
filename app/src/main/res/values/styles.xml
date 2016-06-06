@@ -122,7 +122,6 @@
     <style name="white_header_text_style" parent="match_width_parent_wrap_height_content">
         <item name="android:textSize">@dimen/pairing_connection_header_text_size</item>
         <item name="android:textColor">@color/main_gray_color</item>
-        <item name="android:textStyle">bold</item>
         <item name="android:gravity">start|top</item>
         <item name="android:paddingTop">@dimen/pairing_connection_header_padding</item>
         <item name="android:paddingBottom">@dimen/pairing_connection_header_padding</item>
@@ -138,4 +137,12 @@
         <item name="android:padding">@dimen/pair_prev_connected_button_padding</item>
         <item name="android:textAppearance">?android:textAppearanceMedium</item>
     </style>
+
+    <style name="pairing_step_image_layout_style">
+        <item name="android:layout_width">@dimen/pairing_step_image_width</item>
+        <item name="android:layout_height">@dimen/pairing_step_image_height</item>
+        <item name="android:padding">@dimen/pairing_step_image_padding</item>
+        <item name="android:gravity">end|bottom</item>
+    </style>
+    
 </resources>

@@ -10,7 +10,7 @@
     <LinearLayout
         style="@style/pairing_step_tip_layout_style"
         android:layout_width="0dp"
-        android:layout_weight="4">
+        android:layout_weight="1">
 
         <TextView
             android:id="@+id/pair_enter_pattern_step_2"
@@ -25,12 +25,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_weight="5"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/pairing_step_two_image_layout_margin"
-        android:layout_marginEnd="@dimen/pairing_step_two_image_layout_margin"
-        android:gravity="end|bottom">
+        style="@style/pairing_step_image_layout_style">
 
         <ImageView
             android:id="@+id/oh_pretty_emoji"
