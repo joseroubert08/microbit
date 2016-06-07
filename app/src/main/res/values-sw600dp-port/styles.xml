@@ -221,21 +221,4 @@
         <item name="android:paddingTop">@dimen/pairing_step_tip_layout_height_padding</item>
     </style>
 
-    <!-- Pairing step layout styles -->
-    <style name="pairing_step_layout_style">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@color/black_color</item>
-        <item name="android:orientation">vertical</item>
-    </style>
-
-    <style name="pairing_step_central_image_layout_style">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">0dp</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:layout_weight">3</item>
-        <item name="android:gravity">center</item>
-        <item name="android:scrollbars">none</item>
-    </style>
-
 </resources>

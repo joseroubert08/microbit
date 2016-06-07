@@ -30,70 +30,41 @@
 
         <GridView
             android:id="@+id/enter_pattern_step_2_gridview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/led_grid_width"
+            android:layout_height="@dimen/led_grid_width"
             android:cacheColorHint="@color/cancel_button_up"
             android:gravity="center"
             android:horizontalSpacing="@dimen/led_gap"
             android:numColumns="5"
-            android:stretchMode="spacingWidthUniform"
             android:verticalSpacing="@dimen/led_gap" />
     </LinearLayout>
 
     <include layout="@layout/view_entering_pattern_step" />
 
     <!--Line-->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:alpha="0.5"
-        android:background="@color/gray_color" />
+    <include layout="@layout/view_divider" />
 
     <!-- Pairing confirmation buttons-->
     <LinearLayout
         android:id="@+id/enterPatternConfirmationView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:gravity="center"
-        android:orientation="horizontal">
+        style="@style/pairing_step_buttons_layout_style">
 
         <Button
             android:id="@+id/cancel_enter_pattern_step_2_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_weight="1"
+            style="@style/pairing_step_button_style"
+            android:layout_marginEnd="@dimen/pairing_step_buttons_space_margin"
             android:background="@drawable/cancel_btn"
             android:drawableEnd="@drawable/cancel_step_pairing_btn"
-            android:gravity="center_vertical|start"
-            android:padding="8dp"
             android:text="@string/txt_cancel_btn"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@color/black_color"
             android:visibility="invisible" />
 
         <Button
             android:id="@+id/ok_enter_pattern_step_2_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_weight="1"
+            style="@style/pairing_step_button_style"
+            android:layout_marginStart="@dimen/pairing_step_buttons_space_margin"
             android:background="@drawable/green_btn"
             android:drawableEnd="@drawable/next_step_pairing_btn"
-            android:gravity="center_vertical|start"
-            android:padding="8dp"
             android:text="@string/txt_how_to_pair_next_btn"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@color/black_color"
             android:visibility="invisible" />
     </LinearLayout>
 

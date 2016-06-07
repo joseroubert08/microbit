@@ -1,48 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rootLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/pop_up_background"
-    android:orientation="vertical">
+    style="@style/popup_layout_style">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical">
+        style="@style/popup_images_layout_style">
 
         <!-- Non animated images for flashing-->
         <ImageView
             android:id="@+id/image_icon"
-            android:layout_width="@dimen/popup_icon_size"
-            android:layout_height="@dimen/popup_icon_size"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/popup_header_section_marginTop"
-            android:scaleType="centerInside"
-            android:src="@drawable/overwrite_face"
-            android:visibility="gone" />
+            style="@style/popup_image_style"/>
 
         <!-- Loading Giffs -->
         <pl.droidsonroids.gif.GifImageView
             android:id="@+id/pop_up_gif_image_view"
-            android:layout_width="@dimen/popup_gif_size"
-            android:layout_height="@dimen/popup_gif_size"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/popup_header_section_marginTop"
-            android:baselineAlignBottom="true"
-            android:scaleType="centerInside"
-            android:visibility="gone" />
+            style="@style/popup_gif_image_style" />
     </LinearLayout>
 
     <!-- Body of pop up - main text area, loader etc-->
     <LinearLayout
         android:id="@+id/pop_body_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:paddingTop="@dimen/popup_text_layout_padding_top"
-        android:orientation="vertical">
+        style="@style/popup_content_layout_style"
+        android:paddingTop="@dimen/popup_text_layout_padding_top">
 
         <!-- Pop up  title-->
         <TextView

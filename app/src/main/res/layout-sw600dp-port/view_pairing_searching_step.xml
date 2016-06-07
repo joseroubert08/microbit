@@ -24,13 +24,8 @@
             android:text="@string/searching_tip_text_instructions" />
     </LinearLayout>
 
-    <LinearLayout
-        style="@style/pairing_step_image_layout_style">
-
-        <ImageView
-            android:id="@+id/searching_emoji"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_where_are_you" />
-    </LinearLayout>
+    <ImageView
+        android:id="@+id/searching_emoji"
+        style="@style/pairing_step_image_layout_style"
+        android:src="@drawable/ic_where_are_you" />
 </LinearLayout>

@@ -42,9 +42,9 @@
     <dimen name="device_name_width">550dp</dimen>
     <dimen name="divider_margin">20dp</dimen>
     <dimen name="device_lv_bottom_margin">70dp</dimen>
-    <dimen name="led_gap">14dp</dimen>
-    <integer name="led_size">56</integer>
-    <dimen name="led_grid_width">340dp</dimen>
+    <dimen name="led_gap">15dp</dimen>
+    <integer name="led_size">60</integer>
+    <dimen name="led_grid_width">360dp</dimen>
     <dimen name="mbit_tip_img_size">250dp</dimen>
     <dimen name="connect_lv_btn_width">80dp</dimen>
     <dimen name="connect_lv_item_height">80dp</dimen>
@@ -110,7 +110,7 @@
 
     <!-- Project items -->
     <dimen name="project_items_text_size">24sp</dimen>
-    <dimen name="project_items_layout_margin">16dp</dimen>
+
 
     <!-- Divider -->
     <dimen name="view_divider_margin">0dp</dimen>
@@ -144,9 +144,8 @@
     <dimen name="pairing_step_image_padding">36dp</dimen>
     <dimen name="pairing_step_image_width">280dp</dimen>
     <dimen name="pairing_step_image_height">210dp</dimen>
-    <dimen name="pairing_step_gif_view_margin">16dp</dimen>
     <dimen name="pairing_step_cycle_progress_bar_size">164dp</dimen>
-    <integer name="pairing_step_cycle_progress_bar_duration">1000</integer>
+
 
     <!-- Popup screens -->
     <dimen name="popup_gif_size">200dp</dimen>

@@ -11,26 +11,22 @@
         style="@style/pairing_step_tip_layout_style"
         android:layout_width="0dp"
         android:layout_weight="1">
-    <TextView
-        android:id="@+id/pair_tip_step_1_step"
-        style="@style/pairing_step_title_style"
-        android:contentDescription="@string/desc_connect_tip_text_step"
-        android:text="@string/connect_tip_text_step"/>
 
-    <TextView
-        android:id="@+id/pair_tip_step_1_instructions"
-        style="@style/pairing_step_tip_text_style"
-        android:contentDescription="@string/desc_connect_tip_text"
-        android:text="@string/connect_tip_text_one_line" />
+        <TextView
+            android:id="@+id/pair_tip_step_1_step"
+            style="@style/pairing_step_title_style"
+            android:contentDescription="@string/desc_connect_tip_text_step"
+            android:text="@string/connect_tip_text_step" />
+
+        <TextView
+            android:id="@+id/pair_tip_step_1_instructions"
+            style="@style/pairing_step_tip_text_style"
+            android:contentDescription="@string/desc_connect_tip_text"
+            android:text="@string/connect_tip_text" />
     </LinearLayout>
 
-    <LinearLayout
-        style="@style/pairing_step_image_layout_style">
-
-        <ImageView
-            android:id="@+id/step_one_lets_do_this_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_person_step_1" />
-    </LinearLayout>
+    <ImageView
+        android:id="@+id/step_one_lets_do_this_image"
+        style="@style/pairing_step_image_layout_style"
+        android:src="@drawable/ic_person_step_1" />
 </LinearLayout>

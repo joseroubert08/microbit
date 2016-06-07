@@ -591,12 +591,13 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     }
 
     private void checkPatternSuccess() {
+        final ImageView ohPrettyImage = (ImageView) findViewById(R.id.oh_pretty_emoji);
         if (deviceCodeArray[20] == "1" && deviceCodeArray[21] == "1" && deviceCodeArray[22] == "1" && deviceCodeArray[23] == "1" && deviceCodeArray[24] == "1") {
             findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
-            findViewById(R.id.oh_pretty_emoji).setBackgroundResource(R.drawable.emoji_entering_pattern_valid_pattern);
+            ohPrettyImage.setImageResource(R.drawable.emoji_entering_pattern_valid_pattern);
         } else {
             findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.INVISIBLE);
-            findViewById(R.id.oh_pretty_emoji).setBackgroundResource(R.drawable.emoji_entering_pattern);
+            ohPrettyImage.setImageResource(R.drawable.emoji_entering_pattern);
         }
     }
 

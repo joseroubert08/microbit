@@ -138,11 +138,107 @@
         <item name="android:textAppearance">?android:textAppearanceMedium</item>
     </style>
 
+    <!-- Main activity styles -->
+    <style name="main_activity_button_style" parent="match_width_parent_wrap_height_content">
+        <item name="android:layout_marginBottom">@dimen/main_activity_button_margin_bottom</item>
+        <item name="android:background">@drawable/grey_btn</item>
+        <item name="android:elevation">@dimen/elevation</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">center_vertical|start</item>
+        <item name="android:lines">1</item>
+        <item name="android:onClick">onClick</item>
+        <item name="android:scrollHorizontally">true</item>
+        <item name="android:textSize">@dimen/main_activity_button_text_size</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <!-- Pairing steps styles -->
+    <style name="pairing_step_tip_text_style" parent="match_width_parent_wrap_height_content">
+        <item name="android:textSize">@dimen/pairing_step_tip_text_size</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="pairing_step_button_style">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">@dimen/pairing_step_button_text_size</item>
+        <item name="android:padding">@dimen/pairing_step_button_padding</item>
+    </style>
+
+    <style name="pairing_step_buttons_layout_style" parent="match_width_parent_wrap_height_content">
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">bottom</item>
+        <item name="android:padding">@dimen/pairing_step_button_layout_padding</item>
+    </style>
+
     <style name="pairing_step_image_layout_style">
         <item name="android:layout_width">@dimen/pairing_step_image_width</item>
         <item name="android:layout_height">@dimen/pairing_step_image_height</item>
         <item name="android:padding">@dimen/pairing_step_image_padding</item>
-        <item name="android:gravity">end|bottom</item>
     </style>
-    
+
+    <style name="pairing_step_tip_layout_style" parent="match_width_parent_wrap_height_content">
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">bottom</item>
+        <item name="android:padding">@dimen/pairing_step_tip_padding</item>
+    </style>
+
+    <!-- Pairing step layout styles -->
+    <style name="pairing_step_layout_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/black_color</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="pairing_step_central_image_layout_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_weight">3</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <!-- Popup styles -->
+    <style name="popup_layout_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/pop_up_background</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="popup_images_layout_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="popup_image_style">
+        <item name="android:layout_width">@dimen/popup_icon_size</item>
+        <item name="android:layout_height">@dimen/popup_icon_size</item>
+        <item name="android:layout_marginTop">@dimen/popup_header_section_marginTop</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:src">@drawable/overwrite_face</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="popup_gif_image_style">
+        <item name="android:layout_width">@dimen/popup_gif_size</item>
+        <item name="android:layout_height">@dimen/popup_gif_size</item>
+        <item name="android:layout_marginTop">@dimen/popup_header_section_marginTop</item>
+        <item name="android:baselineAlignBottom">true</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="popup_content_layout_style" parent="match_width_parent_wrap_height_content">
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
 </resources>

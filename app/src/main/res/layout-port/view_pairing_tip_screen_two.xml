@@ -11,11 +11,8 @@
         android:id="@+id/how_to_pair_screen_two_title"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_gravity="center"
         android:layout_weight="1"
-        android:gravity="start|center"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:gravity="center"
         android:text="@string/connect_tip_title"
         android:textAppearance="?android:textAppearanceLarge"
         android:textColor="@color/white_color" />
@@ -38,17 +35,13 @@
             android:src="@drawable/pairing_pin_screen_two" />
     </LinearLayout>
 
+    <!-- Step instructions -->
     <include layout="@layout/pair_microbit_step_screen_two" />
 
     <!-- Line -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:alpha="0.5"
-        android:background="@color/gray_color" />
+    <include layout="@layout/view_divider" />
 
+    <!-- Confirmation buttons -->
     <include layout="@layout/pairing_tip_action_buttons_screen_two" />
 
 </LinearLayout>
