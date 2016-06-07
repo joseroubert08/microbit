@@ -34,6 +34,7 @@
     <dimen name="popup_title_padding">8dp</dimen>
     <dimen name="popup_round_button_padding">32dp</dimen>
     <dimen name="popup_round_button_margin">16dp</dimen>
+    <dimen name="pairing_step_tip_layout_width_padding">18dp</dimen>
 
     <!-- Main activity -->
     <dimen name="main_activity_layout_padding">16dp</dimen>

@@ -24,7 +24,7 @@
                 android:id="@+id/img_toolbar_bbc_logo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:logoDescription="@string/content_description_toolbar_logo"
+                android:contentDescription="@string/content_description_toolbar_logo"
                 android:src="@drawable/bbc_microbit_app_bar_logo" />
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>

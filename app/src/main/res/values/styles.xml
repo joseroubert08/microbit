@@ -239,6 +239,8 @@
     <style name="popup_content_layout_style" parent="match_width_parent_wrap_height_content">
         <item name="android:layout_centerInParent">true</item>
         <item name="android:orientation">vertical</item>
+        <item name="android:paddingStart">@dimen/pairing_step_tip_layout_width_padding</item>
+        <item name="android:paddingEnd">@dimen/pairing_step_tip_layout_width_padding</item>
     </style>
 
 </resources>

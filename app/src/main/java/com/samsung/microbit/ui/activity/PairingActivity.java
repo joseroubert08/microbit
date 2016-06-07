@@ -1065,7 +1065,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         PopUp.show(this,
                 getString(R.string.deleteMicrobitMessage), //message
                 getString(R.string.deleteMicrobitTitle), //title
-                R.drawable.delete_project, R.drawable.red_btn,
+                R.drawable.ic_trash, R.drawable.red_btn,
                 PopUp.GIFF_ANIMATION_NONE,
                 PopUp.TYPE_CHOICE, //type of popup.
                 new View.OnClickListener() {

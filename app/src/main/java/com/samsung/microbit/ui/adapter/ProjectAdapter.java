@@ -243,7 +243,7 @@ public class ProjectAdapter extends BaseAdapter {
             PopUp.show(MBApp.getContext(),
                     MBApp.getContext().getString(R.string.delete_project_message),
                     MBApp.getContext().getString(R.string.delete_project_title),
-                    R.drawable.delete_project, R.drawable.red_btn,
+                    R.drawable.ic_trash, R.drawable.red_btn,
                     PopUp.GIFF_ANIMATION_NONE,
                     PopUp.TYPE_CHOICE,
                     new View.OnClickListener() {
