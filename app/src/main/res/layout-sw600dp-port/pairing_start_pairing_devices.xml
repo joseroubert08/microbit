@@ -11,8 +11,6 @@
     <LinearLayout
         android:id="@+id/pairButton"
         style="@style/custom_button_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_margin="@dimen/custom_button_margin"
         android:background="@drawable/yellow_btn"
         android:onClick="onClick">

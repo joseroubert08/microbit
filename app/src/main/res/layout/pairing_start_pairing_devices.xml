@@ -2,27 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/pairButtonView"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:divider="?android:dividerHorizontal"
-    android:dividerPadding="16dp"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:showDividers="beginning">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:id="@+id/pairButton"
         style="@style/custom_button_layout"
+        android:layout_margin="@dimen/custom_button_margin"
         android:background="@drawable/yellow_btn"
         android:onClick="onClick">
-
-        <TextView
-            android:id="@+id/custom_pair_button_text"
-            style="@style/custom_button_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="start"
-            android:text="@string/connectNew" />
 
         <ImageView
             style="@style/custom_button_image"
@@ -30,5 +17,12 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/desc_connect_pair_micro_bit"
             android:src="@drawable/pair_new_micro_bit" />
+
+        <TextView
+            android:id="@+id/custom_pair_button_text"
+            style="@style/custom_button_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/connectNew" />
     </LinearLayout>
 </LinearLayout>

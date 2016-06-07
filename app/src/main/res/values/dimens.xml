@@ -8,15 +8,14 @@
     <dimen name="custom_button_padding">16dp</dimen>
     <dimen name="custom_button_start_margin">8dp</dimen>
     <dimen name="custom_button_end_margin">16dp</dimen>
-    <dimen name="custom_button_image_margin">10dp</dimen>
+    <dimen name="custom_button_image_margin">0dp</dimen>
     <dimen name="custom_button_margin">16dp</dimen>
     <dimen name="image_delete_button_margin_end">8dp</dimen>
     <dimen name="project_item_buttons_size">48dp</dimen>
     <dimen name="project_items_layout_margin">16dp</dimen>
+    <dimen name="project_items_image_padding">6dp</dimen>
 
     <!-- Connect screen -->
-    <dimen name="custom_pair_button_height_padding">14dp</dimen>
-    <dimen name="custom_pair_button_width_padding">8dp</dimen>
     <dimen name="pairing_connection_header_text_size">18sp</dimen>
     <dimen name="pairing_connection_header_padding">16dp</dimen>
     <dimen name="pair_prev_connected_button_padding">8dp</dimen>
@@ -41,13 +40,14 @@
     <dimen name="main_activity_gif_image_margin">16dp</dimen>
     <dimen name="main_activity_button_margin_bottom">8dp</dimen>
     <dimen name="main_activity_button_text_size">18sp</dimen>
+    <dimen name="main_activity_button_padding">24dp</dimen>
 
     <!-- Pairing steps -->
     <dimen name="pairing_step_tip_padding">16dp</dimen>
     <dimen name="pairing_step_tip_text_size">18sp</dimen>
     <dimen name="pairing_step_buttons_space_margin">8dp</dimen>
     <dimen name="pairing_step_button_layout_padding">16dp</dimen>
-    <dimen name="pairing_step_button_padding">8dp</dimen>
+    <dimen name="pairing_step_button_padding">16dp</dimen>
     <dimen name="pairing_step_button_text_size">18sp</dimen>
     <dimen name="pairing_step_image_padding">0dp</dimen>
     <dimen name="pairing_step_image_width">158dp</dimen>
@@ -56,4 +56,12 @@
     <dimen name="pairing_step_cycle_progress_bar_size">124dp</dimen>
     <dimen name="pairing_step_searching_tip_text_padding_end">8dp</dimen>
     <dimen name="pairing_step_gif_view_margin">16dp</dimen>
+    <dimen name="pairing_step_button_height">58dp</dimen>
+
+    <!-- Connect screen -->
+    <dimen name="connections_container_layout_padding">16dp</dimen>
+    <dimen name="connections_container_layout_margin">16dp</dimen>
+    <dimen name="description_and_smile_layout_padding">8dp</dimen>
+    <dimen name="description_and_smile_image_margin">16dp</dimen>
+
 </resources>

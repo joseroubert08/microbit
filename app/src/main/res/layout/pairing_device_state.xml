@@ -2,13 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/prevDeviceView"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    style="@style/connection_transparent_layout_style"
     android:layout_gravity="top"
-    android:divider="?android:dividerVertical"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:showDividers="end"
+    android:layout_margin="@dimen/connections_container_layout_margin"
     tools:showIn="@layout/view_connect_microbit">
 
     <!-- Connection status-->

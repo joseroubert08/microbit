@@ -117,24 +117,6 @@
         <item name="android:visibility">visible</item>
     </style>
 
-    <style name="custom_button_layout">
-        <item name="android:padding">@dimen/custom_button_padding</item>
-        <item name="android:gravity">center</item>
-    </style>
-
-    <style name="custom_button_text">
-        <item name="android:textSize">@dimen/p1_font_size</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@android:color/black</item>
-        <item name="android:textAppearance">?android:textAppearance</item>
-    </style>
-
-    <style name="custom_button_image">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginEnd">@dimen/custom_button_image_margin</item>
-    </style>
-
     <!-- Pairing activity connection styles -->
     <style name="white_header_text_style" parent="match_width_parent_wrap_height_content">
         <item name="android:textSize">@dimen/pairing_connection_header_text_size</item>
@@ -150,13 +132,7 @@
         <item name="android:gravity">center|bottom</item>
     </style>
 
-    <style name="connection_description_and_smile_layout_style" parent="match_width_parent_wrap_height_content">
-        <item name="android:background">@android:color/transparent</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingBottom">@dimen/description_and_smile_layout_padding</item>
-        <item name="android:paddingTop">@dimen/description_and_smile_layout_padding</item>
-        <item name="android:orientation">horizontal</item>
-    </style>
+
 
     <style name="connection_description_text_style">
         <item name="android:layout_width">0dp</item>
@@ -175,25 +151,6 @@
         <item name="android:layout_marginStart">@dimen/description_and_smile_image_margin</item>
         <item name="android:layout_weight">1</item>
         <item name="android:importantForAccessibility">no</item>
-    </style>
-
-    <style name="connection_transparent_layout_style" parent="match_width_parent_wrap_height_content">
-        <item name="android:background">@drawable/grey_transparent_container</item>
-        <item name="android:padding">@dimen/connections_container_layout_padding</item>
-        <item name="android:orientation">vertical</item>
-    </style>
-
-    <!-- Pairing step buttons style -->
-    <style name="pairing_step_button_style">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:layout_height">@dimen/pairing_step_button_height</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:textSize">@dimen/pairing_step_button_text_size</item>
-        <item name="android:textColor">@android:color/black</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:paddingStart">@dimen/pairing_step_button_padding</item>
-        <item name="android:paddingEnd">@dimen/pairing_step_button_padding</item>
     </style>
     
     <!-- Pairing step text styles -->

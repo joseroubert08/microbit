@@ -18,6 +18,6 @@
         style="@style/pairing_step_button_style"
         android:layout_marginStart="@dimen/pairing_step_buttons_space_margin"
         android:background="@drawable/green_btn"
-        android:drawableEnd="@drawable/next_step_pairing_btn"
+        android:drawableEnd="@drawable/ic_done_black"
         android:text="@string/txt_how_to_pair_next_btn" />
 </LinearLayout>
