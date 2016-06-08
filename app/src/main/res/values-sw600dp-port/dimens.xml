@@ -152,4 +152,7 @@
     <dimen name="popup_round_button_padding">36dp</dimen>
     <dimen name="popup_round_button_margin">16dp</dimen>
 
+    <!-- Splash screen -->
+    <dimen name="splash_screen_text_size">28dp</dimen>
+    <dimen name="splash_screen_logo_padding">38dp</dimen>
 </resources>

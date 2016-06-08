@@ -266,4 +266,24 @@
         <item name="android:paddingEnd">@dimen/pairing_step_tip_layout_width_padding</item>
     </style>
 
+    <!-- Common splash screen styles -->
+    <style name="splash_screen_text_style" parent="p2">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">2</item>
+        <item name="android:gravity">bottom|center</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/splash_screen_text_color</item>
+        <item name="android:textSize">@dimen/splash_screen_text_size</item>
+        <item name="android:text">@string/developed_by</item>
+    </style>
+
+    <style name="splash_screen_logo_image_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">3</item>
+        <item name="android:padding">@dimen/splash_screen_logo_padding</item>
+        <item name="android:scaleType">fitStart</item>
+        <item name="android:src">@drawable/samsung_logo</item>
+    </style>
 </resources>

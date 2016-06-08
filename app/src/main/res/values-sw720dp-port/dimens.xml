@@ -101,4 +101,8 @@
 
     <dimen name="pairing_step_image_width">360dp</dimen>
     <dimen name="pairing_step_image_height">270dp</dimen>
+
+    <!-- Splash screen -->
+    <dimen name="splash_screen_text_size">34dp</dimen>
+    <dimen name="splash_screen_logo_padding">44dp</dimen>
 </resources>

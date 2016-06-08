@@ -67,4 +67,8 @@
 
     <!-- Project items -->
     <dimen name="project_items_text_size">18sp</dimen>
+
+    <!-- Splash screen -->
+    <dimen name="splash_screen_text_size">22dp</dimen>
+    <dimen name="splash_screen_logo_padding">32dp</dimen>
 </resources>

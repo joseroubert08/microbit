@@ -151,7 +151,7 @@
             </intent-filter>
         </service>
         <activity
-            android:name=".ui.activity.SplashScreenActivityVideo"
+            android:name=".ui.activity.SplashScreenActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
             <intent-filter>
