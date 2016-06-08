@@ -138,13 +138,13 @@
     <dimen name="pairing_step_tip_layout_height_padding">50dp</dimen>
     <dimen name="pairing_step_two_image_layout_margin">18dp</dimen>
     <dimen name="pairing_step_two_tip_layout_padding_top">16dp</dimen>
-    <dimen name="pairing_step_two_header_margin_top">30dp</dimen>
+    <dimen name="pairing_step_two_header_margin">30dp</dimen>
     <dimen name="pairing_step_image_padding">18dp</dimen>
     <dimen name="pairing_step_image_width">280dp</dimen>
     <dimen name="pairing_step_image_height">210dp</dimen>
     <dimen name="pairing_step_cycle_progress_bar_size">164dp</dimen>
     <dimen name="pairing_step_button_layout_padding">18dp</dimen>
-
+    <dimen name="pairing_step_gif_image_margin">0dp</dimen>
 
     <!-- Popup screens -->
     <dimen name="popup_gif_size">200dp</dimen>

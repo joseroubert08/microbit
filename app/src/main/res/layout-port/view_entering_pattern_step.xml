@@ -27,5 +27,5 @@
     <ImageView
         android:id="@+id/oh_pretty_emoji"
         style="@style/pairing_step_image_layout_style"
-        android:src="@drawable/emoji_entering_pattern_valid_pattern" />
+        android:src="@drawable/emoji_entering_pattern" />
 </LinearLayout>

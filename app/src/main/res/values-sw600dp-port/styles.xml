@@ -125,12 +125,7 @@
         <item name="android:layout_marginBottom">@dimen/white_header_text_margin_bottom</item>
     </style>
 
-    <style name="pairing_step_header_style" parent="white_header_text_style">
-        <item name="android:textSize">@dimen/pairing_step_header_text_size</item>
-        <item name="android:layout_height">0dp</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:gravity">center|bottom</item>
-    </style>
+
 
 
 

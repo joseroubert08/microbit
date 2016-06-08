@@ -94,7 +94,7 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="fab_margin">16dp</dimen>
 
-    <dimen name="pairing_step_two_header_margin_top">60dp</dimen>
+    <dimen name="pairing_step_two_header_margin">60dp</dimen>
 
     <!-- Popup screens -->
     <dimen name="popup_text_layout_padding_top">200dp</dimen>

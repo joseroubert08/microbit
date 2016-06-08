@@ -22,19 +22,15 @@
     <!-- Body of pop up - main text area, loader etc-->
     <LinearLayout
         android:id="@+id/pop_body_layout"
-        style="@style/popup_content_layout_style">
+        style="@style/popup_content_layout_style"
+        android:paddingTop="@dimen/popup_text_layout_padding_top">
 
         <!-- Pop up  title-->
         <TextView
             android:id="@+id/flash_projects_title_txt"
-            android:layout_width="match_parent"
+            style="@style/pairing_step_header_style"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:paddingBottom="@dimen/popup_title_padding"
-            android:paddingTop="@dimen/popup_title_padding"
             android:text="@string/popup_title"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:textColor="@color/white_color"
             android:visibility="gone" />
 
         <!-- Flashing progress bar -->
@@ -67,15 +63,11 @@
         <!-- Subtitle text, messages about status-->
         <TextView
             android:id="@+id/messageTxt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/pairing_step_tip_text_style"
+            android:layout_gravity="center_horizontal"
             android:gravity="center"
-            android:paddingBottom="@dimen/popup_body_view_paddingVertical"
-            android:paddingTop="@dimen/popup_body_view_paddingVertical"
             android:text="@string/pop_up_subtitle_text"
             android:textAlignment="center"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@color/white_color"
             android:visibility="gone" />
 
     </LinearLayout>

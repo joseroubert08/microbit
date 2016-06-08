@@ -16,15 +16,10 @@
 
         <TextView
             android:id="@+id/title_manage_microbit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|top"
+            style="@style/white_header_text_style"
             android:contentDescription="@string/desc_manage_and_remove_microbits_label"
-            android:gravity="start"
             android:nextFocusDown="@+id/img_pair_microbit"
-            android:text="@string/manage_and_remove_microbit"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@android:color/white" />
+            android:text="@string/manage_and_remove_microbit" />
 
 
         <LinearLayout style="@style/connection_description_and_smile_layout_style">

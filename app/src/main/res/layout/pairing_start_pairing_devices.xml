@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/pairButtonView"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/main_gray_transparent_60_opacity_color">
 
     <LinearLayout
         android:id="@+id/pairButton"

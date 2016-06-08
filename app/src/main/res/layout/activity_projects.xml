@@ -38,5 +38,12 @@
     <!-- View my scripts -->
     <include layout="@layout/view_divider" />
 
-    <include layout="@layout/custom_projects_button" />
+    <!-- My Scripts button -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/main_gray_transparent_60_opacity_color">
+
+        <include layout="@layout/custom_projects_button" />
+    </LinearLayout>
 </LinearLayout>
