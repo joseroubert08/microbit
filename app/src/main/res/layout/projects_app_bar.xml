@@ -20,7 +20,7 @@
         android:nextFocusDown="@id/flash_projects_title_txt"
         android:onClick="onClick"
         android:padding="16dp"
-        android:src="@drawable/back" />
+        android:src="@drawable/ic_back_arrow" />
 
     <!-- View my scripts -->
     <View

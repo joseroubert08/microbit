@@ -24,19 +24,9 @@
             android:text="@string/enter_pattern_tip_text_one_line" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/pairing_step_two_image_layout_margin"
-        android:layout_marginEnd="@dimen/pairing_step_tip_layout_width_padding"
-        android:layout_weight="1"
-        android:padding="@dimen/pairing_step_two_image_layout_padding"
-        android:gravity="end|bottom">
 
-        <ImageView
-            android:id="@+id/oh_pretty_emoji"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/emoji_entering_pattern" />
-    </LinearLayout>
+    <ImageView
+        android:id="@+id/oh_pretty_emoji"
+        style="@style/pairing_step_image_layout_style"
+        android:src="@drawable/emoji_entering_pattern" />
 </LinearLayout>

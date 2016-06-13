@@ -95,7 +95,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
 
         imageIcon = (ImageView) findViewById(R.id.image_icon);
         titleTxt = (TextView) findViewById(R.id.flash_projects_title_txt);
-        titleTxt.setTypeface(MBApp.getApp().getTypeface());
+        titleTxt.setTypeface(MBApp.getApp().getTypefaceBold());
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         spinnerBar = (ProgressBar) findViewById(R.id.spinnerBar);
         messageTxt = (TextView) findViewById(R.id.messageTxt);

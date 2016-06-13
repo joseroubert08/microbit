@@ -36,4 +36,5 @@
     <color name="gray_green">#394535</color>
 
     <color name="custom_button_text">#525252</color>
+    <color name="splash_screen_text_color">#14289f</color>
 </resources>

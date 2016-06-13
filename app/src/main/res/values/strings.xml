@@ -20,6 +20,7 @@
     <string name="home_activity_name"></string>
     <string name="poweredBy">Powered by\r\n SAMSUNG</string>
     <string name="copyright">Copyright © 1995-2015 SAMSUNG</string>
+    <string name="developed_by">Developed by</string>
 
     <string name="createCodeURL">https://www.microbit.co.uk/</string>
 
@@ -155,8 +156,7 @@
     <string name="searching_microbit_found_message">Open your notification drawer \nand enter your Pin</string>
     <string name="desc_searching_microbit_found_message">Open your notification drawer and enter your Pin</string>
     <string name="step_connect_tip_text_step_two">Step 2</string>
-    <string name="connect_tip_text">Hold the A and B buttons,\nthen PRESS RESET</string>
-    <string name="connect_tip_text_one_line">Hold the A and B buttons, then PRESS RESET</string>
+    <string name="connect_tip_text">Hold the A and B buttons, then PRESS RESET</string>
     <string name="desc_connect_tip_text">Hold the A and B buttons, then PRESS RESET</string>
     <string name="desc_connect_tip_text_step">Step one</string>
     <string name="connect_tip_text_step_text">Hold the A and B buttons,\nthen PRESS RESET</string>
@@ -164,7 +164,6 @@
     <string name="connect_tip_text_step_two_text">When asked, enter your PIP \n(personal identification pattern) </string>
     <string name="desc_connect_tip_text_step_two_text">When asked, enter your personal identification pattern </string>
     <string name="step_enter_pattern_tip_text">Step 2</string>
-    <string name="enter_pattern_tip_text">Copy the pattern from \nyour micro:bit onto this grid</string>
     <string name="enter_pattern_tip_text_one_line">Copy the pattern from your micro:bit onto this grid</string>
     <string name="desc_enter_pattern_tip_step_two">Step two</string>
     <string name="desc_enter_pattern_tip_text">Copy the pattern from your micro:bit onto this grid</string>
@@ -315,7 +314,7 @@
     <string name="desc_connection_status_flash_text">Micro:Bit connection status</string>
     <string name="desc_send_project_btn">Flash code to your Micro:bit</string>
     <string name="desc_delete_project_btn">Delete code</string>
-    <string name="searching_tip_step_text">When asked for a PIN, \npress button A</string>
+    <string name="searching_tip_step_text">When asked for a PIN,\npress button A</string>
     <string name="desc_connect_pair_micro_bit">Pair a new micro:bit</string>
     <string name="most_recent_device_status">Most recently used micro:bit</string>
     <string name="device_connected_device_status">Currently connected micro:bit</string>

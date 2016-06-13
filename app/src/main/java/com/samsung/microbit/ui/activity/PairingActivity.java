@@ -590,12 +590,13 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     }
 
     private void checkPatternSuccess() {
+        final ImageView ohPrettyImage = (ImageView) findViewById(R.id.oh_pretty_emoji);
         if (deviceCodeArray[20] == "1" && deviceCodeArray[21] == "1" && deviceCodeArray[22] == "1" && deviceCodeArray[23] == "1" && deviceCodeArray[24] == "1") {
             findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
-            findViewById(R.id.oh_pretty_emoji).setBackgroundResource(R.drawable.emoji_entering_pattern_valid_pattern);
+            ohPrettyImage.setImageResource(R.drawable.emoji_entering_pattern_valid_pattern);
         } else {
             findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.INVISIBLE);
-            findViewById(R.id.oh_pretty_emoji).setBackgroundResource(R.drawable.emoji_entering_pattern);
+            ohPrettyImage.setImageResource(R.drawable.emoji_entering_pattern);
         }
     }
 
@@ -1063,7 +1064,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         PopUp.show(this,
                 getString(R.string.deleteMicrobitMessage), //message
                 getString(R.string.deleteMicrobitTitle), //title
-                R.drawable.delete_project, R.drawable.red_btn,
+                R.drawable.ic_trash, R.drawable.red_btn,
                 PopUp.GIFF_ANIMATION_NONE,
                 PopUp.TYPE_CHOICE, //type of popup.
                 new View.OnClickListener() {

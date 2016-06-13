@@ -5,73 +5,57 @@
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:layout_weight="1"
-    android:gravity="center"
-    android:paddingBottom="16dp"
-    android:paddingEnd="16dp"
-    android:paddingStart="16dp"
-
+    android:paddingBottom="@dimen/connections_container_layout_padding"
+    android:paddingEnd="@dimen/connections_container_layout_padding"
+    android:paddingStart="@dimen/connections_container_layout_padding"
     tools:showIn="@layout/view_connect_microbit">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/transparent"
-        android:orientation="vertical"
-        android:paddingBottom="16dp"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp">
+    <LinearLayout
+        style="@style/connection_transparent_layout_style"
+        android:paddingBottom="@dimen/connections_container_layout_padding">
 
         <TextView
             android:id="@+id/title_manage_microbit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|top"
+            style="@style/white_header_text_style"
             android:contentDescription="@string/desc_manage_and_remove_microbits_label"
-            android:gravity="start"
-            android:lines="2"
-            android:maxLines="2"
             android:nextFocusDown="@+id/img_pair_microbit"
-            android:text="@string/manage_and_remove_microbit"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@color/main_gray_color"
-            android:textStyle="bold" />
+            android:text="@string/manage_and_remove_microbit" />
 
 
-            <TextView
-                android:id="@+id/description_manage_microbit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/title_manage_microbit"
-                android:contentDescription="@string/desc_manage_microbit_txt"
-                android:focusable="true"
-                android:maxLines="5"
-                android:minLines="3"
-                android:nextFocusDown="@id/flash_projects_title_txt"
-                android:text="@string/manage_microbit_txt"
-                android:textAppearance="?android:textAppearanceMedium"
-                android:textColor="@color/main_gray_color" />
+        <LinearLayout style="@style/connection_description_and_smile_layout_style">
 
-        <!-- Bluetooth settings -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/description_manage_microbit"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/connect_microbit_problems_message"
+            <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/description_and_smile_image_margin"
                 android:layout_weight="2"
-                android:contentDescription="@string/desc_connect_microbit_problems_message"
-                android:focusable="true"
-                android:maxLines="5"
-                android:minLines="3"
-                android:nextFocusDown="@id/flash_projects_title_txt"
-                android:text="@string/connect_microbit_problems_message_two_lines"
-                android:textAppearance="?android:textAppearanceMedium"
-                android:textColor="@color/main_gray_color" />
+                android:orientation="vertical"
+                android:weightSum="2">
+
+                <TextView
+                    android:id="@+id/description_manage_microbit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/desc_manage_microbit_txt"
+                    android:focusable="true"
+                    android:gravity="bottom"
+                    android:nextFocusDown="@id/flash_projects_title_txt"
+                    android:text="@string/manage_microbit_txt_one_line"
+                    android:textColor="@android:color/black" />
+
+                <TextView
+                    android:id="@+id/connect_microbit_problems_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/desc_connect_microbit_problems_message"
+                    android:focusable="true"
+                    android:gravity="bottom"
+                    android:nextFocusDown="@id/flash_projects_title_txt"
+                    android:text="@string/connect_microbit_problems_message_two_lines"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
 
             <ImageView
                 android:id="@+id/img_pair_microbit"
@@ -82,9 +66,8 @@
                 android:importantForAccessibility="no"
                 android:nextFocusDown="@+id/connect_microbit_problems_message"
                 android:src="@drawable/ic_face" />
-
         </LinearLayout>
-    </RelativeLayout>
+    </LinearLayout>
 </LinearLayout>
 
     

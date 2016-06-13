@@ -8,14 +8,14 @@
     <dimen name="custom_button_padding">16dp</dimen>
     <dimen name="custom_button_start_margin">8dp</dimen>
     <dimen name="custom_button_end_margin">16dp</dimen>
-    <dimen name="custom_button_image_margin">10dp</dimen>
+    <dimen name="custom_button_image_margin">0dp</dimen>
     <dimen name="custom_button_margin">16dp</dimen>
     <dimen name="image_delete_button_margin_end">8dp</dimen>
     <dimen name="project_item_buttons_size">48dp</dimen>
+    <dimen name="project_items_layout_margin">16dp</dimen>
+    <dimen name="project_items_image_padding">6dp</dimen>
 
     <!-- Connect screen -->
-    <dimen name="custom_pair_button_height_padding">14dp</dimen>
-    <dimen name="custom_pair_button_width_padding">8dp</dimen>
     <dimen name="pairing_connection_header_text_size">18sp</dimen>
     <dimen name="pairing_connection_header_padding">16dp</dimen>
     <dimen name="pair_prev_connected_button_padding">8dp</dimen>
@@ -24,6 +24,55 @@
     <!-- p1 font size -->
     <dimen name="p1_font_size">16sp</dimen>
 
-    <!-- Divider -->
-    <dimen name="view_divider_margin">16dp</dimen>
+    <!-- Popup screens -->
+    <dimen name="popup_gif_size">150dp</dimen>
+    <dimen name="popup_layout_padding">16dp</dimen>
+    <dimen name="popup_title_padding">8dp</dimen>
+    <dimen name="popup_round_button_padding">32dp</dimen>
+    <dimen name="popup_round_button_margin">16dp</dimen>
+    <dimen name="pairing_step_tip_layout_width_padding">18dp</dimen>
+    <dimen name="popup_text_layout_padding_top">36dp</dimen>
+
+    <!-- Main activity -->
+    <dimen name="main_activity_layout_padding">16dp</dimen>
+    <dimen name="main_activity_gif_image_margin">16dp</dimen>
+    <dimen name="main_activity_button_margin_bottom">8dp</dimen>
+    <dimen name="main_activity_button_text_size">18sp</dimen>
+    <dimen name="main_activity_button_padding">24dp</dimen>
+
+    <!-- Pairing steps -->
+    <dimen name="pairing_step_tip_padding">16dp</dimen>
+    <dimen name="pairing_step_tip_text_size">18sp</dimen>
+    <dimen name="pairing_step_buttons_space_margin">8dp</dimen>
+    <dimen name="pairing_step_button_layout_padding">16dp</dimen>
+    <dimen name="pairing_step_button_padding">16dp</dimen>
+    <dimen name="pairing_step_button_text_size">18sp</dimen>
+    <dimen name="pairing_step_image_padding">0dp</dimen>
+    <dimen name="pairing_step_image_width">158dp</dimen>
+    <dimen name="pairing_step_image_height">114dp</dimen>
+    <integer name="pairing_step_cycle_progress_bar_duration">1000</integer>
+    <dimen name="pairing_step_cycle_progress_bar_size">124dp</dimen>
+    <dimen name="pairing_step_searching_tip_text_padding_end">8dp</dimen>
+    <dimen name="pairing_step_gif_view_margin">16dp</dimen>
+    <dimen name="pairing_step_button_height">58dp</dimen>
+    <dimen name="pairing_step_header_text_size">22sp</dimen>
+    <dimen name="pairing_step_gif_image_margin">8dp</dimen>
+    <dimen name="pairing_step_two_header_margin">16dp</dimen>
+
+    <!-- Connect screen -->
+    <dimen name="connections_container_layout_padding">16dp</dimen>
+    <dimen name="connections_container_layout_margin">16dp</dimen>
+    <dimen name="description_and_smile_layout_padding">8dp</dimen>
+    <dimen name="description_and_smile_image_margin">16dp</dimen>
+
+    <!-- Project items -->
+    <dimen name="project_items_text_size">18sp</dimen>
+
+    <!-- Splash screen -->
+    <dimen name="splash_screen_text_size">20dp</dimen>
+    <dimen name="splash_screen_gif_image_layout_padding">32dp</dimen>
+    <dimen name="splash_screen_logo_margin_top">16dp</dimen>
+    <dimen name="splash_screen_logo_width">200dp</dimen>
+    <dimen name="splash_screen_logo_height">32dp</dimen>
+
 </resources>
