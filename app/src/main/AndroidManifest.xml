@@ -51,10 +51,9 @@
         android:theme="@style/AppTheme.NoActionBar">
         <activity
             android:name=".ui.activity.HomeActivity"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize"
             android:label="@string/home_activity_name"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
+            android:launchMode="singleTop" />
         <activity
             android:name=".ui.activity.ProjectActivity"
             android:parentActivityName=".ui.activity.HomeActivity"
