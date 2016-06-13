@@ -85,7 +85,7 @@ public final class IPCMessageManager {
 
 	private boolean isDebug = BuildConfig.DEBUG;
 
-    ServiceConnection serviceConnection = new ServiceConnection() {
+    private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             if(isDebug) {

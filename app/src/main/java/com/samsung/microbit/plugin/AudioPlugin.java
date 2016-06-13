@@ -10,10 +10,14 @@ import com.samsung.microbit.ui.activity.AudioRecorderActivity;
 public class AudioPlugin {
     private static Context context = null;
 
-    public static final String INTENT_ACTION_LAUNCH = "com.samsung.microbit.ui.activity.AudioRecorderActivity.action.LAUNCH";
-    public static final String INTENT_ACTION_START_RECORD = "com.samsung.microbit.ui.activity.AudioRecorderActivity.action.START_RECORD";
-    public static final String INTENT_ACTION_STOP_RECORD = "com.samsung.microbit.ui.activity.AudioRecorderActivity.action.STOP_RECORD";
-    public static final String INTENT_ACTION_STOP = "com.samsung.microbit.ui.activity.AudioRecorderActivity.action.STOP";//close
+    public static final String INTENT_ACTION_LAUNCH = "com.samsung.microbit.ui.activity.AudioRecorderActivity.action" +
+            ".LAUNCH";
+    public static final String INTENT_ACTION_START_RECORD = "com.samsung.microbit.ui.activity.AudioRecorderActivity" +
+            ".action.START_RECORD";
+    public static final String INTENT_ACTION_STOP_RECORD = "com.samsung.microbit.ui.activity.AudioRecorderActivity" +
+            ".action.STOP_RECORD";
+    public static final String INTENT_ACTION_STOP = "com.samsung.microbit.ui.activity.AudioRecorderActivity.action" +
+            ".STOP";//close
 
     public static void pluginEntry(Context ctx, CmdArg cmd) {
         context = ctx;

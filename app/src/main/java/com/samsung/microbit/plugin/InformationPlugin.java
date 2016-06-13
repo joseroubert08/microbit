@@ -38,50 +38,56 @@ public class InformationPlugin {
 
         switch (cmd.getCMD()) {
             case Constants.REG_SIGNALSTRENGTH: {
-                if (register)
+                if (register) {
                     registerSignalStrength();
-                else
+                } else {
                     unregisterSignalStrength();
+                }
                 break;
             }
 
             case Constants.REG_DEVICEORIENTATION: {
-                if (register)
+                if (register) {
                     registerOrientation();
-                else
+                } else {
                     unregisterOrientation();
+                }
                 break;
             }
 
             case Constants.REG_DEVICEGESTURE: {
-                if (register)
+                if (register) {
                     registerShake();
-                else
+                } else {
                     unregisterShake();
+                }
                 break;
             }
 
             case Constants.REG_BATTERYSTRENGTH: {
-                if (register)
+                if (register) {
                     registerBattery();
-                else
+                } else {
                     unregisterBattery();
+                }
                 break;
             }
 
             case Constants.REG_TEMPERATURE: {
-                if (register)
+                if (register) {
                     registerTemperature();
-                else
+                } else {
                     unregisterTemperature();
+                }
                 break;
             }
 
             case Constants.REG_DISPLAY: {
-                if (register)
+                if (register) {
                     registerDisplay();
-                else
+                } else {
                     unregisterDisplay();
+                }
                 break;
 
             }
@@ -126,7 +132,7 @@ public class InformationPlugin {
         }
     };
 
-    static private final void updateSignalStrength() {
+    static private void updateSignalStrength() {
         int level = 0;
         Log.i("InformationPlugin", "updateSignalStrength: ");
         if (!isCdma()) {
@@ -271,8 +277,9 @@ public class InformationPlugin {
      * ORIENTATION
      */
     public static void registerOrientation() {
-        if (mOrientationListener != null)
-              return;
+        if (mOrientationListener != null) {
+            return;
+        }
 
         if (mSensorManager == null) {
             mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
@@ -305,12 +312,15 @@ public class InformationPlugin {
 
             }
         };
+
         mSensorManager.registerListener(mOrientationListener , mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     public static void unregisterOrientation() {
-        if (mOrientationListener == null)
+        if (mOrientationListener == null) {
             return;
+        }
+
         mSensorManager.unregisterListener(mOrientationListener);
         mOrientationListener = null;
     }
@@ -350,8 +360,9 @@ public class InformationPlugin {
     }
 
     public static void registerTemperature() {
-        if (mTemperatureListener != null)
+        if (mTemperatureListener != null) {
             return;
+        }
 
         mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
 
@@ -368,8 +379,9 @@ public class InformationPlugin {
     }
 
     public static void unregisterTemperature() {
-        if (mTemperatureListener == null)
+        if (mTemperatureListener == null) {
             return;
+        }
 
         mSensorManager.unregisterListener(mTemperatureListener);
         mTemperatureListener = null;
@@ -379,8 +391,10 @@ public class InformationPlugin {
     }
 
     public static void registerDisplay() {
-        if (mScreenReceiver != null)
+        if (mScreenReceiver != null) {
             return;
+        }
+
         Log.i("Information Plugin", "registerDisplay() ");
         mScreenReceiver = new BroadcastReceiver() {
             @Override
@@ -401,8 +415,9 @@ public class InformationPlugin {
 
     public static void unregisterDisplay() {
         Log.i("Information Plugin", "unregisterDisplay() ");
-        if (mScreenReceiver == null)
+        if (mScreenReceiver == null) {
             return;
+        }
 
         mContext.unregisterReceiver(mScreenReceiver);
         mScreenReceiver = null;
@@ -412,23 +427,24 @@ public class InformationPlugin {
     }
 
     public static void registerShake() {
-        if (mShakeListener != null)
+        if (mShakeListener != null) {
             return;
+        }
 
         mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
 
         mShakeListener = new ShakeEventListener();
-        mSensorManager.registerListener(mShakeListener, mSensorManager
-                        .getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(mShakeListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                 SensorManager.SENSOR_DELAY_NORMAL);
 
         CmdArg cmd = new CmdArg(0, "Registered Shake.");
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
     public static void unregisterShake() {
-        if (mShakeListener == null)
+        if (mShakeListener == null) {
             return;
+        }
 
         mSensorManager.unregisterListener(mShakeListener);
         mShakeListener = null;
@@ -442,8 +458,9 @@ public class InformationPlugin {
     }
 
     public static void registerBattery() {
-        if (mBatteryReceiver != null)
+        if (mBatteryReceiver != null) {
             return;
+        }
 
         mBatteryReceiver = new BroadcastReceiver() {
             @Override
@@ -469,8 +486,9 @@ public class InformationPlugin {
     }
 
     public static void unregisterBattery() {
-        if (mBatteryReceiver == null)
+        if (mBatteryReceiver == null) {
             return;
+        }
 
         mContext.unregisterReceiver(mBatteryReceiver);
         mBatteryReceiver = null;

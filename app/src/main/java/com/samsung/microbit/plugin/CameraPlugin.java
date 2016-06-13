@@ -115,8 +115,7 @@ public class CameraPlugin {
 		}
 	}
 
-    private static void performOnEnd()
-    {
+    private static void performOnEnd() {
         Log.d("CameraPlugin" , "Next state - " + m_NextState);
         switch (m_NextState)
         {

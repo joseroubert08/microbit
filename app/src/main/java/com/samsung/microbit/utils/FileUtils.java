@@ -33,12 +33,12 @@ public class FileUtils {
             MBApp app = MBApp.getApp();
 
             Resources resources = app.getResources();
-            final int ZIP_INTERNAL = resources.getIdentifier(Constants.ZIP_INTERNAL_NAME, "raw", app.getPackageName());
-            final String OUTPUT_DIR = Environment.getExternalStoragePublicDirectory(Environment
+            final int internalResource = resources.getIdentifier(Constants.ZIP_INTERNAL_NAME, "raw", app.getPackageName());
+            final String outputDir = Environment.getExternalStoragePublicDirectory(Environment
                     .DIRECTORY_DOWNLOADS).getAbsolutePath();
-            Log.d("MicroBit", "Resource id: " + ZIP_INTERNAL);
+            Log.d("MicroBit", "Resource id: " + internalResource);
             //Unzip the file now
-            ZipInputStream zin = new ZipInputStream(resources.openRawResource(ZIP_INTERNAL));
+            ZipInputStream zin = new ZipInputStream(resources.openRawResource(internalResource));
             ZipEntry ze;
             while ((ze = zin.getNextEntry()) != null) {
                 Log.v("MicroBit", "Unzipping " + ze.getName());
@@ -46,7 +46,7 @@ public class FileUtils {
                 if (ze.isDirectory()) {
                     dirChecker(ze.getName());
                 } else {
-                    FileOutputStream fout = new FileOutputStream(OUTPUT_DIR + File.separator + ze.getName());
+                    FileOutputStream fout = new FileOutputStream(outputDir + File.separator + ze.getName());
                     for (int c = zin.read(); c != -1; c = zin.read()) {
                         fout.write(c);
                     }

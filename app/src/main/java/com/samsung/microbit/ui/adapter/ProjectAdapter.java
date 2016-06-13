@@ -30,12 +30,13 @@ import java.util.List;
 
 public class ProjectAdapter extends BaseAdapter {
 
+    private static final String TAG = ProjectAdapter.class.getSimpleName();
+    
     private List<Project> projects;
     private ProjectActivity projectActivity;
     int currentEditableRow = -1;
-
-    protected String TAG = "ProjectAdapter";
-    protected boolean debug = BuildConfig.DEBUG;
+    
+    private boolean isDebug = BuildConfig.DEBUG;
 
     protected void logi(String message) {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
@@ -45,8 +46,8 @@ public class ProjectAdapter extends BaseAdapter {
 
         @Override
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-
             logi("onEditorAction() :: currentEditableRow=" + currentEditableRow);
+
             boolean handled = true;
             int pos = (int) v.getTag(R.id.positionId);
             Project project = projects.get(pos);
@@ -66,7 +67,6 @@ public class ProjectAdapter extends BaseAdapter {
     private View.OnClickListener appNameClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
             logi("OnClickListener() :: " + v.getClass().getName());
 
             boolean expandProjectItem = false;
@@ -107,8 +107,8 @@ public class ProjectAdapter extends BaseAdapter {
     private View.OnLongClickListener appNameLongClickListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
-
             logi("OnLongClickListener() :: " + v.getClass().getName());
+
             boolean rc = false;
             //if (v.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             renameProject(v);
@@ -132,11 +132,11 @@ public class ProjectAdapter extends BaseAdapter {
     }
 
     private void dismissKeyBoard(View v, boolean hide, boolean done) {
-
         logi("dismissKeyBoard() :: ");
-        int pos = (Integer) v.getTag(R.id.positionId);
-        logi("dismissKeyBoard() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
 
+        int pos = (Integer) v.getTag(R.id.positionId);
+
+        logi("dismissKeyBoard() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
 
         InputMethodManager imm = (InputMethodManager) projectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
@@ -160,9 +160,10 @@ public class ProjectAdapter extends BaseAdapter {
     }
 
     private void showKeyBoard(final View v) {
-
         logi("showKeyBoard() :: " + v.getClass().getName());
+
         int pos = (Integer) v.getTag(R.id.positionId);
+
         logi("showKeyBoard() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
 
         //v.setVisibility(View.VISIBLE);
@@ -179,7 +180,6 @@ public class ProjectAdapter extends BaseAdapter {
     }
 
     private void changeActionBar(View v) {
-
         logi("changeActionBar() :: ");
 
         int pos = (int) v.getTag(R.id.positionId);
@@ -198,7 +198,6 @@ public class ProjectAdapter extends BaseAdapter {
     }
 
     private void renameProject(View v) {
-
         logi("renameProject() :: ");
 
         int pos = (int) v.getTag(R.id.positionId);
@@ -258,32 +257,27 @@ public class ProjectAdapter extends BaseAdapter {
     };
 
     public ProjectAdapter(ProjectActivity projectActivity, List<Project> list) {
-
         this.projectActivity = projectActivity;
         projects = list;
     }
 
     @Override
     public int getCount() {
-
         return projects.size();
     }
 
     @Override
     public Object getItem(int position) {
-
         return projects.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-
         return position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         Project project = projects.get(position);
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(MBApp.getContext());

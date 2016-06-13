@@ -70,7 +70,8 @@ public class BLEManager {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
     }
 
-    public BLEManager(Context context, BluetoothDevice bluetoothDevice, UnexpectedConnectionEventListener unexpectedDisconnectionListener) {
+    public BLEManager(Context context, BluetoothDevice bluetoothDevice, UnexpectedConnectionEventListener
+             unexpectedDisconnectionListener) {
         if (isDebug) {
             logi("BLEManager(,,) :: start");
         }
@@ -80,8 +81,8 @@ public class BLEManager {
         this.unexpectedDisconnectionListener = unexpectedDisconnectionListener;
     }
 
-    public BLEManager(Context context, BluetoothDevice bluetoothDevice, CharacteristicChangeListener characteristicChangeListener,
-                      UnexpectedConnectionEventListener unexpectedDisconnectionListener) {
+    public BLEManager(Context context, BluetoothDevice bluetoothDevice, CharacteristicChangeListener
+             characteristicChangeListener, UnexpectedConnectionEventListener unexpectedDisconnectionListener) {
         if (isDebug) {
             logi("BLEManager(,,,) :: start");
         }
