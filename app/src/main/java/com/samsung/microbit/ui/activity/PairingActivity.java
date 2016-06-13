@@ -1174,7 +1174,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     mBluetoothAdapter.startLeScan((BluetoothAdapter.LeScanCallback) getBlueToothCallBack());
                 } else {
                     List<ScanFilter> filters = new ArrayList<ScanFilter>();
-                    // TODO: play with ScanSettings further to ensure the Kit kat devices connect with higher success rate
+                    // TODO: play with ScanSettings further to ensure the Kit kat devices connectMaybeInit with higher success rate
                     ScanSettings settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
                     mLEScanner.startScan(filters, settings, (ScanCallback) getBlueToothCallBack());
                 }

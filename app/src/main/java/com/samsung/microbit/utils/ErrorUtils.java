@@ -82,7 +82,7 @@ public class ErrorUtils {
                 return "GATT BUSY";
 
             case 0x0085:
-                return "Cannot connect to micro:bit (GATT error). Please retry.";
+                return "Cannot connectMaybeInit to micro:bit (GATT error). Please retry.";
 
             case 0x0086:
                 return "GATT CMD STARTED";

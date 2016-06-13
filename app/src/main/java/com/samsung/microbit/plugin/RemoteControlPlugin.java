@@ -6,6 +6,7 @@ import android.media.AudioManager;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import com.samsung.microbit.MBApp;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.Constants;
 
@@ -17,14 +18,11 @@ import static com.samsung.microbit.BuildConfig.DEBUG;
 public class RemoteControlPlugin {
 	private static final String TAG = RemoteControlPlugin.class.getSimpleName();
 
-    private static Context context = null;
-
 	private static void logi(String message) {
 		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 	}
 
 	public static void pluginEntry(Context ctx, CmdArg cmd) {
-		context = ctx;
 		switch (cmd.getCMD()) {
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY:
 				if (DEBUG) {
@@ -107,7 +105,7 @@ public class RemoteControlPlugin {
 		Intent mediaEvent = new Intent(Intent.ACTION_MEDIA_BUTTON);
 		KeyEvent event = new KeyEvent(action, code);
 		mediaEvent.putExtra(Intent.EXTRA_KEY_EVENT, event);
-		context.sendOrderedBroadcast(mediaEvent, null);
+		MBApp.getApp().sendOrderedBroadcast(mediaEvent, null);
 	}
 
 	private static void scheduleMediaKeyEvent(final int action, final int code, final int duration) {
@@ -155,7 +153,7 @@ public class RemoteControlPlugin {
 	}
 
 	private static void VolumeUp() {
-		AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+		AudioManager audio = (AudioManager) MBApp.getApp().getSystemService(Context.AUDIO_SERVICE);
 		audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
 			AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
 		/*
@@ -165,7 +163,7 @@ public class RemoteControlPlugin {
 	}
 
 	private static void VolumeDown() {
-		AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+		AudioManager audio = (AudioManager) MBApp.getApp().getSystemService(Context.AUDIO_SERVICE);
 		audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
 			AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
 		/*

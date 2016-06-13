@@ -26,11 +26,11 @@ public abstract class BLEBaseService extends Service {
 
     public static final boolean AUTO_CONNECT = true;
 
-    protected BLEManager bleManager;
+    private BLEManager bleManager;
 
     private BluetoothManager bluetoothManager;
-    BluetoothAdapter bluetoothAdapter;
-    BluetoothDevice bluetoothDevice;
+    private BluetoothAdapter bluetoothAdapter;
+    private BluetoothDevice bluetoothDevice;
 
     private String deviceAddress;
 
@@ -42,6 +42,18 @@ public abstract class BLEBaseService extends Service {
         if (isDebug) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
+    }
+
+    protected BLEManager getBleManager() {
+        return bleManager;
+    }
+
+    protected BluetoothAdapter getBluetoothAdapter() {
+        return bluetoothAdapter;
+    }
+
+    protected void setBluetoothDevice(BluetoothDevice bluetoothDevice) {
+        this.bluetoothDevice = bluetoothDevice;
     }
 
     @Override

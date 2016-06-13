@@ -15,13 +15,12 @@ import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.samsung.microbit.MBApp;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.service.PluginService;
 
 public class InformationPlugin {
-    private static Context mContext = null;
-
     //Information plugin action
     public static final int ORIENTATION = 0;
     public static final int SHAKE = 1;
@@ -30,7 +29,6 @@ public class InformationPlugin {
 
 
     public static void pluginEntry(Context ctx, CmdArg cmd) {
-        mContext = ctx;
         boolean register = false;
         if (cmd.getValue() != null) {
             register = cmd.getValue().toLowerCase().equals("on");
@@ -114,20 +112,20 @@ public class InformationPlugin {
     }
 
 
-    static SensorManager mSensorManager;
-    static SensorEventListener mOrientationListener;
-    static int mPreviousOrientation;
+    static SensorManager sSensorManager;
+    static SensorEventListener sOrientationListener;
+    static int sPreviousOrientation;
 
     //Signal strength code
-    static TelephonyManager mTelephonyManager;
-    static SignalStrength mSignalStrength;
+    static TelephonyManager sTelephonyManager;
+    static SignalStrength sSignalStrength;
     static PowerManager mPowerManager;
 
-    static PhoneStateListener mPhoneListener = new PhoneStateListener() {
+    static PhoneStateListener sPhoneListener = new PhoneStateListener() {
         @Override
         public void onSignalStrengthsChanged(SignalStrength signalStrength) {
             Log.i("InformationPlugin", "onSignalStrengthsChanged: ");
-            mSignalStrength = signalStrength;
+            sSignalStrength = signalStrength;
             updateSignalStrength();
         }
     };
@@ -136,7 +134,7 @@ public class InformationPlugin {
         int level = 0;
         Log.i("InformationPlugin", "updateSignalStrength: ");
         if (!isCdma()) {
-            int asu = mSignalStrength.getGsmSignalStrength();
+            int asu = sSignalStrength.getGsmSignalStrength();
             // ASU ranges from 0 to 31 - TS 27.007 Sec 8.5
             // asu = 0 (-113dB or less) is very weak
             // signal, its better to show 0 bars to the user in such cases.
@@ -154,8 +152,8 @@ public class InformationPlugin {
     }
 
     static private int getCdmaLevel() {
-        final int cdmaDbm = mSignalStrength.getCdmaDbm();
-        final int cdmaEcio = mSignalStrength.getCdmaEcio();
+        final int cdmaDbm = sSignalStrength.getCdmaDbm();
+        final int cdmaEcio = sSignalStrength.getCdmaEcio();
         int levelDbm = 0;
         int levelEcio = 0;
         if (cdmaDbm >= -75) levelDbm = 4;
@@ -173,7 +171,7 @@ public class InformationPlugin {
     }
 
     static private boolean isCdma() {
-        return (mSignalStrength != null) && !mSignalStrength.isGsm();
+        return (sSignalStrength != null) && !sSignalStrength.isGsm();
     }
 
     /*
@@ -194,7 +192,7 @@ public class InformationPlugin {
         }
     }
 
-    static TemperatureListener mTemperatureListener;
+    static TemperatureListener sTemperatureListener;
 
     /*
      * ShakeEventListener
@@ -258,34 +256,34 @@ public class InformationPlugin {
         }
     }
 
-    static ShakeEventListener mShakeListener;
-    static BroadcastReceiver mBatteryReceiver;
-    static BroadcastReceiver mScreenReceiver;
-    static int mPreviousBatteryPct;
+    static ShakeEventListener sShakeListener;
+    static BroadcastReceiver sBatteryReceiver;
+    static BroadcastReceiver sScreenReceiver;
+    static int sPreviousBatteryPct;
 
     static {
-        mOrientationListener = null;
-        mTemperatureListener = null;
-        mShakeListener = null;
-        mBatteryReceiver = null;
-        mTelephonyManager = null;
-        mPreviousBatteryPct = 0;
-        mPreviousOrientation = -1;
+        sOrientationListener = null;
+        sTemperatureListener = null;
+        sShakeListener = null;
+        sBatteryReceiver = null;
+        sTelephonyManager = null;
+        sPreviousBatteryPct = 0;
+        sPreviousOrientation = -1;
     }
 
     /*
      * ORIENTATION
      */
     public static void registerOrientation() {
-        if (mOrientationListener != null) {
+        if (sOrientationListener != null) {
             return;
         }
 
-        if (mSensorManager == null) {
-            mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
+        if (sSensorManager == null) {
+            sSensorManager = (SensorManager) MBApp.getApp().getSystemService(Context.SENSOR_SERVICE);
         }
 
-        mOrientationListener = new SensorEventListener() {
+        sOrientationListener = new SensorEventListener() {
             int orientation=-1;;
             @Override
             public void onSensorChanged(SensorEvent event) {
@@ -300,10 +298,10 @@ public class InformationPlugin {
                     }
                     orientation = Constants.SAMSUNG_DEVICE_ORIENTATION_PORTRAIT;
                 }
-                if (mPreviousOrientation != orientation) {
+                if (sPreviousOrientation != orientation) {
 
                     PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID, orientation));
-                    mPreviousOrientation = orientation;
+                    sPreviousOrientation = orientation;
                 }
             }
 
@@ -313,20 +311,20 @@ public class InformationPlugin {
             }
         };
 
-        mSensorManager.registerListener(mOrientationListener , mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        sSensorManager.registerListener(sOrientationListener, sSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     public static void unregisterOrientation() {
-        if (mOrientationListener == null) {
+        if (sOrientationListener == null) {
             return;
         }
 
-        mSensorManager.unregisterListener(mOrientationListener);
-        mOrientationListener = null;
+        sSensorManager.unregisterListener(sOrientationListener);
+        sOrientationListener = null;
     }
 
     public static boolean isOrientationRegistered() {
-        return mOrientationListener != null;
+        return sOrientationListener != null;
     }
 
     /*
@@ -334,44 +332,44 @@ public class InformationPlugin {
      */
     public static void registerSignalStrength() {
         Log.i("Information Plugin", "registerSignalStrength 1 ");
-        if (mTelephonyManager != null) {
+        if (sTelephonyManager != null) {
             return;
         }
         Log.i("Information Plugin", "registerSignalStrength 2 ");
-        mTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-        mTelephonyManager.listen(mPhoneListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+        sTelephonyManager = (TelephonyManager) MBApp.getApp().getSystemService(Context.TELEPHONY_SERVICE);
+        sTelephonyManager.listen(sPhoneListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
         CmdArg cmd = new CmdArg(0, "Registered Signal Strength.");
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
     public static void unregisterSignalStrength() {
-        if (mTelephonyManager == null) {
+        if (sTelephonyManager == null) {
             return;
         }
 
-        mTelephonyManager.listen(mPhoneListener, PhoneStateListener.LISTEN_NONE);
-        mTelephonyManager = null;
+        sTelephonyManager.listen(sPhoneListener, PhoneStateListener.LISTEN_NONE);
+        sTelephonyManager = null;
         CmdArg cmd = new CmdArg(0, "Unregistered Signal Strength.");
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
     public static boolean isSignalStrengthRegistered() {
-        return mTelephonyManager != null;
+        return sTelephonyManager != null;
     }
 
     public static void registerTemperature() {
-        if (mTemperatureListener != null) {
+        if (sTemperatureListener != null) {
             return;
         }
 
-        mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
+        sSensorManager = (SensorManager) MBApp.getApp().getSystemService(Context.SENSOR_SERVICE);
 
-        Sensor temperatureSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        Sensor temperatureSensor = sSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
         if (temperatureSensor == null)//no temperature sensor
             return;
 
-        mTemperatureListener = new TemperatureListener();
-        mSensorManager.registerListener(mTemperatureListener, temperatureSensor,
+        sTemperatureListener = new TemperatureListener();
+        sSensorManager.registerListener(sTemperatureListener, temperatureSensor,
                 SensorManager.SENSOR_DELAY_NORMAL);
 
         CmdArg cmd = new CmdArg(0, "Registered Temperature.");
@@ -379,24 +377,24 @@ public class InformationPlugin {
     }
 
     public static void unregisterTemperature() {
-        if (mTemperatureListener == null) {
+        if (sTemperatureListener == null) {
             return;
         }
 
-        mSensorManager.unregisterListener(mTemperatureListener);
-        mTemperatureListener = null;
+        sSensorManager.unregisterListener(sTemperatureListener);
+        sTemperatureListener = null;
 
         CmdArg cmd = new CmdArg(0, "Unregistered Temperature.");
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
     public static void registerDisplay() {
-        if (mScreenReceiver != null) {
+        if (sScreenReceiver != null) {
             return;
         }
 
         Log.i("Information Plugin", "registerDisplay() ");
-        mScreenReceiver = new BroadcastReceiver() {
+        sScreenReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
@@ -410,31 +408,31 @@ public class InformationPlugin {
         IntentFilter screenStateFilter = new IntentFilter();
         screenStateFilter.addAction(Intent.ACTION_SCREEN_ON);
         screenStateFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        mContext.registerReceiver(mScreenReceiver, screenStateFilter);
+        MBApp.getApp().registerReceiver(sScreenReceiver, screenStateFilter);
     }
 
     public static void unregisterDisplay() {
         Log.i("Information Plugin", "unregisterDisplay() ");
-        if (mScreenReceiver == null) {
+        if (sScreenReceiver == null) {
             return;
         }
 
-        mContext.unregisterReceiver(mScreenReceiver);
-        mScreenReceiver = null;
+        MBApp.getApp().unregisterReceiver(sScreenReceiver);
+        sScreenReceiver = null;
     }
     public static boolean isTemperatureRegistered() {
-        return mTemperatureListener != null;
+        return sTemperatureListener != null;
     }
 
     public static void registerShake() {
-        if (mShakeListener != null) {
+        if (sShakeListener != null) {
             return;
         }
 
-        mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
+        sSensorManager = (SensorManager) MBApp.getApp().getSystemService(Context.SENSOR_SERVICE);
 
-        mShakeListener = new ShakeEventListener();
-        mSensorManager.registerListener(mShakeListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+        sShakeListener = new ShakeEventListener();
+        sSensorManager.registerListener(sShakeListener, sSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                  SensorManager.SENSOR_DELAY_NORMAL);
 
         CmdArg cmd = new CmdArg(0, "Registered Shake.");
@@ -442,62 +440,62 @@ public class InformationPlugin {
     }
 
     public static void unregisterShake() {
-        if (mShakeListener == null) {
+        if (sShakeListener == null) {
             return;
         }
 
-        mSensorManager.unregisterListener(mShakeListener);
-        mShakeListener = null;
+        sSensorManager.unregisterListener(sShakeListener);
+        sShakeListener = null;
 
         CmdArg cmd = new CmdArg(0, "Unregistered Shake.");
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
     public static boolean isShakeRegistered() {
-        return mShakeListener != null;
+        return sShakeListener != null;
     }
 
     public static void registerBattery() {
-        if (mBatteryReceiver != null) {
+        if (sBatteryReceiver != null) {
             return;
         }
 
-        mBatteryReceiver = new BroadcastReceiver() {
+        sBatteryReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
                 int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
                 int batteryPct = (int) (level / (float) scale * 100);
 
-                if (batteryPct != mPreviousBatteryPct) {
+                if (batteryPct != sPreviousBatteryPct) {
                     CmdArg cmd = new CmdArg(InformationPlugin.BATTERY, "Battery level " + batteryPct);
                     InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
 
-                    mPreviousBatteryPct = batteryPct;
+                    sPreviousBatteryPct = batteryPct;
                 }
             }
         };
 
         IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        mContext.registerReceiver(mBatteryReceiver, filter);
+        MBApp.getApp().registerReceiver(sBatteryReceiver, filter);
 
         CmdArg cmd = new CmdArg(0, "Registered Battery.");
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
     public static void unregisterBattery() {
-        if (mBatteryReceiver == null) {
+        if (sBatteryReceiver == null) {
             return;
         }
 
-        mContext.unregisterReceiver(mBatteryReceiver);
-        mBatteryReceiver = null;
+        MBApp.getApp().unregisterReceiver(sBatteryReceiver);
+        sBatteryReceiver = null;
 
         CmdArg cmd = new CmdArg(0, "Unregistered Battery.");
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
     public static boolean isBatteryRegistered() {
-        return mBatteryReceiver != null;
+        return sBatteryReceiver != null;
     }
 }

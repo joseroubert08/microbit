@@ -167,7 +167,7 @@ public class BLEManager {
 
         if (gatt == null) {
             if (isDebug) {
-                logi("connect() :: gatt == null");
+                logi("connectMaybeInit() :: gatt == null");
             }
 
             synchronized (locker) {
@@ -175,7 +175,7 @@ public class BLEManager {
                     inBleOp = OP_CONNECT;
                     try {
                         if (isDebug) {
-                            logi("connect() :: bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback)");
+                            logi("connectMaybeInit() :: bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback)");
                         }
 
                         gatt = bluetoothDevice.connectGatt(context, false, bluetoothGattCallback);
@@ -191,7 +191,7 @@ public class BLEManager {
                             locker.wait(BLE_WAIT_TIMEOUT);
 
                             if (isDebug) {
-                                logi("connect() :: remote device = " + gatt.getDevice().getAddress());
+                                logi("connectMaybeInit() :: remote device = " + gatt.getDevice().getAddress());
                             }
 
                             if (!callbackCompleted) {
@@ -212,7 +212,7 @@ public class BLEManager {
         }
 
         if (isDebug) {
-            logi("connect() :: rc = " + rc);
+            logi("connectMaybeInit() :: rc = " + rc);
         }
         return rc;
     }
@@ -235,13 +235,13 @@ public class BLEManager {
                 try {
                     if (bleState == 0) {
                         if (isDebug) {
-                            logi("gattConnect() :: gatt.connect()");
+                            logi("gattConnect() :: gatt.connectMaybeInit()");
                         }
 
                         callbackCompleted = false;
 
                         boolean result = gatt.connect();
-                        logi("gatt.connect() returns = " + result);
+                        logi("gatt.connectMaybeInit() returns = " + result);
                         locker.wait(BLE_WAIT_TIMEOUT);
 
                         if (isDebug) {

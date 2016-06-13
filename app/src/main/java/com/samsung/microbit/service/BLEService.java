@@ -1,6 +1,7 @@
 package com.samsung.microbit.service;
 
 import android.app.NotificationManager;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
@@ -10,13 +11,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.RemoteException;
 import android.util.Log;
 
-import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.bluetooth.BLEManager;
 import com.samsung.microbit.core.IPCMessageManager;
+import com.samsung.microbit.core.bluetooth.BLEManager;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.ConnectedDevice;
@@ -26,10 +25,10 @@ import com.samsung.microbit.utils.ErrorUtils;
 
 import java.util.UUID;
 
+import static com.samsung.microbit.BuildConfig.DEBUG;
+
 public class BLEService extends BLEBaseService {
     private static final String TAG = BLEService.class.getSimpleName();
-    
-    private boolean isDebug = BuildConfig.DEBUG;
 
     private boolean firstRun = true;
 
@@ -40,8 +39,22 @@ public class BLEService extends BLEBaseService {
         startIPCListener();
     }
 
-    private void logi(String message) {
-        if (isDebug) {
+    public void startIPCListener() {
+        logi("startIPCListener()");
+
+        IPCMessageManager.connectMaybeInit(BLEService.class.getName(), new Handler.Callback() {
+
+            @Override
+            public boolean handleMessage(Message msg) {
+                logi("startIPCListener().handleMessage");
+                handleIncomingMessage(msg);
+                return true;
+            }
+        });
+    }
+
+    private static void logi(String message) {
+        if (DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
@@ -52,7 +65,7 @@ public class BLEService extends BLEBaseService {
 
         int rc = super.onStartCommand(intent, flags, startId);
         /*
-		 * Make the initial connection to other processes
+         * Make the initial connection to other processes
 		 */
         new Thread(new Runnable() {
             @Override
@@ -93,12 +106,12 @@ public class BLEService extends BLEBaseService {
     }
 
     protected void startupConnection() {
-        logi("startupConnection() bleManager=" + bleManager);
+        logi("startupConnection() bleManager=" + getBleManager());
 
         boolean success = true;
         int rc = connect();
         if (rc == 0) {
-            logi("startupConnection() :: connect() == 0");
+            logi("startupConnection() :: connectMaybeInit() == 0");
             rc = discoverServices();
             if (rc == 0) {
 
@@ -119,7 +132,7 @@ public class BLEService extends BLEBaseService {
 
         if (!success) {
             logi("startupConnection() :: Failed ErrorCode = " + rc);
-            if (bleManager != null) {
+            if (getBleManager() != null) {
                 reset();
                 setNotification(false, rc);
             }
@@ -146,6 +159,7 @@ public class BLEService extends BLEBaseService {
             logi("register_eventsFromMicrobit() :: ES_MICROBIT_REQUIREMENTS Not found");
             return false;
         }
+
         BluetoothGattDescriptor microbit_requirementsDescriptor = microbit_requirements.getDescriptor(Constants.CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR);
         if (microbit_requirementsDescriptor == null) {
             logi("register_eventsFromMicrobit() :: CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR Not found");
@@ -250,7 +264,7 @@ public class BLEService extends BLEBaseService {
             return false;
         }
 
-        if (isDebug) {
+        if (DEBUG) {
             logi("Constants.EVENT_SERVICE   = " + Constants.EVENT_SERVICE.toString());
             logi("Constants.ES_MICROBIT_REQUIREMENTS   = " + Constants.ES_MICROBIT_REQUIREMENTS.toString());
             logi("Constants.ES_CLIENT_EVENT   = " + Constants.ES_CLIENT_EVENT.toString());
@@ -258,7 +272,7 @@ public class BLEService extends BLEBaseService {
             logi("Constants.ES_CLIENT_REQUIREMENTS   = " + Constants.ES_CLIENT_REQUIREMENTS.toString());
         }
         if (!registerMicrobitRequirements(eventService, enable)) {
-            if (isDebug) {
+            if (DEBUG) {
                 logi("***************** Cannot Register Microbit Requirements.. Will continue ************** ");
             }
         }
@@ -318,7 +332,7 @@ public class BLEService extends BLEBaseService {
         }
     }
 
-    protected void sendMicrobitFirmware(String firmware) {
+    private static void sendMicrobitFirmware(String firmware) {
         logi("sendMicrobitFirmware() :: firmware = " + firmware);
         NameValuePair[] args = new NameValuePair[2];
         args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
@@ -326,7 +340,7 @@ public class BLEService extends BLEBaseService {
         sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
     }
 
-    protected void sendMicroBitNeedsCallNotification() {
+    private static void sendMicroBitNeedsCallNotification() {
         logi("sendMicroBitNeedsCallNotification()");
         NameValuePair[] args = new NameValuePair[2];
         args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
@@ -334,7 +348,7 @@ public class BLEService extends BLEBaseService {
         sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
     }
 
-    protected void sendMicroBitNeedsSmsNotification() {
+    private static void sendMicroBitNeedsSmsNotification() {
         logi("sendMicroBitNeedsSmsNotification()");
         NameValuePair[] args = new NameValuePair[2];
         args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
@@ -363,13 +377,15 @@ public class BLEService extends BLEBaseService {
 
         if (!isConnected) {
             logi("setNotification() :: !isConnected");
+            BluetoothAdapter bluetoothAdapter = getBluetoothAdapter();
+
             if (bluetoothAdapter != null) {
                 if (!bluetoothAdapter.isEnabled()) {
 
                     logi("setNotification() :: !bluetoothAdapter.isEnabled()");
                     reset();
                     //bleManager = null;
-                    bluetoothDevice = null;
+                    setBluetoothDevice(null);
                 }
             }
             notificationString = getString(R.string.tray_notification_failure);
@@ -461,66 +477,16 @@ public class BLEService extends BLEBaseService {
         return IPCMessageManager.getInstance().getClientMessenger().getBinder();
     }
 
-    public void startIPCListener() {
-        logi("startIPCListener()");
-
-        if (IPCMessageManager.getInstance() == null) {
-            logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
-
-            IPCMessageManager inst = IPCMessageManager.getInstance("BLEServiceReceiver", new Handler() {
-
-                @Override
-                public void handleMessage(Message msg) {
-                    logi("startIPCListener().handleMessage");
-                    handleIncomingMessage(msg);
-                }
-            });
-        }
-    }
-
-    public void sendtoPluginService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
+    public static void sendtoPluginService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
         logi("sendtoPluginService()");
 
-        sendIPCMessge(PluginService.class, mbsService, functionCode, cmd, args);
+        IPCMessageManager.sendIPCMessage(PluginService.class, mbsService, functionCode, cmd, args);
     }
 
-    public void sendtoIPCService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
+    public static void sendtoIPCService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
         logi("sendtoIPCService()");
 
-        sendIPCMessge(IPCService.class, mbsService, functionCode, cmd, args);
-    }
-
-    public void sendIPCMessge(Class destService, int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-        IPCMessageManager inst = IPCMessageManager.getInstance();
-
-        if (!inst.isConnected(destService)) {
-            inst.configureServerConnection(destService, this);
-        }
-
-        if (mbsService != IPCMessageManager.ANDROID_MESSAGE && mbsService != IPCMessageManager.MICROBIT_MESSAGE) {
-            return;
-        }
-
-        Message msg = Message.obtain(null, mbsService);
-        msg.arg1 = functionCode;
-        Bundle bundle = new Bundle();
-        if (cmd != null) {
-            bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
-            bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
-        }
-
-        if (args != null) {
-            for (int i = 0; i < args.length; i++) {
-                bundle.putSerializable(args[i].getName(), args[i].getValue());
-            }
-        }
-
-        msg.setData(bundle);
-        try {
-            inst.sendMessage(destService, msg);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        IPCMessageManager.sendIPCMessage(IPCService.class, mbsService, functionCode, cmd, args);
     }
 
     public void writeCharacteristicByte(String serviceGuid, String characteristic, byte[] value) {
@@ -577,12 +543,12 @@ public class BLEService extends BLEBaseService {
             switch (msg.arg1) {
                 case IPCMessageManager.IPC_FUNCTION_CONNECT:
                     logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_CONNECT bleManager = " +
-                             bleManager);
+                            getBleManager());
                     setupBLE();
                     break;
 
                 case IPCMessageManager.IPC_FUNCTION_DISCONNECT:
-                    logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_DISCONNECT = " + bleManager);
+                    logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_DISCONNECT = " + getBleManager());
                     if (reset()) {
                         setNotification(false, 0);
                     }
@@ -590,7 +556,7 @@ public class BLEService extends BLEBaseService {
                     break;
 
                 case IPCMessageManager.IPC_FUNCTION_RECONNECT:
-                    logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_RECONNECT = " + bleManager);
+                    logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_RECONNECT = " + getBleManager());
                     if (reset()) {
                         setupBLE();
                     }
@@ -604,10 +570,10 @@ public class BLEService extends BLEBaseService {
             switch (msg.arg1) {
                 case IPCMessageManager.IPC_FUNCTION_WRITE_CHARACTERISTIC:
                     logi("handleIncomingMessage() :: IPCMessageManager.IPC_FUNCTION_WRITE_CHARACTERISTIC = " +
-                             bleManager);
+                            getBleManager());
                     String service = (String) bundle.getSerializable(IPCMessageManager.BUNDLE_SERVICE_GUID);
                     String characteristic = (String) bundle.getSerializable(IPCMessageManager
-                             .BUNDLE_CHARACTERISTIC_GUID);
+                            .BUNDLE_CHARACTERISTIC_GUID);
                     int value = (int) bundle.getSerializable(IPCMessageManager.BUNDLE_CHARACTERISTIC_VALUE);
                     int type = (int) bundle.getSerializable(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE);
                     writeCharacteristic(service, characteristic, value, type);

@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Vibrator;
 import android.util.Log;
 
+import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.Constants;
@@ -23,9 +24,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class AlertPlugin {
-
-    private static Context context = null;
-
     private static PlayAudioPresenter playAudioPresenter = new PlayAudioPresenter();
 
     private static AlertDialog customDialog = null;
@@ -46,6 +44,8 @@ public class AlertPlugin {
     }
 
     private static void playSound(Uri alarm, int maxDuration, boolean vibrate, boolean isAlarm) {
+        Context context = MBApp.getApp();
+
         int duration = getDuration(alarm);
         if (maxDuration > 0 && duration > maxDuration)
             duration = maxDuration;
@@ -87,7 +87,7 @@ public class AlertPlugin {
     }
 
     public static void pluginEntry(Context ctx, CmdArg cmd) {
-        context = ctx;
+        Context context = MBApp.getApp();
         switch (cmd.getCMD()) {
             case Constants.SAMSUNG_ALERT_EVT_DISPLAY_TOAST:
                 PopUp.showFromService(context, cmd.getValue(),
@@ -125,6 +125,8 @@ public class AlertPlugin {
     }
 
     private static void playAlarm(int alarmId) {
+        Context context = MBApp.getApp();
+
         showDialog(context.getString(R.string.sound_via_microbit));
         Uri alarm = null;
         RingtoneManager ringtoneMgr = new RingtoneManager(context);
@@ -144,18 +146,20 @@ public class AlertPlugin {
     }
 
     private static void playRingTone() {
-        showDialog(context.getString(R.string.ringtone_via_microbit));
+        showDialog(MBApp.getApp().getString(R.string.ringtone_via_microbit));
         Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
         playSound(ringtone, 10000, false, false);
     }
 
     private static void playNotification() {
-        showDialog(context.getString(R.string.sound_via_microbit));
+        showDialog(MBApp.getApp().getString(R.string.sound_via_microbit));
         Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         playSound(ringtone, 10000, false, false);
     }
 
     private static void findPhone() {
+        Context context = MBApp.getApp();
+
         showDialog(context.getString(R.string.findphone_via_microbit));
         if (mVibrator == null)
             mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
@@ -170,6 +174,8 @@ public class AlertPlugin {
     }
 
     private static void vibrate(int duration) {
+        Context context = MBApp.getApp();
+
         showDialog(context.getString(R.string.vibrating_via_microbit));
         Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         v.vibrate(duration);
@@ -179,7 +185,7 @@ public class AlertPlugin {
         int duration = 500;
         MediaPlayer mp = new MediaPlayer();
         try {
-            mp.setDataSource(context, file);
+            mp.setDataSource(MBApp.getApp(), file);
             mp.prepare();
             duration = mp.getDuration();
         } catch (IOException e) {
@@ -194,7 +200,7 @@ public class AlertPlugin {
 
 
     private static void showDialog(String textMsg) {
-        PopUp.showFromService(context, "",
+        PopUp.showFromService(MBApp.getApp(), "",
                 textMsg,
                 R.drawable.message_face, R.drawable.blue_btn,
                 0, /* TODO - nothing needs to be done */

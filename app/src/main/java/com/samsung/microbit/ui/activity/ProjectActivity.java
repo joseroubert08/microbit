@@ -652,7 +652,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 }
                 break;
             case R.id.deviceName:
-                // Toast.makeText(this, "Back to connect screen", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(this, "Back to connectMaybeInit screen", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, PairingActivity.class);
                 startActivity(intent);
                 break;

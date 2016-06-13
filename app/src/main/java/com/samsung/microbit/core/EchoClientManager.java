@@ -204,7 +204,7 @@ public class EchoClientManager {
                         Log.d("EchoClientManager", "Sending Connection stats - MSG(DISCONNECT) - Firmware = " + firmware + " Duration =" + duration);
                         eventLabels.put("firmware", firmware);
                         eventLabels.put("duration", duration);
-                        echo.userActionEvent("disconnect", "connect", eventLabels);
+                        echo.userActionEvent("disconnect", "connectMaybeInit", eventLabels);
                         break;
 
                 }

@@ -2,16 +2,15 @@ package com.samsung.microbit.service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.samsung.microbit.BuildConfig;
-import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.core.IPCMessageManager;
+import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.NameValuePair;
@@ -94,35 +93,29 @@ public class IPCService extends Service {
             logi("startIPCListener()");
         }
 
-        if (IPCMessageManager.getInstance() == null) {
-            if (isDebug) {
-                logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
+        IPCMessageManager.connectMaybeInit(IPCService.class.getName(), new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                handleIncomingMessage(msg);
+                return true;
             }
-
-            IPCMessageManager inst = IPCMessageManager.getInstance("IPCServiceListener", new android.os.Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    super.handleMessage(msg);
-                    handleIncomingMessage(msg);
-                }
-            });
+        });
 
 			/*
-			 * Make the initial connection to other processes
+             * Make the initial connection to other processes
 			 */
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(IPCMessageManager.STARTUP_DELAY);
-                        sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
-                        sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(IPCMessageManager.STARTUP_DELAY);
+                    sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+                    sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            }).start();
-        }
+            }
+        }).start();
     }
 
     public void sendtoBLEService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
@@ -130,7 +123,7 @@ public class IPCService extends Service {
             logi("sendtoBLEService() --> " + functionCode);
         }
 
-        sendIPCMessge(BLEService.class, mbsService, functionCode, cmd, args);
+        IPCMessageManager.sendIPCMessage(BLEService.class, mbsService, functionCode, cmd, args);
     }
 
     public void sendtoPluginService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
@@ -138,40 +131,7 @@ public class IPCService extends Service {
             logi("sendtoPluginService()");
         }
 
-        sendIPCMessge(PluginService.class, mbsService, functionCode, cmd, args);
-    }
-
-    public void sendIPCMessge(Class destService, int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-        IPCMessageManager inst = IPCMessageManager.getInstance();
-
-        if (!inst.isConnected(destService)) {
-            inst.configureServerConnection(destService, this);
-        }
-
-        if (mbsService != IPCMessageManager.ANDROID_MESSAGE && mbsService != IPCMessageManager.MICROBIT_MESSAGE) {
-            return;
-        }
-
-        Message msg = Message.obtain(null, mbsService);
-        msg.arg1 = functionCode;
-        Bundle bundle = new Bundle();
-        if (cmd != null) {
-            bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
-            bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
-        }
-
-        if (args != null) {
-            for (int i = 0; i < args.length; i++) {
-                bundle.putSerializable(args[i].getName(), args[i].getValue());
-            }
-        }
-
-        msg.setData(bundle);
-        try {
-            inst.sendMessage(destService, msg);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        IPCMessageManager.sendIPCMessage(PluginService.class, mbsService, functionCode, cmd, args);
     }
 
     private void handleIncomingMessage(Message msg) {
@@ -191,7 +151,6 @@ public class IPCService extends Service {
                 cd.mStatus = (msg.arg1 == IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED);
                 BluetoothUtils.setPairedMicroBit(this, cd);
             }
-
 
             int errorCode = (int) msg.getData().getSerializable(IPCMessageManager.BUNDLE_ERROR_CODE);
 
