@@ -208,7 +208,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         TextView shareStatsCheckTitle = (TextView) findViewById(R.id.share_statistics_title);
         shareStatsCheckTitle.setTypeface(MBApp.getApp().getTypeface());
         TextView shareStatsDescription = (TextView) findViewById(R.id.share_statistics_description);
-        shareStatsDescription.setTypeface(MBApp.getApp().getTypeface());
+        shareStatsDescription.setTypeface(MBApp.getApp().getRobotoTypeface());
         mShareStatsCheckBox = (CheckBox) findViewById(R.id.share_statistics_status);
         mShareStatsCheckBox.setOnClickListener(this);
         mShareStatsCheckBox.setChecked(shareStats);
@@ -451,7 +451,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (mShareStatsCheckBox == null) {
             return;
         }
-        boolean shareStatistics = false;
+        boolean shareStatistics;
         shareStatistics = mShareStatsCheckBox.isChecked();
         mPrefs.edit().putBoolean(getString(R.string.prefs_share_stats_status), shareStatistics).apply();
         logi("shareStatistics = " + shareStatistics);

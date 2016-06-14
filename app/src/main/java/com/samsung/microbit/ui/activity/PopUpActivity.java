@@ -99,14 +99,16 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         spinnerBar = (ProgressBar) findViewById(R.id.spinnerBar);
         messageTxt = (TextView) findViewById(R.id.messageTxt);
-        messageTxt.setTypeface(MBApp.getApp().getTypeface());
+        messageTxt.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         layoutBottom = (LinearLayout) findViewById(R.id.popup_bottom_layout);
 
         okButton = (Button) findViewById(R.id.imageButtonOk);
         cancelButton = (Button) findViewById(R.id.imageButtonCancel);
         affirmationOKButton = (Button) findViewById(R.id.affirmationOKBtn);
-        affirmationOKButton.setTypeface(MBApp.getApp().getTypeface());
+        affirmationOKButton.setTypeface(MBApp.getApp().getRobotoTypeface());
+        cancelButton.setTypeface(MBApp.getApp().getRobotoTypeface());
+        okButton.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         isCancelable = getIntent().getBooleanExtra(INTENT_EXTRA_CANCELABLE, true);
 
@@ -199,7 +201,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
             // Set default plain icon
         } else {
             imageIcon.setVisibility(View.VISIBLE);
-            findViewById(R.id.pop_up_gif_image_view).setVisibility(View.INVISIBLE);
+            findViewById(R.id.pop_up_gif_image_view).setVisibility(View.GONE);
         }
 
         switch (intent.getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_MAX)) {
