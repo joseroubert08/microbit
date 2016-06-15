@@ -125,14 +125,10 @@
         <item name="android:layout_marginBottom">@dimen/white_header_text_margin_bottom</item>
     </style>
 
-
-
-
-
     <style name="connection_description_text_style">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">bottom</item>
+        <item name="android:layout_gravity">center</item>
         <item name="android:layout_weight">1</item>
         <item name="android:layout_marginEnd">@dimen/description_and_smile_image_margin</item>
         <item name="android:focusable">true</item>

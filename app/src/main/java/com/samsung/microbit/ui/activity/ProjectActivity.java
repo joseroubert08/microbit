@@ -153,9 +153,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 if (error != 0) {
                     String message = intent.getStringExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
                     logi("localBroadcastReceiver Error message = " + message);
-                    if (message == null)
-                        message = "Error";
-                    final String displayTitle = message;
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -251,41 +248,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_projects);
 
-        boolean showSortMenu = false;
-        try {
-            showSortMenu = getResources().getBoolean(R.bool.showSortMenu);
-        } catch (Exception e) {
-        }
-// TODO - KEEP sort functionality
-//        Spinner sortList = (Spinner) findViewById(R.id.sortProjects);
-//        if (showSortMenu) {
-//
-//            sortList.setPrompt("Sort by");
-//            ArrayAdapter<CharSequence> sortAdapter = ArrayAdapter.createFromResource(this, R.array.projectListSortOrder,
-//                    android.R.layout.simple_spinner_item);
-//
-//            sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//            sortList.setAdapter(sortAdapter);
-//            sortList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//                @Override
-//                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                    projectListSortOrder = position;
-//                    projectListSortOrderChanged();
-//                }
-//
-//                @Override
-//                public void onNothingSelected(AdapterView<?> parent) {
-//                }
-//            });
-//        }
-
         // Title font
         TextView flashProjectsTitle = (TextView) findViewById(R.id.flash_projects_title_txt);
         flashProjectsTitle.setTypeface(MBApp.getApp().getTypeface());
 
         // Create projects
         TextView createProjectText = (TextView) findViewById(R.id.custom_button_text);
-        createProjectText.setTypeface(MBApp.getApp().getTypeface());
+        createProjectText.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         projectListView = (ListView) findViewById(R.id.projectListView);
         checkMinimumPermissionsForThisScreen();
@@ -436,11 +405,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
         TextView connectedIndicatorText = (TextView) findViewById(R.id.connectedIndicatorText);
         connectedIndicatorText.setText(connectedIndicatorText.getText());
-        connectedIndicatorText.setTypeface(MBApp.getApp().getTypeface());
-        TextView deviceName1 = (TextView) findViewById(R.id.deviceName);
-        deviceName1.setContentDescription(deviceName1.getText());
-        deviceName1.setTypeface(MBApp.getApp().getTypeface());
-        deviceName1.setOnClickListener(this);
+        connectedIndicatorText.setTypeface(MBApp.getApp().getRobotoTypeface());
+        TextView deviceName = (TextView) findViewById(R.id.deviceName);
+        deviceName.setContentDescription(deviceName.getText());
+        deviceName.setTypeface(MBApp.getApp().getRobotoTypeface());
+        deviceName.setOnClickListener(this);
         ImageView connectedIndicatorIcon = (ImageView) findViewById(R.id.connectedIndicatorIcon);
 
         if (connectedIndicatorIcon == null || connectedIndicatorText == null)
@@ -465,24 +434,24 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         if (!device.mStatus) {
             connectedIndicatorIcon.setImageResource(R.drawable.device_status_disconnected);
             connectedIndicatorText.setText(getString(R.string.not_connected));
-            if (deviceName1 != null) {
+            if (deviceName != null) {
                 //Mobile Device.. 2 lines of display
                 if (device.mName != null)
-                    deviceName1.setText(device.mName);
-            } else if (deviceName1 != null) {
+                    deviceName.setText(device.mName);
+            } else if (deviceName != null) {
                 if (device.mName != null)
-                    deviceName1.setText(device.mName + " (" + device.mPattern + ")");
+                    deviceName.setText(device.mName + " (" + device.mPattern + ")");
             }
         } else {
             connectedIndicatorIcon.setImageResource(R.drawable.device_status_connected);
             connectedIndicatorText.setText(getString(R.string.connected_to));
-            if (deviceName1 != null) {
+            if (deviceName != null) {
                 //Mobile Device.. 2 lines of display
                 if (device.mName != null)
-                    deviceName1.setText(device.mName);
-            } else if (deviceName1 != null) {
+                    deviceName.setText(device.mName);
+            } else if (deviceName != null) {
                 if (device.mName != null)
-                    deviceName1.setText(device.mName + " (" + device.mPattern + ")");
+                    deviceName.setText(device.mName + " (" + device.mPattern + ")");
             }
         }
     }
@@ -539,12 +508,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
         projectAdapter = new ProjectAdapter(this, projectList);
         projectListView.setAdapter(projectAdapter);
-        projectListView.setItemsCanFocus(true);
-    }
-
-    void projectListSortOrderChanged() {
-        PreferenceUtils.setListOrderPrefs(projectListSortOrder);
-        updateProjectsListSortOrder(true);
     }
 
     @Override

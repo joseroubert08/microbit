@@ -151,5 +151,6 @@
     <dimen name="popup_text_layout_padding_top">96dp</dimen>
     <dimen name="popup_round_button_padding">36dp</dimen>
     <dimen name="popup_round_button_margin">16dp</dimen>
+    <dimen name="popup_image_layout_margin_bottom">64dp</dimen>
 
 </resources>

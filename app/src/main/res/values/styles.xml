@@ -219,7 +219,7 @@
     </style>
 
     <style name="pairing_step_header_style" parent="white_header_text_style">
-        <item name="android:textSize">@dimen/pairing_step_header_text_size</item>
+        <item name="android:textSize">@dimen/popup_title_text_size</item>
         <item name="android:layout_height">0dp</item>
         <item name="android:layout_weight">1</item>
         <item name="android:gravity">center|bottom</item>
@@ -234,17 +234,14 @@
     </style>
 
     <style name="popup_images_layout_style">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_alignParentTop">true</item>
-        <item name="android:gravity">center</item>
+        <item name="android:gravity">bottom|center_horizontal</item>
+        <item name="android:layout_marginBottom">@dimen/popup_image_layout_margin_bottom</item>
         <item name="android:orientation">vertical</item>
     </style>
 
     <style name="popup_image_style">
         <item name="android:layout_width">@dimen/popup_icon_size</item>
         <item name="android:layout_height">@dimen/popup_icon_size</item>
-        <item name="android:layout_marginTop">@dimen/popup_header_section_marginTop</item>
         <item name="android:scaleType">centerInside</item>
         <item name="android:src">@drawable/overwrite_face</item>
         <item name="android:visibility">gone</item>
@@ -253,8 +250,6 @@
     <style name="popup_gif_image_style">
         <item name="android:layout_width">@dimen/popup_gif_size</item>
         <item name="android:layout_height">@dimen/popup_gif_size</item>
-        <item name="android:layout_marginTop">@dimen/popup_header_section_marginTop</item>
-        <item name="android:baselineAlignBottom">true</item>
         <item name="android:scaleType">centerInside</item>
         <item name="android:visibility">gone</item>
     </style>

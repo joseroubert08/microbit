@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Gray transparent button -->
-    <dimen name="grey_button_padding">8dp</dimen>
-    <dimen name="grey_button_radius">7dp</dimen>
+    <!-- Button backgrounds -->
+    <dimen name="button_background_padding">8dp</dimen>
+    <dimen name="button_background_radius">4dp</dimen>
 
     <!-- Flash Activity custom button -->
     <dimen name="custom_button_padding">16dp</dimen>
@@ -20,6 +20,7 @@
     <dimen name="pairing_connection_header_padding">16dp</dimen>
     <dimen name="pair_prev_connected_button_padding">8dp</dimen>
     <dimen name="pair_prev_connected_button_drawable_padding">16dp</dimen>
+    <dimen name="connection_description_text_size">16sp</dimen>
 
     <!-- p1 font size -->
     <dimen name="p1_font_size">16sp</dimen>
@@ -32,6 +33,11 @@
     <dimen name="popup_round_button_margin">16dp</dimen>
     <dimen name="pairing_step_tip_layout_width_padding">18dp</dimen>
     <dimen name="popup_text_layout_padding_top">36dp</dimen>
+    <dimen name="popup_spinner_progress_bar_margin">12dp</dimen>
+    <dimen name="popup_round_ok_button_size">100dp</dimen>
+    <dimen name="popup_title_text_size">26sp</dimen>
+    <dimen name="popup_image_layout_margin_bottom">32dp</dimen>
+    <dimen name="popup_round_ok_button_text_size">18sp</dimen>
 
     <!-- Main activity -->
     <dimen name="main_activity_layout_padding">16dp</dimen>

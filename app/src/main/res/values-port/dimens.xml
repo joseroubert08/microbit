@@ -64,13 +64,6 @@
 	<dimen name="lv_txt_img_btn_width">206dp</dimen>
 
 	<!-- PopUp -->
-	<dimen name="popup_header_section_marginTop">70dp</dimen>
-	<dimen name="popup_buttons_section_paddingBottom">70dp</dimen>
-	<dimen name="popup_textinput_width">280dp</dimen>
-	<dimen name="popup_buttons_area_width">180dp</dimen> <!-- distance between left button edge and right button edge -->
-	<dimen name="popup_button_size">60dp</dimen>
-	<dimen name="popup_paddingLeft">20dp</dimen>
-	<dimen name="popup_paddingRight">20dp</dimen>
 	<dimen name="popup_icon_size">80dp</dimen>
 	<dimen name="popup_body_view_paddingVertical">4dp</dimen> <!-- spacing top/bottom between each view inside body section -->
 	<dimen name="popup_progressbar_height">16dp</dimen>

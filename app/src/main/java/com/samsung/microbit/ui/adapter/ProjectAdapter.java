@@ -69,11 +69,9 @@ public class ProjectAdapter extends BaseAdapter {
         public void onClick(View v) {
             logi("OnClickListener() :: " + v.getClass().getName());
 
-            boolean expandProjectItem = false;
-            try {
-                expandProjectItem = projectActivity.getResources().getBoolean(R.bool.expandProjectItem);
-            } catch (Exception e) {
-            }
+            boolean expandProjectItem;
+
+            expandProjectItem = projectActivity.getResources().getBoolean(R.bool.expandProjectItem);
 
             if (expandProjectItem) {
                 changeActionBar(v);
@@ -186,7 +184,7 @@ public class ProjectAdapter extends BaseAdapter {
         logi("changeActionBar() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
 
         Project project = projects.get(pos);
-        project.actionBarExpanded = (project.actionBarExpanded) ? false : true;
+        project.actionBarExpanded = !project.actionBarExpanded;
         if (currentEditableRow != -1) {
             project = projects.get(currentEditableRow);
             project.inEditMode = false;
@@ -211,7 +209,7 @@ public class ProjectAdapter extends BaseAdapter {
         }
 
         project = projects.get(pos);
-        project.inEditMode = (project.inEditMode) ? false : true;
+        project.inEditMode = !project.inEditMode;
         currentEditableRow = pos;
         View ev = (View) v.getTag(R.id.textEdit);
         showKeyBoard(ev);
@@ -288,10 +286,10 @@ public class ProjectAdapter extends BaseAdapter {
         }
 
         Button appNameButton = (Button) convertView.findViewById(R.id.appNameButton);
-        appNameButton.setTypeface(MBApp.getApp().getTypeface());
+        appNameButton.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         ExtendedEditText appNameEdit = (ExtendedEditText) convertView.findViewById(R.id.appNameEdit);
-        appNameEdit.setTypeface(MBApp.getApp().getTypeface());
+        appNameEdit.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         LinearLayout actionBarLayout = (LinearLayout) convertView.findViewById(R.id.actionBarForProgram);
         if (actionBarLayout != null) {
@@ -333,7 +331,7 @@ public class ProjectAdapter extends BaseAdapter {
         //appNameEdit.setOnClickListener(appNameClickListener);
 
         TextView flashBtnText = (TextView) convertView.findViewById(R.id.project_item_text);
-        flashBtnText.setTypeface(MBApp.getApp().getTypeface());
+        flashBtnText.setTypeface(MBApp.getApp().getRobotoTypeface());
         LinearLayout sendBtnLayout = (LinearLayout) convertView.findViewById(R.id.sendBtn);
         sendBtnLayout.setTag(position);
         sendBtnLayout.setOnClickListener(sendBtnClickListener);

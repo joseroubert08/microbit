@@ -1,7 +1,6 @@
 package com.samsung.microbit.ui.activity;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -10,7 +9,7 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
@@ -18,7 +17,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
@@ -26,7 +24,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -44,25 +41,21 @@ import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.utils.FileUtils;
 
-import java.util.HashMap;
-import java.util.List;
-
 import pl.droidsonroids.gif.GifImageView;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
+    public static final String FIRST_RUN = "firstrun";
     // share stats checkbox
     private CheckBox mShareStatsCheckBox;
 
     SharedPreferences mPrefs = null;
-    StableArrayAdapter adapter = null;
-    private AppCompatDelegate delegate;
+
     // Hello animation
     private GifImageView gifAnimationHelloEmoji;
-    boolean connectionInitiated = false;
 
     private MBApp app = null;
-    protected String TAG = "HomeActivity";
+    protected String TAG = HomeActivity.class.getSimpleName();
     protected boolean debug = BuildConfig.DEBUG;
 
     /* Debug code*/
@@ -85,6 +78,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         //handle orientation change to prevent re-creation of activity.
         //i.e. while recording we need to preserve state of recorder
         super.onConfigurationChanged(newConfig);
+
+        setContentView(R.layout.activity_home);
+        setupDrawer();
+        setupButtonsFontStyle();
     }
 
     @Override
@@ -98,22 +95,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         setContentView(R.layout.activity_home);
         setupDrawer();
+        setupButtonsFontStyle();
 
         if (app == null)
             app = (MBApp) MBApp.getApp().getApplicationContext();
-
-        //LinearLayout connectBarView = (LinearLayout) findViewById(R.id.connectBarView);
-        //connectBarView.getBackground().setAlpha(128);
-
-        // Font Style for buttons
-        Button connectButton = (Button) findViewById(R.id.connect_device_btn);
-        connectButton.setTypeface(MBApp.getApp().getTypeface());
-        Button flashButton = (Button) findViewById(R.id.flash_microbit_btn);
-        flashButton.setTypeface(MBApp.getApp().getTypeface());
-        Button createCodeButton = (Button) findViewById(R.id.create_code_btn);
-        createCodeButton.setTypeface(MBApp.getApp().getTypeface());
-        Button discoverButton = (Button) findViewById(R.id.discover_btn);
-        discoverButton.setTypeface(MBApp.getApp().getTypeface());
 
         checkMinimumPermissionsForThisScreen();
         startOtherServices();
@@ -146,6 +131,18 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         gifAnimationHelloEmoji = (GifImageView) findViewById(R.id.homeHelloAnimationGifView);
     }
 
+    private void setupButtonsFontStyle() {
+        // Font Style for buttons
+        Button connectButton = (Button) findViewById(R.id.connect_device_btn);
+        connectButton.setTypeface(MBApp.getApp().getTypeface());
+        Button flashButton = (Button) findViewById(R.id.flash_microbit_btn);
+        flashButton.setTypeface(MBApp.getApp().getTypeface());
+        Button createCodeButton = (Button) findViewById(R.id.create_code_btn);
+        createCodeButton.setTypeface(MBApp.getApp().getTypeface());
+        Button discoverButton = (Button) findViewById(R.id.discover_btn);
+        discoverButton.setTypeface(MBApp.getApp().getTypeface());
+    }
+
     private void startOtherServices() {
         // IPC service to communicate between the services
         Intent ipcIntent = new Intent(this, IPCService.class);
@@ -166,9 +163,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         toolbar.setNavigationContentDescription(R.string.content_description_toolbar_home);
         ImageView imgToolbarLogo = (ImageView) findViewById(R.id.img_toolbar_bbc_logo);
         imgToolbarLogo.setContentDescription("BBC Micro:bit");
-        //toolbar.setLogo(R.drawable.bbc_microbit_app_bar_logo);
-        // toolbar.setNavigationIcon(R.drawable.white_red_led_btn);
-        //  toolbar.setLogoDescription(R.string.content_description_toolbar_logo);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -187,8 +181,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         drawer.setDrawerListener(toggle);
 
         toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         /* Todo [Hack]:
         * NavigationView items for selection by user using
@@ -213,15 +205,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         termsNavBtn.setTypeface(MBApp.getApp().getTypeface());
         findViewById(R.id.btn_terms_conditions).setOnClickListener(this);
 
-        Button sendFeedbackNavbtn = (Button) findViewById(R.id.btn_send_feedback);
-        sendFeedbackNavbtn.setTypeface(MBApp.getApp().getTypeface());
+        Button sendFeedbackNavBtn = (Button) findViewById(R.id.btn_send_feedback);
+        sendFeedbackNavBtn.setTypeface(MBApp.getApp().getTypeface());
         findViewById(R.id.btn_send_feedback).setOnClickListener(this);
 
         // Share stats checkbox
         TextView shareStatsCheckTitle = (TextView) findViewById(R.id.share_statistics_title);
         shareStatsCheckTitle.setTypeface(MBApp.getApp().getTypeface());
         TextView shareStatsDescription = (TextView) findViewById(R.id.share_statistics_description);
-        shareStatsDescription.setTypeface(MBApp.getApp().getTypeface());
+        shareStatsDescription.setTypeface(MBApp.getApp().getRobotoTypeface());
         mShareStatsCheckBox = (CheckBox) findViewById(R.id.share_statistics_status);
         mShareStatsCheckBox.setOnClickListener(this);
         mShareStatsCheckBox.setChecked(shareStats);
@@ -239,7 +231,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             info = manager.getPackageInfo(MBApp.getApp().getPackageName(), 0);
             version = info.versionName;
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         }
         emailBodyString = String.format(emailBody,
                 version,
@@ -284,8 +276,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         unbindDrawables(findViewById(R.id.share_statistics_title));
         unbindDrawables(findViewById(R.id.share_statistics_description));
         unbindDrawables(findViewById(R.id.share_statistics_status));
-
-        System.gc();
     }
 
     private void unbindDrawables(View view) {
@@ -338,32 +328,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onStop() {
         super.onStop();
-    }
-
-
-    private class StableArrayAdapter extends ArrayAdapter<String> {
-
-        HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
-
-        public StableArrayAdapter(Context context, int textViewResourceId,
-                                  List<String> objects) {
-            super(context, textViewResourceId, objects);
-            for (int i = 0; i < objects.size(); ++i) {
-                mIdMap.put(objects.get(i), i);
-            }
-        }
-
-        @Override
-        public long getItemId(int position) {
-            String item = getItem(position);
-            return mIdMap.get(item);
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
     }
 
     @Override
@@ -493,7 +457,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (mShareStatsCheckBox == null) {
             return;
         }
-        boolean shareStatistics = false;
+        boolean shareStatistics;
         shareStatistics = mShareStatsCheckBox.isChecked();
         mPrefs.edit().putBoolean(getString(R.string.prefs_share_stats_status), shareStatistics).apply();
         logi("shareStatistics = " + shareStatistics);
@@ -503,8 +467,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void installSamples() {
-        if (mPrefs.getBoolean("firstrun", true)) {
-            mPrefs.edit().putBoolean("firstrun", false).commit();
+        if (mPrefs.getBoolean(FIRST_RUN, true)) {
+            mPrefs.edit().putBoolean(FIRST_RUN, false).apply();
             //First Run. Install the Sample applications
             new Thread(new Runnable() {
                 @Override
@@ -524,14 +488,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
         switch (requestCode)
         {
             case Constants.APP_STORAGE_PERMISSIONS_REQUESTED: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     installSamples();
                 } else {
-                    if (mPrefs!= null) mPrefs.edit().putBoolean("firstrun", false).commit();
+                    if (mPrefs!= null) mPrefs.edit().putBoolean(FIRST_RUN, false).apply();
                     PopUp.show(MBApp.getApp(),
                             getString(R.string.storage_permission_for_samples_error),
                             "",
@@ -546,7 +512,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void requetPermission(String[] permissions, final int requestCode) {
+    private void requestPermission(String[] permissions, final int requestCode) {
         ActivityCompat.requestPermissions(this, permissions, requestCode);
     }
 
@@ -555,8 +521,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         public void onClick(View v) {
             logi("diskStoragePermissionOKHandler");
             PopUp.hide();
-            String[] permissionsNeeded = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-            requetPermission(permissionsNeeded, Constants.APP_STORAGE_PERMISSIONS_REQUESTED);
+            String[] permissionsNeeded = {
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            };
+            requestPermission(permissionsNeeded, Constants.APP_STORAGE_PERMISSIONS_REQUESTED);
         }
     };
 
@@ -572,16 +541,18 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     PopUp.GIFF_ANIMATION_ERROR,
                     PopUp.TYPE_ALERT,
                     null, null);
-            if (mPrefs!= null) mPrefs.edit().putBoolean("firstrun", false).commit();
+            if (mPrefs!= null) mPrefs.edit().putBoolean(FIRST_RUN, false).apply();
         }
     };
 
 
     private void checkMinimumPermissionsForThisScreen() {
-        //Check reading perminssions & writing permission to populate the HEX files & show program list
-        if (mPrefs.getBoolean("firstrun", true)) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PermissionChecker.PERMISSION_GRANTED ||
-                    (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PermissionChecker.PERMISSION_GRANTED)) {
+        //Check reading permissions & writing permission to populate the HEX files & show program list
+        if (mPrefs.getBoolean(FIRST_RUN, true)) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PermissionChecker.PERMISSION_GRANTED ||
+                    (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            != PermissionChecker.PERMISSION_GRANTED)) {
                 PopUp.show(MBApp.getApp(),
                         getString(R.string.storage_permission_for_samples),
                         getString(R.string.permissions_needed_title),
@@ -590,8 +561,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         diskStoragePermissionOKHandler,
                         diskStoragePermissionCancelHandler);
             } else {
-                if (mPrefs.getBoolean("firstrun", true)) {
-                    mPrefs.edit().putBoolean("firstrun", false).commit();
+                if (mPrefs.getBoolean(FIRST_RUN, true)) {
+                    mPrefs.edit().putBoolean(FIRST_RUN, false).apply();
                     //First Run. Install the Sample applications
                     new Thread(new Runnable() {
                         @Override

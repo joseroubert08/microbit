@@ -431,13 +431,13 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         manageMicorbitStatus.setTypeface(MBApp.getApp().getTypefaceBold());
 
         TextView descriptionManageMicrobit = (TextView) findViewById(R.id.description_manage_microbit);
-        descriptionManageMicrobit.setTypeface(MBApp.getApp().getTypeface());
+        descriptionManageMicrobit.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         TextView pairBtnText = (TextView) findViewById(R.id.custom_pair_button_text);
         pairBtnText.setTypeface(MBApp.getApp().getTypeface());
 
         TextView problemsMicrobit = (TextView) findViewById(R.id.connect_microbit_problems_message);
-        problemsMicrobit.setTypeface(MBApp.getApp().getTypefaceBold());
+        problemsMicrobit.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         // How to pair your micro:bit - Screen #1
         TextView pairTipTitle = (TextView) findViewById(R.id.pairTipTitle);
@@ -447,13 +447,13 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         stepOneTitle.setTypeface(MBApp.getApp().getTypefaceBold());
 
         TextView stepOneInstructions = (TextView) findViewById(R.id.pair_tip_step_1_instructions);
-        stepOneInstructions.setTypeface(MBApp.getApp().getTypeface());
+        stepOneInstructions.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         Button cancelPairButton = (Button) findViewById(R.id.cancel_tip_step_1_btn);
-        cancelPairButton.setTypeface(MBApp.getApp().getTypeface());
+        cancelPairButton.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         Button nextPairButton = (Button) findViewById(R.id.ok_tip_step_1_btn);
-        nextPairButton.setTypeface(MBApp.getApp().getTypeface());
+        nextPairButton.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         // How to pair your micro:bit - Screen #2
         TextView howToPairStepThreeTitle = (TextView) findViewById(R.id.how_to_pair_screen_two_title);
@@ -463,19 +463,19 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         howToPairStepThreeStep.setTypeface(MBApp.getApp().getTypefaceBold());
 
         TextView howToPairStepThreeText = (TextView) findViewById(R.id.pair_tip_step_3_instructions);
-        howToPairStepThreeText.setTypeface(MBApp.getApp().getTypeface());
+        howToPairStepThreeText.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         TextView howToPairStepFourTitle = (TextView) findViewById(R.id.pair_tip_step_4_step);
         howToPairStepFourTitle.setTypeface(MBApp.getApp().getTypefaceBold());
 
         TextView howToPairStepFourText = (TextView) findViewById(R.id.pair_tip_step_4_instructions);
-        howToPairStepFourText.setTypeface(MBApp.getApp().getTypeface());
+        howToPairStepFourText.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         Button cancelPairScreenTwoButton = (Button) findViewById(R.id.cancel_tip_step_3_btn);
-        cancelPairScreenTwoButton.setTypeface(MBApp.getApp().getTypeface());
+        cancelPairScreenTwoButton.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         Button nextPairScreenTwoButton = (Button) findViewById(R.id.ok_tip_step_3_btn);
-        nextPairScreenTwoButton.setTypeface(MBApp.getApp().getTypeface());
+        nextPairScreenTwoButton.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         // Step 2 - Enter Pattern
         TextView enterPatternTitle = (TextView) findViewById(R.id.enter_pattern_step_2_title);
@@ -485,16 +485,16 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         stepTwoTitle.setTypeface(MBApp.getApp().getTypefaceBold());
 
         TextView stepTwoInstructions = (TextView) findViewById(R.id.pair_enter_pattern_step_2_instructions);
-        stepTwoInstructions.setTypeface(MBApp.getApp().getTypeface());
+        stepTwoInstructions.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         ImageView ohPrettyImg = (ImageView) findViewById(R.id.oh_pretty_emoji);
         ohPrettyImg.setVisibility(View.INVISIBLE);
 
         Button cancelEnterPattern = (Button) findViewById(R.id.cancel_enter_pattern_step_2_btn);
-        cancelEnterPattern.setTypeface(MBApp.getApp().getTypeface());
+        cancelEnterPattern.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         Button okEnterPatternButton = (Button) findViewById(R.id.ok_enter_pattern_step_2_btn);
-        okEnterPatternButton.setTypeface(MBApp.getApp().getTypeface());
+        okEnterPatternButton.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         // Step 3 - Searching for micro:bit
         TextView searchMicrobitTitle = (TextView) findViewById(R.id.search_microbit_step_3_title);
@@ -504,10 +504,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         stepThreeTitle.setTypeface(MBApp.getApp().getTypefaceBold());
 
         TextView stepThreeInstructions = (TextView) findViewById(R.id.searching_microbit_step_instructions);
-        stepThreeInstructions.setTypeface(MBApp.getApp().getTypeface());
+        stepThreeInstructions.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         Button cancelSearchMicroBit = (Button) findViewById(R.id.cancel_search_microbit_step_3_btn);
-        cancelSearchMicroBit.setTypeface(MBApp.getApp().getTypeface());
+        cancelSearchMicroBit.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         // pin view
         displayScreen(mState);

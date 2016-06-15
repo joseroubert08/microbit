@@ -17,6 +17,10 @@ public class MBApp extends Application {
 
     private static MBApp app = null;
 
+    private Typeface mTypeface;
+    private Typeface mBoldTypeface;
+    private Typeface mRobotoTypeface;
+
     private EchoClientManager echoClientManager;
 
     private SoundPool appSoundPool;
@@ -27,6 +31,7 @@ public class MBApp extends Application {
     public void onCreate() {
         super.onCreate();
         app = this;
+        initTypefaces();
         echoClientManager = EchoClientManager.getInstance(this);
 
         if(Build.VERSION.SDK_INT >= 21) {
@@ -46,12 +51,25 @@ public class MBApp extends Application {
         Log.d("MBApp", "App Created");
     }
 
-    public Typeface getTypeface() {
-        return Typeface.createFromAsset(getAssets(), "fonts/GT-Walsheim.otf");
+    /**
+     * Creates font styles from an asset.
+     */
+    private void initTypefaces() {
+        mTypeface = Typeface.createFromAsset(getAssets(), "fonts/GT-Walsheim.otf");
+        mBoldTypeface = Typeface.createFromAsset(getAssets(), "fonts/GT-Walsheim-Bold.otf");
+        mRobotoTypeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Regular.ttf");
     }
 
-    public Typeface getTypefaceBold() {
-        return Typeface.createFromAsset(getAssets(), "fonts/GT-Walsheim-Bold.otf");
+    public Typeface getTypeface(){
+        return mTypeface;
+    }
+
+    public Typeface getTypefaceBold(){
+        return mBoldTypeface;
+    }
+
+    public Typeface getRobotoTypeface() {
+        return mRobotoTypeface;
     }
 
     public static MBApp getApp() {

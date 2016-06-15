@@ -82,4 +82,10 @@
 	<!-- Default screen margins, per the Android Design guidelines. -->
 	<dimen name="fab_margin">16dp</dimen>
 
+	<!-- Main Activity -->
+	<dimen name="button_margin">8dp</dimen>
+	<dimen name="button_padding_top">36dp</dimen>
+	<dimen name="main_activity_button_text_size">18sp</dimen>
+	<dimen name="main_activity_button_height">144dp</dimen>
+	<dimen name="buttons_layout_margin">18dp</dimen>
 </resources>

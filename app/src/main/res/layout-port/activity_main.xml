@@ -12,11 +12,10 @@
     tools:showIn="@layout/app_bar_main">
 
     <!--pairing animation-->
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="3"
-        android:orientation="horizontal"
         android:scrollbars="none">
 
         <pl.droidsonroids.gif.GifImageView
@@ -30,9 +29,9 @@
             android:labelFor="@drawable/bbc_microbit_vertical"
             android:nextFocusDown="@+id/connect_device_btn"
             android:scrollbars="none"
-            android:src="@drawable/hello_emoji_animation" />
+            android:src="@drawable/hello_emoji_animation"/>
 
-    </LinearLayout>
+    </RelativeLayout>
     <!-- Connections -->
     <Button
         android:id="@+id/connect_device_btn"
