@@ -1,14 +1,14 @@
 <!-- Pairing button -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/pairButtonView"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/main_gray_transparent_60_opacity_color">
+    style="@style/pair_new_microbit_button_layout_style"
+    tools:showIn="@layout/view_connect_microbit">
 
     <LinearLayout
         android:id="@+id/pairButton"
         style="@style/custom_button_layout"
-        android:layout_margin="@dimen/custom_button_margin"
+        android:layout_margin="@dimen/pair_new_microbit_button_layout_margin"
         android:background="@drawable/yellow_btn"
         android:onClick="onClick">
 

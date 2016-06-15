@@ -2,12 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/manageDeviceView"
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="1"
-    android:paddingBottom="@dimen/connections_container_layout_padding"
-    android:paddingEnd="@dimen/connections_container_layout_padding"
-    android:paddingStart="@dimen/connections_container_layout_padding"
+    style="@style/pairing_manage_device_layout_style"
     tools:showIn="@layout/view_connect_microbit">
 
     <LinearLayout
