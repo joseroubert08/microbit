@@ -233,12 +233,15 @@ public class ProjectAdapter extends BaseAdapter {
             logi("deleteBtnClickListener() :: ");
             final int pos = (int) v.getTag();
             //Update Stats
-            if (MBApp.getApp().getEchoClientManager().getEcho() != null) {
-                MBApp.getApp().getEchoClientManager().getEcho().userActionEvent("click", "DeleteProject", null);
+
+            MBApp application = MBApp.getApp();
+
+            if (application.getEchoClientManager().getEcho() != null) {
+                application.getEchoClientManager().getEcho().userActionEvent("click", "DeleteProject", null);
             }
-            PopUp.show(MBApp.getContext(),
-                    MBApp.getContext().getString(R.string.delete_project_message),
-                    MBApp.getContext().getString(R.string.delete_project_title),
+            PopUp.show(application,
+                    application.getString(R.string.delete_project_message),
+                    application.getString(R.string.delete_project_title),
                     R.drawable.ic_trash, R.drawable.red_btn,
                     PopUp.GIFF_ANIMATION_NONE,
                     PopUp.TYPE_CHOICE,
@@ -280,7 +283,7 @@ public class ProjectAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         Project project = projects.get(position);
         if (convertView == null) {
-            LayoutInflater inflater = LayoutInflater.from(MBApp.getContext());
+            LayoutInflater inflater = LayoutInflater.from(MBApp.getApp());
             convertView = inflater.inflate(R.layout.project_items, null);
         }
 
@@ -294,10 +297,12 @@ public class ProjectAdapter extends BaseAdapter {
         if (actionBarLayout != null) {
             if (project.actionBarExpanded) {
                 actionBarLayout.setVisibility(View.VISIBLE);
-                appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getContext(), R.drawable.ic_arrow_down), null);
+                appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getApp()
+                        , R.drawable.ic_arrow_down), null);
             } else {
                 actionBarLayout.setVisibility(View.GONE);
-                appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getContext(), R.drawable.ic_arrow_left), null);
+                appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getApp()
+                        , R.drawable.ic_arrow_left), null);
             }
         }
 

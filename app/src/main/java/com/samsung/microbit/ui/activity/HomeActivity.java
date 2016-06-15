@@ -91,7 +91,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logi("onCreate() :: ");
-        MBApp.setContext(this);
 
         appInfoPresenter = new AppInfoPresenter();
 
@@ -132,7 +131,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (!appInfo.isAppStatusOn()) {
             finish();
             //Cannot proceed with the application. Shutdown NOW
-            PopUp.show(MBApp.getContext(),
+            PopUp.show(MBApp.getApp(),
                     appInfo.getExceptionMsg(),
                     appInfo.getExceptionTitle(),
                     R.drawable.error_face,//image icon res id
@@ -234,10 +233,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         String emailBody = getString(R.string.email_body);
         String version = "0.1.0";
-        PackageManager manager = MBApp.getContext().getPackageManager();
+        PackageManager manager = MBApp.getApp().getPackageManager();
         PackageInfo info = null;
         try {
-            info = manager.getPackageInfo(MBApp.getContext().getPackageName(), 0);
+            info = manager.getPackageInfo(MBApp.getApp().getPackageName(), 0);
             version = info.versionName;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -510,7 +509,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    PopUp.show(MBApp.getContext(),
+                    PopUp.show(MBApp.getApp(),
                             "Samples will now be copied to your device. You can check them out in the Flash section.",
                             "Thank you",
                             R.drawable.message_face, R.drawable.blue_btn,
@@ -533,7 +532,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     installSamples();
                 } else {
                     if (mPrefs!= null) mPrefs.edit().putBoolean("firstrun", false).commit();
-                    PopUp.show(MBApp.getContext(),
+                    PopUp.show(MBApp.getApp(),
                             getString(R.string.storage_permission_for_samples_error),
                             "",
                             R.drawable.error_face, R.drawable.red_btn,
@@ -566,7 +565,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         public void onClick(View v) {
             logi("diskStoragePermissionCancelHandler");
             PopUp.hide();
-            PopUp.show(MBApp.getContext(),
+            PopUp.show(MBApp.getApp(),
                     getString(R.string.storage_permission_for_samples_error),
                     "",
                     R.drawable.error_face, R.drawable.red_btn,
@@ -583,7 +582,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (mPrefs.getBoolean("firstrun", true)) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PermissionChecker.PERMISSION_GRANTED ||
                     (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PermissionChecker.PERMISSION_GRANTED)) {
-                PopUp.show(MBApp.getContext(),
+                PopUp.show(MBApp.getApp(),
                         getString(R.string.storage_permission_for_samples),
                         getString(R.string.permissions_needed_title),
                         R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
@@ -609,7 +608,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void onResume() {
         if (debug) logi("onResume() :: ");
         super.onResume();
-        MBApp.setContext(this);
         findViewById(R.id.homeHelloAnimationGifView).animate();
     }
 }

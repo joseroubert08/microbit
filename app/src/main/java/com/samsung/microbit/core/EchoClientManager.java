@@ -99,7 +99,7 @@ public class EchoClientManager {
     public void sendViewEventStats(String viewEventString) {
         if (shareStatistic && echo != null) {
             Log.d("EchoClientManager", "sendViewEventStats " + viewEventString);
-            String counterName = MBApp.getContext().getString(R.string.stats_view_name, viewEventString);
+            String counterName = MBApp.getApp().getString(R.string.stats_view_name, viewEventString);
             HashMap<String, String> eventLabels = new HashMap<String, String>();
             eventLabels.put("bbc_site", "bitesize");
             echo.viewEvent(counterName, eventLabels);

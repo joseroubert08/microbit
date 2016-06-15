@@ -1,7 +1,6 @@
 package com.samsung.microbit;
 
 import android.app.Application;
-import android.content.Context;
 import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
@@ -15,8 +14,6 @@ import com.samsung.microbit.core.EchoClientManager;
 public class MBApp extends Application {
 
     private static final int MAX_STREAMS_SIMULTANIOUSLY = 10;
-
-    private static Context mContext;
 
     private static MBApp app = null;
 
@@ -55,14 +52,6 @@ public class MBApp extends Application {
 
     public Typeface getTypefaceBold() {
         return Typeface.createFromAsset(getAssets(), "fonts/GT-Walsheim-Bold.otf");
-    }
-
-    public static Context getContext() {
-        return MBApp.mContext;
-    }
-
-    public static void setContext(Context ctx) {
-        MBApp.mContext = ctx;
     }
 
     public static MBApp getApp() {

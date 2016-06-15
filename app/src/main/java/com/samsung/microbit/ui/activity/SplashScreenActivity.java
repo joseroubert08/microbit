@@ -41,8 +41,6 @@ public class SplashScreenActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        MBApp.setContext(this);
-
         initViews();
 
         MBApp.getApp().getEchoClientManager().sendAppStats();

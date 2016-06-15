@@ -4,22 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.samsung.microbit.MBApp;
-import com.samsung.microbit.ui.activity.HomeActivity;
-
 public class NotificationActivity extends Activity {
-	@Override
-	public void onResume() {
-		super.onResume();
-		MBApp.setContext(this);
-	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-
-		MBApp.setContext(this);
 
 		// If this activity is the root activity of the task, the app is not running
 		if (isTaskRoot()) {

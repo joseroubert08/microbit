@@ -59,7 +59,7 @@ public class AppInfoPresenter implements Presenter {
         }
         //Install the HTTP Cache
         try {
-            File httpCacheDir = new File(MBApp.getContext().getCacheDir(), "https");
+            File httpCacheDir = new File(MBApp.getApp().getCacheDir(), "https");
             long httpCacheSize = 3 * 1024 * 1024; // 3 MiB
             HttpResponseCache.install(httpCacheDir, httpCacheSize);
         } catch (IOException e) {
