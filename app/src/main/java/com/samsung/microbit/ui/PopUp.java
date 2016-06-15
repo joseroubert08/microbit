@@ -1,6 +1,5 @@
 package com.samsung.microbit.ui;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +8,6 @@ import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 
 import com.samsung.microbit.ui.activity.PopUpActivity;
 
@@ -88,7 +86,7 @@ public class PopUp {
             } else if (intent.getAction().equals(PopUpActivity.INTENT_ACTION_CREATED)) {
                 Log.d("PopUp", "INTENT_ACTION_CREATED size queue = " + pendingQueue.size());
                 PendingRequest request = pendingQueue.poll();
-                if(request != null) {
+                if (request != null) {
                     current_type = request.intent.getIntExtra(PopUpActivity.INTENT_EXTRA_TYPE, 0);
                     okPressListener = request.okListener;
                     cancelPressListener = request.cancelListener;
@@ -201,7 +199,7 @@ public class PopUp {
      * @param imageResId           - pass 0 to imageResId to use default icon
      * @param imageBackgroundResId - pass 0 to imageBackgroundResId if no background is needed for icon
      * @param animationCode        - pass 0 to use default @imageResId icon.
-     *                               The animationCode and the @imageResId are shown separately but never together (visibility is toggled)
+     *                             The animationCode and the @imageResId are shown separately but never together (visibility is toggled)
      * @param type                 - pop up type e.g. spinner, cancellable;
      * @param okListener           - pass null to use default listener (which hides the pops) - you can override for your own purpose
      * @param cancelListener       - pass null to use default listener (which hides the pops)
@@ -219,11 +217,6 @@ public class PopUp {
                                                      int imageResId, int imageBackgroundResId, int animationCode, int type,
                                                      View.OnClickListener okListener, View.OnClickListener cancelListener) {
         Log.d("PopUp", "show START popup type " + type);
-        if (!(context instanceof Activity)) {
-            //TODO: throw exception?
-            Log.e("PopUp", "Cannot show popup because context is not an activity. PopUp.show must be called from an activity");
-            return false;
-        }
         ctx = context;
 
         if (registered == false) {
