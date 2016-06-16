@@ -9,6 +9,7 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanRecord;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.BroadcastReceiver;
@@ -55,6 +56,7 @@ import com.samsung.microbit.ui.BluetoothSwitch;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.adapter.LEDAdapter;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,7 +130,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         STATE_DISCONNECTING
     }
 
-    private List<Integer> mRequestPermission = new ArrayList<Integer>();
+    private List<Integer> mRequestPermission = new ArrayList<>();
 
     private int mRequestingPermission = -1;
 
@@ -350,6 +352,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         displayScreen(mState);
     }
 
+    /**
+     * Setup font styles by setting an appropriate typefaces.
+     */
     private void setupFontStyle() {
         deviceConnectionStatusBtn.setTypeface(MBApp.getApp().getTypeface());
         // Connect Screen
@@ -443,10 +448,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     }
 
     private void initViews() {
-        // Device connection status button
         deviceConnectionStatusBtn = (Button) findViewById(R.id.connected_device_status_button);
-        deviceConnectionStatusBtn.setOnClickListener(this);
-
         mBottomPairButton = (LinearLayout) findViewById(R.id.ll_pairing_activity_screen);
         mPairButtonView = (LinearLayout) findViewById(R.id.pairButtonView);
         mPairTipView = (LinearLayout) findViewById(R.id.pairTipView);
@@ -455,6 +457,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         mNewDeviceView = (LinearLayout) findViewById(R.id.newDeviceView);
         mPairSearchView = (LinearLayout) findViewById(R.id.pairSearchView);
 
+        //Setup on click listeners.
+        deviceConnectionStatusBtn.setOnClickListener(this);
         findViewById(R.id.pairButton).setOnClickListener(this);
         findViewById(R.id.cancel_tip_step_1_btn).setOnClickListener(this);
         findViewById(R.id.ok_enter_pattern_step_2_btn).setOnClickListener(this);
@@ -536,17 +540,11 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         if (mBluetoothAdapter == null) {
             final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             mBluetoothAdapter = bluetoothManager.getAdapter();
-        }
-        if (mBluetoothAdapter == null) {
             retvalue = false;
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mLEScanner == null) {
-            try {
-                mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
-            } catch (NullPointerException e) {
-                Log.e(TAG, e.toString());
-            }
+            mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
             if (mLEScanner == null)
                 retvalue = false;
         }
@@ -766,6 +764,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         mPairTipViewScreenTwo.setVisibility(View.GONE);
         mNewDeviceView.setVisibility(View.GONE);
         mPairSearchView.setVisibility(View.GONE);
+        mConnectDeviceView.setVisibility(View.GONE);
 
         logi("********** Connect: state from " + mState + " to " + gotoState);
         mState = gotoState;
@@ -795,18 +794,13 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
             case PAIRING_STATE_TIP:
                 mPairTipView.setVisibility(View.VISIBLE);
-                mConnectDeviceView.setVisibility(View.GONE);
                 findViewById(R.id.ok_tip_step_1_btn).setOnClickListener(this);
                 break;
 
             case PAIRING_STATE_PATTERN_EMPTY:
-
-                findViewById(R.id.enter_pattern_step_2_gridview).setEnabled(true);
                 mNewDeviceView.setVisibility(View.VISIBLE);
                 findViewById(R.id.cancel_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
                 findViewById(R.id.enter_pattern_step_2_title).setVisibility(View.VISIBLE);
-
-                findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.GONE);
                 findViewById(R.id.oh_pretty_emoji).setVisibility(View.VISIBLE);
 
                 displayLedGrid();
@@ -1089,8 +1083,9 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 try {
                     Method m = bt.getClass().getMethod("removeBond", (Class[]) null);
                     m.invoke(bt, (Object[]) null);
-                } catch (Exception e) {
-                    Log.e(TAG, e.getMessage());
+                } catch (NoSuchMethodException | IllegalAccessException
+                        | InvocationTargetException e) {
+                    Log.e(TAG, e.toString());
                 }
             }
         }
@@ -1215,7 +1210,10 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                         Log.i("callbackType = ", String.valueOf(callbackType));
                         Log.i("result = ", result.toString());
                         BluetoothDevice btDevice = result.getDevice();
-                        PairingActivity.instance.onLeScan(btDevice, result.getRssi(), result.getScanRecord().getBytes());
+                        final ScanRecord scanRecord = result.getScanRecord();
+                        if(scanRecord != null) {
+                            PairingActivity.instance.onLeScan(btDevice, result.getRssi(), scanRecord.getBytes());
+                        }
                     }
 
                     @Override
@@ -1308,16 +1306,13 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             logi("Device is already bonded.");
             cancelPairing();
             //Get device name from the System settings if present and add to our list
-            ConnectedDevice newDev = new ConnectedDevice(mNewDeviceCode.toUpperCase(), mNewDeviceCode.toUpperCase(), false, mNewDeviceAddress, 0, null, System.currentTimeMillis());
+            ConnectedDevice newDev = new ConnectedDevice(mNewDeviceCode.toUpperCase(),
+                    mNewDeviceCode.toUpperCase(), false, mNewDeviceAddress, 0, null,
+                    System.currentTimeMillis());
             handlePairingSuccessful(newDev);
             return;
         }
-        try {
-            boolean retValue = device.createBond();
-            logi("device.createBond returns " + retValue);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        logi("device.createBond returns " + device.createBond());
     }
 
     @Override
@@ -1365,7 +1360,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         unbindDrawables(findViewById(R.id.cancel_search_microbit_step_3_btn));
         unbindDrawables(findViewById(R.id.searching_progress_spinner));
 
-        System.gc();
         unregisterReceiver(mPairReceiver);
     }
 

@@ -13,7 +13,7 @@
     <!-- Project UI -->
     <bool name="expandProjectItem">true</bool>
 
-    <!-- Connect UI -->
+    <!-- Pattern grid -->
     <dimen name="led_gap">4dp</dimen>
     <integer name="led_size">44</integer>
     <dimen name="led_grid_width">240dp</dimen>
@@ -89,6 +89,7 @@
     <dimen name="pairing_step_button_height">58dp</dimen>
     <dimen name="pairing_step_gif_image_margin">8dp</dimen>
     <dimen name="pairing_step_two_header_margin">16dp</dimen>
+    <dimen name="pairing_step_two_tip_layout_margin_top">16dp</dimen>
 
     <!-- Connect screen -->
     <dimen name="connections_container_layout_padding">16dp</dimen>
