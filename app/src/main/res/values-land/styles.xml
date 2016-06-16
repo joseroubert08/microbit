@@ -18,4 +18,26 @@
         <item name="android:textAllCaps">true</item>
         <item name="android:visibility">visible</item>
     </style>
+
+    <!-- Connect screen styles -->
+    <style name="pairing_manage_device_layout_style">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:paddingBottom">@dimen/connections_container_layout_padding</item>
+        <item name="android:paddingEnd">@dimen/connections_container_layout_padding</item>
+        <item name="android:paddingStart">@dimen/connections_container_layouts_indentation</item>
+        <item name="android:paddingTop">@dimen/connections_container_layout_padding_top</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="pair_new_microbit_button_layout_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="connect_activity_layout_style">
+        <item name="android:background">@drawable/bg_land</item>
+    </style>
+
 </resources>

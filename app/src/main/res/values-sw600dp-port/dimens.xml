@@ -107,9 +107,6 @@
     <dimen name="project_item_buttons_size">72dp</dimen>
     <dimen name="project_items_image_padding">0dp</dimen>
 
-    <!-- p1 font size -->
-    <dimen name="p1_font_size">20sp</dimen>
-
     <!-- Project items -->
     <dimen name="project_items_text_size">24sp</dimen>
 
@@ -118,8 +115,6 @@
     <dimen name="view_divider_margin">0dp</dimen>
 
     <!-- Connect screen -->
-    <dimen name="pairing_connection_header_text_size">24sp</dimen>
-    <dimen name="connection_description_text_size">20sp</dimen>
     <dimen name="connection_smile_image_height">200dp</dimen>
     <dimen name="pairing_connection_header_margin_bottom">16dp</dimen>
     <dimen name="description_and_smile_layout_padding">40dp</dimen>

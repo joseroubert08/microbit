@@ -150,6 +150,25 @@
         <item name="android:paddingTop">@dimen/description_and_smile_layout_padding</item>
     </style>
 
+    <style name="pairing_manage_device_layout_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:paddingBottom">@dimen/connections_container_layout_padding</item>
+        <item name="android:paddingEnd">@dimen/connections_container_layout_padding</item>
+        <item name="android:paddingStart">@dimen/connections_container_layout_padding</item>
+    </style>
+
+    <style name="pair_new_microbit_button_layout_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/main_gray_transparent_60_opacity_color</item>
+    </style>
+
+    <style name="connect_activity_layout_style">
+        <item name="android:background">@drawable/bg</item>
+    </style>
+
     <!-- Main activity styles -->
     <style name="main_activity_button_style" parent="match_width_parent_wrap_height_content">
         <item name="android:layout_marginBottom">@dimen/main_activity_button_margin_bottom</item>
