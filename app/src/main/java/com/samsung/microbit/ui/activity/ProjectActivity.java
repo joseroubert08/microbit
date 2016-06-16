@@ -226,7 +226,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         != PermissionChecker.PERMISSION_GRANTED)) {
                 mRequestingPermission = mRequestPermission.get(0);
                 mRequestPermission.remove(0);
-                PopUp.show(MBApp.getContext(),
+                PopUp.show(MBApp.getApp(),
                         (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED)
                                 ? getString(R.string.telephony_permission)
                                 : getString(R.string.sms_permission),
@@ -245,12 +245,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
     }
 
     private AppInfoPresenter appInfoPresenter;
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        MBApp.setContext(this);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -312,9 +306,20 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         appInfoPresenter.destroy();
         super.onDestroy();
     }
+
     private void requestPermission(String[] permissions, final int requestCode) {
         ActivityCompat.requestPermissions(this, permissions, requestCode);
     }
+
+    View.OnClickListener diskStoragePermissionOKHandler = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            logi("diskStoragePermissionOKHandler");
+            PopUp.hide();
+            String[] permissionsNeeded = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+            requestPermission(permissionsNeeded, Constants.APP_STORAGE_PERMISSIONS_REQUESTED);
+        }
+    };
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
@@ -338,7 +343,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             break;
             case Constants.INCOMING_CALL_PERMISSIONS_REQUESTED:{
                 if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED ) {
-                    PopUp.show(MBApp.getContext(),
+                    PopUp.show(MBApp.getApp(),
                             getString(R.string.telephony_permission_error),
                             getString(R.string.permissions_needed_title),
                             R.drawable.error_face, R.drawable.red_btn,
@@ -484,7 +489,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         projectListView.setEmptyView(emptyText);
         if (reReadFS) {
             projectList.clear();
-            Utils.findProgramsAndPopulate(prettyFileNameMap, projectList);
+            UnpackUtils.findProgramsAndPopulate(prettyFileNameMap, projectList);
         }
 
         projectListSortOrder = PreferenceUtils.getListOrderPrefs();
@@ -930,7 +935,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
                 }
             } else if (intent.getAction().equals(DfuService.BROADCAST_ERROR)) {
-                String error_message = Utils.broadcastGetErrorMessage(intent.getIntExtra(DfuService.EXTRA_DATA, 0));
+                String error_message = ErrorUtils.broadcastGetErrorMessage(intent.getIntExtra(DfuService.EXTRA_DATA, 0));
 
                 logi("DFUResultReceiver.onReceive() :: Flashing ERROR!!  Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
                         + "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");

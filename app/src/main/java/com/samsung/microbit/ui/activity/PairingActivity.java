@@ -469,7 +469,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        MBApp.setContext(this);
         updatePairedDeviceCard();
 
         // Step 1 - How to pair
@@ -500,13 +499,11 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         super.onCreate(savedInstanceState);
 
-        MBApp.setContext(this);
-
         // Make sure to call this before any other userActionEvent is sent
-        EchoClientManager.getInstance().sendViewEventStats("pairingactivity");
+        MBApp.getApp().getEchoClientManager().sendViewEventStats("pairingactivity");
 
         IntentFilter broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
-        LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(localBroadcastReceiver, broadcastIntentFilter);
+        LocalBroadcastManager.getInstance(MBApp.getApp()).registerReceiver(localBroadcastReceiver, broadcastIntentFilter);
 
         //Register receiver
         IntentFilter intent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
@@ -969,7 +966,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PermissionChecker.PERMISSION_GRANTED) {
-            PopUp.show(MBApp.getContext(),
+            PopUp.show(MBApp.getApp(),
                     getString(R.string.location_permission_pairing),
                     getString(R.string.permissions_needed_title),
                     R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
