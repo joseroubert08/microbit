@@ -88,4 +88,12 @@
 	<!-- Default screen margins, per the Android Design guidelines. -->
 	<dimen name="fab_margin">16dp</dimen>
 
+	<!-- Pattern grid -->
+	<dimen name="led_gap">6dp</dimen>
+	<integer name="led_size">48</integer>
+	<dimen name="led_grid_width">264dp</dimen>
+
+    <!-- Pairing step screens -->
+    <dimen name="pairing_step_1_gif_image_width">290dp</dimen>
+    <dimen name="pairing_step_1_gif_image_height">230dp</dimen>
 </resources>

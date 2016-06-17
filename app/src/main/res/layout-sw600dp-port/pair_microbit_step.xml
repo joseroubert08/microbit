@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="bottom"
-    tools:showIn="@layout/view_pairing_tip">
+    tools:showIn="@layout/view_pairing_step_1">
 
     <LinearLayout
         style="@style/pairing_step_tip_layout_style"
