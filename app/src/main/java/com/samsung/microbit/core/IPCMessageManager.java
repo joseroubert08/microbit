@@ -133,14 +133,22 @@ public final class IPCMessageManager {
         }
 
         synchronized (LOCK) {
+
+            List<Handler.Callback> clientCallbacks = null;
+
             if (incomingHandler != null) {
-                incomingHandler.clientCallbacks.clear();
+                clientCallbacks = incomingHandler.clientCallbacks;
                 handlerThread.quit();
             }
 
             handlerThread = new HandlerThread(serviceName);
             handlerThread.start();
             incomingHandler = new IncomingHandler(handlerThread, isDebug);
+
+            if(clientCallbacks != null) {
+                incomingHandler.clientCallbacks.addAll(clientCallbacks);
+            }
+
             clientMessenger = new Messenger(incomingHandler);
         }
     }
