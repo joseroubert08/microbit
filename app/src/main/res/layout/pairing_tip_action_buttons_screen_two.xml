@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/pairTipButtonView"
     style="@style/pairing_step_buttons_layout_style"
-    tools:showIn="@layout/view_pairing_tip_screen_two">
+    tools:showIn="@layout/view_pairing_step_3_4">
 
     <Button
         android:id="@+id/cancel_tip_step_3_btn"

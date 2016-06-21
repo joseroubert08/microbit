@@ -51,7 +51,7 @@
         android:theme="@style/AppTheme.NoActionBar">
         <activity
             android:name=".ui.activity.HomeActivity"
-            android:configChanges="orientation|screenSize"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/home_activity_name"
             android:launchMode="singleTop"/>
         <activity
@@ -92,12 +92,13 @@
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_connect"
             android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName=".ui.activity.HomeActivity"
             android:windowSoftInputMode="stateHidden|adjustPan"/>
         <activity
             android:name=".ui.activity.PopUpActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@style/PopUpTheme"
             android:windowSoftInputMode="adjustPan"/>
         <activity

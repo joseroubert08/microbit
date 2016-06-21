@@ -16,8 +16,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:gravity="center_horizontal">
             <!-- New Device title -->
             <TextView
                 android:id="@+id/enter_pattern_step_2_title"
@@ -51,7 +50,6 @@
             <LinearLayout
                 android:id="@+id/enterPatternConfirmationView"
                 style="@style/pairing_step_buttons_layout_style"
-                android:layout_gravity="bottom"
                 android:paddingBottom="0dp">
 
                 <Button

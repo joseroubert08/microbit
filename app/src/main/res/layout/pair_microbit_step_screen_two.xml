@@ -4,7 +4,7 @@
     android:id="@+id/pairTipButtonText"
     style="@style/pairing_step_tip_layout_style"
     android:orientation="vertical"
-    tools:showIn="@layout/view_pairing_tip_screen_two">
+    tools:showIn="@layout/view_pairing_step_3_4">
 
     <TextView
         android:id="@+id/pair_tip_step_3_step"

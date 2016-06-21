@@ -59,4 +59,9 @@
         <item name="android:paddingStart">@dimen/pairing_step_button_layout_padding</item>
         <item name="android:paddingEnd">@dimen/pairing_step_button_layout_padding</item>
     </style>
+
+    <!-- Popup screen styles -->
+    <style name="popup_buttons_layout_style">
+        <item name="android:weightSum">3</item>
+    </style>
 </resources>

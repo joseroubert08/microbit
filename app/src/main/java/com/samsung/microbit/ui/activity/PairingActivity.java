@@ -117,6 +117,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     private BluetoothAdapter mBluetoothAdapter = null;
     private volatile boolean mScanning = false;
 
+    private int mCurrentOrientation;
     private BluetoothLeScanner mLEScanner = null;
 
     private enum ACTIVITY_STATE {
@@ -348,6 +349,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
         setContentView(R.layout.activity_connect);
         initViews();
+        mCurrentOrientation = getResources().getConfiguration().orientation;
         displayScreen(mState);
     }
 
@@ -469,6 +471,17 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         setupFontStyle();
     }
 
+    private void releaseViews() {
+        deviceConnectionStatusBtn = null;
+        mBottomPairButton = null;
+        mPairButtonView = null;
+        mPairTipView = null;
+        mPairTipViewScreenTwo = null;
+        mConnectDeviceView = null; // Connect device view
+        mNewDeviceView = null;
+        mPairSearchView = null;
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -520,6 +533,8 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         initViews();
 
         updatePairedDeviceCard();
+
+        mCurrentOrientation = getResources().getConfiguration().orientation;
 
         // pin view
         displayScreen(mState);
@@ -695,14 +710,8 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         Drawable mDeviceDisconnectedImg;
         Drawable mDeviceConnectedImg;
 
-        // @getDrawable method depracated in API 21
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-            mDeviceDisconnectedImg = getDrawableResource(R.drawable.device_status_disconnected);
-            mDeviceConnectedImg = getDrawableResource(R.drawable.device_status_connected);
-        } else {
-            mDeviceDisconnectedImg = getDrawableResource(R.drawable.device_status_disconnected);
-            mDeviceConnectedImg = getDrawableResource(R.drawable.device_status_connected);
-        }
+        mDeviceDisconnectedImg = getDrawableResource(R.drawable.device_status_disconnected);
+        mDeviceConnectedImg = getDrawableResource(R.drawable.device_status_connected);
 
         if (!connectedDevice.mStatus) {
             // Device is not connected
@@ -808,7 +817,11 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                         tvTitle.setText(R.string.searchingTitle);
                         findViewById(R.id.searching_progress_spinner).setVisibility(View.VISIBLE);
                         findViewById(R.id.searching_microbit_found_giffview).setVisibility(View.GONE);
-                        tvSearchingStep.setText(R.string.searching_tip_step_text);
+                        if(mCurrentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                            tvSearchingStep.setText(R.string.searching_tip_step_text_one_line);
+                        } else {
+                            tvSearchingStep.setText(R.string.searching_tip_step_text);
+                        }
                         tvSearchingInstructions.setText(R.string.searching_tip_text_instructions);
                     }
                 }
@@ -1273,7 +1286,11 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                             textView.setText(getString(R.string.searchingTitle));
                             findViewById(R.id.searching_progress_spinner).setVisibility(View.GONE);
                             findViewById(R.id.searching_microbit_found_giffview).setVisibility(View.VISIBLE);
-                            tvSearchingStep.setText(R.string.searching_microbit_found_message);
+                            if(mCurrentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                                tvSearchingStep.setText(R.string.searching_microbit_found_message_one_line);
+                            } else {
+                                tvSearchingStep.setText(R.string.searching_microbit_found_message);
+                            }
                             tvSearchingInstructions.setText(R.string.searching_tip_text_instructions);
                             startPairingSecureBle(device);
                         }
@@ -1309,6 +1326,9 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         mNewDeviceView.setVisibility(View.GONE);
         mPairSearchView.setVisibility(View.GONE);
         mConnectDeviceView.setVisibility(View.GONE);
+
+        releaseViews();
+
         unbindDrawables(findViewById(R.id.connected_device_status_button));
         unbindDrawables(findViewById(R.id.pairButtonView));
         unbindDrawables(findViewById(R.id.pairTipView));
