@@ -3,7 +3,6 @@ package com.samsung.microbit.service;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
@@ -35,11 +34,7 @@ public class PluginService extends Service {
     public static final int CAMERA = 6;
     public static final int FILE = 7;
 
-    public PluginService() {
-        startIPCListener();
-    }
-
-    private static void logi(String message) {
+    public static void logi(String message) {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
     }
 
@@ -128,34 +123,6 @@ public class PluginService extends Service {
             logi("onStartCommand() :: start");
         }
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                /*
-                if (DEBUG) logi("onStartCommand().run() ::  Starting Constants.REG_SIGNALSTRENGTH");
-				Message msg = Message.obtain(null, Constants.REG_SIGNALSTRENGTH);
-				msg.arg1 = Constants.SAMSUNG_SIGNAL_STRENGTH_ID;
-				Bundle bundle = new Bundle();
-				bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_SIGNALSTRENGTH);
-				bundle.putString(IPCMessageManager.BUNDLE_VALUE, "on");
-				msg.setData(bundle);
-				handleMessage(msg);
-				*/
-
-
-                //bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DEVICEORIENTATION);
-                //bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DEVICEGESTURE);
-                //bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DISPLAY);
-
-
-            }
-        }).run();
-
         return START_STICKY;
     }
 
@@ -171,40 +138,6 @@ public class PluginService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return IPCMessageManager.getInstance().getClientMessenger().getBinder();
-    }
-
-    public void startIPCListener() {
-        if (DEBUG) {
-            logi("startIPCListener()");
-        }
-
-        IPCMessageManager.connectMaybeInit(PluginService.class.getName(), new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message msg) {
-                if (DEBUG) {
-                    logi("startIPCListener().handleMessage");
-                }
-
-                handleIncomingMessage(msg);
-                return true;
-            }
-        });
-
-			/*
-			 * Make the initial connection to other processes
-			 */
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(IPCMessageManager.STARTUP_DELAY);
-                    sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
-                    sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
     }
 
     public static void sendMessageToBle(int value) {

@@ -545,7 +545,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         PopUp.GIFF_ANIMATION_NONE,
                         PopUp.TYPE_SPINNER_NOT_CANCELABLE,
                         null, null);
-                IPCService.getInstance().bleDisconnect();
+                IPCService.bleDisconnect();
             } else {
                 mRequestPermission.clear();
                 setActivityState(ACTIVITY_STATE.MICROBIT_CONNECTING);
@@ -557,7 +557,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         PopUp.TYPE_SPINNER_NOT_CANCELABLE,
                         null, null);
 
-                IPCService.getInstance().bleConnect();
+                IPCService.bleConnect();
             }
         }
     }

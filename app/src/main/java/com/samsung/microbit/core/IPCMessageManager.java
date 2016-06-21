@@ -19,6 +19,8 @@ import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.NameValuePair;
+import com.samsung.microbit.service.PluginService;
+import com.samsung.microbit.utils.ServiceUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,26 +61,44 @@ public final class IPCMessageManager {
     public static final int IPC_NOTIFICATION_INCOMING_CALL_REQUESTED = 4003;
     public static final int IPC_NOTIFICATION_INCOMING_SMS_REQUESTED = 4002;
 
-    private static final Object LOCK = new Object();
+    private static final Object INSTALL_LOCK = new Object();
 
-    private static volatile IPCMessageManager instance;
+    private static IPCMessageManager instance;
 
     public static IPCMessageManager getInstance() {
         return instance;
     }
 
-    public static void connectMaybeInit(String serviceName, Handler.Callback callback) {
+    public static void initIPCInteraction(String serviceName, Handler.Callback callback) {
         if (instance == null) {
-            synchronized (LOCK) {
-                if (instance == null) {
-                    IPCMessageManager manager = new IPCMessageManager();
-                    manager.configureClientHandler(serviceName);
-                    instance = manager;
+            synchronized (INSTALL_LOCK) {
+                if(instance == null) {
+                    instance = new IPCMessageManager();
+                    instance.configureClientHandler(serviceName);
+                    sendStartCommands();
                 }
             }
         }
 
         instance.serviceHandlingCallbacks.put(serviceName, callback);
+    }
+
+    public static void sendStartCommands() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(IPCMessageManager.STARTUP_DELAY);
+                    ServiceUtils.sendtoBLEService(PluginService.class, IPCMessageManager.ANDROID_MESSAGE,
+                            IPCMessageManager.IPC_FUNCTION_CODE_INIT,
+                            null, null);
+                    ServiceUtils.sendtoIPCService(PluginService.class, IPCMessageManager.ANDROID_MESSAGE,
+                            IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     private IncomingHandler incomingHandler = null;
@@ -127,61 +147,59 @@ public final class IPCMessageManager {
     }
 
     public void configureClientHandler(String serviceName) {
-
         if (isDebug) {
             logi("configureClientHandler()");
         }
 
-        synchronized (LOCK) {
+        List<Handler.Callback> clientCallbacks = null;
 
-            List<Handler.Callback> clientCallbacks = null;
-
-            if (incomingHandler != null) {
-                clientCallbacks = incomingHandler.clientCallbacks;
-                handlerThread.quit();
-            }
-
-            handlerThread = new HandlerThread(serviceName);
-            handlerThread.start();
-            incomingHandler = new IncomingHandler(handlerThread, isDebug);
-
-            if(clientCallbacks != null) {
-                incomingHandler.clientCallbacks.addAll(clientCallbacks);
-            }
-
-            clientMessenger = new Messenger(incomingHandler);
+        if (incomingHandler != null) {
+            clientCallbacks = incomingHandler.clientCallbacks;
+            handlerThread.quit();
         }
+
+        handlerThread = new HandlerThread(serviceName);
+        handlerThread.start();
+        incomingHandler = new IncomingHandler(handlerThread, isDebug);
+
+        if (clientCallbacks != null) {
+            incomingHandler.clientCallbacks.addAll(clientCallbacks);
+        }
+
+        clientMessenger = new Messenger(incomingHandler);
     }
 
     public static void sendIPCMessage(Class destService, int mbsService, int functionCode, CmdArg cmd,
                                       NameValuePair[] args) {
-        if (!instance.isConnected(destService)) {
-            instance.configureServerConnection(destService);
-        }
-
-        if (mbsService != IPCMessageManager.ANDROID_MESSAGE && mbsService != IPCMessageManager.MICROBIT_MESSAGE) {
-            return;
-        }
-
-        Message msg = Message.obtain(null, mbsService);
-        msg.arg1 = functionCode;
-        Bundle bundle = new Bundle();
-        if (cmd != null) {
-            bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
-            bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
-        }
-
-        if (args != null) {
-            for (int i = 0; i < args.length; i++) {
-                bundle.putSerializable(args[i].getName(), args[i].getValue());
+        synchronized (INSTALL_LOCK) {
+            if (!instance.isConnected(destService)) {
+                instance.configureServerConnection(destService);
             }
-        }
 
-        msg.setData(bundle);
-        try {
-            instance.sendMessage(destService, msg);
-        } catch (RemoteException e) {
-            e.printStackTrace();
+            if (mbsService != IPCMessageManager.ANDROID_MESSAGE && mbsService != IPCMessageManager.MICROBIT_MESSAGE) {
+                return;
+            }
+
+            Message msg = Message.obtain(null, mbsService);
+            msg.arg1 = functionCode;
+            Bundle bundle = new Bundle();
+            if (cmd != null) {
+                bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
+                bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
+            }
+
+            if (args != null) {
+                for (int i = 0; i < args.length; i++) {
+                    bundle.putSerializable(args[i].getName(), args[i].getValue());
+                }
+            }
+
+            msg.setData(bundle);
+            try {
+                instance.sendMessage(destService, msg);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
     }
 

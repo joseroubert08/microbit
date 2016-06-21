@@ -8,7 +8,6 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
@@ -35,25 +34,7 @@ public class BLEService extends BLEBaseService {
     private NotificationManager notifyMgr = null;
     private int notificationId = 1010;
 
-    public BLEService() {
-        startIPCListener();
-    }
-
-    public void startIPCListener() {
-        logi("startIPCListener()");
-
-        IPCMessageManager.connectMaybeInit(BLEService.class.getName(), new Handler.Callback() {
-
-            @Override
-            public boolean handleMessage(Message msg) {
-                logi("startIPCListener().handleMessage");
-                handleIncomingMessage(msg);
-                return true;
-            }
-        });
-    }
-
-    private static void logi(String message) {
+    public static void logi(String message) {
         if (DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
@@ -86,7 +67,6 @@ public class BLEService extends BLEBaseService {
                 } else {
                     logi("Not first run!");
                 }
-
             }
         }).start();
 

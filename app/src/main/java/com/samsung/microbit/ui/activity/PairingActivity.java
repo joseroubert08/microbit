@@ -845,7 +845,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                         PopUp.GIFF_ANIMATION_NONE,
                         PopUp.TYPE_SPINNER_NOT_CANCELABLE,
                         null, null);
-                IPCService.getInstance().bleConnect();
+                IPCService.bleConnect();
             } else {
                 mActivityState = ACTIVITY_STATE.STATE_DISCONNECTING;
                 PopUp.show(MBApp.getApp(),
@@ -855,7 +855,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                         PopUp.GIFF_ANIMATION_NONE,
                         PopUp.TYPE_SPINNER_NOT_CANCELABLE,
                         null, null);
-                IPCService.getInstance().bleDisconnect();
+                IPCService.bleDisconnect();
             }
         }
     }
