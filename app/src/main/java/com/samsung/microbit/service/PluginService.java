@@ -34,6 +34,47 @@ public class PluginService extends Service {
     public static final int CAMERA = 6;
     public static final int FILE = 7;
 
+    public PluginService() {
+        super();
+        startIPCListener();
+    }
+
+    public void startIPCListener() {
+
+        if (DEBUG) logi("startIPCListener()");
+        if (IPCMessageManager.getInstance() == null) {
+            if (DEBUG) logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
+            IPCMessageManager inst = IPCMessageManager.getInstance("PluginServiceReceiver", new android.os.Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    if (DEBUG) {
+                        logi("startIPCListener().handleMessage");
+                    }
+                    handleIncomingMessage(msg);
+                }
+            });
+
+			/*
+			 * Make the initial connection to other processes
+			 */
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    try {
+                        Thread.sleep(IPCMessageManager.STARTUP_DELAY);
+                        sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+                        sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+
+        }
+    }
+
+
     public static void logi(String message) {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
     }
@@ -162,7 +203,7 @@ public class PluginService extends Service {
             }
         }
 
-        IPCMessageManager.sendIPCMessage(BLEService.class, mbsService, functionCode, cmd, args);
+        IPCMessageManager.getInstance().sendIPCMessage(BLEService.class, mbsService, functionCode, cmd, args);
     }
 
     public static void sendtoIPCService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {

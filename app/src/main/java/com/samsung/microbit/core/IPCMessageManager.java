@@ -19,18 +19,11 @@ import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.NameValuePair;
-import com.samsung.microbit.service.IPCService;
-import com.samsung.microbit.service.PluginService;
-import com.samsung.microbit.utils.ServiceUtils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public final class IPCMessageManager {
-
-    private static final String TAG = IPCMessageManager.class.getSimpleName();
 
     public static final long STARTUP_DELAY = 1000L;
     public static final String BUNDLE_DATA = "data";
@@ -44,6 +37,7 @@ public final class IPCMessageManager {
     public static final String BUNDLE_CHARACTERISTIC_TYPE = "BUNDLE_CHARACTERISTIC_TYPE";
     public static final String BUNDLE_CHARACTERISTIC_VALUE = "BUNDLE_CHARACTERISTIC_VALUE";
     public static final String BUNDLE_DEVICE_ADDRESS = "BUNDLE_DEVICE_ADDRESS";
+
 
     public static final int ANDROID_MESSAGE = 1;
     public static final int MICROBIT_MESSAGE = 2;
@@ -62,89 +56,36 @@ public final class IPCMessageManager {
     public static final int IPC_NOTIFICATION_INCOMING_CALL_REQUESTED = 4003;
     public static final int IPC_NOTIFICATION_INCOMING_SMS_REQUESTED = 4002;
 
-    private static IPCMessageManager instance;
-    private static final Object initLock = new Object();
-
-    public static IPCMessageManager getInstance() {
-        if (instance == null) {
-            synchronized (initLock) {
-                if (instance == null) {
-                    IPCService.startIPCListener();
-                }
-            }
-        }
-        return instance;
-    }
-
-    public static void initIPCInteraction(String serviceName, Handler.Callback callback) {
-        instance = new IPCMessageManager();
-        instance.configureClientHandler(serviceName);
-
-        instance.serviceHandlingCallbacks.put(serviceName, callback);
-
-        sendStartCommands();
-    }
-
-    public static void sendStartCommands() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(IPCMessageManager.STARTUP_DELAY);
-                    ServiceUtils.sendtoBLEService(PluginService.class, IPCMessageManager.ANDROID_MESSAGE,
-                            IPCMessageManager.IPC_FUNCTION_CODE_INIT,
-                            null, null);
-                    ServiceUtils.sendtoIPCService(PluginService.class, IPCMessageManager.ANDROID_MESSAGE,
-                            IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
 
     private IncomingHandler incomingHandler = null;
     private HandlerThread handlerThread = null;
     private Messenger clientMessenger = null;
 
-    private boolean isDebug = BuildConfig.DEBUG;
+    private static volatile IPCMessageManager instance;
+    private static final Object lock = new Object();
 
-    private Map<String, Messenger> remoteServices = new HashMap<>();
-    private Map<String, Handler.Callback> serviceHandlingCallbacks = new HashMap<>();
+    private HashMap<String, Messenger> remoteServices = new HashMap<String, Messenger>();
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
+    ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            if (isDebug) {
-                logi("serviceConnection.onServiceConnected() :: name.getClassName() " + name.getClassName());
-            }
 
-            Handler.Callback clientCallback = serviceHandlingCallbacks.get(name.getClassName());
-
-            if (clientCallback != null) {
-                synchronized (initLock) {
-                    incomingHandler.clientCallbacks.add(clientCallback);
-                }
-            }
-
+            if(debug) logi("serviceConnection.onServiceConnected() :: name.getClassName() " + name.getClassName());
             remoteServices.put(name.getClassName(), new Messenger(service));
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            if (isDebug) {
-                logi("serviceConnection.onServiceDisconnected() :: name.getClassName() " + name.getClassName());
-            }
 
-            synchronized (initLock) {
-                incomingHandler.clientCallbacks.remove(serviceHandlingCallbacks.remove(name.getClassName()));
-            }
-
+            if(debug) logi("serviceConnection.onServiceDisconnected() :: name.getClassName() " + name.getClassName());
             remoteServices.remove(name.getClassName());
         }
     };
 
-    static void logi(String message) {
+    static final String TAG = "IPCMessageManager";
+    private boolean debug = BuildConfig.DEBUG;
+
+    void logi(String message) {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
     }
 
@@ -152,41 +93,31 @@ public final class IPCMessageManager {
     private IPCMessageManager() {
     }
 
-    public Messenger getClientMessenger() {
-        return clientMessenger;
+    public static IPCMessageManager getInstance() {
+        return instance;
     }
 
-    public void configureClientHandler(String serviceName) {
-        if (isDebug) {
-            logi("configureClientHandler()");
+    public static IPCMessageManager getInstance(String serviceName, Handler clientHandler) {
+
+        if (getInstance() == null) {
+            synchronized (lock) {
+                if (getInstance() == null) {
+                    IPCMessageManager ni = new IPCMessageManager();
+                    ni.configureClientHandler(serviceName, clientHandler);
+                    instance = ni;
+                }
+            }
         }
 
-        List<Handler.Callback> clientCallbacks = null;
-
-        if (incomingHandler != null) {
-            clientCallbacks = incomingHandler.clientCallbacks;
-            handlerThread.quit();
-        }
-
-        handlerThread = new HandlerThread(serviceName);
-        handlerThread.start();
-        incomingHandler = new IncomingHandler(handlerThread, isDebug);
-
-        if (clientCallbacks != null) {
-            incomingHandler.clientCallbacks.addAll(clientCallbacks);
-        }
-
-        clientMessenger = new Messenger(incomingHandler);
+        return getInstance();
     }
 
     public static void sendIPCMessage(Class destService, int mbsService, int functionCode, CmdArg cmd,
                                       NameValuePair[] args) {
-        if (instance == null) {
-            getInstance();
-        }
 
-        if (!instance.isConnected(destService)) {
-            instance.configureServerConnection(destService);
+        IPCMessageManager inst = IPCMessageManager.getInstance();
+        if (!inst.isConnected(destService)) {
+            inst.configureServerConnection(destService, MBApp.getApp());
         }
 
         if (mbsService != IPCMessageManager.ANDROID_MESSAGE && mbsService != IPCMessageManager.MICROBIT_MESSAGE) {
@@ -209,35 +140,51 @@ public final class IPCMessageManager {
 
         msg.setData(bundle);
         try {
-            instance.sendMessage(destService, msg);
+            inst.sendMessage(destService, msg);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
     }
 
-    public void configureServerConnection(Class serviceClass) {
-        Context context = MBApp.getApp();
+    public android.os.Messenger getClientMessenger() {
+        return clientMessenger;
+    }
 
-        if (isDebug) {
-            logi("configureServerConnection() :: serviceClass.getName() = " + serviceClass.getName());
+    public void configureClientHandler(String serviceName, Handler clientHandler) {
+
+        if(debug) logi("configureClientHandler()");
+        synchronized (lock) {
+
+            if (incomingHandler != null) {
+                incomingHandler.clientHandler = null;
+                handlerThread.quit();
+            }
+
+            handlerThread = new HandlerThread(serviceName);
+            handlerThread.start();
+            incomingHandler = new IncomingHandler(handlerThread, clientHandler);
+            clientMessenger = new Messenger(incomingHandler);
         }
+    }
 
-        Intent intent = new Intent(serviceClass.getName());
+    public void configureServerConnection(Class serviceClass, Context context) {
+
+        if(debug) logi("configureServerConnection() :: serviceClass.getName() = " + serviceClass.getName());
+        Intent intent = new Intent();
+        intent.setAction(serviceClass.getName());
         intent = createExplicitFromImplicitIntent(context.getApplicationContext(), intent);
         context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     public boolean isConnected(Class serviceClass) {
+
         return remoteServices.containsKey(serviceClass.getName());
     }
 
     public void sendMessage(Class serviceClass, Message msg) throws RemoteException {
-        if (isDebug) {
-            logi("sendMessage()");
-        }
 
+        if(debug) logi("sendMessage()");
         Messenger messenger = remoteServices.get(serviceClass.getName());
-
         if (messenger != null) {
             msg.replyTo = clientMessenger;
             messenger.send(msg);
@@ -269,48 +216,38 @@ public final class IPCMessageManager {
     }
 
     // ################################################
+    class IncomingHandler extends Handler {
 
-    /**
-     * This class must be used to extend to show logs.
-     */
-    public static class IncomingHandler extends Handler {
-        private List<Handler.Callback> clientCallbacks;
-        private boolean isDebug;
+        volatile Handler clientHandler;
 
-        public IncomingHandler(HandlerThread handlerThread, boolean isDebug) {
-            super(handlerThread.getLooper());
-
-            this.clientCallbacks = new ArrayList<>();
-            this.isDebug = isDebug;
+        public IncomingHandler(HandlerThread thr, Handler clientHandler) {
+            super(thr.getLooper());
+            if(debug) logi("IncomingHandler.IncomingHandler() :: clientHandler = " + clientHandler);
+            this.clientHandler = clientHandler;
         }
 
         @Override
         public void handleMessage(Message msg) {
-            if (isDebug) {
-                logi("IncomingHandler.handleMessage()");
-            }
 
+            if(debug) logi("IncomingHandler.handleMessage()");
             super.handleMessage(msg);
 
             if (msg.what == ANDROID_MESSAGE) {
                 if (msg.arg1 == IPC_FUNCTION_CODE_INIT) {
-                    if (isDebug) {
-                        logi("IncomingHandler.handleMessage() :: ANDROID_MESSAGE.IPC_FUNCTION_CODE_INIT");
-                    }
+                    if(debug) logi("IncomingHandler.handleMessage() :: ANDROID_MESSAGE.IPC_FUNCTION_CODE_INIT");
                     return;
                 }
             }
 
-            synchronized (initLock) {
-                for (Handler.Callback clientCallback : clientCallbacks) {
-                    if (clientCallback != null) {
-                        if (isDebug) {
-                            logi("IncomingHandler.handleMessage() :: c != null");
-                        }
+            Handler c = null;
+            synchronized (lock) {
+                if(debug) logi("IncomingHandler.handleMessage() :: getting clientHandler");
+                c = clientHandler;
+            }
 
-                        clientCallback.handleMessage(msg);
-                    }
-                }
+            if (c != null) {
+                if(debug) logi("IncomingHandler.handleMessage() :: c != null");
+                c.handleMessage(msg);
             }
         }
     }

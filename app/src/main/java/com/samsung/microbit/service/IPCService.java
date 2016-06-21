@@ -3,7 +3,6 @@ package com.samsung.microbit.service;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
@@ -32,6 +31,11 @@ public class IPCService extends Service {
 
     public static void logi(String message) {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+    }
+
+    public IPCService() {
+        super();
+        startIPCListener();
     }
 
     @Override
@@ -79,38 +83,40 @@ public class IPCService extends Service {
     }
 
     public static void startIPCListener() {
-        if (DEBUG) {
-            logi("startIPCListener()");
-        }
 
-        IPCMessageManager.initIPCInteraction(IPCService.class.getPackage().getName() + "." + IPCService.class
-                 .getSimpleName(), new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message msg) {
-                handleIncomingMessage(msg);
-                return true;
-            }
-        });
+        if (DEBUG) logi("startIPCListener()");
+        if (IPCMessageManager.getInstance() == null) {
+            if (DEBUG) logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
+            IPCMessageManager inst = IPCMessageManager.getInstance("IPCServiceListener", new android.os.Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    super.handleMessage(msg);
+                    handleIncomingMessage(msg);
+                }
+            });
 
 			/*
              * Make the initial connection to other processes
 			 */
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(IPCMessageManager.STARTUP_DELAY);
-                    sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
-                    sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    try {
+                        Thread.sleep(IPCMessageManager.STARTUP_DELAY);
+                        sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+                        sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        }).start();
+            }).start();
+        }
+
     }
 
     public static void sendtoBLEService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-        if(cmd != null) {
+        if (cmd != null) {
             logi("ipcService: sendtoBLEService(), " + mbsService + "," + functionCode + "," + cmd.getValue() + "," +
                     cmd.getCMD() + "");
         } else {
@@ -122,7 +128,7 @@ public class IPCService extends Service {
 
     public static void sendtoPluginService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
         if (DEBUG) {
-            if(cmd != null) {
+            if (cmd != null) {
                 logi("ipcService: sendtoBLEService(), " + mbsService + "," + functionCode + "," + cmd.getValue() + "," +
                         cmd.getCMD() + "");
             } else {
@@ -153,7 +159,7 @@ public class IPCService extends Service {
                 BluetoothUtils.setPairedMicroBit(appContext, cd);
             }
 
-            if(msg == null) {
+            if (msg == null) {
                 return;
             }
 
