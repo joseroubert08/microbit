@@ -33,7 +33,7 @@ public class BLEService extends BLEBaseService {
 
 	protected void logi(String message) {
         if (debug) {
-            Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+            Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + "bleService: # " + message);
         }
 	}
 
@@ -487,15 +487,15 @@ public class BLEService extends BLEBaseService {
 	}
 
 	public void sendtoPluginService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-
-		logi("sendtoPluginService()");
+        logi("sendtoPluginService()" + ", " + mbsService + ", " + functionCode + (cmd != null ? ", " + cmd.getValue() +
+                ", " + cmd.getCMD() : ""));
 		Class destService = PluginService.class;
 		sendIPCMessge(destService, mbsService, functionCode, cmd, args);
 	}
 
 	public void sendtoIPCService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-
-		logi("sendtoIPCService()");
+		logi("sendtoIPCService()" + ", " + mbsService + ", " + functionCode + (cmd != null ? ", " + cmd.getValue() +
+                ", " + cmd.getCMD() : ""));
 		Class destService = IPCService.class;
         sendIPCMessge(destService, mbsService, functionCode, cmd, args);
     }
