@@ -89,7 +89,6 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.activity.PairingActivity"
-            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_connect"
             android:launchMode="singleTop"
             android:configChanges="orientation|screenSize|keyboardHidden"
