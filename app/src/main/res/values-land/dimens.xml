@@ -107,17 +107,20 @@
     <dimen name="connections_container_layouts_indentation">8dp</dimen>
 
     <!-- Pairing step screens -->
-    <dimen name="pairing_step_title_and_gif_layout_margin_start">16dp</dimen>
+    <dimen name="pairing_step_title_and_gif_layout_margin_start">8dp</dimen>
     <dimen name="pairing_step_tip_layout_height_padding">0dp</dimen>
     <dimen name="pairing_step_title_text_size">20sp</dimen>
     <dimen name="pairing_step_tip_instruction_text_size">16sp</dimen>
     <dimen name="pairing_step_layout_margin">8dp</dimen>
     <dimen name="pairing_step_button_text_size">13sp</dimen>
-    <dimen name="pairing_step_tip_padding">16dp</dimen>
+    <dimen name="pairing_step_tip_padding">8dp</dimen>
     <dimen name="pairing_step_text_width">140dp</dimen>
     <dimen name="pairing_step_1_gif_image_width">270dp</dimen>
     <dimen name="pairing_step_1_gif_image_height">210dp</dimen>
     <dimen name="pairing_step_cycle_progress_bar_size">60dp</dimen>
+    <dimen name="pairing_step_tip_title_margin_bottom">8dp</dimen>
+    <dimen name="pairing_step_buttons_space_margin">4dp</dimen>
+    <integer name="pairing_searching_step_button_layout_weight_sum">3</integer>
 
     <!-- Pattern grid -->
     <dimen name="led_gap">4dp</dimen>
