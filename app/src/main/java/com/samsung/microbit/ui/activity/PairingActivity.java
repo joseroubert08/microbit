@@ -112,12 +112,12 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     private Handler mHandler;
 
     // Stops scanning after 10 seconds.
-    private static final long SCAN_PERIOD = 45000;
+    private static final long SCAN_PERIOD = 15000;
 
     private BluetoothAdapter mBluetoothAdapter = null;
     private volatile boolean mScanning = false;
 
-    private static BluetoothLeScanner mLEScanner = null;
+    private BluetoothLeScanner mLEScanner = null;
 
     private enum ACTIVITY_STATE {
         STATE_IDLE,
@@ -534,7 +534,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
             retvalue = false;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mLEScanner == null) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP && mLEScanner == null) {
             mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
             if (mLEScanner == null)
                 retvalue = false;
@@ -696,7 +696,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         Drawable mDeviceConnectedImg;
 
         // @getDrawable method depracated in API 21
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             mDeviceDisconnectedImg = getDrawableResource(R.drawable.device_status_disconnected);
             mDeviceConnectedImg = getDrawableResource(R.drawable.device_status_connected);
         } else {
@@ -1144,6 +1144,9 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 return;
             }
             if (!mScanning) {
+
+                boolean hasBle = getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
+
                 logi("scanLeDevice ::   Searching For " + mNewDeviceName.toLowerCase());
                 // Stops scanning after a pre-defined scan period.
                 mScanning = true;
@@ -1151,20 +1154,20 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 if (textView != null)
                     textView.setText(getString(R.string.searchingTitle));
                 mHandler.postDelayed(scanTimedOut, SCAN_PERIOD);
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) { //Lollipop
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) { //Lollipop
                     mBluetoothAdapter.startLeScan(getOldScanCallback());
                 } else {
                     List<ScanFilter> filters = new ArrayList<ScanFilter>();
                     // TODO: play with ScanSettings further to ensure the Kit kat devices connectMaybeInit with higher success rate
                     ScanSettings settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
-                    mLEScanner.startScan(filters, settings, getNewScanCallback());
+                    mLEScanner.startScan(null, settings, getNewScanCallback());
                 }
             }
         } else {
             if (mScanning) {
                 mScanning = false;
                 mHandler.removeCallbacks(scanTimedOut);
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
                     mBluetoothAdapter.stopLeScan(getOldScanCallback());
                 } else {
                     mLEScanner.stopScan(getNewScanCallback());
