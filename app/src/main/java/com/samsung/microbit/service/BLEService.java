@@ -478,13 +478,23 @@ public class BLEService extends BLEBaseService {
     }
 
     public static void sendtoPluginService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-        logi("sendtoPluginService()");
+        if(cmd != null) {
+            logi("bleservice: sendtoPluginService(), " + mbsService + "," + functionCode + "," + cmd.getValue() + "," +
+                    cmd.getCMD() + "");
+        } else {
+            logi("bleservice: sendtoPluginService(), " + mbsService + "," + functionCode);
+        }
 
         IPCMessageManager.sendIPCMessage(PluginService.class, mbsService, functionCode, cmd, args);
     }
 
     public static void sendtoIPCService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-        logi("sendtoIPCService()");
+        if(cmd != null) {
+            logi("bleservice: sendtoIPCService(), " + mbsService + "," + functionCode + "," + cmd.getValue() + "," +
+                    cmd.getCMD() + "");
+        } else {
+            logi("bleservice: sendtoIPCService(), " + mbsService + "," + functionCode);
+        }
 
         IPCMessageManager.sendIPCMessage(IPCService.class, mbsService, functionCode, cmd, args);
     }

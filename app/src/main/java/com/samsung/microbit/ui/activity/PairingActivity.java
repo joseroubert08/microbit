@@ -64,7 +64,7 @@ import java.util.Set;
 
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class PairingActivity extends Activity implements View.OnClickListener {
+public class PairingActivity extends Activity implements View.OnClickListener, BluetoothAdapter.LeScanCallback {
 
     private static boolean DISABLE_DEVICE_LIST = false;
 
@@ -112,14 +112,12 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private Handler mHandler;
 
     // Stops scanning after 10 seconds.
-    private static final long SCAN_PERIOD = 15000;
+    private static final long SCAN_PERIOD = 45000;
 
-    private static PairingActivity instance;
-    private static BluetoothAdapter mBluetoothAdapter = null;
-    private static volatile boolean mScanning = false;
-    //private Runnable scanFailedCallback;
+    private BluetoothAdapter mBluetoothAdapter = null;
+    private volatile boolean mScanning = false;
+
     private static BluetoothLeScanner mLEScanner = null;
-
 
     private enum ACTIVITY_STATE {
         STATE_IDLE,
@@ -134,6 +132,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     private int mRequestingPermission = -1;
 
     private static ACTIVITY_STATE mActivityState = ACTIVITY_STATE.STATE_IDLE;
+
+    private ScanCallback newScanCallback;
 
     private View.OnClickListener mSuccessFulPairingHandler = new View.OnClickListener() {
         @Override
@@ -206,7 +206,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-
             int error = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
             String firmware = intent.getStringExtra(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE);
             int getNotification = intent.getIntExtra(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, -1);
@@ -489,11 +488,6 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         // Step 1 - How to pair
 
         // Step 3 - Stop searching for micro:bit animation
-    }
-
-    public PairingActivity() {
-        logi("PairingActivity() ::");
-        instance = this;
     }
 
     @Override
@@ -1158,12 +1152,12 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     textView.setText(getString(R.string.searchingTitle));
                 mHandler.postDelayed(scanTimedOut, SCAN_PERIOD);
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) { //Lollipop
-                    mBluetoothAdapter.startLeScan((BluetoothAdapter.LeScanCallback) getBlueToothCallBack());
+                    mBluetoothAdapter.startLeScan(getOldScanCallback());
                 } else {
                     List<ScanFilter> filters = new ArrayList<ScanFilter>();
                     // TODO: play with ScanSettings further to ensure the Kit kat devices connectMaybeInit with higher success rate
                     ScanSettings settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
-                    mLEScanner.startScan(filters, settings, (ScanCallback) getBlueToothCallBack());
+                    mLEScanner.startScan(filters, settings, getNewScanCallback());
                 }
             }
         } else {
@@ -1171,18 +1165,56 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                 mScanning = false;
                 mHandler.removeCallbacks(scanTimedOut);
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                    mBluetoothAdapter.stopLeScan((BluetoothAdapter.LeScanCallback) getBlueToothCallBack());
+                    mBluetoothAdapter.stopLeScan(getOldScanCallback());
                 } else {
-                    mLEScanner.stopScan((ScanCallback) getBlueToothCallBack());
+                    mLEScanner.stopScan(getNewScanCallback());
                 }
             }
         }
     }
 
-    private static Runnable scanTimedOut = new Runnable() {
+    private ScanCallback getNewScanCallback() {
+        if(newScanCallback == null) {
+            newScanCallback = new ScanCallback() {
+                @Override
+                public void onScanResult(int callbackType, ScanResult result) {
+                    super.onScanResult(callbackType, result);
+                    Log.i("callbackType = ", String.valueOf(callbackType));
+                    Log.i("result = ", result.toString());
+                    BluetoothDevice btDevice = result.getDevice();
+                    final ScanRecord scanRecord = result.getScanRecord();
+                    if (scanRecord != null) {
+                        onLeScan(btDevice, result.getRssi(), scanRecord.getBytes());
+                    }
+                }
+
+                @Override
+                public void onBatchScanResults(List<ScanResult> results) {
+                    super.onBatchScanResults(results);
+                    for (ScanResult sr : results) {
+                        Log.i("Scan result - Results ", sr.toString());
+                    }
+                }
+
+                @Override
+                public void onScanFailed(int errorCode) {
+                    super.onScanFailed(errorCode);
+                    Log.i("Scan failed", "Error Code : " + errorCode);
+                }
+            };
+        }
+
+        return newScanCallback;
+    }
+
+    private BluetoothAdapter.LeScanCallback getOldScanCallback() {
+        return this;
+    }
+
+    private Runnable scanTimedOut = new Runnable() {
         @Override
         public void run() {
-            PairingActivity.instance.scanFailedCallbackImpl();
+            scanFailedCallbackImpl();
         }
     };
 
@@ -1195,53 +1227,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    private static Object mBluetoothScanCallBack = null;
-
-    private static Object getBlueToothCallBack() {
-        if (mBluetoothScanCallBack == null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mBluetoothScanCallBack = new ScanCallback() {
-                    @Override
-                    public void onScanResult(int callbackType, ScanResult result) {
-                        super.onScanResult(callbackType, result);
-                        Log.i("callbackType = ", String.valueOf(callbackType));
-                        Log.i("result = ", result.toString());
-                        BluetoothDevice btDevice = result.getDevice();
-                        final ScanRecord scanRecord = result.getScanRecord();
-                        if(scanRecord != null) {
-                            PairingActivity.instance.onLeScan(btDevice, result.getRssi(), scanRecord.getBytes());
-                        }
-                    }
-
-                    @Override
-                    public void onBatchScanResults(List<ScanResult> results) {
-                        super.onBatchScanResults(results);
-                        for (ScanResult sr : results) {
-                            Log.i("Scan result - Results ", sr.toString());
-                        }
-                    }
-
-                    @Override
-                    public void onScanFailed(int errorCode) {
-                        super.onScanFailed(errorCode);
-                        Log.i("Scan failed", "Error Code : " + errorCode);
-                    }
-
-                };
-
-                return (mBluetoothScanCallBack);
-            } else {
-                mBluetoothScanCallBack = new BluetoothAdapter.LeScanCallback() {
-                    @Override
-                    public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
-                        PairingActivity.instance.onLeScan(device, rssi, scanRecord);
-                    }
-                };
-            }
-        }
-        return mBluetoothScanCallBack;
-    }
-
+    @Override
     public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
 
         logi("mLeScanCallback.onLeScan() [+]");

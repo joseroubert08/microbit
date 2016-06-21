@@ -119,8 +119,11 @@ public class IPCService extends Service {
     }
 
     public void sendtoBLEService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-        if (isDebug) {
-            logi("sendtoBLEService() --> " + functionCode);
+        if(cmd != null) {
+            logi("ipcService: sendtoBLEService(), " + mbsService + "," + functionCode + "," + cmd.getValue() + "," +
+                    cmd.getCMD() + "");
+        } else {
+            logi("ipcService: sendtoBLEService(), " + mbsService + "," + functionCode);
         }
 
         IPCMessageManager.sendIPCMessage(BLEService.class, mbsService, functionCode, cmd, args);
@@ -128,7 +131,12 @@ public class IPCService extends Service {
 
     public void sendtoPluginService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
         if (isDebug) {
-            logi("sendtoPluginService()");
+            if(cmd != null) {
+                logi("ipcService: sendtoBLEService(), " + mbsService + "," + functionCode + "," + cmd.getValue() + "," +
+                        cmd.getCMD() + "");
+            } else {
+                logi("ipcService: sendtoBLEService(), " + mbsService + "," + functionCode);
+            }
         }
 
         IPCMessageManager.sendIPCMessage(PluginService.class, mbsService, functionCode, cmd, args);
