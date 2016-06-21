@@ -89,11 +89,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         logi("onCreate() :: ");
 
+        setContentView(R.layout.activity_home);
+
         appInfoPresenter = new AppInfoPresenter();
 
         appInfoPresenter.start();
 
-        setContentView(R.layout.activity_home);
         setupDrawer();
         setupButtonsFontStyle();
 

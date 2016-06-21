@@ -19,6 +19,7 @@ import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.NameValuePair;
+import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.utils.ServiceUtils;
 
@@ -61,26 +62,27 @@ public final class IPCMessageManager {
     public static final int IPC_NOTIFICATION_INCOMING_CALL_REQUESTED = 4003;
     public static final int IPC_NOTIFICATION_INCOMING_SMS_REQUESTED = 4002;
 
-    private static final Object INSTALL_LOCK = new Object();
-
     private static IPCMessageManager instance;
+    private static final Object initLock = new Object();
 
     public static IPCMessageManager getInstance() {
+        if (instance == null) {
+            synchronized (initLock) {
+                if (instance == null) {
+                    IPCService.startIPCListener();
+                }
+            }
+        }
         return instance;
     }
 
     public static void initIPCInteraction(String serviceName, Handler.Callback callback) {
-        if (instance == null) {
-            synchronized (INSTALL_LOCK) {
-                if(instance == null) {
-                    instance = new IPCMessageManager();
-                    instance.configureClientHandler(serviceName);
-                    sendStartCommands();
-                }
-            }
-        }
+        instance = new IPCMessageManager();
+        instance.configureClientHandler(serviceName);
 
         instance.serviceHandlingCallbacks.put(serviceName, callback);
+
+        sendStartCommands();
     }
 
     public static void sendStartCommands() {
@@ -117,7 +119,13 @@ public final class IPCMessageManager {
                 logi("serviceConnection.onServiceConnected() :: name.getClassName() " + name.getClassName());
             }
 
-            incomingHandler.clientCallbacks.add(serviceHandlingCallbacks.get(name.getClassName()));
+            Handler.Callback clientCallback = serviceHandlingCallbacks.get(name.getClassName());
+
+            if (clientCallback != null) {
+                synchronized (initLock) {
+                    incomingHandler.clientCallbacks.add(clientCallback);
+                }
+            }
 
             remoteServices.put(name.getClassName(), new Messenger(service));
         }
@@ -128,7 +136,9 @@ public final class IPCMessageManager {
                 logi("serviceConnection.onServiceDisconnected() :: name.getClassName() " + name.getClassName());
             }
 
-            incomingHandler.clientCallbacks.remove(serviceHandlingCallbacks.remove(name.getClassName()));
+            synchronized (initLock) {
+                incomingHandler.clientCallbacks.remove(serviceHandlingCallbacks.remove(name.getClassName()));
+            }
 
             remoteServices.remove(name.getClassName());
         }
@@ -171,35 +181,37 @@ public final class IPCMessageManager {
 
     public static void sendIPCMessage(Class destService, int mbsService, int functionCode, CmdArg cmd,
                                       NameValuePair[] args) {
-        synchronized (INSTALL_LOCK) {
-            if (!instance.isConnected(destService)) {
-                instance.configureServerConnection(destService);
-            }
+        if (instance == null) {
+            getInstance();
+        }
 
-            if (mbsService != IPCMessageManager.ANDROID_MESSAGE && mbsService != IPCMessageManager.MICROBIT_MESSAGE) {
-                return;
-            }
+        if (!instance.isConnected(destService)) {
+            instance.configureServerConnection(destService);
+        }
 
-            Message msg = Message.obtain(null, mbsService);
-            msg.arg1 = functionCode;
-            Bundle bundle = new Bundle();
-            if (cmd != null) {
-                bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
-                bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
-            }
+        if (mbsService != IPCMessageManager.ANDROID_MESSAGE && mbsService != IPCMessageManager.MICROBIT_MESSAGE) {
+            return;
+        }
 
-            if (args != null) {
-                for (int i = 0; i < args.length; i++) {
-                    bundle.putSerializable(args[i].getName(), args[i].getValue());
-                }
-            }
+        Message msg = Message.obtain(null, mbsService);
+        msg.arg1 = functionCode;
+        Bundle bundle = new Bundle();
+        if (cmd != null) {
+            bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
+            bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
+        }
 
-            msg.setData(bundle);
-            try {
-                instance.sendMessage(destService, msg);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+        if (args != null) {
+            for (int i = 0; i < args.length; i++) {
+                bundle.putSerializable(args[i].getName(), args[i].getValue());
             }
+        }
+
+        msg.setData(bundle);
+        try {
+            instance.sendMessage(destService, msg);
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 
@@ -289,13 +301,15 @@ public final class IPCMessageManager {
                 }
             }
 
-            for (Handler.Callback clientCallback : clientCallbacks) {
-                if (clientCallback != null) {
-                    if (isDebug) {
-                        logi("IncomingHandler.handleMessage() :: c != null");
-                    }
+            synchronized (initLock) {
+                for (Handler.Callback clientCallback : clientCallbacks) {
+                    if (clientCallback != null) {
+                        if (isDebug) {
+                            logi("IncomingHandler.handleMessage() :: c != null");
+                        }
 
-                    clientCallback.handleMessage(msg);
+                        clientCallback.handleMessage(msg);
+                    }
                 }
             }
         }

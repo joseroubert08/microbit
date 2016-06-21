@@ -1,6 +1,7 @@
 package com.samsung.microbit.service;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
@@ -8,6 +9,7 @@ import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.samsung.microbit.MBApp;
 import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.model.CmdArg;
@@ -30,11 +32,6 @@ public class IPCService extends Service {
 
     public static void logi(String message) {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
-    }
-
-    public IPCService() {
-        super();
-        startIPCListener();
     }
 
     @Override
@@ -81,12 +78,13 @@ public class IPCService extends Service {
         return IPCMessageManager.getInstance().getClientMessenger().getBinder();
     }
 
-    public void startIPCListener() {
+    public static void startIPCListener() {
         if (DEBUG) {
             logi("startIPCListener()");
         }
 
-        IPCMessageManager.initIPCInteraction(IPCService.class.getName(), new Handler.Callback() {
+        IPCMessageManager.initIPCInteraction(IPCService.class.getPackage().getName() + "." + IPCService.class
+                 .getSimpleName(), new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
                 handleIncomingMessage(msg);
@@ -135,7 +133,7 @@ public class IPCService extends Service {
         IPCMessageManager.sendIPCMessage(PluginService.class, mbsService, functionCode, cmd, args);
     }
 
-    private void handleIncomingMessage(Message msg) {
+    private static void handleIncomingMessage(Message msg) {
         if (DEBUG) {
             logi("handleIncomingMessage() :: Start BLEService");
         }
@@ -148,9 +146,15 @@ public class IPCService extends Service {
             if (msg.arg1 == IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED ||
                     msg.arg1 == IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED) {
 
-                ConnectedDevice cd = BluetoothUtils.getPairedMicrobit(this);
+                Context appContext = MBApp.getApp();
+
+                ConnectedDevice cd = BluetoothUtils.getPairedMicrobit(MBApp.getApp());
                 cd.mStatus = (msg.arg1 == IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED);
-                BluetoothUtils.setPairedMicroBit(this, cd);
+                BluetoothUtils.setPairedMicroBit(appContext, cd);
+            }
+
+            if(msg == null) {
+                return;
             }
 
             int errorCode = (int) msg.getData().getSerializable(IPCMessageManager.BUNDLE_ERROR_CODE);
@@ -171,14 +175,14 @@ public class IPCService extends Service {
             intent.putExtra(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE, firmware);
             intent.putExtra(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, microbitRequest);
 
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+            LocalBroadcastManager.getInstance(MBApp.getApp()).sendBroadcast(intent);
         } else if (msg.what == IPCMessageManager.MICROBIT_MESSAGE) {
             if (DEBUG) {
                 logi("handleIncomingMessage() :: IPCMessageManager.MICROBIT_MESSAGE msg.arg1 = " + msg.arg1);
             }
 
             Intent intent = new Intent(INTENT_MICROBIT_NOTIFICATION);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+            LocalBroadcastManager.getInstance(MBApp.getApp()).sendBroadcast(intent);
         }
     }
 }
