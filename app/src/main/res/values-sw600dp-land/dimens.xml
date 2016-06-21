@@ -95,7 +95,7 @@
     <dimen name="pairing_step_tip_text_size">26sp</dimen>
     <dimen name="pairing_step_tip_instruction_text_size">22sp</dimen>
     <dimen name="pairing_step_button_height">72dp</dimen>
-    <dimen name="pairing_step_button_layout_padding">32dp</dimen>
+    <dimen name="pairing_step_button_layout_padding">16dp</dimen>
     <dimen name="pairing_step_tip_padding">32dp</dimen>
     <dimen name="pairing_step_title_and_gif_layout_margin_start">32dp</dimen>
     <dimen name="pairing_step_image_width">280dp</dimen>
@@ -103,9 +103,17 @@
     <dimen name="pairing_step_text_width">240dp</dimen>
     <dimen name="pairing_step_1_gif_image_width">460dp</dimen>
     <dimen name="pairing_step_1_gif_image_height">370dp</dimen>
+    <dimen name="pairing_step_cycle_progress_bar_size">120dp</dimen>
 
     <!-- Pattern grid -->
     <dimen name="led_gap">15dp</dimen>
     <integer name="led_size">68</integer>
     <dimen name="led_grid_width">400dp</dimen>
+
+    <!-- Popup screens -->
+    <dimen name="popup_gif_size">160dp</dimen>
+    <dimen name="popup_spinner_progress_bar_margin">8dp</dimen>
+    <dimen name="popup_linear_progress_bar_margin">26dp</dimen>
+    <dimen name="popup_round_ok_button_size">100dp</dimen>
+    <dimen name="popup_title_padding_bottom">16dp</dimen>
 </resources>

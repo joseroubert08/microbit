@@ -57,13 +57,13 @@
     <!-- Popup screens -->
     <dimen name="popup_gif_size">150dp</dimen>
     <dimen name="popup_layout_padding">16dp</dimen>
-    <dimen name="popup_round_button_margin">16dp</dimen>
     <dimen name="pairing_step_tip_layout_width_padding">18dp</dimen>
     <dimen name="popup_spinner_progress_bar_margin">12dp</dimen>
     <dimen name="popup_round_ok_button_size">100dp</dimen>
-    <dimen name="popup_title_text_size">26sp</dimen>
-    <dimen name="popup_image_layout_margin_bottom">32dp</dimen>
+    <dimen name="popup_title_text_size">24sp</dimen>
     <dimen name="popup_round_ok_button_text_size">18sp</dimen>
+    <dimen name="popup_linear_progress_bar_margin">16dp</dimen>
+    <dimen name="popup_title_padding_bottom">0dp</dimen>
 
     <!-- Main activity -->
     <dimen name="main_activity_layout_padding">16dp</dimen>
@@ -90,6 +90,7 @@
     <dimen name="pairing_step_gif_image_margin">8dp</dimen>
     <dimen name="pairing_step_two_header_margin">16dp</dimen>
     <dimen name="pairing_step_two_tip_layout_margin_top">16dp</dimen>
+    <dimen name="pairing_step_tip_instruction_text_size">18sp</dimen>
 
     <!-- Connect screen -->
     <dimen name="connections_container_layout_padding">16dp</dimen>
