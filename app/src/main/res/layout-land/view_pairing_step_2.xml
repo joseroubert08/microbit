@@ -51,7 +51,6 @@
             <LinearLayout
                 android:id="@+id/enterPatternConfirmationView"
                 style="@style/pairing_step_buttons_layout_style"
-                android:layout_gravity="bottom"
                 android:paddingBottom="0dp">
 
                 <Button

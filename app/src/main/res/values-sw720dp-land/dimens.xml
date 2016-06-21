@@ -97,4 +97,10 @@
     <dimen name="pairing_step_text_width">280dp</dimen>
     <dimen name="pairing_step_1_gif_image_width">480dp</dimen>
     <dimen name="pairing_step_1_gif_image_height">380dp</dimen>
+    <dimen name="pairing_step_cycle_progress_bar_size">164dp</dimen>
+
+    <!-- Popup screens -->
+    <dimen name="popup_gif_size">220dp</dimen>
+    <dimen name="popup_linear_progress_bar_margin">32dp</dimen>
+    <dimen name="popup_title_padding_bottom">18dp</dimen>
 </resources>

@@ -117,10 +117,17 @@
     <dimen name="pairing_step_text_width">140dp</dimen>
     <dimen name="pairing_step_1_gif_image_width">270dp</dimen>
     <dimen name="pairing_step_1_gif_image_height">210dp</dimen>
+    <dimen name="pairing_step_cycle_progress_bar_size">60dp</dimen>
 
     <!-- Pattern grid -->
     <dimen name="led_gap">4dp</dimen>
     <integer name="led_size">42</integer>
     <dimen name="led_grid_width">226dp</dimen>
+
+    <!-- Popup screen -->
+    <dimen name="popup_round_ok_button_size">56dp</dimen>
+    <dimen name="popup_spinner_progress_bar_margin">0dp</dimen>
+    <dimen name="pairing_step_button_layout_padding">8dp</dimen>
+    <dimen name="popup_gif_size">110dp</dimen>
 </resources>
 

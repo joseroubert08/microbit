@@ -140,12 +140,9 @@
     <dimen name="pairing_step_cycle_progress_bar_size">164dp</dimen>
     <dimen name="pairing_step_button_layout_padding">18dp</dimen>
     <dimen name="pairing_step_gif_image_margin">0dp</dimen>
+    <dimen name="pairing_step_tip_instruction_text_size">22sp</dimen>
 
     <!-- Popup screens -->
     <dimen name="popup_gif_size">200dp</dimen>
-    <dimen name="popup_text_layout_padding_top">96dp</dimen>
-    <dimen name="popup_round_button_padding">36dp</dimen>
-    <dimen name="popup_round_button_margin">16dp</dimen>
-    <dimen name="popup_image_layout_margin_bottom">64dp</dimen>
 
 </resources>

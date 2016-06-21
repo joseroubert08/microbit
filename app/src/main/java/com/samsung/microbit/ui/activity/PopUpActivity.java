@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -59,6 +60,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
 
     private boolean isCancelable = false;
 
+    private Intent mReceiverIntent = null;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
         @Override
@@ -78,11 +80,64 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
                     public void run() {
                         clearLayout();
                         setLayout(intent);
+                        mReceiverIntent = intent;
                     }
                 });
             }
         }
     };
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        setContentView(R.layout.activity_popup);
+        initViews();
+        //Check if an intent was passed through a receiver.
+        if (mReceiverIntent == null) {
+            setLayout(getIntent());
+        } else {
+            setLayout(mReceiverIntent);
+        }
+    }
+
+    private void setupFontStyle() {
+        affirmationOKButton.setTypeface(MBApp.getApp().getRobotoTypeface());
+        cancelButton.setTypeface(MBApp.getApp().getRobotoTypeface());
+        okButton.setTypeface(MBApp.getApp().getRobotoTypeface());
+        messageTxt.setTypeface(MBApp.getApp().getRobotoTypeface());
+        titleTxt.setTypeface(MBApp.getApp().getTypefaceBold());
+    }
+
+    private void initViews() {
+        imageIcon = (ImageView) findViewById(R.id.image_icon);
+        titleTxt = (TextView) findViewById(R.id.flash_projects_title_txt);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        spinnerBar = (ProgressBar) findViewById(R.id.spinnerBar);
+        messageTxt = (TextView) findViewById(R.id.messageTxt);
+        layoutBottom = (LinearLayout) findViewById(R.id.popup_bottom_layout);
+        okButton = (Button) findViewById(R.id.imageButtonOk);
+        cancelButton = (Button) findViewById(R.id.imageButtonCancel);
+        affirmationOKButton = (Button) findViewById(R.id.affirmationOKBtn);
+        // Error / Flash animation
+        gifImageView = (GifImageView) findViewById(R.id.pop_up_gif_image_view);
+
+        setupFontStyle();
+    }
+
+    private void releaseViews() {
+        imageIcon = null;
+        titleTxt = null;
+        progressBar = null;
+        spinnerBar = null;
+        messageTxt = null;
+        layoutBottom = null;
+        okButton = null;
+        cancelButton = null;
+        affirmationOKButton = null;
+        gifImageView = null;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,22 +148,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        imageIcon = (ImageView) findViewById(R.id.image_icon);
-        titleTxt = (TextView) findViewById(R.id.flash_projects_title_txt);
-        titleTxt.setTypeface(MBApp.getApp().getTypefaceBold());
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        spinnerBar = (ProgressBar) findViewById(R.id.spinnerBar);
-        messageTxt = (TextView) findViewById(R.id.messageTxt);
-        messageTxt.setTypeface(MBApp.getApp().getRobotoTypeface());
-
-        layoutBottom = (LinearLayout) findViewById(R.id.popup_bottom_layout);
-
-        okButton = (Button) findViewById(R.id.imageButtonOk);
-        cancelButton = (Button) findViewById(R.id.imageButtonCancel);
-        affirmationOKButton = (Button) findViewById(R.id.affirmationOKBtn);
-        affirmationOKButton.setTypeface(MBApp.getApp().getRobotoTypeface());
-        cancelButton.setTypeface(MBApp.getApp().getRobotoTypeface());
-        okButton.setTypeface(MBApp.getApp().getRobotoTypeface());
+        initViews();
 
         isCancelable = getIntent().getBooleanExtra(INTENT_EXTRA_CANCELABLE, true);
 
@@ -120,23 +160,20 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
 
         //notify creation of activity to calling code PopUp class
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(INTENT_ACTION_CREATED));
-
-        // Error / Flash animation
-        gifImageView = (GifImageView) findViewById(R.id.pop_up_gif_image_view);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         // Ensure sure animation remains loading
-        findViewById(R.id.pop_up_gif_image_view).animate();
+        gifImageView.animate();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         // Ensure animation pauses
-        findViewById(R.id.pop_up_gif_image_view).clearAnimation();
+        gifImageView.clearAnimation();
     }
 
     private void clearLayout() {
@@ -144,7 +181,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         imageIcon.setBackgroundResource(0);
         titleTxt.setVisibility(View.GONE);
         messageTxt.setVisibility(View.GONE);
-        layoutBottom.setVisibility(View.GONE);
+        layoutBottom.setVisibility(View.INVISIBLE);
         okButton.setVisibility(View.GONE);
         cancelButton.setVisibility(View.GONE);
         affirmationOKButton.setVisibility(View.GONE);
@@ -183,8 +220,8 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
                 // Flashing screen
                 case 1:
                     // Asset file
-                    findViewById(R.id.pop_up_gif_image_view).setBackgroundResource(R.drawable.emoji_flashing_microbit);
-                    findViewById(R.id.pop_up_gif_image_view).setVisibility(View.VISIBLE);
+                    gifImageView.setBackgroundResource(R.drawable.emoji_flashing_microbit);
+                    gifImageView.setVisibility(View.VISIBLE);
                     // Regular image disabled
                     imageIcon.setVisibility(View.GONE);
                     break;
@@ -192,8 +229,8 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
                 // Error screen
                 case 2:
                     // Asset file
-                    findViewById(R.id.pop_up_gif_image_view).setBackgroundResource(R.drawable.emoji_fail_microbit);
-                    findViewById(R.id.pop_up_gif_image_view).setVisibility(View.VISIBLE);
+                    gifImageView.setBackgroundResource(R.drawable.emoji_fail_microbit);
+                    gifImageView.setVisibility(View.VISIBLE);
                     // Regular image disabled
                     imageIcon.setVisibility(View.GONE);
                     break;
@@ -201,7 +238,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
             // Set default plain icon
         } else {
             imageIcon.setVisibility(View.VISIBLE);
-            findViewById(R.id.pop_up_gif_image_view).setVisibility(View.GONE);
+            gifImageView.setVisibility(View.GONE);
         }
 
         switch (intent.getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_MAX)) {
@@ -236,6 +273,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         Log.d("PopUpActivity", "onDestroy()");
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(INTENT_ACTION_DESTROYED));
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
+        releaseViews();
     }
 
     @Override
