@@ -130,7 +130,7 @@
     <string name="findphone_via_microbit">Find my phone alert via micro:bit!</string>
     <string name="ringtone_via_microbit">Playing ringtone via micro:bit!</string>
     <string name="sound_via_microbit">Playing sound via micro:bit!</string>
-    <string name="alert">Alert&#8230;</string>
+    <string name="alert">Alert...</string>
 
     <!-- Connect Activity -->
     <string name="previous_devices">Connect previously paired micro:bit</string>
@@ -175,8 +175,8 @@
     <string name="step_enter_pin_to_pair_text">Step 4</string>
     <string name="desc_enterPinToPairText">Press button A, and enter the 6 digit PIN</string>
     <!--<string name="connectTipText">To know the pattern of your micro:bit :- \nPlease hold A and B buttons down and then press RESET on your micro:bit</string>-->
-    <string name="connectSearchingTitle">Connecting&#8230;</string>
-    <string name="desc_connectSearchingTitle">Connecting&#8230;</string>
+    <string name="connectSearchingTitle">Connecting...</string>
+    <string name="desc_connectSearchingTitle">Connecting...</string>
     <string name="searchingTitle">Searching for micro:bit</string>
     <string name="pairing_msg_1">Found micro:bit</string>
 
@@ -191,7 +191,7 @@
     <string name="saved_projects">saved projects</string>
     <string name="start_new_project">Start a new project</string>
     <string name="new_project">New project</string>
-    <string name="loading_page_msg">Please wait. Page is loading&#8230;</string>
+    <string name="loading_page_msg">Please wait. Page is loading...</string>
 
     <!-- Popup message -->
     <string name="delete_project_message">Are you sure you want to remove this file?\r\nThe file will be permanently removed from this application.</string>
@@ -203,7 +203,7 @@
     <string name="my_scripts">My Scripts</string>
 
     <string name="download_existing">Download Existing</string>
-    <string name="downloading">Downloading&#8230;</string>
+    <string name="downloading">Downloading...</string>
 
     <string name="q_overwrite_existing">A file with same name already exists. Overwrite the existing file?</string>
     <string name="rename_file">Rename Download File</string>
@@ -223,7 +223,7 @@
     <string name="flashing_title">Flashing</string>
     <string name="pairing_title">Pairing</string>
     <string name="flashing_error_msg">micro:bit not in correct state</string>
-    <string name="flashing_phase1_msg">Finding the device&#8230;</string>
+    <string name="flashing_phase1_msg">Finding the device..</string>
     <string name="pairing_phase2_msg">Press button "A" on micro:bit to pair successfully. \n\n Waiting for the secret key</string>
     <string name="pairing_phase2_msg_New">Enter PIN</string>
 

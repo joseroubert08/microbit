@@ -26,41 +26,41 @@ import pl.droidsonroids.gif.GifImageView;
 public class PopUpActivity extends Activity implements View.OnClickListener {
 
     //intent from PopUpActivity to PopUp
-    public static final String INTENT_ACTION_OK_PRESSED = "PopUpActivity.OK_PRESSED";
-    public static final String INTENT_ACTION_CANCEL_PRESSED = "PopUpActivity.CANCEL_PRESSED";
-    public static final String INTENT_ACTION_DESTROYED = "PopUpActivity.DESTROYED";
-    public static final String INTENT_ACTION_CREATED = "PopUpActivity.CREATED";
+    static public final String INTENT_ACTION_OK_PRESSED = "PopUpActivity.OK_PRESSED";
+    static public final String INTENT_ACTION_CANCEL_PRESSED = "PopUpActivity.CANCEL_PRESSED";
+    static public final String INTENT_ACTION_DESTROYED = "PopUpActivity.DESTROYED";
+    static public final String INTENT_ACTION_CREATED = "PopUpActivity.CREATED";
 
     //intent from PopUp to PopUpActivity
-    public static final String INTENT_ACTION_CLOSE = "PopUpActivity.CLOSE";
-    public static final String INTENT_ACTION_UPDATE_PROGRESS = "PopUpActivity.UPDATE_PROGRESS";
-    public static final String INTENT_ACTION_UPDATE_LAYOUT = "PopUpActivity.UPDATE_LAYOUT";
+    static public final String INTENT_ACTION_CLOSE = "PopUpActivity.CLOSE";
+    static public final String INTENT_ACTION_UPDATE_PROGRESS = "PopUpActivity.UPDATE_PROGRESS";
+    static public final String INTENT_ACTION_UPDATE_LAYOUT = "PopUpActivity.UPDATE_LAYOUT";
 
-    public static final String INTENT_EXTRA_TYPE = "type";
-    public static final String INTENT_EXTRA_TITLE = "title";
-    public static final String INTENT_EXTRA_MESSAGE = "message";
-    public static final String INTENT_EXTRA_ICON = "imageIcon";
-    public static final String INTENT_EXTRA_ICONBG = "imageIconBg";
-    public static final String INTENT_EXTRA_PROGRESS = "progress.xml";
-    public static final String INTENT_EXTRA_CANCELABLE = "cancelable";
-    public static final String INTENT_GIFF_ANIMATION_CODE = "giffAnimationCode";
+    static public final String INTENT_EXTRA_TYPE = "type";
+    static public final String INTENT_EXTRA_TITLE = "title";
+    static public final String INTENT_EXTRA_MESSAGE = "message";
+    static public final String INTENT_EXTRA_ICON = "imageIcon";
+    static public final String INTENT_EXTRA_ICONBG = "imageIconBg";
+    static public final String INTENT_EXTRA_PROGRESS = "progress.xml";
+    static public final String INTENT_EXTRA_CANCELABLE = "cancelable";
+    static public final String INTENT_GIFF_ANIMATION_CODE = "giffAnimationCode";
 
     // Animations - Loading Error & Flash states
     private GifImageView gifImageView;
 
-    private ImageView imageIcon;
-    private TextView titleTxt;
-    private ProgressBar progressBar;
-    private ProgressBar spinnerBar;
-    private TextView messageTxt;
-    private Button okButton;
-    private Button cancelButton;
-    private Button affirmationOKButton;
-    private LinearLayout layoutBottom;
+    private ImageView imageIcon = null;
+    private TextView titleTxt = null;
+    private ProgressBar progressBar = null;
+    private ProgressBar spinnerBar = null;
+    private TextView messageTxt = null;
+    private Button okButton = null;
+    private Button cancelButton = null;
+    private Button affirmationOKButton = null;
+    private LinearLayout layoutBottom = null;
 
-    private boolean isCancelable;
+    private boolean isCancelable = false;
 
-    private Intent mReceiverIntent;
+    private Intent mReceiverIntent = null;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
         @Override

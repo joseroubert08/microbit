@@ -12,35 +12,33 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.samsung.microbit.MBApp;
-import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.service.PluginService;
 
-public class TelephonyPlugin {
+public class TelephonyPlugin
+{
+    private static Context mContext = null;
 
     public static void pluginEntry(Context ctx, CmdArg cmd) {
+        mContext = ctx;
         boolean register = false;
         if (cmd.getValue() != null) {
             register = cmd.getValue().toLowerCase().equals("on");
         }
-
         switch (cmd.getCMD()) {
             case Constants.REG_TELEPHONY: {
-                if (register) {
+                if (register)
                     registerIncomingCall();
-                } else {
+                else
                     unregisterIncomingCall();
-                }
                 break;
             }
             case Constants.REG_MESSAGING: {
-                if (register) {
+                if (register)
                     registerIncomingSMS();
-                } else {
+                else
                     unregisterIncomingSMS();
-                }
                 break;
             }
         }
@@ -48,7 +46,7 @@ public class TelephonyPlugin {
 
     //TODO: needed?
     public static void sendCommandBLE(int mbsService, CmdArg cmd) {
-        if (IPCMessageManager.getInstance().getClientMessenger() != null) {
+        if(PluginService.mClientMessenger != null) {
             Message msg = Message.obtain(null, mbsService);
             Bundle bundle = new Bundle();
             bundle.putInt("cmd", cmd.getCMD());
@@ -56,28 +54,30 @@ public class TelephonyPlugin {
             msg.setData(bundle);
 
             try {
-                IPCMessageManager.getInstance().getClientMessenger().send(msg);
+                PluginService.mClientMessenger.send(msg);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    static class IncomingCallListener extends PhoneStateListener {
+    static class IncomingCallListener extends PhoneStateListener
+    {
         @Override
-        public void onCallStateChanged(int state, String incomingNumber) {
-            switch (state) {
+        public void onCallStateChanged(int state, String incomingNumber)
+        {
+            switch (state)
+            {
                 case TelephonyManager.CALL_STATE_RINGING:
                     Log.i("TelephonyManager", "onCallStateChanged: " + state);
-
-                    PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID,
-                            Constants.SAMSUNG_INCOMING_CALL));
+                    PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID,Constants.SAMSUNG_INCOMING_CALL));
                     break;
             }
         }
     }
 
-    static class IncomingSMSListener extends BroadcastReceiver {
+    static class IncomingSMSListener extends BroadcastReceiver
+    {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Telephony.Sms.Intents.SMS_RECEIVED_ACTION)) {
@@ -86,100 +86,97 @@ public class TelephonyPlugin {
         }
     }
 
-    static TelephonyManager sTelephonyManager;
-    static IncomingCallListener sIncomingCallListener;
-    static IncomingSMSListener sIncomingSMSListener;
+    static TelephonyManager mTelephonyManager;
+    static IncomingCallListener mIncomingCallListener;
+    static IncomingSMSListener mIncomingSMSListener;
 
-    static {
-        sTelephonyManager = null;
-        sIncomingCallListener = null;
-        sIncomingSMSListener = null;
+    static
+    {
+        mTelephonyManager = null;
+        mIncomingCallListener = null;
+        mIncomingSMSListener = null;
     }
 
-    public static void registerIncomingCall() {
+    public static void registerIncomingCall()
+    {
         Log.i("TelephonyPlugin", "registerIncomingCall: ");
-
-        if (sTelephonyManager == null) {
-            sTelephonyManager = (TelephonyManager) MBApp.getApp().getSystemService(Context.TELEPHONY_SERVICE);
+        if (mTelephonyManager == null) {
+            mTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         }
 
-        if (sIncomingCallListener == null) {
-            sIncomingCallListener = new IncomingCallListener();
+        if(mIncomingCallListener == null) {
+            mIncomingCallListener = new IncomingCallListener();
         }
 
-        sTelephonyManager.listen(sIncomingCallListener, PhoneStateListener.LISTEN_CALL_STATE);
-        CmdArg cmd = new CmdArg(0, "Registered Incoming Call Alert");
+        mTelephonyManager.listen(mIncomingCallListener, PhoneStateListener.LISTEN_CALL_STATE);
+        CmdArg cmd = new CmdArg(0,"Registered Incoming Call Alert");
         TelephonyPlugin.sendCommandBLE(PluginService.TELEPHONY, cmd);//TODO: do we need to report registration status?
     }
 
-    public static void unregisterIncomingCall() {
+    public static void unregisterIncomingCall()
+    {
         Log.i("TelephonyPlugin", "unregisterIncomingCall: ");
-
-        if (sTelephonyManager == null) {
+        if (mTelephonyManager == null) {
             return;
         }
 
-        if (sIncomingCallListener == null) {
+        if(mIncomingCallListener == null) {
             return;
         }
 
-        sTelephonyManager.listen(sIncomingCallListener, PhoneStateListener.LISTEN_NONE);
-        sIncomingCallListener = null;
+        mTelephonyManager.listen(mIncomingCallListener, PhoneStateListener.LISTEN_NONE);
+        mIncomingCallListener = null;
 
-        if (sIncomingSMSListener == null) {
-            sTelephonyManager = null;
+        if(mIncomingSMSListener==null) {
+            mTelephonyManager = null;
         }
 
-        CmdArg cmd = new CmdArg(0, "Unregistered Incoming Call Alert");
+        CmdArg cmd = new CmdArg(0,"Unregistered Incoming Call Alert");
         TelephonyPlugin.sendCommandBLE(PluginService.TELEPHONY, cmd);//TODO: do we need to report registration status?
     }
 
-    public static boolean isIncomingCallRegistered() {
-        return sIncomingCallListener != null;
+    public static boolean isIncomingCallRegistered()
+    {
+        return mIncomingCallListener != null;
     }
 
-    public static void registerIncomingSMS() {
+    public static void registerIncomingSMS()
+    {
         Log.i("TelephonyPlugin", "registerIncomingSMS: ");
+        if (mTelephonyManager == null)
+            mTelephonyManager = (TelephonyManager)mContext.getSystemService(Context.TELEPHONY_SERVICE);
 
-        Context mContext = MBApp.getApp();
+        if(mIncomingSMSListener == null)
+            mIncomingSMSListener = new IncomingSMSListener();
 
-        if (sTelephonyManager == null) {
-            sTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-        }
-
-        if (sIncomingSMSListener == null) {
-            sIncomingSMSListener = new IncomingSMSListener();
-        }
-
-        mContext.registerReceiver(sIncomingSMSListener, new IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION));
+        mContext.registerReceiver(mIncomingSMSListener, new IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION));
 
         Log.d("FMA", "registerIncomingSMS");
-        CmdArg cmd = new CmdArg(0, "Registered Incoming SMS Alert");
+        CmdArg cmd = new CmdArg(0,"Registered Incoming SMS Alert");
         TelephonyPlugin.sendCommandBLE(PluginService.TELEPHONY, cmd);//TODO: do we need to report registration status?
     }
 
-    public static void unregisterIncomingSMS() {
+    public static void unregisterIncomingSMS()
+    {
         Log.i("TelephonyPlugin", "unregisterIncomingSMS: ");
-
-        if (sTelephonyManager == null) {
+        if (mTelephonyManager == null)
             return;
-        }
 
-        if (sIncomingSMSListener == null) {
+        if(mIncomingSMSListener == null)
             return;
-        }
 
-        MBApp.getApp().unregisterReceiver(sIncomingSMSListener);
-        sIncomingSMSListener = null;
+        mContext.unregisterReceiver(mIncomingSMSListener);
+        mIncomingSMSListener = null;
 
-        if (sIncomingCallListener == null)
-            sTelephonyManager = null;
+        if(mIncomingCallListener==null)
+            mTelephonyManager = null;
 
-        CmdArg cmd = new CmdArg(0, "Unregistered Incoming SMS Alert");
+        CmdArg cmd = new CmdArg(0,"Unregistered Incoming SMS Alert");
         TelephonyPlugin.sendCommandBLE(PluginService.TELEPHONY, cmd);//TODO: do we need to report registration status?
     }
 
-    public static boolean isIncomingSMSRegistered() {
-        return sIncomingSMSListener != null;
+    public static boolean isIncomingSMSRegistered()
+    {
+        return mIncomingSMSListener != null;
     }
 }

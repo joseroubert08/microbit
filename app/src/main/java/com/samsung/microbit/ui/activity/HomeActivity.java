@@ -32,14 +32,14 @@ import android.widget.TextView;
 import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.common.AppInfo;
+import com.samsung.microbit.core.EchoClientManager;
+import com.samsung.microbit.core.RemoteConfig;
+import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.Constants;
-import com.samsung.microbit.presentation.AppInfoPresenter;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.PopUp;
-import com.samsung.microbit.utils.FileUtils;
 
 import pl.droidsonroids.gif.GifImageView;
 
@@ -65,8 +65,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private String emailBodyString = null;
 
-    private AppInfoPresenter appInfoPresenter;
-
     protected void logi(String message) {
         if (debug) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
@@ -88,13 +86,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logi("onCreate() :: ");
+        MBApp.setContext(this);
+
+        RemoteConfig.getInstance().init();
 
         setContentView(R.layout.activity_home);
-
-        appInfoPresenter = new AppInfoPresenter();
-
-        appInfoPresenter.start();
-
         setupDrawer();
         setupButtonsFontStyle();
 
@@ -104,7 +100,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         checkMinimumPermissionsForThisScreen();
         startOtherServices();
 
-        MBApp.getApp().getEchoClientManager().sendViewEventStats("homeactivity");
+        EchoClientManager.getInstance().sendViewEventStats("homeactivity");
 
         /* Debug code*/
         MenuItem item = (MenuItem) findViewById(R.id.live);
@@ -112,14 +108,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             item.setChecked(true);
         }
 
-        AppInfo appInfo = MBApp.getApp().getAppInfo();
-
-        if (!appInfo.isAppStatusOn()) {
+        if (!RemoteConfig.getInstance().isAppStatusOn()) {
             finish();
             //Cannot proceed with the application. Shutdown NOW
-            PopUp.show(MBApp.getApp(),
-                    appInfo.getExceptionMsg(),
-                    appInfo.getExceptionTitle(),
+            PopUp.show(MBApp.getContext(),
+                    RemoteConfig.getInstance().getExceptionMsg(),
+                    RemoteConfig.getInstance().getExceptionTitle(),
                     R.drawable.error_face,//image icon res id
                     R.drawable.red_btn,
                     PopUp.GIFF_ANIMATION_ERROR,
@@ -176,7 +170,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mPrefs = getSharedPreferences("com.samsung.microbit", MODE_PRIVATE);
         if (mPrefs != null) {
             shareStats = mPrefs.getBoolean(getString(R.string.prefs_share_stats_status), true);
-            MBApp.getApp().getEchoClientManager().setShareStatistic(shareStats);
+            EchoClientManager.setSharingStats(shareStats);
         }
         //TODO focusable view
         drawer.setDrawerListener(toggle);
@@ -226,10 +220,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         String emailBody = getString(R.string.email_body);
         String version = "0.1.0";
-        PackageManager manager = MBApp.getApp().getPackageManager();
-        PackageInfo info = null;
+        PackageManager manager = MBApp.getContext().getPackageManager();
+        PackageInfo info;
         try {
-            info = manager.getPackageInfo(MBApp.getApp().getPackageName(), 0);
+            info = manager.getPackageInfo(MBApp.getContext().getPackageName(), 0);
             version = info.versionName;
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, e.toString());
@@ -238,7 +232,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 version,
                 Build.MODEL,
                 Build.VERSION.RELEASE,
-                MBApp.getApp().getAppInfo().getPrivacyURL());
+                RemoteConfig.getInstance().getPrivacyURL());
         return emailBodyString;
     }
 
@@ -256,8 +250,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        appInfoPresenter.destroy();
-
+        RemoteConfig.getInstance().destroy();
         unbindDrawables(gifAnimationHelloEmoji);
         unbindDrawables(findViewById(R.id.connect_device_btn));
         unbindDrawables(findViewById(R.id.flash_microbit_btn));
@@ -300,7 +293,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        urlToOpen = MBApp.getApp().getAppInfo().getCreateCodeURL();
+        urlToOpen = RemoteConfig.getInstance().getCreateCodeURL();
         switch (id) {
             case R.id.live:
                 item.setChecked(true);
@@ -359,9 +352,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             break;
             case R.id.create_code_btn: {
                 //Update Stats
-                MBApp.getApp().getEchoClientManager().sendNavigationStats("home", "create-code");
+                EchoClientManager.getInstance().sendNavigationStats("home", "create-code");
                 if (urlToOpen == null) {
-                    urlToOpen = MBApp.getApp().getAppInfo().getCreateCodeURL();
+                    urlToOpen = RemoteConfig.getInstance().getCreateCodeURL();
                 }
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(urlToOpen));
@@ -370,14 +363,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.flash_microbit_btn:
-                MBApp.getApp().getEchoClientManager().sendNavigationStats("home", "flash");
+                EchoClientManager.getInstance().sendNavigationStats("home", "flash");
                 Intent i = new Intent(this, ProjectActivity.class);
                 startActivity(i);
                 break;
             case R.id.discover_btn:
-                MBApp.getApp().getEchoClientManager().sendNavigationStats("home", "discover");
+                EchoClientManager.getInstance().sendNavigationStats("home", "discover");
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(MBApp.getApp().getAppInfo().getDiscoverURL()));
+                intent.setData(Uri.parse(RemoteConfig.getInstance().getDiscoverURL()));
                 startActivity(intent);
                 break;
 
@@ -389,7 +382,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.btn_about: {
-                String url = MBApp.getApp().getAppInfo().getAboutURL();
+                String url = RemoteConfig.getInstance().getAboutURL();
                 Intent aboutIntent = new Intent(Intent.ACTION_VIEW);
                 aboutIntent.setData(Uri.parse(url));
                 startActivity(aboutIntent);
@@ -403,33 +396,33 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(launchHelpIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
-                MBApp.getApp().getEchoClientManager().sendNavigationStats("overflow-menu", "help");
+                EchoClientManager.getInstance().sendNavigationStats("overflow-menu", "help");
             }
             break;
             case R.id.btn_privacy_cookies: {
-                String url = MBApp.getApp().getAppInfo().getPrivacyURL();
+                String url = RemoteConfig.getInstance().getPrivacyURL();
                 Intent privacyIntent = new Intent(Intent.ACTION_VIEW);
                 privacyIntent.setData(Uri.parse(url));
                 startActivity(privacyIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
-                MBApp.getApp().getEchoClientManager().sendNavigationStats("overflow-menu", "privacy-policy");
+                EchoClientManager.getInstance().sendNavigationStats("overflow-menu", "privacy-policy");
             }
             break;
             case R.id.btn_terms_conditions: {
-                String url = MBApp.getApp().getAppInfo().getTermsOfUseURL();
+                String url = RemoteConfig.getInstance().getTermsOfUseURL();
                 Intent termsIntent = new Intent(Intent.ACTION_VIEW);
                 termsIntent.setData(Uri.parse(url));
                 startActivity(termsIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
-                MBApp.getApp().getEchoClientManager().sendNavigationStats("overflow-menu", "ts-and-cs");
+                EchoClientManager.getInstance().sendNavigationStats("overflow-menu", "ts-and-cs");
 
             }
             break;
 
             case R.id.btn_send_feedback: {
-                String emailAddress = MBApp.getApp().getAppInfo().getSendEmailAddress();
+                String emailAddress = RemoteConfig.getInstance().getSendEmailAddress();
                 Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
                 feedbackIntent.setType("message/rfc822");
                 feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{emailAddress});
@@ -462,8 +455,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         shareStatistics = mShareStatsCheckBox.isChecked();
         mPrefs.edit().putBoolean(getString(R.string.prefs_share_stats_status), shareStatistics).apply();
         logi("shareStatistics = " + shareStatistics);
-        MBApp.getApp().getEchoClientManager().setShareStatistic(shareStatistics);
-        MBApp.getApp().getEchoClientManager().sendStatSharing(shareStatistics);
+        EchoClientManager.setSharingStats(shareStatistics);
+        EchoClientManager.getInstance().sendStatSharing(shareStatistics);
     }
 
 
@@ -474,14 +467,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    PopUp.show(MBApp.getApp(),
+                    PopUp.show(MBApp.getContext(),
                             "Samples will now be copied to your device. You can check them out in the Flash section.",
                             "Thank you",
                             R.drawable.message_face, R.drawable.blue_btn,
                             PopUp.GIFF_ANIMATION_NONE,
                             PopUp.TYPE_ALERT,
                             null, null);
-                    FileUtils.installSamples();
+                    Utils.installSamples();
 
                 }
             }).start();
@@ -499,7 +492,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     installSamples();
                 } else {
                     if (mPrefs!= null) mPrefs.edit().putBoolean(FIRST_RUN, false).apply();
-                    PopUp.show(MBApp.getApp(),
+                    PopUp.show(MBApp.getContext(),
                             getString(R.string.storage_permission_for_samples_error),
                             "",
                             R.drawable.error_face, R.drawable.red_btn,
@@ -535,7 +528,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         public void onClick(View v) {
             logi("diskStoragePermissionCancelHandler");
             PopUp.hide();
-            PopUp.show(MBApp.getApp(),
+            PopUp.show(MBApp.getContext(),
                     getString(R.string.storage_permission_for_samples_error),
                     "",
                     R.drawable.error_face, R.drawable.red_btn,
@@ -554,7 +547,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     != PermissionChecker.PERMISSION_GRANTED ||
                     (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                             != PermissionChecker.PERMISSION_GRANTED)) {
-                PopUp.show(MBApp.getApp(),
+                PopUp.show(MBApp.getContext(),
                         getString(R.string.storage_permission_for_samples),
                         getString(R.string.permissions_needed_title),
                         R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
@@ -568,7 +561,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            FileUtils.installSamples();
+                            Utils.installSamples();
                         }
                     }).start();
                 }
@@ -580,6 +573,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void onResume() {
         if (debug) logi("onResume() :: ");
         super.onResume();
+        MBApp.setContext(this);
         findViewById(R.id.homeHelloAnimationGifView).animate();
     }
 }

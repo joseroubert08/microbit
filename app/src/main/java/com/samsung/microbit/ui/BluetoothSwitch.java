@@ -20,8 +20,7 @@ public class BluetoothSwitch {
 
     private BluetoothSwitch() {
         if (mBluetoothAdapter == null) {
-            final BluetoothManager bluetoothManager = (BluetoothManager) MBApp.getApp().getSystemService(Context
-                    .BLUETOOTH_SERVICE);
+            final BluetoothManager bluetoothManager = (BluetoothManager) MBApp.getContext().getSystemService(Context.BLUETOOTH_SERVICE);
             mBluetoothAdapter = bluetoothManager.getAdapter();
         }
     }
@@ -39,11 +38,9 @@ public class BluetoothSwitch {
 
     public boolean checkBluetoothAndStart() {
         if (!mBluetoothAdapter.isEnabled()) {
-            MBApp application = MBApp.getApp();
-
-            PopUp.show(application,
-                    application.getString(R.string.bluetooth_turn_on_guide),
-                    application.getString(R.string.turn_on_bluetooth),
+            PopUp.show(MBApp.getContext(),
+                    MBApp.getContext().getString(R.string.bluetooth_turn_on_guide),
+                    MBApp.getContext().getString(R.string.turn_on_bluetooth),
                     R.drawable.bluetooth, R.drawable.blue_btn,
                     0, /* TODO - nothing needs to be done */
                     PopUp.TYPE_CHOICE,

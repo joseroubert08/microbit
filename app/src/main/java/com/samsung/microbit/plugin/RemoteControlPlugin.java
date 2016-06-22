@@ -6,93 +6,69 @@ import android.media.AudioManager;
 import android.util.Log;
 import android.view.KeyEvent;
 
-import com.samsung.microbit.MBApp;
+import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.Constants;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.samsung.microbit.BuildConfig.DEBUG;
-
 public class RemoteControlPlugin {
-	private static final String TAG = RemoteControlPlugin.class.getSimpleName();
 
-	private static void logi(String message) {
+	private static Context context = null;
+
+	static final String TAG = "RemoteControlPlugin";
+	private static boolean debug = BuildConfig.DEBUG;
+
+	static void logi(String message) {
 		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 	}
 
 	public static void pluginEntry(Context ctx, CmdArg cmd) {
+		context = ctx;
 		switch (cmd.getCMD()) {
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY:
-				if (DEBUG) {
-                    logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_PLAY");
-                }
-
+				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_PLAY");
 				Play();
 				break;
 
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE:
-				if (DEBUG) {
-                    logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_PAUSE");
-                }
-
+				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_PAUSE");
 				Pause();
 				break;
 
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_STOP:
-				if (DEBUG) {
-                    logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_STOP");
-                }
-
+				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_STOP");
 				Stop();
 				break;
 
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK:
-				if (DEBUG) {
-                    logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK");
-                }
-
+				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK");
 				NextTrack();
 				break;
 
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_PREVTRACK:
-				if (DEBUG) {
-                    logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_PREVTRACK");
-                }
-
+				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_PREVTRACK");
 				PrevTrack();
 				break;
 
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_FORWARD:
-				if (DEBUG) {
-                    logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_FORWARD");
-                }
-
+				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_FORWARD");
 				Forward();
 				break;
 
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_REWIND:
-				if (DEBUG) {
-                    logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_REWIND");
-                }
-
+				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_REWIND");
 				Rewind();
 				break;
 
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEUP:
-				if (DEBUG) {
-                    logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEUP");
-                }
-
+				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEUP");
 				VolumeUp();
 				break;
 
 			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN:
-				if (DEBUG) {
-                    logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN");
-                }
-
+				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN");
 				VolumeDown();
 				break;
 
@@ -101,14 +77,14 @@ public class RemoteControlPlugin {
 		}
 	}
 
-	private static void sendMediaKeyEvent(final int action, final int code) {
+	private static final void sendMediaKeyEvent(final int action, final int code) {
 		Intent mediaEvent = new Intent(Intent.ACTION_MEDIA_BUTTON);
 		KeyEvent event = new KeyEvent(action, code);
 		mediaEvent.putExtra(Intent.EXTRA_KEY_EVENT, event);
-		MBApp.getApp().sendOrderedBroadcast(mediaEvent, null);
+		context.sendOrderedBroadcast(mediaEvent, null);
 	}
 
-	private static void scheduleMediaKeyEvent(final int action, final int code, final int duration) {
+	private static final void scheduleMediaKeyEvent(final int action, final int code, final int duration) {
 		new Timer().schedule(new TimerTask() {
 			@Override
 			public void run() {
@@ -153,7 +129,7 @@ public class RemoteControlPlugin {
 	}
 
 	private static void VolumeUp() {
-		AudioManager audio = (AudioManager) MBApp.getApp().getSystemService(Context.AUDIO_SERVICE);
+		AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
 		audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
 			AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
 		/*
@@ -163,7 +139,7 @@ public class RemoteControlPlugin {
 	}
 
 	private static void VolumeDown() {
-		AudioManager audio = (AudioManager) MBApp.getApp().getSystemService(Context.AUDIO_SERVICE);
+		AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
 		audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
 			AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
 		/*
@@ -171,4 +147,5 @@ public class RemoteControlPlugin {
         scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_VOLUME_DOWN, 100);
         */
 	}
+
 }

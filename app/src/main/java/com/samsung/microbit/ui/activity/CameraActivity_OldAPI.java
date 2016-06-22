@@ -44,11 +44,10 @@ import android.widget.Toast;
 import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.Utils;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.Constants;
-import com.samsung.microbit.model.RawConstants;
 import com.samsung.microbit.plugin.CameraPlugin;
-import com.samsung.microbit.presentation.PlayAudioPresenter;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.view.CameraPreview;
 
@@ -84,8 +83,6 @@ public class CameraActivity_OldAPI extends Activity {
     private Boolean bTakePicOnResume = false;
     private Boolean bRecordVideoOnResume = false;
 
-    private PlayAudioPresenter playAudioPresenter;
-
     private static final String TAG = "CameraActivity_OldAPI";
     private boolean debug = BuildConfig.DEBUG;
 
@@ -97,8 +94,7 @@ public class CameraActivity_OldAPI extends Activity {
             switch (what) {
                 case MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED:
                 case MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED:
-                    playAudioPresenter.setNotificationForPlay(RawConstants.MAX_VIDEO_RECORDED);
-                    playAudioPresenter.start();
+                    Utils.playAudio(Utils.getMaxVideoRecordedAudio(), null);
                     stopRecording();
                     break;
                 case MediaRecorder.MEDIA_RECORDER_INFO_UNKNOWN:
@@ -461,8 +457,6 @@ public class CameraActivity_OldAPI extends Activity {
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        playAudioPresenter = new PlayAudioPresenter();
-
         createRotatedIcons();
 
         setOrientationOffset();
@@ -583,8 +577,7 @@ public class CameraActivity_OldAPI extends Activity {
 
     private void startTakePicCounter () {
 
-        playAudioPresenter.setNotificationForPlay(RawConstants.TAKING_PHOTO_AUDIO);
-        playAudioPresenter.start();
+        Utils.playAudio(Utils.geTakingPhotoAudio(), null);
         final Toast toast = Toast.makeText(MBApp.getApp().getApplicationContext(),"bbb", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
 
@@ -664,8 +657,7 @@ public class CameraActivity_OldAPI extends Activity {
     }
 
     private void recordVideo() {
-        playAudioPresenter.setNotificationForPlay(RawConstants.RECORDING_VIDEO_AUDIO);
-        playAudioPresenter.start();
+        Utils.playAudio(Utils.getRecordingVideoAudio(), null);
         mButtonClick.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -741,9 +733,7 @@ public class CameraActivity_OldAPI extends Activity {
             Toast toast = Toast.makeText(MBApp.getApp().getApplicationContext(), "Photo taken", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
-
-            playAudioPresenter.setNotificationForPlay(RawConstants.PICTURE_TAKEN_AUDIO);
-            playAudioPresenter.start();
+            Utils.playAudio(Utils.getPictureTakenAudio(), null);
 
         }
     };
@@ -778,9 +768,8 @@ public class CameraActivity_OldAPI extends Activity {
         CmdArg cmd = new CmdArg(0, "Camera off");
         CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);
 
-        this.unregisterReceiver(mMessageReceiver);
-
-        playAudioPresenter.destroy();
+        this.unregisterReceiver(
+                mMessageReceiver);
 
         super.onDestroy();
     }
