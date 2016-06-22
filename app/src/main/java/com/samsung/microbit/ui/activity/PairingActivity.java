@@ -46,8 +46,8 @@ import android.widget.Toast;
 import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.core.IPCMessageManager;
+import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.service.IPCService;
@@ -549,7 +549,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
             retvalue = false;
         }
 
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP && mLEScanner == null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mLEScanner == null) {
             mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
             if (mLEScanner == null)
                 retvalue = false;
@@ -1169,20 +1169,20 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 if (textView != null)
                     textView.setText(getString(R.string.searchingTitle));
                 mHandler.postDelayed(scanTimedOut, SCAN_PERIOD);
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) { //Lollipop
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) { //Lollipop
                     mBluetoothAdapter.startLeScan(getOldScanCallback());
                 } else {
                     List<ScanFilter> filters = new ArrayList<ScanFilter>();
                     // TODO: play with ScanSettings further to ensure the Kit kat devices connectMaybeInit with higher success rate
-                    ScanSettings settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
-                    mLEScanner.startScan(null, settings, getNewScanCallback());
+                    ScanSettings settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_BALANCED).build();
+                    mLEScanner.startScan(filters, settings, getNewScanCallback());
                 }
             }
         } else {
             if (mScanning) {
                 mScanning = false;
                 mHandler.removeCallbacks(scanTimedOut);
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                     mBluetoothAdapter.stopLeScan(getOldScanCallback());
                 } else {
                     mLEScanner.stopScan(getNewScanCallback());
