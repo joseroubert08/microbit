@@ -87,8 +87,14 @@ public class PlayAudioPresenter implements Presenter {
 
     @Override
     public void stop() {
-        if(mediaplayer != null && mediaplayer.isPlaying()) {
-            mediaplayer.stop();
+        if(mediaplayer != null) {
+            try {
+                if(mediaplayer.isPlaying()) {
+                    mediaplayer.stop();
+                }
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
         }
     }
 
