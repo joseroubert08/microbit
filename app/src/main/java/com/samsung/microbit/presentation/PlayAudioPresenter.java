@@ -54,6 +54,7 @@ public class PlayAudioPresenter implements Presenter {
             e.printStackTrace();
             Log.d("Utils", "playAudio: exception");
             mediaplayer.release();
+            mediaplayer = null;
             return;
         }
         //Set a callback for completion
@@ -65,6 +66,7 @@ public class PlayAudioPresenter implements Presenter {
                     callBack.onCompletion(mp);
                 }
                 mediaplayer.release();
+                mediaplayer = null;
             }
         });
         mediaplayer.start();
