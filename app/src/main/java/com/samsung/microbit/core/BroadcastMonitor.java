@@ -8,7 +8,6 @@ import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.plugin.FeedbackPlugin;
 import com.samsung.microbit.service.PluginService;
 
-
 public class BroadcastMonitor extends BroadcastReceiver{
 
     @Override
