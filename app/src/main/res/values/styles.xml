@@ -110,7 +110,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginEnd">@dimen/custom_button_image_margin</item>
-        <item name="android:padding">@dimen/project_items_image_padding</item>
+        <item name="android:paddingEnd">@dimen/project_items_image_padding</item>
     </style>
 
     <style name="custom_button_layout" parent="match_width_parent_wrap_height_content">

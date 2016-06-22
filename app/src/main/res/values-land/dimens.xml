@@ -132,5 +132,13 @@
     <dimen name="popup_spinner_progress_bar_margin">0dp</dimen>
     <dimen name="pairing_step_button_layout_padding">8dp</dimen>
     <dimen name="popup_gif_size">110dp</dimen>
+
+    <!-- Project screen -->
+    <integer name="project_my_scripts_button_weight">1</integer>
+    <dimen name="project_item_lists_indentation">8dp</dimen>
+    <dimen name="project_items_layout_padding">16dp</dimen>
+    <dimen name="project_items_layout_margin_top">8dp</dimen>
+    <dimen name="custom_button_margin">8dp</dimen>
+    <dimen name="project_item_buttons_size">57dp</dimen>
 </resources>
 

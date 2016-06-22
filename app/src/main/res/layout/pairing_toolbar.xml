@@ -4,12 +4,11 @@
     android:id="@+id/headerBar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:layout_gravity="top"
     android:background="@color/main_gray_color"
     android:elevation="@dimen/activity_bottom_margin"
-    android:orientation="horizontal"
     tools:showIn="@layout/view_connect_microbit">
 
+    <!-- Back button -->
     <ImageButton
         android:id="@+id/backBtn"
         android:layout_width="wrap_content"
@@ -20,17 +19,11 @@
         android:nextFocusDown="@layout/pairing_device_state"
         android:nextFocusRight="@layout/pairing_device_state"
         android:onClick="onClick"
-        android:padding="16dp"
+        android:padding="@dimen/app_bar_back_btn_padding"
         android:src="@drawable/ic_back_arrow" />
 
-    <!-- View my scripts -->
-    <View
-        android:layout_width="0.25dp"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="20dp"
-        android:alpha="0.5"
-        android:background="@color/white_color" />
+    <!-- Small divider -->
+    <include layout="@layout/app_bar_small_divider" />
 
     <TextView
         android:id="@+id/flash_projects_title_txt"
@@ -42,7 +35,7 @@
         android:nextFocusDown="@id/backBtn"
         android:nextFocusRight="@id/backBtn"
         android:text="@string/connect_device"
-        android:textAppearance="?android:textAppearanceLarge"
+        android:textSize="@dimen/app_bar_title_text_size"
         android:textColor="@color/white_color" />
 
 </LinearLayout>

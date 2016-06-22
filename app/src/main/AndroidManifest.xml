@@ -57,7 +57,7 @@
         <activity
             android:name=".ui.activity.ProjectActivity"
             android:parentActivityName=".ui.activity.HomeActivity"
-            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:windowSoftInputMode="adjustResize">
 
             <!-- Register for the HEX file -->

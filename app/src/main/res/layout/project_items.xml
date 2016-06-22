@@ -12,8 +12,9 @@
         android:drawableEnd="@drawable/ic_arrow_down"
         android:gravity="start|center_vertical"
         android:longClickable="true"
-        android:textSize="@dimen/project_items_text_size"
-        android:textColor="@android:color/white" />
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/project_items_text_size" />
 
     <com.samsung.microbit.ui.control.ExtendedEditText
         android:id="@+id/appNameEdit"
@@ -23,6 +24,7 @@
         android:editable="true"
         android:enabled="true"
         android:focusable="true"
+        android:textAllCaps="false"
         android:focusableInTouchMode="true"
         android:gravity="start|center_vertical"
         android:inputType="textNoSuggestions|textVisiblePassword"
@@ -35,7 +37,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/appNameButton"
-        android:layout_marginBottom="@dimen/custom_button_start_margin">
+        android:layout_marginBottom="@dimen/custom_button_start_margin"
+        android:layout_marginTop="@dimen/project_item_action_bar_layout_margin">
 
         <!-- Flash button -->
         <include layout="@layout/custom_project_items_button" />

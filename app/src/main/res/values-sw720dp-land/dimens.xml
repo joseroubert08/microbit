@@ -6,7 +6,7 @@
     <dimen name="activity_top_margin">24dp</dimen>
 
     <!-- Generic margin TODO maybe rename -->
-    <dimen name="widget_margin">5dp</dimen>
+    <dimen name="widget_margin">12dp</dimen>
     <dimen name="content_margin">16dp</dimen>
 
     <!-- Generic Buttons TODO maybe remove-->

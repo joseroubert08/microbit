@@ -6,7 +6,6 @@
     android:layout_height="?attr/actionBarSize"
     android:background="@color/main_gray_color"
     android:elevation="@dimen/activity_vertical_margin"
-    android:orientation="horizontal"
     tools:showIn="@layout/activity_projects">
 
     <!-- back button-->
@@ -19,17 +18,11 @@
         android:contentDescription="@string/desc_back_to_home_from_flash_btn"
         android:nextFocusDown="@id/flash_projects_title_txt"
         android:onClick="onClick"
-        android:padding="16dp"
+        android:padding="@dimen/app_bar_back_btn_padding"
         android:src="@drawable/ic_back_arrow" />
 
-    <!-- View my scripts -->
-    <View
-        android:layout_width="0.25dp"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="20dp"
-        android:alpha="0.5"
-        android:background="@color/white_color" />
+    <!-- Small divider -->
+    <include layout="@layout/app_bar_small_divider" />
 
     <!-- App bar title-->
     <TextView
@@ -44,15 +37,15 @@
         android:gravity="center"
         android:nextFocusDown="@+id/connectedIndicatorIcon"
         android:text="@string/flash"
-        android:textAppearance="?android:textAppearanceLarge"
-        android:textColor="@color/white_color" />
+        android:textSize="@dimen/app_bar_title_text_size"
+        android:textColor="@android:color/white" />
 
-    <!-- View my scripts -->
+    <!-- Big divider -->
     <View
-        android:layout_width="0.25dp"
+        android:layout_width="@dimen/app_bar_divider_width"
         android:layout_height="match_parent"
-        android:alpha="0.25"
-        android:background="@color/white_color" />
+        android:alpha="@dimen/app_bar_divider_alpha"
+        android:background="@android:color/white" />
 
     <!-- Connected device  -->
     <LinearLayout
@@ -69,27 +62,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_margin="4dp"
-            android:textColor="@color/white_color" />
+            android:textColor="@android:color/white" />
 
         <TextView
             android:id="@+id/deviceName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_margin="4dp"
-            android:textColor="@color/white_color" />
+            android:layout_marginTop="@dimen/project_app_bat_device_name_margin_top"
+            android:textColor="@android:color/white" />
 
     </LinearLayout>
 
-    <!-- View my scripts -->
-    <View
-        android:layout_width="0.25dp"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="20dp"
-        android:alpha="0.5"
-        android:background="@color/white_color" />
+    <!-- Small divider -->
+    <include layout="@layout/app_bar_small_divider" />
 
     <!-- connected device status -->
     <ImageView
@@ -101,6 +87,6 @@
         android:importantForAccessibility="yes"
         android:nextFocusDown="@+id/ll_toolbar_indicator"
         android:onClick="onClick"
-        android:padding="12dp"
+        android:padding="@dimen/project_app_bar_connect_btn_padding"
         android:src="@drawable/device_status_connected" />
 </LinearLayout>

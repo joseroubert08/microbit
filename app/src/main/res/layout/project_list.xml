@@ -4,6 +4,8 @@
     android:id="@+id/projectListView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingStart="@dimen/project_items_layout_padding"
+    android:paddingEnd="@dimen/project_items_layout_padding"
     android:divider="@android:color/transparent"
     android:dividerHeight="@dimen/widget_margin"
     tools:showIn="@layout/activity_projects" />
