@@ -24,7 +24,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class AlertPlugin {
-    private static PlayAudioPresenter playAudioPresenter = new PlayAudioPresenter();
+    private static PlayAudioPresenter playAudioPresenter;
 
     private static AlertDialog customDialog = null;
     private static Ringtone mRingtone = null;
@@ -119,6 +119,13 @@ public class AlertPlugin {
             case Constants.SAMSUNG_ALERT_EVT_ALARM5:
             case Constants.SAMSUNG_ALERT_EVT_ALARM6:
                 playAlarm(cmd.getCMD());
+                break;
+            case Constants.SAMSUNG_ALERT_STOP_PLAYING:
+                if(playAudioPresenter != null) {
+                    playAudioPresenter.stop();
+                    playAudioPresenter = null;
+                }
+                break;
             default:
                 break;
         }
@@ -160,15 +167,18 @@ public class AlertPlugin {
     private static void findPhone() {
         Context context = MBApp.getApp();
 
-        showDialog(context.getString(R.string.findphone_via_microbit));
-        if (mVibrator == null)
+        showDialogWithAction(context.getString(R.string.findphone_via_microbit), PopUp.OK_ACTION_STOP_SERVICE_PLAYING);
+
+        if (mVibrator == null) {
             mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        }
 
         if (mVibrator != null && mVibrator.hasVibrator()) {
             mVibrator.cancel();
             mVibrator.vibrate(5 * 1000);
         }
 
+        playAudioPresenter = new PlayAudioPresenter();
         playAudioPresenter.setNotificationForPlay(RawConstants.FIND_MY_PHONE_AUDIO);
         playAudioPresenter.start();
     }
@@ -198,6 +208,13 @@ public class AlertPlugin {
         return duration;
     }
 
+    private static void showDialogWithAction(String textMsg, int popupAction) {
+        PopUp.showFromService(MBApp.getApp(), "",
+                textMsg,
+                R.drawable.message_face, R.drawable.blue_btn,
+                0, /* TODO - nothing needs to be done */
+                PopUp.TYPE_ALERT, popupAction);
+    }
 
     private static void showDialog(String textMsg) {
         PopUp.showFromService(MBApp.getApp(), "",

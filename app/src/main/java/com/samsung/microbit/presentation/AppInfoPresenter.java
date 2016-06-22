@@ -92,6 +92,14 @@ public class AppInfoPresenter implements Presenter {
     }
 
     @Override
+    public void stop() {
+        if(retrieveAppInfoTask != null && retrieveAppInfoTask.getStatus() == AsyncTask.Status.RUNNING) {
+            retrieveAppInfoTask.cancel(true);
+            retrieveAppInfoTask = null;
+        }
+    }
+
+    @Override
     public void destroy() {
         if(retrieveAppInfoTask != null && retrieveAppInfoTask.getStatus() == AsyncTask.Status.RUNNING) {
             retrieveAppInfoTask.cancel(true);

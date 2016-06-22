@@ -1,6 +1,7 @@
 package com.samsung.microbit.utils;
 
 import com.samsung.microbit.core.IPCMessageManager;
+import com.samsung.microbit.core.PopUpServiceReceiver;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.NameValuePair;
 import com.samsung.microbit.service.BLEService;
@@ -20,6 +21,8 @@ public class ServiceUtils {
             PluginService.logi(message);
         } else if(serviceClass.equals(BLEService.class)) {
             BLEService.logi(message);
+        } else if(serviceClass.equals(PopUpServiceReceiver.class)) {
+            PopUpServiceReceiver.logi(message);
         }
     }
 
@@ -27,11 +30,11 @@ public class ServiceUtils {
                                         NameValuePair[] args) {
         if (DEBUG) {
             if(cmd != null) {
-                logi(serviceClass, serviceClass.getName() + ": sendtoIPCService(), " + mbsService + "," +
+                logi(serviceClass, serviceClass.getSimpleName() + ": sendtoIPCService(), " + mbsService + "," +
                         functionCode + "," +
                         "(" + cmd.getValue() + "," + cmd.getCMD() + "");
             } else {
-                logi(serviceClass, serviceClass.getName() + ": sendtoIPCService(), " + mbsService + "," + functionCode);
+                logi(serviceClass, serviceClass.getSimpleName() + ": sendtoIPCService(), " + mbsService + "," + functionCode);
             }
         }
 
@@ -42,11 +45,12 @@ public class ServiceUtils {
                                         NameValuePair[] args) {
         if (DEBUG) {
             if(cmd != null) {
-                logi(serviceClass, serviceClass.getName() + ": sendtoPluginService(), " + mbsService + "," +
+                logi(serviceClass, serviceClass.getSimpleName() + ": sendtoPluginService(), " + mbsService + "," +
                         functionCode + "," +
                         "(" + cmd.getValue() + "," + cmd.getCMD() + "");
             } else {
-                logi(serviceClass, serviceClass.getName() + ": sendtoPluginService(), " + mbsService + "," + functionCode);
+                logi(serviceClass, serviceClass.getSimpleName() + ": sendtoPluginService(), " + mbsService + "," +
+                        functionCode);
             }
         }
 
@@ -57,10 +61,11 @@ public class ServiceUtils {
                                         NameValuePair[] args) {
         if (DEBUG) {
             if(cmd != null) {
-                logi(serviceClass, serviceClass.getName() + ": sendtoBLEService(), " + mbsService + "," + functionCode + "," + cmd
+                logi(serviceClass, serviceClass.getSimpleName() + ": sendtoBLEService(), " + mbsService + "," + functionCode +
+                        "," + cmd
                         .getValue() + "," + cmd.getCMD() + "");
             } else {
-                logi(serviceClass, serviceClass.getName() + ": sendtoBLEService(), " + mbsService + "," + functionCode);
+                logi(serviceClass, serviceClass.getSimpleName() + ": sendtoBLEService(), " + mbsService + "," + functionCode);
             }
         }
 

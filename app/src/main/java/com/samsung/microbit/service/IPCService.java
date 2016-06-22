@@ -11,9 +11,9 @@ import android.util.Log;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
-import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.NameValuePair;
+import com.samsung.microbit.utils.ServiceUtils;
 
 import java.util.UUID;
 
@@ -38,55 +38,16 @@ public class IPCService extends Service {
         startIPCListener();
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    private void startIPCListener() {
         if (DEBUG) {
-            logi("onStartCommand()");
+            logi("startIPCListener()");
         }
 
-        return START_STICKY;
-    }
-
-	/*
-     * Business method
-	 */
-
-    public static void bleDisconnect() {
-        sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_DISCONNECT, null, null);
-    }
-
-    public static void bleConnect() {
-        sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CONNECT, null, null);
-    }
-
-    public static void bleReconnect() {
-        sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_RECONNECT, null, null);
-    }
-
-    public static void writeCharacteristic(UUID service, UUID characteristic, int value, int type) {
-
-        NameValuePair[] args = new NameValuePair[4];
-        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_SERVICE_GUID, service.toString());
-        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_GUID, characteristic.toString());
-        args[2] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_VALUE, value);
-        args[3] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE, type);
-        sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_WRITE_CHARACTERISTIC,
-                null, args);
-    }
-
-    /*
-     * setup IPCMessageManager
-     */
-    @Override
-    public IBinder onBind(Intent intent) {
-        return IPCMessageManager.getInstance().getClientMessenger().getBinder();
-    }
-
-    public static void startIPCListener() {
-
-        if (DEBUG) logi("startIPCListener()");
         if (IPCMessageManager.getInstance() == null) {
-            if (DEBUG) logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
+            if (DEBUG) {
+                logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
+            }
+
             IPCMessageManager inst = IPCMessageManager.getInstance("IPCServiceListener", new android.os.Handler() {
                 @Override
                 public void handleMessage(Message msg) {
@@ -101,45 +62,64 @@ public class IPCService extends Service {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-
                     try {
                         Thread.sleep(IPCMessageManager.STARTUP_DELAY);
-                        sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
-                        sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+                        ServiceUtils.sendtoBLEService(IPCService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+                        ServiceUtils.sendtoPluginService(IPCService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager
+                                .IPC_FUNCTION_CODE_INIT, null, null);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
             }).start();
         }
-
     }
 
-    public static void sendtoBLEService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-        if (cmd != null) {
-            logi("ipcService: sendtoBLEService(), " + mbsService + "," + functionCode + "," + cmd.getValue() + "," +
-                    cmd.getCMD() + "");
-        } else {
-            logi("ipcService: sendtoBLEService(), " + mbsService + "," + functionCode);
-        }
-
-        IPCMessageManager.sendIPCMessage(BLEService.class, mbsService, functionCode, cmd, args);
-    }
-
-    public static void sendtoPluginService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
         if (DEBUG) {
-            if (cmd != null) {
-                logi("ipcService: sendtoBLEService(), " + mbsService + "," + functionCode + "," + cmd.getValue() + "," +
-                        cmd.getCMD() + "");
-            } else {
-                logi("ipcService: sendtoBLEService(), " + mbsService + "," + functionCode);
-            }
+            logi("onStartCommand()");
         }
 
-        IPCMessageManager.sendIPCMessage(PluginService.class, mbsService, functionCode, cmd, args);
+        return START_STICKY;
     }
 
-    private static void handleIncomingMessage(Message msg) {
+	/*
+     * Business method
+	 */
+
+    public static void bleDisconnect() {
+        ServiceUtils.sendtoBLEService(IPCService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_DISCONNECT, null, null);
+    }
+
+    public static void bleConnect() {
+        ServiceUtils.sendtoBLEService(IPCService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager
+                .IPC_FUNCTION_CONNECT, null, null);
+    }
+
+    public static void bleReconnect() {
+        ServiceUtils.sendtoBLEService(IPCService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_RECONNECT, null, null);
+    }
+
+    public static void writeCharacteristic(UUID service, UUID characteristic, int value, int type) {
+        NameValuePair[] args = new NameValuePair[4];
+        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_SERVICE_GUID, service.toString());
+        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_GUID, characteristic.toString());
+        args[2] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_VALUE, value);
+        args[3] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE, type);
+        ServiceUtils.sendtoBLEService(IPCService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_WRITE_CHARACTERISTIC,
+                null, args);
+    }
+
+    /*
+     * setup IPCMessageManager
+     */
+    @Override
+    public IBinder onBind(Intent intent) {
+        return IPCMessageManager.getInstance().getClientMessenger().getBinder();
+    }
+
+    private void handleIncomingMessage(Message msg) {
         if (DEBUG) {
             logi("handleIncomingMessage() :: Start BLEService");
         }
@@ -157,10 +137,6 @@ public class IPCService extends Service {
                 ConnectedDevice cd = BluetoothUtils.getPairedMicrobit(MBApp.getApp());
                 cd.mStatus = (msg.arg1 == IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED);
                 BluetoothUtils.setPairedMicroBit(appContext, cd);
-            }
-
-            if (msg == null) {
-                return;
             }
 
             int errorCode = (int) msg.getData().getSerializable(IPCMessageManager.BUNDLE_ERROR_CODE);

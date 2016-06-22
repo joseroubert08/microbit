@@ -22,6 +22,7 @@ import com.samsung.microbit.model.ConnectedDevice;
 import com.samsung.microbit.model.Constants;
 import com.samsung.microbit.model.NameValuePair;
 import com.samsung.microbit.utils.ErrorUtils;
+import com.samsung.microbit.utils.ServiceUtils;
 
 import java.util.UUID;
 
@@ -35,14 +36,31 @@ public class BLEService extends BLEBaseService {
     private NotificationManager notifyMgr = null;
     private int notificationId = 1010;
 
+    public static void logi(String message) {
+        if (DEBUG) {
+            Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+        }
+    }
+
     public BLEService() {
         super();
         startIPCListener();
     }
 
-    public static void logi(String message) {
-        if (DEBUG) {
-            Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+    private void startIPCListener() {
+        logi("startIPCListener()");
+        if (IPCMessageManager.getInstance() == null) {
+
+            logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
+            IPCMessageManager inst = IPCMessageManager.getInstance("BLEServiceReceiver", new Handler() {
+
+                @Override
+                public void handleMessage(Message msg) {
+                    logi("startIPCListener().handleMessage");
+                    handleIncomingMessage(msg);
+                }
+
+            });
         }
     }
 
@@ -63,8 +81,8 @@ public class BLEService extends BLEBaseService {
                     logi("First run!");
                     try {
                         Thread.sleep(IPCMessageManager.STARTUP_DELAY + 500L);
-                        sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
-                        sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+                        ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+                        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
                         setNotification(false, 0);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -151,7 +169,6 @@ public class BLEService extends BLEBaseService {
             logi("register_eventsFromMicrobit() :: CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR Not found");
             return false;
         }
-
 
         BluetoothGattCharacteristic characteristic = readCharacteristic(microbit_requirements);
         while (characteristic != null && characteristic.getValue() != null && characteristic.getValue().length != 0) {
@@ -323,7 +340,8 @@ public class BLEService extends BLEBaseService {
         NameValuePair[] args = new NameValuePair[2];
         args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
         args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE, firmware);
-        sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
+        ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager
+                .IPC_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
     }
 
     private static void sendMicroBitNeedsCallNotification() {
@@ -331,7 +349,7 @@ public class BLEService extends BLEBaseService {
         NameValuePair[] args = new NameValuePair[2];
         args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
         args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED);
-        sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
+        ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
     }
 
     private static void sendMicroBitNeedsSmsNotification() {
@@ -339,7 +357,7 @@ public class BLEService extends BLEBaseService {
         NameValuePair[] args = new NameValuePair[2];
         args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
         args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED);
-        sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
+        ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
     }
 
     @Override
@@ -377,14 +395,14 @@ public class BLEService extends BLEBaseService {
             notificationString = getString(R.string.tray_notification_failure);
             onGoingNotification = false;
 
-            sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED, null, args);
-            sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED, null, args);
+            ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED, null, args);
+            ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED, null, args);
         } else {
             notificationString = getString(R.string.tray_notification_sucsess);
             onGoingNotification = true;
 
-            sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null, args);
-            sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null, args);
+            ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null, args);
+            ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED, null, args);
         }
     }
 
@@ -411,48 +429,49 @@ public class BLEService extends BLEBaseService {
                 return;
         }
         if (cmd != null) {
-            sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, msgService, cmd, null);
+            ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MICROBIT_MESSAGE, msgService, cmd,
+                    null);
         }
     }
 
     void registerForSignalStrength(boolean register) {
         logi("registerForSignalStrength() -- " + register);
         CmdArg cmd = register ? new CmdArg(Constants.REG_SIGNALSTRENGTH, "On") : new CmdArg(Constants.REG_SIGNALSTRENGTH, "Off");
-        sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_SIGNAL_STRENGTH_ID, cmd, null);
+        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_SIGNAL_STRENGTH_ID, cmd, null);
     }
 
     void registerForDeviceInfo(boolean register) {
         logi("registerForDeviceInfo() -- " + register);
         //Device Orientation
         CmdArg cmd = register ? new CmdArg(Constants.REG_DEVICEORIENTATION, "On") : new CmdArg(Constants.REG_DEVICEORIENTATION, "Off");
-        sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_DEVICE_INFO_ID, cmd, null);
+        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_DEVICE_INFO_ID, cmd, null);
 
         //Device Gesture
         CmdArg cmd1 = register ? new CmdArg(Constants.REG_DEVICEGESTURE, "On") : new CmdArg(Constants.REG_DEVICEGESTURE, "Off");
-        sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_DEVICE_INFO_ID, cmd1, null);
+        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_DEVICE_INFO_ID, cmd1, null);
 
 
         //Device Battery Strength
         CmdArg cmd2 = register ? new CmdArg(Constants.REG_BATTERYSTRENGTH, "On") : new CmdArg(Constants.REG_BATTERYSTRENGTH, "Off");
-        sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_DEVICE_INFO_ID, cmd2, null);
+        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_DEVICE_INFO_ID, cmd2, null);
 
         //Device Temperature
         CmdArg cmd3 = register ? new CmdArg(Constants.REG_TEMPERATURE, "On") : new CmdArg(Constants.REG_TEMPERATURE, "Off");
-        sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_DEVICE_INFO_ID, cmd3, null);
+        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_DEVICE_INFO_ID, cmd3, null);
 
 
         //Register Telephony
         CmdArg cmd4 = register ? new CmdArg(Constants.REG_TELEPHONY, "On") : new CmdArg(Constants.REG_TELEPHONY, "Off");
-        sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_TELEPHONY_ID, cmd4, null);
+        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_TELEPHONY_ID, cmd4, null);
 
         //Register Messaging
         CmdArg cmd5 = register ? new CmdArg(Constants.REG_MESSAGING, "On") : new CmdArg(Constants.REG_MESSAGING, "Off");
-        sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_TELEPHONY_ID, cmd5, null);
+        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_TELEPHONY_ID, cmd5, null);
 
         //Register Display
         CmdArg cmd6 = register ? new CmdArg(Constants.REG_DISPLAY, "On") : new CmdArg(Constants.REG_DISPLAY, "Off");
-        sendtoPluginService(IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_DEVICE_INFO_ID, cmd6, null);
-
+        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MICROBIT_MESSAGE, Constants.SAMSUNG_DEVICE_INFO_ID, cmd6,
+                null);
     }
 
     /*
@@ -461,28 +480,6 @@ public class BLEService extends BLEBaseService {
     @Override
     public IBinder onBind(Intent intent) {
         return IPCMessageManager.getInstance().getClientMessenger().getBinder();
-    }
-
-    public static void sendtoPluginService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-        if (cmd != null) {
-            logi("bleservice: sendtoPluginService(), " + mbsService + "," + functionCode + "," + cmd.getValue() + "," +
-                    cmd.getCMD() + "");
-        } else {
-            logi("bleservice: sendtoPluginService(), " + mbsService + "," + functionCode);
-        }
-
-        IPCMessageManager.sendIPCMessage(PluginService.class, mbsService, functionCode, cmd, args);
-    }
-
-    public static void sendtoIPCService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-        if (cmd != null) {
-            logi("bleservice: sendtoIPCService(), " + mbsService + "," + functionCode + "," + cmd.getValue() + "," +
-                    cmd.getCMD() + "");
-        } else {
-            logi("bleservice: sendtoIPCService(), " + mbsService + "," + functionCode);
-        }
-
-        IPCMessageManager.sendIPCMessage(IPCService.class, mbsService, functionCode, cmd, args);
     }
 
     public void writeCharacteristicByte(String serviceGuid, String characteristic, byte[] value) {
@@ -527,25 +524,6 @@ public class BLEService extends BLEBaseService {
         c.setValue(value, type, 0);
         int ret = writeCharacteristic(c);
         logi("writeCharacteristic() :: returns - " + ret);
-    }
-
-
-    public void startIPCListener() {
-
-        logi("startIPCListener()");
-        if (IPCMessageManager.getInstance() == null) {
-
-            logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
-            IPCMessageManager inst = IPCMessageManager.getInstance("BLEServiceReceiver", new Handler() {
-
-                @Override
-                public void handleMessage(Message msg) {
-                    logi("startIPCListener().handleMessage");
-                    handleIncomingMessage(msg);
-                }
-
-            });
-        }
     }
 
     private void handleIncomingMessage(Message msg) {

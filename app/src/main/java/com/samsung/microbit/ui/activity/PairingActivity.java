@@ -749,8 +749,10 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
             deviceConnectionStatusBtn.setText("-");
             deviceConnectionStatusBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
         } else {
-            deviceConnectionStatusBtn.setText(connectedDevice.mName);
-            updateConnectionStatus();
+            if(deviceConnectionStatusBtn != null) {
+                deviceConnectionStatusBtn.setText(connectedDevice.mName);
+                updateConnectionStatus();
+            }
         }
     }
 

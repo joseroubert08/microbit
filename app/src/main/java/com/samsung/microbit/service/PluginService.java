@@ -18,6 +18,7 @@ import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.plugin.InformationPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
 import com.samsung.microbit.plugin.TelephonyPlugin;
+import com.samsung.microbit.utils.ServiceUtils;
 
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
@@ -34,16 +35,25 @@ public class PluginService extends Service {
     public static final int CAMERA = 6;
     public static final int FILE = 7;
 
+    public static void logi(String message) {
+        Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+    }
+
     public PluginService() {
         super();
         startIPCListener();
     }
 
     public void startIPCListener() {
+        if (DEBUG) {
+            logi("startIPCListener()");
+        }
 
-        if (DEBUG) logi("startIPCListener()");
         if (IPCMessageManager.getInstance() == null) {
-            if (DEBUG) logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
+            if (DEBUG) {
+                logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
+            }
+
             IPCMessageManager inst = IPCMessageManager.getInstance("PluginServiceReceiver", new android.os.Handler() {
                 @Override
                 public void handleMessage(Message msg) {
@@ -63,8 +73,10 @@ public class PluginService extends Service {
 
                     try {
                         Thread.sleep(IPCMessageManager.STARTUP_DELAY);
-                        sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
-                        sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+                        ServiceUtils.sendtoBLEService(PluginService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager
+                                .IPC_FUNCTION_CODE_INIT, null, null);
+                        ServiceUtils.sendtoIPCService(PluginService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager
+                                .IPC_FUNCTION_CODE_INIT, null, null);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -74,15 +86,65 @@ public class PluginService extends Service {
         }
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (DEBUG) {
+            logi("onStartCommand() :: start");
+        }
 
-    public static void logi(String message) {
-        Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+        return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        Toast.makeText(this, "Plugin Service Destroyed", Toast.LENGTH_SHORT).show();
+    }
+
+	/*
+     * IPC Messenger handling
+	 */
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return IPCMessageManager.getInstance().getClientMessenger().getBinder();
+    }
+
+    public static void sendMessageToBle(int value) {
+        //TODO: instance is null because anysystem broadcast receiver run inside different process than the process who built the PluginService instance.
+        Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + "sendMessageToBle()");
+        NameValuePair[] args = new NameValuePair[4];
+        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_SERVICE_GUID, Constants.EVENT_SERVICE.toString());
+        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_GUID, Constants.ES_CLIENT_EVENT.toString());
+        args[2] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_VALUE, value);
+        args[3] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE, Constants.FORMAT_UINT32);
+        ServiceUtils.sendtoBLEService(PluginService.class, IPCMessageManager.MICROBIT_MESSAGE,
+                IPCMessageManager.IPC_FUNCTION_WRITE_CHARACTERISTIC, null, args);
+    }
+
+    private void handleIncomingMessage(Message msg) {
+        if (DEBUG) {
+            logi("handleIncomingMessage() :: Start PluginService");
+        }
+
+        if (msg.what == IPCMessageManager.ANDROID_MESSAGE) {
+            if (DEBUG) {
+                logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
+            }
+
+            handleAndroidMessage(msg);
+        } else if (msg.what == IPCMessageManager.MICROBIT_MESSAGE) {
+            if (DEBUG) {
+                logi("handleIncomingMessage() :: IPCMessageManager.MICROBIT_MESSAGE msg.arg1 = " + msg.arg1);
+            }
+
+            handleMicroBitMessage(msg);
+        }
     }
 
     /**
      * Handler of incoming messages from BLEListener.
      */
-    public void handleMessage(Message msg) {
+    private void handleMicroBitMessage(Message msg) {
         if (DEBUG) {
             logi("handleMessage() ");
         }
@@ -158,83 +220,9 @@ public class PluginService extends Service {
         }
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if (DEBUG) {
-            logi("onStartCommand() :: start");
-        }
-
-        return START_STICKY;
-    }
-
-    @Override
-    public void onDestroy() {
-        Toast.makeText(this, "Plugin Service Destroyed", Toast.LENGTH_SHORT).show();
-    }
-
-	/*
-     * IPC Messenger handling
-	 */
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return IPCMessageManager.getInstance().getClientMessenger().getBinder();
-    }
-
-    public static void sendMessageToBle(int value) {
-        //TODO: instance is null because anysystem broadcast receiver run inside different process than the process who built the PluginService instance.
-        Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + "sendMessageToBle()");
-        NameValuePair[] args = new NameValuePair[4];
-        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_SERVICE_GUID, Constants.EVENT_SERVICE.toString());
-        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_GUID, Constants.ES_CLIENT_EVENT.toString());
-        args[2] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_VALUE, value);
-        args[3] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE, Constants.FORMAT_UINT32);
-        PluginService.sendtoBLEService(IPCMessageManager.MICROBIT_MESSAGE,
-                IPCMessageManager.IPC_FUNCTION_WRITE_CHARACTERISTIC, null, args);
-    }
-
-    public static void sendtoBLEService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-        if (DEBUG) {
-            if(cmd != null) {
-                logi("pluginService: sendtoBLEService(), " + mbsService + "," + functionCode + "," + cmd.getValue() + "," +
-                        cmd.getCMD() + "");
-            } else {
-                logi("pluginService: sendtoBLEService(), " + mbsService + "," + functionCode);
-            }
-        }
-
-        IPCMessageManager.getInstance().sendIPCMessage(BLEService.class, mbsService, functionCode, cmd, args);
-    }
-
-    public static void sendtoIPCService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-        if (DEBUG) {
-            if(cmd != null) {
-                logi("pluginService: sendtoIPCService(), " + mbsService + "," + functionCode + "," + cmd.getValue() + "," +
-                        cmd.getCMD() + "");
-            } else {
-                logi("pluginService: sendtoIPCService(), " + mbsService + "," + functionCode);
-            }
-        }
-
-        IPCMessageManager.sendIPCMessage(IPCService.class, mbsService, functionCode, cmd, args);
-    }
-
-    private void handleIncomingMessage(Message msg) {
-        if (DEBUG) {
-            logi("handleIncomingMessage() :: Start PluginService");
-        }
-
-        if (msg.what == IPCMessageManager.ANDROID_MESSAGE) {
-            if (DEBUG) {
-                logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
-            }
-
-        } else if (msg.what == IPCMessageManager.MICROBIT_MESSAGE) {
-            if (DEBUG) {
-                logi("handleIncomingMessage() :: IPCMessageManager.MICROBIT_MESSAGE msg.arg1 = " + msg.arg1);
-            }
-
-            handleMessage(msg);
+    private void handleAndroidMessage(Message msg) {
+        if(msg.arg1 == IPCMessageManager.IPC_FUNCTION_STOP_PLAYING) {
+            AlertPlugin.pluginEntry(PluginService.this, new CmdArg(Constants.SAMSUNG_ALERT_STOP_PLAYING, null));
         }
     }
 }
