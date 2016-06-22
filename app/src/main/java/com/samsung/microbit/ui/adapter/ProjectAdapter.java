@@ -31,11 +31,11 @@ import java.util.List;
 public class ProjectAdapter extends BaseAdapter {
 
     private static final String TAG = ProjectAdapter.class.getSimpleName();
-    
-    private List<Project> projects;
-    private ProjectActivity projectActivity;
+
+    private List<Project> mProjects;
+    private ProjectActivity mProjectActivity;
     int currentEditableRow = -1;
-    
+
     private boolean isDebug = BuildConfig.DEBUG;
 
     protected void logi(String message) {
@@ -48,9 +48,8 @@ public class ProjectAdapter extends BaseAdapter {
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
             logi("onEditorAction() :: currentEditableRow=" + currentEditableRow);
 
-            boolean handled = true;
             int pos = (int) v.getTag(R.id.positionId);
-            Project project = projects.get(pos);
+            Project project = mProjects.get(pos);
             project.inEditMode = false;
             currentEditableRow = -1;
 
@@ -60,7 +59,7 @@ public class ProjectAdapter extends BaseAdapter {
                 dismissKeyBoard(v, true, false);
             }
 
-            return handled;
+            return true;
         }
     };
 
@@ -71,7 +70,7 @@ public class ProjectAdapter extends BaseAdapter {
 
             boolean expandProjectItem;
 
-            expandProjectItem = projectActivity.getResources().getBoolean(R.bool.expandProjectItem);
+            expandProjectItem = mProjectActivity.getResources().getBoolean(R.bool.expandProjectItem);
 
             if (expandProjectItem) {
                 changeActionBar(v);
@@ -85,35 +84,16 @@ public class ProjectAdapter extends BaseAdapter {
                     renameProject(v);
                 }
             }
-            /*
-            logi("OnClickListener() :: " + v.getClass().getName());
-			if (v.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-				changeActionBar(v);
-			} else if (v.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-				if (currentEditableRow != -1) {
-					int i = (Integer) v.getTag(R.id.positionId);
-					if (i != currentEditableRow) {
-						renameProject(v);
-					}
-				} else {
-					renameProject(v);
-				}
-			}*/
         }
     };
 
     private View.OnLongClickListener appNameLongClickListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
+
             logi("OnLongClickListener() :: " + v.getClass().getName());
-
-            boolean rc = false;
-            //if (v.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             renameProject(v);
-            rc = true;
-            //}
-
-            return rc;
+            return true;
         }
     };
 
@@ -141,17 +121,16 @@ public class ProjectAdapter extends BaseAdapter {
 
         if (hide) {
             HideEditTextView(v);
-            //v.setVisibility(View.INVISIBLE);
         }
 
         if (done) {
             EditText ed = (EditText) v;
             pos = (int) ed.getTag(R.id.positionId);
             String newName = ed.getText().toString();
-            Project p = projects.get(pos);
-            if (newName != null && newName.length() > 0) {
+            Project p = mProjects.get(pos);
+            if (newName.length() > 0) {
                 if (p.name.compareToIgnoreCase(newName) != 0) {
-                    projectActivity.renameFile(p.filePath, newName);
+                    mProjectActivity.renameFile(p.filePath, newName);
                 }
             }
         }
@@ -167,7 +146,7 @@ public class ProjectAdapter extends BaseAdapter {
         //v.setVisibility(View.VISIBLE);
         ShowEditTextView(v);
 
-        final InputMethodManager imm = (InputMethodManager) projectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        final InputMethodManager imm = (InputMethodManager) mProjectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
         v.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -183,10 +162,10 @@ public class ProjectAdapter extends BaseAdapter {
         int pos = (int) v.getTag(R.id.positionId);
         logi("changeActionBar() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
 
-        Project project = projects.get(pos);
+        Project project = mProjects.get(pos);
         project.actionBarExpanded = !project.actionBarExpanded;
         if (currentEditableRow != -1) {
-            project = projects.get(currentEditableRow);
+            project = mProjects.get(currentEditableRow);
             project.inEditMode = false;
             currentEditableRow = -1;
             dismissKeyBoard(v, false, false);
@@ -203,12 +182,12 @@ public class ProjectAdapter extends BaseAdapter {
 
         Project project;
         if (currentEditableRow != -1) {
-            project = projects.get(currentEditableRow);
+            project = mProjects.get(currentEditableRow);
             project.inEditMode = false;
             currentEditableRow = -1;
         }
 
-        project = projects.get(pos);
+        project = mProjects.get(pos);
         project.inEditMode = !project.inEditMode;
         currentEditableRow = pos;
         View ev = (View) v.getTag(R.id.textEdit);
@@ -221,7 +200,7 @@ public class ProjectAdapter extends BaseAdapter {
         @Override
         public void onClick(View v) {
             logi("sendBtnClickListener() :: ");
-            projectActivity.onClick(v);
+            mProjectActivity.sendProject((Project) ProjectAdapter.this.getItem((Integer) v.getTag()));
         }
     };
 
@@ -247,10 +226,11 @@ public class ProjectAdapter extends BaseAdapter {
                         @Override
                         public void onClick(View v) {
                             PopUp.hide();
-                            Project proj = projects.get(pos);
+                            Project proj = mProjects.get(pos);
                             if (FileUtils.deleteFile(proj.filePath)) {
-                                projects.remove(pos);
+                                mProjects.remove(pos);
                                 notifyDataSetChanged();
+                                mProjectActivity.updateProjectsListSortOrder(true);
                             }
                         }
                     }, null);
@@ -258,18 +238,20 @@ public class ProjectAdapter extends BaseAdapter {
     };
 
     public ProjectAdapter(ProjectActivity projectActivity, List<Project> list) {
-        this.projectActivity = projectActivity;
-        projects = list;
+        this.mProjectActivity = projectActivity;
+        mProjects = list;
     }
 
     @Override
     public int getCount() {
-        return projects.size();
+
+        return mProjects.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return projects.get(position);
+
+        return mProjects.get(position);
     }
 
     @Override
@@ -279,7 +261,8 @@ public class ProjectAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Project project = projects.get(position);
+
+        Project project = mProjects.get(position);
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(MBApp.getApp());
             convertView = inflater.inflate(R.layout.project_items, null);

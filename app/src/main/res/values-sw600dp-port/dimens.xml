@@ -104,11 +104,7 @@
     <dimen name="custom_button_margin">32dp</dimen>
     <dimen name="delete_button_width_padding">26dp</dimen>
     <dimen name="delete_button_height_padding">21dp</dimen>
-    <dimen name="project_item_buttons_size">72dp</dimen>
     <dimen name="project_items_image_padding">0dp</dimen>
-
-    <!-- Project items -->
-    <dimen name="project_items_text_size">24sp</dimen>
 
 
     <!-- Divider -->

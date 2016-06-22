@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -53,23 +54,21 @@ import java.util.List;
 
 public class ProjectActivity extends Activity implements View.OnClickListener {
 
-    List<Project> projectList = new ArrayList<>();
-    ProjectAdapter projectAdapter;
-    private ListView projectListView;
-    private HashMap<String, String> prettyFileNameMap = new HashMap<>();
+    private List<Project> mProjectList = new ArrayList<>();
+    private ListView mProjectListView;
+    private ListView mProjectListViewRight;
+    private HashMap<String, String> mPrettyFileNameMap = new HashMap<>();
 
-    Project programToSend;
+    private Project mProgramToSend;
 
-    private String m_HexFileSizeStats = "0";
-    private String m_BinSizeStats = "0";
-    private String m_MicroBitFirmware = "0.0";
-
+    private String m_HexFileSizeStats = "0" ;
+    private String m_BinSizeStats = "0" ;
+    private String m_MicroBitFirmware = "0.0" ;
 
     private DFUResultReceiver dfuResultReceiver;
-    private int projectListSortOrder = 0;
 
     protected boolean debug = BuildConfig.DEBUG;
-    protected String TAG = "ProjectActivity";
+    protected String TAG = ProjectActivity.class.getSimpleName();
 
     private static ACTIVITY_STATE mActivityState = ACTIVITY_STATE.STATE_IDLE;
 
@@ -218,6 +217,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                     checkMorePermissionsNeeded, checkMorePermissionsNeeded);
         }
     };
+
     private void checkTelephonyPermissions() {
         if (!mRequestPermission.isEmpty()) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS)
@@ -238,6 +238,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             }
         }
     }
+
     private void setActivityState(ACTIVITY_STATE newState) {
         logi("Flash state old - " + mActivityState + " new - " + newState);
         mActivityState = newState;
@@ -245,6 +246,42 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
     }
 
     private AppInfoPresenter appInfoPresenter;
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        setContentView(R.layout.activity_projects);
+        initViews();
+        setupFontStyle();
+        setConnectedDeviceText();
+        setupListAdapter();
+    }
+
+    /**
+     * Setup font style by setting an appropriate typeface to needed views.
+     */
+    private void setupFontStyle() {
+        // Title font
+        TextView flashProjectsTitle = (TextView) findViewById(R.id.flash_projects_title_txt);
+        flashProjectsTitle.setTypeface(MBApp.getApp().getTypeface());
+
+        // Create projects
+        TextView createProjectText = (TextView) findViewById(R.id.custom_button_text);
+        createProjectText.setTypeface(MBApp.getApp().getRobotoTypeface());
+    }
+
+    private void initViews() {
+        mProjectListView = (ListView) findViewById(R.id.projectListView);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            mProjectListViewRight = (ListView) findViewById(R.id.projectListViewRight);
+        }
+    }
+
+    private void releaseViews() {
+        mProjectListView = null;
+        mProjectListViewRight = null;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -261,17 +298,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
         //Remove title bar
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         setContentView(R.layout.activity_projects);
-
-        // Title font
-        TextView flashProjectsTitle = (TextView) findViewById(R.id.flash_projects_title_txt);
-        flashProjectsTitle.setTypeface(MBApp.getApp().getTypeface());
-
-        // Create projects
-        TextView createProjectText = (TextView) findViewById(R.id.custom_button_text);
-        createProjectText.setTypeface(MBApp.getApp().getRobotoTypeface());
-
-        projectListView = (ListView) findViewById(R.id.projectListView);
+        initViews();
+        setupFontStyle();
         checkMinimumPermissionsForThisScreen();
 
 		/* *************************************************
@@ -283,16 +313,16 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                     broadcastIntentFilter);
         }
         setConnectedDeviceText();
-        String fullpathoffile = null;
+        String fullPathOfFile = null;
         String fileName = null;
         if (getIntent() != null && getIntent().getData() != null && getIntent().getData().getEncodedPath() != null) {
-            fullpathoffile = getIntent().getData().getEncodedPath();
-            String path[] = fullpathoffile.split("/");
+            fullPathOfFile = getIntent().getData().getEncodedPath();
+            String path[] = fullPathOfFile.split("/");
             fileName = path[path.length - 1];
             setActivityState(ACTIVITY_STATE.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST);
         }
-        if (fullpathoffile != null) {
-            programToSend = new Project(fileName, fullpathoffile, 0, null, false);
+        if (fullPathOfFile != null) {
+            mProgramToSend = new Project(fileName, fullPathOfFile, 0, null, false);
             if (!BluetoothSwitch.getInstance().isBluetoothON()) {
                 startBluetooth();
             } else {
@@ -305,6 +335,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
     protected void onDestroy() {
         appInfoPresenter.destroy();
         super.onDestroy();
+        releaseViews();
     }
 
     private void requestPermission(String[] permissions, final int requestCode) {
@@ -324,8 +355,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
                                            @NonNull int[] grantResults) {
-        switch (requestCode)
-        {
+        switch (requestCode) {
             case Constants.APP_STORAGE_PERMISSIONS_REQUESTED: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
@@ -442,7 +472,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             connectedIndicatorIcon.setImageResource(R.drawable.device_status_connected);
             connectedIndicatorText.setText(getString(R.string.connected_to));
             if (device.mName != null) {
-                    deviceName.setText(device.mName);
+                deviceName.setText(device.mName);
             }
         }
     }
@@ -483,22 +513,51 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    void updateProjectsListSortOrder(boolean reReadFS) {
-
-        TextView emptyText = (TextView) findViewById(android.R.id.empty);
-        projectListView.setEmptyView(emptyText);
+    public void updateProjectsListSortOrder(boolean reReadFS) {
         if (reReadFS) {
-            projectList.clear();
-            UnpackUtils.findProgramsAndPopulate(prettyFileNameMap, projectList);
+            mProjectList.clear();
+            UnpackUtils.findProgramsAndPopulate(mPrettyFileNameMap, mProjectList);
         }
 
-        projectListSortOrder = PreferenceUtils.getListOrderPrefs();
+        int projectListSortOrder = PreferenceUtils.getListOrderPrefs();
         int sortBy = (projectListSortOrder >> 1);
         int sortOrder = projectListSortOrder & 0x01;
         com.samsung.microbit.utils.Utils.sortProjectList(projectList, sortBy, sortOrder);
 
-        projectAdapter = new ProjectAdapter(this, projectList);
-        projectListView.setAdapter(projectAdapter);
+        setupListAdapter();
+    }
+
+    /**
+     * Sets a list adapter for a list view. If orientation is a landscape then
+     * list of items are split up on two lists that will be displayed in two different columns.
+     */
+    private void setupListAdapter() {
+        ProjectAdapter projectAdapter;
+        TextView emptyText = (TextView) findViewById(R.id.project_list_empty);
+        emptyText.setVisibility(View.GONE);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            List<Project> leftList = new ArrayList<>();
+            List<Project> rightList = new ArrayList<>();
+            for (int i = 0; i < mProjectList.size(); i++) {
+                if (i % 2 == 0) {
+                    leftList.add(mProjectList.get(i));
+                } else {
+                    rightList.add(mProjectList.get(i));
+                }
+            }
+            projectAdapter = new ProjectAdapter(this, leftList);
+            ProjectAdapter projectAdapterRight = new ProjectAdapter(this, rightList);
+            mProjectListViewRight.setAdapter(projectAdapterRight);
+            if(projectAdapter.isEmpty() && projectAdapterRight.isEmpty()) {
+                emptyText.setVisibility(View.VISIBLE);
+            }
+        } else {
+            projectAdapter = new ProjectAdapter(this, mProjectList);
+            if(projectAdapter.isEmpty()) {
+                emptyText.setVisibility(View.VISIBLE);
+            }
+        }
+        mProjectListView.setAdapter(projectAdapter);
     }
 
     @Override
@@ -562,11 +621,22 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         }
     }
 
+    /**
+     * Sends a project to flash on a mi0crobit board. If bluetooth is off then turn it on.
+     * @param project Project to flash.
+     */
+    public void sendProject(final Project project){
+        mProgramToSend = project;
+        setActivityState(ACTIVITY_STATE.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST);
+        if (!BluetoothSwitch.getInstance().isBluetoothON()) {
+            startBluetooth();
+        } else {
+            adviceOnMicrobitState();
+        }
+    }
+
     @Override
     public void onClick(final View v) {
-
-        int pos;
-
         switch (v.getId()) {
             case R.id.createProject: {
                 MBApp.getApp().getEchoClientManager().sendNavigationStats("home", "my-scripts");
@@ -580,17 +650,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
             case R.id.backBtn:
                 finish();
-                break;
-
-            case R.id.sendBtn:
-                pos = (Integer) v.getTag();
-                programToSend = (Project) projectAdapter.getItem(pos);
-                setActivityState(ACTIVITY_STATE.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST);
-                if (!BluetoothSwitch.getInstance().isBluetoothON()) {
-                    startBluetooth();
-                } else {
-                    adviceOnMicrobitState();
-                }
                 break;
 
             case R.id.connectedIndicatorIcon:
@@ -631,7 +690,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                     null);//pass null to use default listeneronClick
         } else {
             //TODO Check if the micro:bit is reachable first
-            if (programToSend == null || programToSend.filePath == null) {
+            if (mProgramToSend == null || mProgramToSend.filePath == null) {
                 PopUp.show(MBApp.getApp(),
                         getString(R.string.internal_error_msg),
                         "",
@@ -702,7 +761,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         //Reset all stats value
         m_BinSizeStats = "0";
         m_MicroBitFirmware = "0.0";
-        m_HexFileSizeStats = FileUtils.getFileSize(programToSend.filePath);
+        m_HexFileSizeStats = FileUtils.getFileSize(mProgramToSend.filePath);
 
         ConnectedDevice currentMicrobit = BluetoothUtils.getPairedMicrobit(this);
         final Intent service = new Intent(ProjectActivity.this, DfuService.class);
@@ -710,7 +769,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         service.putExtra(DfuService.EXTRA_DEVICE_NAME, currentMicrobit.mPattern);
         service.putExtra(DfuService.EXTRA_DEVICE_PAIR_CODE, currentMicrobit.mPairingCode);
         service.putExtra(DfuService.EXTRA_FILE_MIME_TYPE, DfuService.MIME_TYPE_OCTET_STREAM);
-        service.putExtra(DfuService.EXTRA_FILE_PATH, programToSend.filePath); // a path or URI must be provided.
+        service.putExtra(DfuService.EXTRA_FILE_PATH, mProgramToSend.filePath); // a path or URI must be provided.
         service.putExtra(DfuService.EXTRA_KEEP_BOND, false);
         service.putExtra(DfuService.INTENT_RESULT_RECEIVER, resultReceiver);
         service.putExtra(DfuService.INTENT_REQUESTED_PHASE, 2);
@@ -796,7 +855,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                 LocalBroadcastManager.getInstance(application).unregisterReceiver(dfuResultReceiver);
                                 dfuResultReceiver = null;
                                 //Update Stats
-                                application.getEchoClientManager().sendFlashStats(true, programToSend.name, m_HexFileSizeStats,
+                                application.getEchoClientManager().sendFlashStats(true, mProgramToSend.name,
+                                        m_HexFileSizeStats,
                                         m_BinSizeStats, m_MicroBitFirmware);
                                 PopUp.show(application,
                                         getString(R.string.flashing_success_message), //message
@@ -814,8 +874,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
                             break;
                         case DfuService.PROGRESS_DISCONNECTING:
-                            //String error_message = "Error Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
-                            //        + "] \n Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]";
                             break;
 
                         case DfuService.PROGRESS_CONNECTING:
@@ -879,7 +937,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             MBApp application = MBApp.getApp();
 
                             //Update Stats
-                            application.getEchoClientManager().sendFlashStats(false, programToSend.name, m_HexFileSizeStats,
+                            application.getEchoClientManager().sendFlashStats(false, mProgramToSend.name,
+                                    m_HexFileSizeStats,
                                     m_BinSizeStats, m_MicroBitFirmware);
                             PopUp.show(application,
                                     getString(R.string.flashing_verifcation_failed), //message
@@ -899,7 +958,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             application = MBApp.getApp();
 
                             //Update Stats
-                            application.getEchoClientManager().sendFlashStats(false, programToSend.name, m_HexFileSizeStats,
+                            application.getEchoClientManager().sendFlashStats(false, mProgramToSend.name,
+                                    m_HexFileSizeStats,
                                     m_BinSizeStats, m_MicroBitFirmware);
                             PopUp.show(application,
                                     getString(R.string.flashing_aborted), //message
@@ -923,7 +983,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
                         PopUp.show(application,
                                 application.getString(R.string.flashing_progress_message),
-                                String.format(application.getString(R.string.flashing_project), programToSend.name),
+                                String.format(application.getString(R.string.flashing_project), mProgramToSend.name),
                                 R.drawable.flash_modal_emoji, 0,
                                 PopUp.GIFF_ANIMATION_FLASH,
                                 PopUp.TYPE_PROGRESS_NOT_CANCELABLE, null, null);
@@ -947,7 +1007,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 LocalBroadcastManager.getInstance(application).unregisterReceiver(dfuResultReceiver);
                 dfuResultReceiver = null;
                 //Update Stats
-                application.getEchoClientManager().sendFlashStats(false, programToSend.name, m_HexFileSizeStats,
+                application.getEchoClientManager().sendFlashStats(false, mProgramToSend.name, m_HexFileSizeStats,
                         m_BinSizeStats, m_MicroBitFirmware);
                 PopUp.show(application,
                         error_message, //message
