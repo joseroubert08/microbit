@@ -28,7 +28,7 @@ public class PluginService extends Service {
 	private boolean debug = BuildConfig.DEBUG;
 
 	void logi(String message) {
-		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + " PluginService: # "  + message);
+		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 	}
 
 	public static Messenger mClientMessenger = null;
@@ -200,21 +200,15 @@ public class PluginService extends Service {
 	}
 
 	public void sendtoBLEService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-		if (debug) {
-			//logi("sendtoBLEService()");
-            logi("sendtoBLEService()" + ", " + mbsService + ", " + functionCode + (cmd != null ? ", " + cmd.getValue() +
-                    ", " + cmd.getCMD() : ""));
-		}
+
+		if (debug) logi("sendtoBLEService()");
 		Class destService = BLEService.class;
 		sendIPCMessge(destService, mbsService, functionCode, cmd, args);
 	}
 
 	public void sendtoIPCService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-		if (debug) {
-            //logi("sendtoIPCService()");
-            logi("sendtoIPCService()" + ", " + mbsService + ", " + functionCode + (cmd != null ? ", " + cmd.getValue() +
-                    ", " + cmd.getCMD() : ""));
-        }
+
+		if (debug) logi("sendtoIPCService()");
 		Class destService = IPCService.class;
 		sendIPCMessge(destService, mbsService, functionCode, cmd, args);
 	}

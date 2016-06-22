@@ -33,7 +33,7 @@ public class IPCService extends Service {
 	private boolean debug = BuildConfig.DEBUG;
 
 	void logi(String message) {
-		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + " IPCService: # " + message);
+		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 	}
 
 	public IPCService() {
@@ -120,22 +120,13 @@ public class IPCService extends Service {
 
 	public void sendtoBLEService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
 
-		if (debug) {
-			//logi("sendtoBLEService() --> " + functionCode);
-
-            logi("sendtoBLEService()" + ", " + mbsService + ", " + functionCode + (cmd != null ? ", " + cmd.getValue() +
-                    ", " + cmd.getCMD() : ""));
-		}
+		if (debug) logi("sendtoBLEService() --> " + functionCode);
 		Class destService = BLEService.class;
 		sendIPCMessge(destService, mbsService, functionCode, cmd, args);
 	}
 
 	public void sendtoPluginService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-		if (debug) {
-            //logi("sendtoPluginService()");
-            logi("sendtoPluginService()" + ", " + mbsService + ", " + functionCode + (cmd != null ? ", " + cmd.getValue() +
-                    ", " + cmd.getCMD() : ""));
-        }
+		if (debug) logi("sendtoPluginService()");
 		Class destService = PluginService.class;
 		sendIPCMessge(destService, mbsService, functionCode, cmd, args);
 	}
@@ -174,7 +165,7 @@ public class IPCService extends Service {
 	}
 
 	private void handleIncomingMessage(Message msg) {
- 		if (debug) logi("handleIncomingMessage() :: Start BLEService");
+		if (debug) logi("handleIncomingMessage() :: Start BLEService");
 		if (msg.what == IPCMessageManager.ANDROID_MESSAGE) {
 			if (debug) logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
 
