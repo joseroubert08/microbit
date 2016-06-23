@@ -27,7 +27,6 @@ public class AlertPlugin {
     private static final String TAG = AlertPlugin.class.getSimpleName();
     private static PlayAudioPresenter playAudioPresenter;
 
-    private static AlertDialog customDialog = null;
     private static Ringtone mRingtone = null;
     private static Vibrator mVibrator = null;
     private static Timer mTimer = null;

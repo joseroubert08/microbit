@@ -1373,7 +1373,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         unbindDrawables(findViewById(R.id.searching_progress_spinner));
 
         unregisterReceiver(mPairReceiver);
-        LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(mLocalBroadcastReceiver);
+        LocalBroadcastManager.getInstance(MBApp.getApp()).unregisterReceiver(localBroadcastReceiver);
     }
 
     private void unbindDrawables(View view) {

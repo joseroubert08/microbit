@@ -10,11 +10,11 @@ import android.widget.Toast;
 
 import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.data.constants.CharacteristicUUIDs;
-import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.EventSubCodes;
 import com.samsung.microbit.data.constants.GattFormats;
 import com.samsung.microbit.data.constants.GattServiceUUIDs;
+import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.data.model.NameValuePair;
 import com.samsung.microbit.plugin.AlertPlugin;
 import com.samsung.microbit.plugin.AudioPlugin;
@@ -39,19 +39,6 @@ public class PluginService extends Service {
     public static final int TELEPHONY = 5;
     public static final int CAMERA = 6;
     public static final int FILE = 7;
-
-	void logi(String message) {
-		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
-	}
-
-	public static Messenger clientMessenger;
-	public static PluginService instance;
-
-	public PluginService() {
-		instance = this;
-		startIPCListener();
-	}
-
 
     public static void logi(String message) {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);

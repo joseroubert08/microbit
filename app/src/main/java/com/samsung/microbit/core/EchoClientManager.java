@@ -1,5 +1,6 @@
 package com.samsung.microbit.core;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -22,7 +23,6 @@ public class EchoClientManager {
 
     private static final String TAG = EchoClientManager.class.getSimpleName();
     private static EchoClientManager instance = null;
-    private static boolean mShareStat = false ;
 
     public static synchronized EchoClientManager getInstance(MBApp mbApp) {
         if (instance == null) {
@@ -86,7 +86,7 @@ public class EchoClientManager {
     public void sendAppStats() {
         if (shareStatistic && echo != null) {
             Log.d(TAG, "sendAppStats ");
-            HashMap<String, String> eventLabels = new HashMap<String, String>();
+            HashMap<String, String> eventLabels = new HashMap<>();
             eventLabels.put("name", "kl.education.microbit.appstart.page");
             eventLabels.put("bbc_site", "bitesize");
             eventLabels.put("microbits_paired", Integer.toString(BluetoothUtils.getTotalPairedMicroBitsFromSystem()));
@@ -101,7 +101,7 @@ public class EchoClientManager {
         if (shareStatistic && echo != null) {
             Log.d(TAG, "sendViewEventStats " + viewEventString);
             String counterName = MBApp.getApp().getString(R.string.stats_view_name, viewEventString);
-            HashMap<String, String> eventLabels = new HashMap<String, String>();
+            HashMap<String, String> eventLabels = new HashMap<>();
             eventLabels.put("bbc_site", "bitesize");
             echo.viewEvent(counterName, eventLabels);
         } else {
@@ -114,7 +114,7 @@ public class EchoClientManager {
             if (shareStatistic && echo != null) {
                 Log.d(TAG, "sendFlashStats fileName=" + fileName + " hexsize=" + hexsize + "  " +
                          "binsize=" + binsize + " microbit_firmwwareversion= " + firmware);
-                HashMap<String, String> eventLabels = new HashMap<String, String>();
+                HashMap<String, String> eventLabels = new HashMap<>();
                 eventLabels.put("action_location", "app");
                 eventLabels.put("bbc_site", "bitesize");
                 eventLabels.put("hex_file_size", hexsize);
@@ -136,7 +136,7 @@ public class EchoClientManager {
     public void sendNavigationStats(String location, String button) {
         try {
             if (shareStatistic && echo != null) {
-                HashMap<String, String> eventLabels = new HashMap<String, String>();
+                HashMap<String, String> eventLabels = new HashMap<>();
                 eventLabels.put("action_location", location);
                 eventLabels.put("button", button);
                 eventLabels.put("bbc_site", "bitesize");
@@ -152,7 +152,7 @@ public class EchoClientManager {
     public void sendStatSharing(boolean enable) {
         try {
             if (echo != null) {
-                HashMap<String, String> eventLabels = new HashMap<String, String>();
+                HashMap<String, String> eventLabels = new HashMap<>();
                 eventLabels.put("bbc_site", "bitesize");
                 if (enable) {
                     echo.userActionEvent("opt-in", "stats-tracking", eventLabels);
@@ -170,7 +170,7 @@ public class EchoClientManager {
     public void sendPairingStats(boolean paired, String firmware) {
         try {
             if (echo != null) {
-                HashMap<String, String> eventLabels = new HashMap<String, String>();
+                HashMap<String, String> eventLabels = new HashMap<>();
                 eventLabels.put("bbc_site", "bitesize");
                 if (paired) {
                     eventLabels.put("firmware", firmware);
@@ -189,7 +189,7 @@ public class EchoClientManager {
     public void sendConnectStats(Constants.ConnectionState connectionState, String firmware, String duration) {
         try {
             if (echo != null) {
-                HashMap<String, String> eventLabels = new HashMap<String, String>();
+                HashMap<String, String> eventLabels = new HashMap<>();
                 eventLabels.put("bbc_site", "bitesize");
                 switch (connectionState) {
                     case SUCCESS:
