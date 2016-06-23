@@ -11,7 +11,6 @@ public class NameValuePair {
 		this.value = value;
 	}
 
-
 	public String getName() {
 		return name;
 	}
