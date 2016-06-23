@@ -1,32 +1,24 @@
 package com.samsung.microbit;
 
 import android.app.Application;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.util.Log;
 
-import com.samsung.microbit.common.AppInfo;
-import com.samsung.microbit.core.EchoClientManager;
-
 public class MBApp extends Application {
+
+    private static Context mContext;
 
     private static MBApp app = null;
 
     private Typeface mTypeface;
     private Typeface mBoldTypeface;
     private Typeface mRobotoTypeface;
-
-    private EchoClientManager echoClientManager;
-
-    private AppInfo appInfo;
-
     @Override
     public void onCreate() {
         super.onCreate();
         app = this;
         initTypefaces();
-        echoClientManager = EchoClientManager.getInstance(this);
-
-        appInfo = new AppInfo(this);
         Log.d("MBApp", "App Created");
     }
 
@@ -51,14 +43,9 @@ public class MBApp extends Application {
         return mRobotoTypeface;
     }
 
-    public static MBApp getApp() {
-        return app;
-    }
+    public static Context getContext() { return MBApp.mContext; }
 
-    public EchoClientManager getEchoClientManager() {
-        return echoClientManager;
-    }
-    public AppInfo getAppInfo() {
-        return appInfo;
-    }
+    public static void setContext(Context ctx) { MBApp.mContext = ctx; }
+
+    public static MBApp getApp(){ return app;}
 }

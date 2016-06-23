@@ -15,12 +15,12 @@ import com.samsung.microbit.BuildConfig;
 import java.util.List;
 
 public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
-    private static final String TAG = CameraPreview.class.getSimpleName();
 
-    private boolean isDebug = BuildConfig.DEBUG;
+    private static final String TAG = "CameraPreview";
+    private boolean debug = BuildConfig.DEBUG;
 
-    private void logi(String message) {
-        if (isDebug) {
+    void logi(String message) {
+        if (debug) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
@@ -101,12 +101,8 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
         return result;
     }
 
-    public CameraPreview(Context context) {
-        super(context);
-    }
-
     public CameraPreview(Context context, SurfaceView sv) {
-        this(context);
+        super(context);
 
         mCameraIdx = -1;
         mCamera = null;
@@ -166,6 +162,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
         logi("onLayout()");
 
         if (changed) {
+
             final int width = r - l;
             final int height = b - t;
 

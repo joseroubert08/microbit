@@ -1,7 +1,5 @@
 package com.samsung.microbit.core;
 
-import com.samsung.microbit.utils.IOUtils;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,14 +25,14 @@ public class DownloadManager {
     }
 
     public long download(String sourceUrl, String destinationFile) {
-        long objectSize = 0L;
 
+        long objectSize = 0L;
         try {
             URL url = new URL(sourceUrl);
             URLConnection urlConnection = url.openConnection();
             InputStream is = urlConnection.getInputStream();
             OutputStream os = new FileOutputStream(new File(destinationFile));
-            objectSize = IOUtils.copy(is, os);
+            objectSize = copyStream(is, os);
             os.close();
             is.close();
 
@@ -43,5 +41,23 @@ public class DownloadManager {
         }
 
         return objectSize;
+    }
+
+    long copyStream(InputStream src, OutputStream dest) throws IOException {
+        long bytesProcessed = 0L;
+        byte[] buffer = new byte[1024];
+        int i;
+
+        while (!cancelled) {
+            i = src.read(buffer);
+            if (i == -1) {
+                break;
+            }
+
+            dest.write(buffer, 0, i);
+            bytesProcessed += i;
+        }
+
+        return bytesProcessed;
     }
 }

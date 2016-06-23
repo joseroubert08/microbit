@@ -8,29 +8,29 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.RemoteException;
 
-import com.samsung.microbit.MBApp;
 import com.samsung.microbit.core.BroadcastMonitor;
-import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.model.CmdArg;
 import com.samsung.microbit.service.PluginService;
 
 public class FeedbackPlugin {
 
-	private static BroadcastReceiver sReceiver = null;
+	private static Context mContext = null;
+	private static BroadcastReceiver mReceiver = null;
 
 	//Feedback plugin action
 	public static final int DISPLAY = 0;
 
 	public static void pluginEntry(Context ctx, CmdArg cmd) {
+		mContext = ctx;
 		switch (cmd.getCMD()) {
 			case DISPLAY:
-				toggleRegisteringScreenOnOffIntent();
+				registerScreenOnOffIntent();
 				break;
 		}
 	}
 
 	public static void sendReplyCommand(int mbsService, CmdArg cmd) {
-		if (IPCMessageManager.getInstance().getClientMessenger() != null) {
+		if (PluginService.mClientMessenger != null) {
 			Message msg = Message.obtain(null, mbsService);
 			Bundle bundle = new Bundle();
 			bundle.putInt("cmd", cmd.getCMD());
@@ -38,25 +38,25 @@ public class FeedbackPlugin {
 			msg.setData(bundle);
 
 			try {
-				IPCMessageManager.getInstance().getClientMessenger().send(msg);
+				PluginService.mClientMessenger.send(msg);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	private static void toggleRegisteringScreenOnOffIntent() {
-		if (sReceiver == null) {
+	private static void registerScreenOnOffIntent() {
+		if (mReceiver == null) {
 			final IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
 			filter.addAction(Intent.ACTION_SCREEN_OFF);
-			sReceiver = new BroadcastMonitor();
-			MBApp.getApp().registerReceiver(sReceiver, filter);
+			mReceiver = new BroadcastMonitor();
+			mContext.registerReceiver(mReceiver, filter);
 
 			CmdArg cmd = new CmdArg(0, "Registered Screen On/Off event.");
 			FeedbackPlugin.sendReplyCommand(PluginService.FEEDBACK, cmd);
 		} else { //TODO - When and where to unresgister????
-			MBApp.getApp().unregisterReceiver(sReceiver);
-			sReceiver = null;
+			mContext.unregisterReceiver(mReceiver);
+			mReceiver = null;
 
 			CmdArg cmd = new CmdArg(0, "Unregistered Screen On/Off event.");
 			FeedbackPlugin.sendReplyCommand(PluginService.FEEDBACK, cmd);
