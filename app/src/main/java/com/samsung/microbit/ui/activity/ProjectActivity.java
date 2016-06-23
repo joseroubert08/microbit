@@ -522,7 +522,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         int projectListSortOrder = PreferenceUtils.getListOrderPrefs();
         int sortBy = (projectListSortOrder >> 1);
         int sortOrder = projectListSortOrder & 0x01;
-        com.samsung.microbit.utils.Utils.sortProjectList(projectList, sortBy, sortOrder);
+        com.samsung.microbit.utils.Utils.sortProjectList(mProjectList, sortBy, sortOrder);
 
         setupListAdapter();
     }

@@ -742,7 +742,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
     private void updatePairedDeviceCard() {
         if (deviceConnectionStatusBtn != null) {
-            ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
+            ConnectedDevice connectedDevice = BluetoothUtils.getPairedMicrobit(this);
             if (connectedDevice.mName == null) {
                 // No device is Paired
                 deviceConnectionStatusBtn.setBackgroundResource(R.drawable.grey_btn);

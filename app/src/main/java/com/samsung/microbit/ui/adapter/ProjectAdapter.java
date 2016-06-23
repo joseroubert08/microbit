@@ -116,7 +116,7 @@ public class ProjectAdapter extends BaseAdapter {
 
         logi("dismissKeyBoard() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
 
-        InputMethodManager imm = (InputMethodManager) projectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) mProjectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
 
         if (hide) {
