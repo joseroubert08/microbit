@@ -26,6 +26,9 @@ import javax.xml.transform.Result;
 import static com.samsung.microbit.ConfigPreferenceNames.*;
 
 public abstract class RetrieveConfigDataTask extends AsyncTask<String, Void, Result> {
+
+    private static final String TAG = RetrieveConfigDataTask.class.getSimpleName();
+
     private final SharedPreferences preferences;
     private long LastQueryTime = 0;
     private String Etag = "";
@@ -59,7 +62,7 @@ public abstract class RetrieveConfigDataTask extends AsyncTask<String, Void, Res
         if (BuildConfig.DEBUG) {
             //Hardcoding the version for Debug builds
             version = "1.3.6";
-            Log.d("RemoteConfig", "Using config file for version :  " + version);
+            Log.d(TAG, "Using config file for version :  " + version);
         } else {
             PackageManager manager = appContext.getPackageManager();
             PackageInfo info;
@@ -67,7 +70,7 @@ public abstract class RetrieveConfigDataTask extends AsyncTask<String, Void, Res
                 info = manager.getPackageInfo(appContext.getPackageName(), 0);
                 version = info.versionName;
             } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
+                Log.e(TAG, e.toString());
             }
         }
         //Get the new config file
@@ -110,10 +113,10 @@ public abstract class RetrieveConfigDataTask extends AsyncTask<String, Void, Res
                 }
 
             } else if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_MODIFIED) {
-                Log.d("RemoteConfig", "Content not modified");
+                Log.d(TAG, "Content not modified");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -136,8 +139,7 @@ public abstract class RetrieveConfigDataTask extends AsyncTask<String, Void, Res
                 editor.putString(RC_EXCEPTIONMSG_KEY, message);
             }
         } catch (JSONException e) {
-            Log.e("RemoteConfig", "readAppStatus: failed");
-            e.printStackTrace();
+            Log.e(TAG, "readAppStatus: failed - " + e.toString());
         }
     }
 
@@ -159,8 +161,7 @@ public abstract class RetrieveConfigDataTask extends AsyncTask<String, Void, Res
             editor.putString(RC_APPSTATUS_MYSCRIPTS, myscripts);
 
         } catch (JSONException e) {
-            Log.e("RemoteConfig", "readEndPoints: failed");
-            e.printStackTrace();
+            Log.e(TAG, "readEndPoints: failed - " + e.toString());
         }
     }
 
@@ -170,8 +171,7 @@ public abstract class RetrieveConfigDataTask extends AsyncTask<String, Void, Res
             String email = config.getString("feedbackEmailAddress");
             editor.putString(RC_CONFIG_EMAIL, email);
         } catch (JSONException e) {
-            Log.e("RemoteConfig", "readConfig: failed");
-            e.printStackTrace();
+            Log.e(TAG, "readConfig: failed - " + e.toString());
         }
     }
 
@@ -188,8 +188,7 @@ public abstract class RetrieveConfigDataTask extends AsyncTask<String, Void, Res
 
             editor.apply();
         } catch (JSONException e) {
-            Log.i("RemoteConfig", "readFromJsonAndStore: failed");
-            e.printStackTrace();
+            Log.e(TAG, "readFromJsonAndStore: failed - " + e.toString());
         }
     }
 
