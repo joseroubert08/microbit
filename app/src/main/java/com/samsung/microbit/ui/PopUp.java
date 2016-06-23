@@ -1,6 +1,5 @@
 package com.samsung.microbit.ui;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +8,6 @@ import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 
 import com.samsung.microbit.ui.activity.PopUpActivity;
 
@@ -22,38 +20,49 @@ import java.util.Deque;
  */
 public class PopUp {
 
-    static public final int TYPE_CHOICE = 0;//2 buttons type
-    static public final int TYPE_ALERT = 1;//1 button type
-    static public final int TYPE_PROGRESS = 2;//0 button progress.xml bar type
-    static public final int TYPE_NOBUTTON = 3;//No button type
-    static public final int TYPE_SPINNER = 4;//0 button type spinner
-    static public final int TYPE_PROGRESS_NOT_CANCELABLE = 6;//0 button progress.xml bar type not cancelable (backpress disabled)
-    static public final int TYPE_SPINNER_NOT_CANCELABLE = 7;//0 button type spinner not cancelable (backpress disabled)
-    static public final int TYPE_MAX = 8;
+    public static final int TYPE_CHOICE = 0;//2 buttons type
+    public static final int TYPE_ALERT = 1;//1 button type
+    public static final int TYPE_PROGRESS = 2;//0 button progress.xml bar type
+    public static final int TYPE_NOBUTTON = 3;//No button type
+    public static final int TYPE_SPINNER = 4;//0 button type spinner
+    public static final int TYPE_PROGRESS_NOT_CANCELABLE = 6;//0 button progress.xml bar type not cancelable
+    // (backpress disabled)
+    public static final int TYPE_SPINNER_NOT_CANCELABLE = 7;//0 button type spinner not cancelable (backpress disabled)
+    public static final int TYPE_MAX = 8;
+
+
+
+    // Constants for giff animation options
+    public static final int GIFF_ANIMATION_NONE = 0;
+    public static final int GIFF_ANIMATION_FLASH = 1;
+    public static final int GIFF_ANIMATION_ERROR = 2;
+
+
+    public static final String INTENT_EXTRA_OK_ACTION = "Popup.extra.ok.type";
+    public static final int OK_ACTION_NONE = 0;
+    public static final int OK_ACTION_STOP_SERVICE_PLAYING = 1;
+
 
     //constants that indicate the type of request for which each type involves specific handling
     //see processNextPendingRequest
-    static private final short REQUEST_TYPE_SHOW = 0;
-    static private final short REQUEST_TYPE_HIDE = 1;
-    static private final short REQUEST_TYPE_UPDATE_PROGRESS = 2;
-    static private final short REQUEST_TYPE_MAX = 3;
+    private static final short REQUEST_TYPE_SHOW = 0;
+    private static final short REQUEST_TYPE_HIDE = 1;
+    private static final short REQUEST_TYPE_UPDATE_PROGRESS = 2;
+    private static final short REQUEST_TYPE_MAX = 3;
 
-    // Constants for giff animation options
-    static public final int GIFF_ANIMATION_NONE = 0;
-    static public final int GIFF_ANIMATION_FLASH = 1;
-    static public final int GIFF_ANIMATION_ERROR = 2;
 
-    static private int current_type = TYPE_MAX; //current type of displayed popup  (TYPE_CHOICE, ...)
 
-    static private Context ctx = null;
+    private static int sCurrentType = TYPE_MAX; //current type of displayed popup  (TYPE_CHOICE, ...)
 
-    static private boolean is_current_request_pending = false;
+    private static Context ctx = null;
 
-    static class PendingRequest {
-        public Intent intent;
-        public View.OnClickListener okListener;
-        public View.OnClickListener cancelListener;
-        public short type;//type of request (REQUEST_TYPE_SHOW, ...)
+    private static boolean isCurrentRequestPending = false;
+
+    private static class PendingRequest {
+        private final Intent intent;
+        private final View.OnClickListener okListener;
+        private final View.OnClickListener cancelListener;
+        private final short type;//type of request (REQUEST_TYPE_SHOW, ...)
 
         public PendingRequest(Intent intent, View.OnClickListener okListener,
                               View.OnClickListener cancelListener,
@@ -68,9 +77,9 @@ public class PopUp {
     //FIFO queue for pending requests
     //This queue is a solution to handle the asynchronous behaviour
     // of Activity startActivity/onCreate
-    static private Deque<PendingRequest> pendingQueue = new ArrayDeque<>();
+    private static Deque<PendingRequest> pendingQueue = new ArrayDeque<>();
 
-    static private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    private static BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(PopUpActivity.INTENT_ACTION_OK_PRESSED)) {
@@ -82,27 +91,27 @@ public class PopUp {
             } else if (intent.getAction().equals(PopUpActivity.INTENT_ACTION_DESTROYED)) {
                 Log.d("PopUp", "INTENT_ACTION_DESTROYED size queue = " + pendingQueue.size());
                 pendingQueue.poll();
-                is_current_request_pending = false;
-                current_type = TYPE_MAX;
+                isCurrentRequestPending = false;
+                sCurrentType = TYPE_MAX;
                 processNextPendingRequest();
             } else if (intent.getAction().equals(PopUpActivity.INTENT_ACTION_CREATED)) {
                 Log.d("PopUp", "INTENT_ACTION_CREATED size queue = " + pendingQueue.size());
                 PendingRequest request = pendingQueue.poll();
-                if(request != null) {
-                    current_type = request.intent.getIntExtra(PopUpActivity.INTENT_EXTRA_TYPE, 0);
+                if (request != null) {
+                    sCurrentType = request.intent.getIntExtra(PopUpActivity.INTENT_EXTRA_TYPE, 0);
                     okPressListener = request.okListener;
                     cancelPressListener = request.cancelListener;
                 }
-                is_current_request_pending = false;
+                isCurrentRequestPending = false;
                 processNextPendingRequest();
             }
         }
     };
 
-    static private boolean registered = false;
-    static private View.OnClickListener okPressListener = null;
-    static private View.OnClickListener cancelPressListener = null;
-    static private View.OnClickListener defaultPressListener = new View.OnClickListener() {
+    private static boolean registered = false;
+    private static View.OnClickListener okPressListener = null;
+    private static View.OnClickListener cancelPressListener = null;
+    private static View.OnClickListener defaultPressListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             PopUp.hide();
@@ -115,7 +124,7 @@ public class PopUp {
         pendingQueue.add(new PendingRequest(new Intent(PopUpActivity.INTENT_ACTION_CLOSE),
                 null, null, REQUEST_TYPE_HIDE));
 
-        if (!is_current_request_pending) {
+        if (!isCurrentRequestPending) {
             processNextPendingRequest();
         }
     }
@@ -125,7 +134,7 @@ public class PopUp {
         intent.putExtra(PopUpActivity.INTENT_EXTRA_PROGRESS, val);
 
         pendingQueue.add(new PendingRequest(intent, null, null, REQUEST_TYPE_UPDATE_PROGRESS));
-        if (!is_current_request_pending) {
+        if (!isCurrentRequestPending) {
             processNextPendingRequest();
         }
     }
@@ -137,6 +146,16 @@ public class PopUp {
         Log.d("PopUp", "showFromService");
         Intent intent = new Intent("com.samsung.microbit.core.SHOWFROMSERVICE");
         putIntentExtra(intent, message, title, imageResId, imageBackgroundResId, animationCode, type);
+        context.sendBroadcast(intent);
+    }
+
+    public static void showFromService(Context context, String message, String title,
+                                       int imageResId, int imageBackgroundResId, int animationCode, int type, int
+                                               okAction) {
+        Log.d("PopUp", "showFromService");
+        Intent intent = new Intent("com.samsung.microbit.core.SHOWFROMSERVICE");
+        putIntentExtra(intent, message, title, imageResId, imageBackgroundResId, animationCode, type);
+        intent.putExtra(INTENT_EXTRA_OK_ACTION, okAction);
         context.sendBroadcast(intent);
     }
 
@@ -158,16 +177,16 @@ public class PopUp {
         }
     }
 
-    static private class PopUpTask extends AsyncTask<Void, Void, Void> {
-        private Context context;
-        private String message;
-        private String title;
-        private int imageResId;
-        private int imageBackgroundResId;
+    private static class PopUpTask extends AsyncTask<Void, Void, Void> {
+        private final Context context;
+        private final String message;
+        private final String title;
+        private final int imageResId;
+        private final int imageBackgroundResId;
         private int giffAnimationCode = 2;
-        private int type;
-        private View.OnClickListener okListener;
-        private View.OnClickListener cancelListener;
+        private final int type;
+        private final View.OnClickListener okListener;
+        private final View.OnClickListener cancelListener;
 
         @Override
         protected Void doInBackground(Void... voids) {
@@ -201,7 +220,7 @@ public class PopUp {
      * @param imageResId           - pass 0 to imageResId to use default icon
      * @param imageBackgroundResId - pass 0 to imageBackgroundResId if no background is needed for icon
      * @param animationCode        - pass 0 to use default @imageResId icon.
-     *                               The animationCode and the @imageResId are shown separately but never together (visibility is toggled)
+     *                             The animationCode and the @imageResId are shown separately but never together (visibility is toggled)
      * @param type                 - pop up type e.g. spinner, cancellable;
      * @param okListener           - pass null to use default listener (which hides the pops) - you can override for your own purpose
      * @param cancelListener       - pass null to use default listener (which hides the pops)
@@ -219,15 +238,9 @@ public class PopUp {
                                                      int imageResId, int imageBackgroundResId, int animationCode, int type,
                                                      View.OnClickListener okListener, View.OnClickListener cancelListener) {
         Log.d("PopUp", "show START popup type " + type);
-        if (!(context instanceof Activity)) {
-            //TODO: throw exception?
-            Log.e("PopUp", "Cannot show popup because context is not an activity. PopUp.show must be called from an activity");
-            return false;
-        }
         ctx = context;
 
-        if (registered == false) {
-
+        if (!registered) {
             LocalBroadcastManager.getInstance(context).registerReceiver(broadcastReceiver, new IntentFilter(PopUpActivity.INTENT_ACTION_OK_PRESSED));
             LocalBroadcastManager.getInstance(context).registerReceiver(broadcastReceiver, new IntentFilter(PopUpActivity.INTENT_ACTION_CANCEL_PRESSED));
             LocalBroadcastManager.getInstance(context).registerReceiver(broadcastReceiver, new IntentFilter(PopUpActivity.INTENT_ACTION_DESTROYED));
@@ -240,7 +253,7 @@ public class PopUp {
 
         pendingQueue.add(new PendingRequest(intent, okListener, cancelListener, REQUEST_TYPE_SHOW));
 
-        if (!is_current_request_pending) {
+        if (!isCurrentRequestPending) {
             processNextPendingRequest();
         }
 
@@ -257,11 +270,11 @@ public class PopUp {
             switch (request.type) {
                 case REQUEST_TYPE_SHOW: {
                     Log.d("PopUp", "processNextPendingRequest REQUEST_TYPE_SHOW");
-                    if (current_type != TYPE_MAX) {
+                    if (sCurrentType != TYPE_MAX) {
                         Log.d("Popup", "processNextPendingRequest Update existing layout instead of hiding");
                         request.intent.setAction(PopUpActivity.INTENT_ACTION_UPDATE_LAYOUT);
                         LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(request.intent);
-                        current_type = request.intent.getIntExtra(PopUpActivity.INTENT_EXTRA_TYPE, 0);
+                        sCurrentType = request.intent.getIntExtra(PopUpActivity.INTENT_EXTRA_TYPE, 0);
                         okPressListener = request.okListener;
                         cancelPressListener = request.cancelListener;
                         pendingQueue.poll();
@@ -269,20 +282,20 @@ public class PopUp {
                     }
 
                     done = true;
-                    is_current_request_pending = true;
+                    isCurrentRequestPending = true;
                     request.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     ctx.startActivity(request.intent);
                     break;
                 }
                 case REQUEST_TYPE_HIDE: {
-                    if (current_type == TYPE_MAX) {
+                    if (sCurrentType == TYPE_MAX) {
                         Log.d("Popup", "processNextPendingRequest Nothing to hide");
                         pendingQueue.poll();
                         continue;
                     }
 
                     done = true;
-                    is_current_request_pending = true;
+                    isCurrentRequestPending = true;
                     LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(request.intent);
                     break;
                 }

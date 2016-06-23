@@ -46,7 +46,6 @@ public class LEDAdapter extends BaseAdapter {
 
         if (mDeviceCodeArray[position].equals("1")) {
             imageView.setBackground(mContext.getResources().getDrawable(R.drawable.red_white_led_btn));
-
         } else {
             imageView.setBackground(mContext.getResources().getDrawable(R.drawable.white_red_led_btn));
 

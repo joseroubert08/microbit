@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.EchoClientManager;
 
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
@@ -42,12 +41,12 @@ public class SplashScreenActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        MBApp.setContext(this);
-
         initViews();
 
-        EchoClientManager.getInstance().sendAppStats();
+        MBApp.getApp().getEchoClientManager().sendAppStats();
     }
+        //Track fresh app launch
+
 
     private void initViews() {
         mLogoLayout = (RelativeLayout) findViewById(R.id.splash_screen_logo_layout);

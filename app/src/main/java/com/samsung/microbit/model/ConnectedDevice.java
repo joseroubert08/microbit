@@ -10,9 +10,10 @@ public class ConnectedDevice {
     public String mfirmware_version;
     public long mlast_connection_time;
 
-    public ConnectedDevice(){}
+    public ConnectedDevice() {
+    }
 
-    public ConnectedDevice(String name, String pattern, boolean status, String address , int pairingCode, String firmware, long connectionTime) {
+    public ConnectedDevice(String name, String pattern, boolean status, String address, int pairingCode, String firmware, long connectionTime) {
         this.mName = name;
         this.mPattern = pattern;
         this.mStatus = status;
