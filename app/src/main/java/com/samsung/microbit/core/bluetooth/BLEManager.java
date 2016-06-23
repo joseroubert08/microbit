@@ -71,7 +71,7 @@ public class BLEManager {
     }
 
     public BLEManager(Context context, BluetoothDevice bluetoothDevice, UnexpectedConnectionEventListener
-             unexpectedDisconnectionListener) {
+            unexpectedDisconnectionListener) {
         if (isDebug) {
             logi("start");
         }
@@ -82,7 +82,7 @@ public class BLEManager {
     }
 
     public BLEManager(Context context, BluetoothDevice bluetoothDevice, CharacteristicChangeListener
-             characteristicChangeListener, UnexpectedConnectionEventListener unexpectedDisconnectionListener) {
+            characteristicChangeListener, UnexpectedConnectionEventListener unexpectedDisconnectionListener) {
         if (isDebug) {
             logi("start1");
         }
@@ -200,8 +200,8 @@ public class BLEManager {
 
                             rc = error | bleState;
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        Log.e(TAG, e.toString());
                     }
 
                     inBleOp = OP_NOOP;
@@ -254,8 +254,8 @@ public class BLEManager {
                         }
                         rc = error | bleState;
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    Log.e(TAG, e.toString());
                 }
 
                 inBleOp = OP_NOOP;
@@ -293,6 +293,7 @@ public class BLEManager {
 
                     rc = error | bleState;
                 } catch (InterruptedException e) {
+                    Log.e(TAG, e.toString());
                 }
 
                 inBleOp = OP_NOOP;
@@ -333,6 +334,7 @@ public class BLEManager {
 
                     rc = error | bleState;
                 } catch (InterruptedException e) {
+                    Log.e(TAG, e.toString());
                 }
 
                 inBleOp = OP_NOOP;
@@ -368,6 +370,7 @@ public class BLEManager {
                         rc = error | bleState;
                     }
                 } catch (InterruptedException e) {
+                    Log.e(TAG, e.toString());
                 }
 
                 inBleOp = OP_NOOP;
@@ -383,7 +386,7 @@ public class BLEManager {
 
     public boolean isConnected() {
         return bleState == BLE_CONNECTED || bleState == BLE_SERVICES_DISCOVERED || bleState == (BLE_CONNECTED |
-                 BLE_SERVICES_DISCOVERED);
+                BLE_SERVICES_DISCOVERED);
     }
 
     public int writeDescriptor(BluetoothGattDescriptor descriptor) {
@@ -411,6 +414,7 @@ public class BLEManager {
                     }
 
                 } catch (InterruptedException e) {
+                    Log.e(TAG, e.toString());
                 }
 
                 inBleOp = OP_NOOP;
@@ -448,6 +452,7 @@ public class BLEManager {
                         rc = error | bleState;
                     }
                 } catch (InterruptedException e) {
+                    Log.e(TAG, e.toString());
                 }
 
                 inBleOp = OP_NOOP;
@@ -490,7 +495,7 @@ public class BLEManager {
 
 
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, e.toString());
                 }
 
                 inBleOp = OP_NOOP;
@@ -535,7 +540,7 @@ public class BLEManager {
                         rc = error | bleState;
                     }
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, e.toString());
                 }
 
                 inBleOp = OP_NOOP;
@@ -558,13 +563,9 @@ public class BLEManager {
     }
 
     public int enableCharacteristicNotification(BluetoothGattCharacteristic characteristic, BluetoothGattDescriptor descriptor, boolean enable) {
-        if (enable) {
-            gatt.setCharacteristicNotification(characteristic, enable);
-            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-        } else {
-            gatt.setCharacteristicNotification(characteristic, false);
-            descriptor.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
-        }
+        gatt.setCharacteristicNotification(characteristic, enable);
+        descriptor.setValue(enable ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : BluetoothGattDescriptor
+                 .DISABLE_NOTIFICATION_VALUE);
 
         return writeDescriptor(descriptor);
     }
@@ -577,7 +578,7 @@ public class BLEManager {
 
             if (isDebug) {
                 logi("BluetoothGattCallback.onConnectionStateChange() :: start : status = " + status + " newState = " +
-                         "" + newState);
+                        "" + newState);
             }
 
             int state = BLE_DISCONNECTED;
@@ -617,7 +618,7 @@ public class BLEManager {
                     }
                     callbackCompleted = true;
                     BLEManager.this.error = error;
-                    BLEManager.this.extended_error = status;
+                    extended_error = status;
                     locker.notify();
                 } else {
                     if (isDebug) {
