@@ -27,7 +27,7 @@ import java.util.UUID;
 
 public class BLEService extends BLEBaseService {
 
-	protected String TAG = "BLEService";
+	protected String TAG = BLEService.class.getSimpleName();
 	protected boolean debug = BuildConfig.DEBUG;
 	protected boolean firstRun = true;
 
@@ -37,7 +37,6 @@ public class BLEService extends BLEBaseService {
         }
 	}
 
-	NotificationManager notifyMgr = null;
 	int notificationId = 1010;
 
 	public BLEService() {
@@ -47,9 +46,8 @@ public class BLEService extends BLEBaseService {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
-		int rc = 0;
 		logi("onStartCommand()");
-		rc = super.onStartCommand(intent, flags, startId);
+		int rc = super.onStartCommand(intent, flags, startId);
 		/*
 		 * Make the initial connection to other processes
 		 */
@@ -67,7 +65,7 @@ public class BLEService extends BLEBaseService {
 						sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
 						setNotification(false, 0);
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						Log.e(TAG, e.toString());
 					}
 				}
 				else {
@@ -280,13 +278,12 @@ public class BLEService extends BLEBaseService {
 	protected void handleCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 
         String UUID = characteristic.getUuid().toString();
-        int value = 0 ;
         Integer integerValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
 
         if (integerValue == null) {
             return;
         }
-        value = integerValue.intValue();
+        int value = integerValue;
 		int eventSrc = value & 0x0ffff;
 		if (eventSrc < 1001) {
 			return;
@@ -392,13 +389,11 @@ public class BLEService extends BLEBaseService {
 
 	// ######################################################################
 
-	int lastEvent = Constants.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE;
-
 	void sendMessage(int eventSrc, int event) {
 
 		logi("Sending eventSrc " + eventSrc + "  event=" + event);
-		int msgService = 0;
-		CmdArg cmd = null;
+		int msgService;
+		CmdArg cmd;
 		switch (eventSrc) {
 			case Constants.SAMSUNG_REMOTE_CONTROL_ID:
 			case Constants.SAMSUNG_ALERTS_ID:
@@ -495,7 +490,7 @@ public class BLEService extends BLEBaseService {
 
 	public void sendtoIPCService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
 
-		logi("sendtoIPCService()");
+		logi("sendToIPCService()");
 		Class destService = IPCService.class;
         sendIPCMessge(destService, mbsService, functionCode, cmd, args);
     }
@@ -520,16 +515,16 @@ public class BLEService extends BLEBaseService {
 		}
 
 		if (args != null) {
-			for (int i = 0; i < args.length; i++) {
-				bundle.putSerializable(args[i].getName(), args[i].getValue());
-            }
+			for (NameValuePair arg : args) {
+				bundle.putSerializable(arg.getName(), arg.getValue());
+			}
         }
 
 		msg.setData(bundle);
         try {
             inst.sendMessage(destService, msg);
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			Log.e(TAG, e.toString());
 		}
 	}
 

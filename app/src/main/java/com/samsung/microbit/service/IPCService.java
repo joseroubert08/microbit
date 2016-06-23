@@ -29,7 +29,7 @@ public class IPCService extends Service {
 
 	public static final String NOTIFICATION_CAUSE = "com.samsung.microbit.service.IPCService.CAUSE";
 
-	static final String TAG = "IPCService";
+	private static final String TAG = IPCService.class.getSimpleName();
 	private boolean debug = BuildConfig.DEBUG;
 
 	void logi(String message) {
@@ -111,7 +111,7 @@ public class IPCService extends Service {
 						sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
 						sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						Log.e(TAG, e.toString());
 					}
 				}
 			}).start();
@@ -120,7 +120,7 @@ public class IPCService extends Service {
 
 	public void sendtoBLEService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
 
-		if (debug) logi("sendtoBLEService() --> " + functionCode);
+		if (debug) logi("sendToBLEService() --> " + functionCode);
 		Class destService = BLEService.class;
 		sendIPCMessge(destService, mbsService, functionCode, cmd, args);
 	}
@@ -151,8 +151,8 @@ public class IPCService extends Service {
 		}
 
 		if (args != null) {
-			for (int i = 0; i < args.length; i++) {
-				bundle.putSerializable(args[i].getName(), args[i].getValue());
+			for (NameValuePair arg : args) {
+				bundle.putSerializable(arg.getName(), arg.getValue());
 			}
 		}
 
@@ -160,7 +160,7 @@ public class IPCService extends Service {
 		try {
 			inst.sendMessage(destService, msg);
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			Log.e(TAG, e.toString());
 		}
 	}
 

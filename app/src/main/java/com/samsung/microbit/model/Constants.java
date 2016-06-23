@@ -201,8 +201,8 @@ public class Constants {
 	public static final UUID IOPS_PARALLEL_PORT = makeUUID(MICROBIT_BASE_UUID_STR, 0x060cf);
 
 
-    public static final UUID DEVICE_INFORMATION_SERVICE_UUID = new UUID(0x0000180A00001000l, 0x800000805F9B34FBl);
-    public static final UUID FIRMWARE_REVISION_UUID = new UUID(0x00002A2600001000l, 0x800000805F9B34FBl);
+    public static final UUID DEVICE_INFORMATION_SERVICE_UUID = new UUID(0x0000180A00001000L, 0x800000805F9B34FBL);
+    public static final UUID FIRMWARE_REVISION_UUID = new UUID(0x00002A2600001000L, 0x800000805F9B34FBL);
 
 	public static final UUID EVENT_SERVICE = makeUUID(MICROBIT_BASE_UUID_STR, 0x093af);
 	public static final UUID ES_MICROBIT_REQUIREMENTS = makeUUID(MICROBIT_BASE_UUID_STR, 0x0B84C);
@@ -228,34 +228,34 @@ public class Constants {
 		return ((value << 16) | category);
 	}
 
-	public static String URL = "URL";
+	public static final String URL = "URL";
 
 	//TODO: Change to data/data/appName/files MBApp.getContext().getFilesDir();
-	public static File HEX_FILE_DIR = Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
+	public static final File HEX_FILE_DIR = Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
 	//public static File HEX_FILE_DIR = MBApp.getContext().getFilesDir();
 
-    public static String ZIP_INTERNAL_NAME = "raw/samples";
+    public static final String ZIP_INTERNAL_NAME = "raw/samples";
 
-    public static int REQUEST_ENABLE_BT = 12345 ; //Magic number
-    public static int POPUP_CREATE_REQUEST = 45809 ; //Magic number
+    public static final int REQUEST_ENABLE_BT = 12345 ; //Magic number
+    public static final int POPUP_CREATE_REQUEST = 45809 ; //Magic number
 
-	public static String LAUNCH_CAMERA_AUDIO_PHOTO = "raw/en_gb_emma_launching_camera_photo";
-    public static String LAUNCH_CAMERA_AUDIO_VIDEO = "raw/en_gb_emma_launching_camera_video";
+	public static final String LAUNCH_CAMERA_AUDIO_PHOTO = "raw/en_gb_emma_launching_camera_photo";
+    public static final String LAUNCH_CAMERA_AUDIO_VIDEO = "raw/en_gb_emma_launching_camera_video";
 
-    public static String TAKING_PHOTO_AUDIO = "raw/en_gb_emma_taking_photo";
-    public static String RECORDING_VIDEO_AUDIO = "raw/en_gb_emma_recording_video_30sec";
-    public static String PICTURE_TAKEN_AUDIO = "raw/en_gb_emma_photo_taken";
-    public static String MAX_VIDEO_RECORDED = "raw/en_gb_emma_max_video";
-    public static String FIND_MY_PHONE_AUDIO = "raw/find_my_phone";
+    public static final String TAKING_PHOTO_AUDIO = "raw/en_gb_emma_taking_photo";
+    public static final String RECORDING_VIDEO_AUDIO = "raw/en_gb_emma_recording_video_30sec";
+    public static final String PICTURE_TAKEN_AUDIO = "raw/en_gb_emma_photo_taken";
+    public static final String MAX_VIDEO_RECORDED = "raw/en_gb_emma_max_video";
+    public static final String FIND_MY_PHONE_AUDIO = "raw/find_my_phone";
 
 
-    public static int MAX_VIDEO_RECORDING_TIME = 30 * 1000 ; //Duration in ms
-    public static int MAX_VIDEO_FILE_SIZE = 100 * 1024 * 1024 ; //Size in bytes
+    public static final int MAX_VIDEO_RECORDING_TIME = 30 * 1000 ; //Duration in ms
+    public static final int MAX_VIDEO_FILE_SIZE = 100 * 1024 * 1024 ; //Size in bytes
 
-	public static int PIC_COUNTER_DURATION = 5 * 1000 ; //Duration in ms
-	public static int PIC_COUNTER_INTERVAL = 900 ; //Duration in ms
+	public static final int PIC_COUNTER_DURATION = 5 * 1000 ; //Duration in ms
+	public static final int PIC_COUNTER_INTERVAL = 900 ; //Duration in ms
 
-    public static String MEDIA_OUTPUT_FOLDER = "bbc-microbit";
+    public static final String MEDIA_OUTPUT_FOLDER = "bbc-microbit";
 
     //For stats
     public enum CONNECTION_STATE {

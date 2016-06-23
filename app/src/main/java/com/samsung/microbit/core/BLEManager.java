@@ -17,36 +17,34 @@ import java.util.UUID;
 
 public class BLEManager {
 
-	public static int BLE_DISCONNECTED = 0x0000;
-	public static int BLE_CONNECTED = 0x0001;
-	public static int BLE_SERVICES_DISCOVERED = 0x0002;
+	public static final int BLE_DISCONNECTED = 0x0000;
+	public static final int BLE_CONNECTED = 0x0001;
+	public static final int BLE_SERVICES_DISCOVERED = 0x0002;
 
-	public static int BLE_ERROR_OK = 0x00000000;
-	public static int BLE_ERROR_FAIL = 0x00010000;
-	public static int BLE_ERROR_TIMEOUT = 0x00020000;
+	public static final int BLE_ERROR_OK = 0x00000000;
+	public static final int BLE_ERROR_FAIL = 0x00010000;
+	public static final int BLE_ERROR_TIMEOUT = 0x00020000;
 
-	public static int BLE_ERROR_NOOP = -1 & 0xFFFF0000;
-	public static int BLE_ERROR_NOGATT = -2 & 0xFFFF0000;
+	public static final int BLE_ERROR_NOOP = 0xFFFF0000;
+	public static final int BLE_ERROR_NOGATT = -2 & 0xFFFF0000;
 
-	public static long BLE_WAIT_TIMEOUT = 10000;
+	public static final long BLE_WAIT_TIMEOUT = 10000;
 
-	public static int OP_NOOP = 0;
-	public static int OP_CONNECT = 1;
-	public static int OP_DISCOVER_SERVICES = 2;
-	public static int OP_READ_CHARACTERISTIC = 3;
-	public static int OP_WRITE_CHARACTERISTIC = 4;
-	public static int OP_READ_DESCRIPTOR = 5;
-	public static int OP_WRITE_DESCRIPTOR = 6;
-	public static int OP_CHARACTERISTIC_CHANGED = 7;
-	public static int OP_RELIABLE_WRITE_COMPLETED = 8;
-	public static int OP_READ_REMOTE_RSSI = 9;
-	public static int OP_MTU_CHANGED = 10;
+	public static final int OP_NOOP = 0;
+	public static final int OP_CONNECT = 1;
+	public static final int OP_DISCOVER_SERVICES = 2;
+	public static final int OP_READ_CHARACTERISTIC = 3;
+	public static final int OP_WRITE_CHARACTERISTIC = 4;
+	public static final int OP_READ_DESCRIPTOR = 5;
+	public static final int OP_WRITE_DESCRIPTOR = 6;
+	public static final int OP_CHARACTERISTIC_CHANGED = 7;
+	public static final int OP_RELIABLE_WRITE_COMPLETED = 8;
+	public static final int OP_READ_REMOTE_RSSI = 9;
+	public static final int OP_MTU_CHANGED = 10;
     public static int extended_error = 0;
-
 
 	protected volatile int bleState = 0;
 	protected volatile int error = 0;
-
 
 	protected volatile int inBleOp = 0;
 	protected volatile boolean callbackCompleted = false;
@@ -63,7 +61,7 @@ public class BLEManager {
 	protected CharacteristicChangeListener characteristicChangeListener;
 	protected UnexpectedConnectionEventListener unexpectedDisconnectionListener;
 
-	static final String TAG = "BLEManager";
+	static final String TAG = BLEManager.class.getSimpleName();
 	private boolean debug = BuildConfig.DEBUG;
 
 	void logi(String message) {
@@ -154,7 +152,6 @@ public class BLEManager {
 
 	public int connect(boolean autoReconnect) {
 
-
 		int rc = BLE_ERROR_NOOP;
 
 		if (gatt == null) {
@@ -181,8 +178,8 @@ public class BLEManager {
 
 							rc = error | bleState;
 						}
-					} catch (Exception e) {
-						e.printStackTrace();
+					} catch (InterruptedException e) {
+						Log.e(TAG, e.toString());
 					}
 
 					inBleOp = OP_NOOP;
@@ -220,9 +217,9 @@ public class BLEManager {
 						}
 						rc = error | bleState;
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				} catch (InterruptedException e) {
+                    Log.e(TAG, e.toString());
+                }
 
 				inBleOp = OP_NOOP;
 			}
@@ -253,6 +250,7 @@ public class BLEManager {
 
 					rc = error | bleState;
 				} catch (InterruptedException e) {
+                    Log.e(TAG, e.toString());
 				}
 
 				inBleOp = OP_NOOP;
@@ -271,7 +269,7 @@ public class BLEManager {
 			if (gatt != null && inBleOp == OP_NOOP) {
 
 				inBleOp = OP_CONNECT;
-				this.error = 0;
+				error = 0;
 				int bleState = this.bleState;
 				try {
 					if (bleState != 0) {
@@ -280,13 +278,13 @@ public class BLEManager {
 						if (!callbackCompleted) {
 							error = (BLE_ERROR_FAIL | BLE_ERROR_TIMEOUT);
 						} else {
-							error = this.error;
 							bleState = this.bleState;
 						}
 					}
 
 					rc = error | bleState;
 				} catch (InterruptedException e) {
+                    Log.e(TAG, e.toString());
 				}
 
 				inBleOp = OP_NOOP;
@@ -317,6 +315,7 @@ public class BLEManager {
 						rc = error | bleState;
 					}
 				} catch (InterruptedException e) {
+                    Log.e(TAG, e.toString());
 				}
 
 				inBleOp = OP_NOOP;
@@ -328,7 +327,8 @@ public class BLEManager {
 	}
 
 	public boolean isConnected() {
-		return (bleState == BLE_CONNECTED || bleState == BLE_SERVICES_DISCOVERED || bleState == (BLE_CONNECTED |BLE_SERVICES_DISCOVERED ) );
+		return (bleState == BLE_CONNECTED || bleState == BLE_SERVICES_DISCOVERED
+                || bleState == (BLE_CONNECTED |BLE_SERVICES_DISCOVERED ) );
 	}
 
 	public int writeDescriptor(BluetoothGattDescriptor descriptor) {
@@ -353,6 +353,7 @@ public class BLEManager {
 					}
 
 				} catch (InterruptedException e) {
+                    Log.e(TAG, e.toString());
 				}
 
 				inBleOp = OP_NOOP;
@@ -384,6 +385,7 @@ public class BLEManager {
 						rc = error | bleState;
 					}
 				} catch (InterruptedException e) {
+                    Log.e(TAG, e.toString());
 				}
 
 				inBleOp = OP_NOOP;
@@ -416,10 +418,8 @@ public class BLEManager {
 					} else {
 						if (debug) logi("writeCharacteristic() :: failed");
 					}
-
-
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					Log.e(TAG, e.toString());
 				}
 
 				inBleOp = OP_NOOP;
@@ -442,7 +442,7 @@ public class BLEManager {
 
 				inBleOp = OP_READ_CHARACTERISTIC;
 				lastCharacteristic = null;
-				this.error = 0;
+				error = 0;
 				int bleState = this.bleState;
 				try {
 					callbackCompleted = false;
@@ -451,14 +451,13 @@ public class BLEManager {
 						if (!callbackCompleted) {
 							error = (BLE_ERROR_FAIL | BLE_ERROR_TIMEOUT);
 						} else {
-							error = this.error;
 							bleState = this.bleState;
 						}
 
 						rc = error | bleState;
 					}
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					Log.e(TAG, e.toString());
 				}
 
 				inBleOp = OP_NOOP;
@@ -480,7 +479,7 @@ public class BLEManager {
 	public int enableCharacteristicNotification(BluetoothGattCharacteristic characteristic, BluetoothGattDescriptor descriptor, boolean enable) {
 
 		if (enable) {
-			gatt.setCharacteristicNotification(characteristic, enable);
+			gatt.setCharacteristicNotification(characteristic, true);
 			descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
 		} else {
 			gatt.setCharacteristicNotification(characteristic, false);
@@ -533,7 +532,7 @@ public class BLEManager {
 					}
 					callbackCompleted = true;
                     BLEManager.this.error = error;
-                    BLEManager.this.extended_error = status;
+                    extended_error = status;
 					locker.notify();
 				} else {
 					if (debug) logi("onConnectionStateChange() :: inBleOp != OP_CONNECT");

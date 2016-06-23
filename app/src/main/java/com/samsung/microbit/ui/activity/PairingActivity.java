@@ -204,7 +204,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
             }
         }
     };
-    private BroadcastReceiver localBroadcastReceiver = new BroadcastReceiver() {
+
+    private BroadcastReceiver mLocalBroadcastReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -269,6 +270,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
 
         }
     };
+
     View.OnClickListener notificationOKHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -523,7 +525,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         EchoClientManager.getInstance().sendViewEventStats("pairingactivity");
 
         IntentFilter broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
-        LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(localBroadcastReceiver, broadcastIntentFilter);
+        LocalBroadcastManager.getInstance(MBApp.getContext()).registerReceiver(mLocalBroadcastReceiver, broadcastIntentFilter);
 
         //Register receiver
         IntentFilter intent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
@@ -750,17 +752,15 @@ public class PairingActivity extends Activity implements View.OnClickListener {
     }
 
     private void updatePairedDeviceCard() {
-        if (deviceConnectionStatusBtn != null) {
-            ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
-            if (connectedDevice.mName == null) {
-                // No device is Paired
-                deviceConnectionStatusBtn.setBackgroundResource(R.drawable.grey_btn);
-                deviceConnectionStatusBtn.setText("-");
-                deviceConnectionStatusBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            } else {
-                deviceConnectionStatusBtn.setText(connectedDevice.mName);
-                updateConnectionStatus();
-            }
+        ConnectedDevice connectedDevice = Utils.getPairedMicrobit(this);
+        if (connectedDevice.mName == null) {
+            // No device is Paired
+            deviceConnectionStatusBtn.setBackgroundResource(R.drawable.grey_btn);
+            deviceConnectionStatusBtn.setText("-");
+            deviceConnectionStatusBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+        } else {
+            deviceConnectionStatusBtn.setText(connectedDevice.mName);
+            updateConnectionStatus();
         }
     }
 
@@ -1382,6 +1382,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         unbindDrawables(findViewById(R.id.searching_progress_spinner));
 
         unregisterReceiver(mPairReceiver);
+        LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(mLocalBroadcastReceiver);
     }
 
     private void unbindDrawables(View view) {

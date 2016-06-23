@@ -172,7 +172,7 @@ public abstract class BLEBaseService extends Service {
 
 		if (rc > 0) {
 			if ((rc & BLEManager.BLE_ERROR_FAIL) != 0) {
-                actual_Error = bleManager.extended_error ;
+                actual_Error = BLEManager.extended_error;
 				if ((rc & BLEManager.BLE_ERROR_TIMEOUT) != 0) {
 					rc = 10;
 				} else {

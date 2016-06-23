@@ -19,7 +19,7 @@ public class CameraPlugin {
 
 	private static Context context = null;
 
-	private static final String TAG = "CameraPlugin";
+	private static final String TAG = CameraPlugin.class.getSimpleName();
 
     private static int m_NextState = -1 ;
 	private static int m_CurrentState = -1;
@@ -44,7 +44,7 @@ public class CameraPlugin {
         if (mPowerManager == null)
         {
             mPowerManager = (PowerManager) ctx.getApplicationContext().getSystemService(Context.POWER_SERVICE);
-            mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
+            mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, TAG);
         }
 		switch (cmd.getCMD()) {
 			case Constants.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE:
@@ -93,7 +93,7 @@ public class CameraPlugin {
 	}
 
 	public static void sendReplyCommand(int mbsService, CmdArg cmd) {
-		if (PluginService.mClientMessenger != null) {
+		if (PluginService.clientMessenger != null) {
 			Message msg = Message.obtain(null, mbsService);
 			Bundle bundle = new Bundle();
 			bundle.putInt("cmd", cmd.getCMD());
@@ -101,16 +101,16 @@ public class CameraPlugin {
 			msg.setData(bundle);
 
 			try {
-				PluginService.mClientMessenger.send(msg);
+				PluginService.clientMessenger.send(msg);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				Log.e(TAG, e.toString());
 			}
 		}
 	}
 
     private static void performOnEnd()
     {
-        Log.d("CameraPlugin" , "Next state - " + m_NextState);
+        Log.d(TAG, "Next state - " + m_NextState);
         switch (m_NextState)
         {
             case Constants.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE:

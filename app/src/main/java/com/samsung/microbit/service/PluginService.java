@@ -24,15 +24,15 @@ import com.samsung.microbit.plugin.TelephonyPlugin;
 
 public class PluginService extends Service {
 
-	static final String TAG = "PluginService";
+	private static final String TAG = PluginService.class.getSimpleName();
 	private boolean debug = BuildConfig.DEBUG;
 
 	void logi(String message) {
 		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 	}
 
-	public static Messenger mClientMessenger = null;
-	public static PluginService instance = null;
+	public static Messenger clientMessenger;
+	public static PluginService instance;
 
 	public PluginService() {
 		instance = this;
@@ -55,7 +55,7 @@ public class PluginService extends Service {
 	public void handleMessage(Message msg) {
 		if (debug) logi("handleMessage() ");
 		Bundle data = msg.getData();
-		mClientMessenger = msg.replyTo;
+		clientMessenger = msg.replyTo;
 		CmdArg cmd = new CmdArg(data.getInt(IPCMessageManager.BUNDLE_DATA), data.getString(IPCMessageManager.BUNDLE_VALUE));
 
 		if (debug) logi("handleMessage() ## msg.arg1 = " + msg.arg1);
@@ -107,33 +107,11 @@ public class PluginService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		if (debug) logi("onStartCommand() :: start");
 
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(5000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-                /*
-				if (debug) logi("onStartCommand().run() ::  Starting Constants.REG_SIGNALSTRENGTH");
-				Message msg = Message.obtain(null, Constants.REG_SIGNALSTRENGTH);
-				msg.arg1 = Constants.SAMSUNG_SIGNAL_STRENGTH_ID;
-				Bundle bundle = new Bundle();
-				bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_SIGNALSTRENGTH);
-				bundle.putString(IPCMessageManager.BUNDLE_VALUE, "on");
-				msg.setData(bundle);
-				handleMessage(msg);
-				*/
-
-
-				//bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DEVICEORIENTATION);
-				//bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DEVICEGESTURE);
-				//bundle.putInt(IPCMessageManager.BUNDLE_DATA, Constants.REG_DISPLAY);
-
-
-			}
-		}).run();
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            Log.e(TAG, e.toString());
+        }
 
 		return START_STICKY;
 	}
@@ -175,10 +153,10 @@ public class PluginService extends Service {
 
 					try {
 						Thread.sleep(IPCMessageManager.STARTUP_DELAY);
-						sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
-						sendtoIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+						sendToBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
+						sendToIPCService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						Log.e(TAG, e.toString());
 					}
 				}
 			}).start();
@@ -195,25 +173,25 @@ public class PluginService extends Service {
 		args[1] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_GUID, Constants.ES_CLIENT_EVENT.toString());
 		args[2] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_VALUE, value);
 		args[3] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE, Constants.FORMAT_UINT32);
-		PluginService.instance.sendtoBLEService(IPCMessageManager.MICROBIT_MESSAGE,
+		PluginService.instance.sendToBLEService(IPCMessageManager.MICROBIT_MESSAGE,
 				IPCMessageManager.IPC_FUNCTION_WRITE_CHARACTERISTIC, null, args);
 	}
 
-	public void sendtoBLEService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
+	public void sendToBLEService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
 
-		if (debug) logi("sendtoBLEService()");
+		if (debug) logi("sendToBLEService()");
 		Class destService = BLEService.class;
-		sendIPCMessge(destService, mbsService, functionCode, cmd, args);
+		sendIPCMessage(destService, mbsService, functionCode, cmd, args);
 	}
 
-	public void sendtoIPCService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
+	public void sendToIPCService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
 
-		if (debug) logi("sendtoIPCService()");
+		if (debug) logi("sendToIPCService()");
 		Class destService = IPCService.class;
-		sendIPCMessge(destService, mbsService, functionCode, cmd, args);
+		sendIPCMessage(destService, mbsService, functionCode, cmd, args);
 	}
 
-	public void sendIPCMessge(Class destService, int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
+	public void sendIPCMessage(Class destService, int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
 
 		IPCMessageManager inst = IPCMessageManager.getInstance();
 		if (!inst.isConnected(destService)) {
@@ -233,16 +211,16 @@ public class PluginService extends Service {
 		}
 
 		if (args != null) {
-			for (int i = 0; i < args.length; i++) {
-				bundle.putSerializable(args[i].getName(), args[i].getValue());
-			}
+            for (NameValuePair arg : args) {
+                bundle.putSerializable(arg.getName(), arg.getValue());
+            }
 		}
 
 		msg.setData(bundle);
 		try {
 			inst.sendMessage(destService, msg);
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			Log.e(TAG, e.toString());
 		}
 	}
 

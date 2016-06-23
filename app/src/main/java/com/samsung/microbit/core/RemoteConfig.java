@@ -30,10 +30,7 @@ import javax.xml.transform.Result;
 public class RemoteConfig
 {
     private static volatile RemoteConfig instance;
-    private URL mConfigLocation;
-    private long mUpdateTime;
     private SharedPreferences mPreferences;
-    private Context mContext;
 
 
   /* Sample config file
@@ -87,6 +84,8 @@ public class RemoteConfig
     public static final String RC_LAST_QUERY = "com.samsung.microbit.lastQuery";
     public static final String RC_MAX_AGE = "com.samsung.microbit.maxage";
 
+    private static final String TAG = RemoteConfig.class.getSimpleName();
+
     //Store for shared preference
     private String blankValue = "";
 
@@ -101,11 +100,8 @@ public class RemoteConfig
     private String m_PPURL = null ;
     private String m_sendToEmail = null ;
     private String m_Etag = null ;
-    private String m_lastModifiedString = null ;
     private long   m_LastQueryTime = 0 ;
     private long   m_maxAge = 0 ;
-
-    private HttpResponseCache m_cache = null;
 
     public static RemoteConfig getInstance()
     {
@@ -123,11 +119,11 @@ public class RemoteConfig
     public void init() {
         Context context = MBApp.getContext();
         if (context == null) {
-            Log.d("RemoteConfig", "Context is null. cannot get the config");
+            Log.d(TAG, "Context is null. cannot get the config");
             return;
         }
         if (!getStoredValues(context)) {
-            Log.e("RemoteConfig", "Could not read from shared preference");
+            Log.e(TAG, "Could not read from shared preference");
             return;
         }
         //Install the HTTP Cache
@@ -136,12 +132,12 @@ public class RemoteConfig
             long httpCacheSize = 3 * 1024 * 1024; // 3 MiB
             HttpResponseCache.install(httpCacheDir, httpCacheSize);
         } catch (IOException e) {
-            Log.i("RemoteConfig", "HTTP response cache installation failed:" + e);
+            Log.e(TAG, "HTTP response cache installation failed: " + e.toString());
         }
-        m_cache = HttpResponseCache.getInstalled();
-        if (m_cache!= null){
+        HttpResponseCache cache = HttpResponseCache.getInstalled();
+        if (cache != null){
             //   If cache is present, flush it to the filesystem.
-            m_cache.flush();
+            cache.flush();
         }
 
         //Check if we should get new config file
@@ -157,7 +153,7 @@ public class RemoteConfig
             try {
                 cache.close();
             } catch (IOException e) {
-                Log.i("RemoteConfig", "HTTP response cache close failed:" + e);
+                Log.e(TAG, "HTTP response cache close failed: " + e.toString());
             }
         }
     }
@@ -270,11 +266,12 @@ public class RemoteConfig
         //Get extended message if needed
         if (m_AppStatus.equalsIgnoreCase("OFF"))
         {
-            Log.e("RemoteConfig", "isAppStatusOn: OFF");
+            Log.e(TAG, "isAppStatusOn: OFF");
             return false;
         }
         return true;
     }
+
     class RetrieveConfigFile extends AsyncTask<String, Void, Result> {
 
         @Override
@@ -283,15 +280,15 @@ public class RemoteConfig
             if (BuildConfig.DEBUG) {
                 //Hardcoding the version for Debug builds
                 version = "1.3.6" ;
-                Log.d("RemoteConfig", "Using config file for version :  " + version);
+                Log.d(TAG, "Using config file for version :  " + version);
             }else{
                 PackageManager manager = MBApp.getContext().getPackageManager();
-                PackageInfo info = null;
+                PackageInfo info;
                 try {
                     info = manager.getPackageInfo(MBApp.getContext().getPackageName(), 0);
                     version = info.versionName;
                 } catch (PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, e.toString());
                 }
             }
             //Get the new config file
@@ -313,12 +310,12 @@ public class RemoteConfig
                     //Process the response headers and populate the shared preference
                     SharedPreferences.Editor editor = mPreferences.edit();
                     String eTag = urlConnection.getHeaderField("ETag");
-                    editor.putString(RC_ETAG, eTag).commit();
-                    editor.putLong(RC_LAST_QUERY, System.currentTimeMillis()).commit();
+                    editor.putString(RC_ETAG, eTag).apply();
+                    editor.putLong(RC_LAST_QUERY, System.currentTimeMillis()).apply();
                     //Get the data
                     BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                     String inputLine;
-                    StringBuffer response = new StringBuffer();
+                    StringBuilder response = new StringBuilder();
                     while ((inputLine = in.readLine()) != null) {
                         response.append(inputLine);
                     }
@@ -328,12 +325,10 @@ public class RemoteConfig
                     }
 
                 } else if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_MODIFIED){
-                    Log.d("RemoteConfig" , "Content not modified");
+                    Log.d(TAG, "Content not modified");
                 }
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, e.toString());
             } finally {
                 if (urlConnection != null)
                     urlConnection.disconnect();
@@ -343,7 +338,7 @@ public class RemoteConfig
 
         private void readAppStatus(JSONObject reader, SharedPreferences.Editor editor)
         {
-            JSONObject status  = null;
+            JSONObject status;
             try {
                 status = reader.getJSONObject("status");
                 String appStatus = status.getString("appStatus");
@@ -357,8 +352,7 @@ public class RemoteConfig
                     editor.putString(RC_EXCEPTIONMSG_KEY, message).commit();
                 }
             } catch (JSONException e) {
-                Log.e("RemoteConfig", "readAppStatus: failed");
-                e.printStackTrace();
+                Log.e(TAG, "readAppStatus: failed with exception " + e.toString());
             }
         }
 
@@ -381,8 +375,7 @@ public class RemoteConfig
                 editor.putString(RC_APPSTATUS_MYSCRIPTS, myscripts).commit();
 
             } catch (JSONException e) {
-                Log.e("RemoteConfig", "readEndPoints: failed");
-                e.printStackTrace();
+                Log.e(TAG, "readEndPoints: failed with exception " + e.toString());
             }
         }
 
@@ -391,10 +384,9 @@ public class RemoteConfig
             try {
                 JSONObject config  = reader.getJSONObject("config");
                 String email = config.getString("feedbackEmailAddress");
-                editor.putString(RC_CONFIG_EMAIL, email).commit();
+                editor.putString(RC_CONFIG_EMAIL, email).apply();
             } catch (JSONException e) {
-                Log.e("RemoteConfig", "readConfig: failed");
-                e.printStackTrace();
+                Log.e(TAG, "readConfig: failed with exception " + e.toString());
             }
         }
         private void readFromJsonAndStore(String jsonFile) {
@@ -408,8 +400,7 @@ public class RemoteConfig
                 //Read end points
                 readConfig(reader, editor);
             } catch (JSONException e) {
-                Log.i("RemoteConfig", "readFromJsonAndStore: failed");
-                e.printStackTrace();
+                Log.e(TAG, "readFromJsonAndStore: failed with exception " + e.toString());
             }
         }
         protected void onPostExecute(Result result) {

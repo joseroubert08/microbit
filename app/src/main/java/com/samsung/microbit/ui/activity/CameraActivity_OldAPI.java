@@ -1,6 +1,7 @@
 package com.samsung.microbit.ui.activity;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -52,15 +53,13 @@ import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.view.CameraPreview;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class CameraActivity_OldAPI extends Activity {
-
-    private static boolean mInstanceActive = false;
 
     private CameraPreview mPreview;
     private ImageButton mButtonClick, mButtonBack_portrait, mButtonBack_landscape;
@@ -83,7 +82,7 @@ public class CameraActivity_OldAPI extends Activity {
     private Boolean bTakePicOnResume = false;
     private Boolean bRecordVideoOnResume = false;
 
-    private static final String TAG = "CameraActivity_OldAPI";
+    private static final String TAG = CameraActivity_OldAPI.class.getSimpleName();
     private boolean debug = BuildConfig.DEBUG;
 
 
@@ -112,9 +111,8 @@ public class CameraActivity_OldAPI extends Activity {
     }
 
     private int getCurrentCamera() {
-        int cameraCount = 0;
         Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
-        cameraCount = Camera.getNumberOfCameras();
+        int cameraCount = Camera.getNumberOfCameras();
         for (int camIdx = 0; camIdx < cameraCount; camIdx++) {
             Camera.getCameraInfo(camIdx, cameraInfo);
             if (mfrontCamera && cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
@@ -139,9 +137,9 @@ public class CameraActivity_OldAPI extends Activity {
 
     private void createRotatedIcons() {
         Drawable icon = getResources().getDrawable(R.drawable.take_photo);
-        mTakePhoto = new ArrayList<Drawable>();
-        mStartRecord = new ArrayList<Drawable>();
-        mStopRecord = new ArrayList<Drawable>();
+        mTakePhoto = new ArrayList<>();
+        mStartRecord = new ArrayList<>();
+        mStopRecord = new ArrayList<>();
         mTakePhoto.add(rotateIcon(icon, 0));
         mTakePhoto.add(rotateIcon(icon, -90));
         mTakePhoto.add(rotateIcon(icon, 180));
@@ -578,7 +576,7 @@ public class CameraActivity_OldAPI extends Activity {
     private void startTakePicCounter () {
 
         Utils.playAudio(Utils.geTakingPhotoAudio(), null);
-        final Toast toast = Toast.makeText(MBApp.getApp().getApplicationContext(),"bbb", Toast.LENGTH_SHORT);
+        @SuppressLint("ShowToast") final Toast toast = Toast.makeText(MBApp.getApp().getApplicationContext(),"bbb", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
 
         //Toast.LENGTH_SHORT will keep the toast for 2s, our interval is 1s and calling toast.show()
@@ -649,7 +647,7 @@ public class CameraActivity_OldAPI extends Activity {
             }
 
         } catch (RuntimeException ex) {
-            logi(ex.toString());
+            Log.e(TAG, ex.toString());
             Toast.makeText(this, getString(R.string.camera_not_found), Toast.LENGTH_LONG).show();
             sendCameraError();
             finish();
@@ -706,7 +704,7 @@ public class CameraActivity_OldAPI extends Activity {
             parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
             mCamera.setParameters(parameters);
         } catch (RuntimeException e) {
-            logi(e.getMessage());
+            Log.e(TAG, e.toString());
         }
     }
 
@@ -778,7 +776,6 @@ public class CameraActivity_OldAPI extends Activity {
 
         @Override
         protected Void doInBackground(byte[]... data) {
-            FileOutputStream outStream = null;
 
             // Write to SD Card
             try {
@@ -789,10 +786,10 @@ public class CameraActivity_OldAPI extends Activity {
                 }
 
                 //TODO defining the file name
-                String fileName = String.format("%d.jpg", System.currentTimeMillis());
+                String fileName = String.format(Locale.getDefault(), "%d.jpg", System.currentTimeMillis());
                 File outFile = new File(dir, fileName);
 
-                outStream = new FileOutputStream(outFile);
+                FileOutputStream outStream = new FileOutputStream(outFile);
                 outStream.write(data[0]);
 
                 outStream.flush();
@@ -802,11 +799,8 @@ public class CameraActivity_OldAPI extends Activity {
 
                 CmdArg cmd = new CmdArg(0, "Camera picture saved");
                 CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
+                Log.e(TAG, e.toString());
             }
             return null;
         }
@@ -857,7 +851,7 @@ public class CameraActivity_OldAPI extends Activity {
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        String fileName = String.format("%d.mp4", System.currentTimeMillis());
+        String fileName = String.format(Locale.getDefault(), "%d.mp4", System.currentTimeMillis());
         mVideoFile = new File(dir, fileName);
         mMediaRecorder.setOutputFile(mVideoFile.getAbsolutePath());
 
@@ -870,16 +864,11 @@ public class CameraActivity_OldAPI extends Activity {
 
         try {
             mMediaRecorder.prepare();
-        } catch (IllegalStateException e) {
-            releaseMediaRecorder();
-            Log.e(TAG, "Error preparing media Recorder: " + e.getLocalizedMessage());
-            return false;
         } catch (IOException e) {
             releaseMediaRecorder();
-            Log.e(TAG, "Error preparing media Recorder IOException: " + e.getLocalizedMessage());
+            Log.e(TAG, e.toString());
             return false;
         }
         return true;
-
     }
 }

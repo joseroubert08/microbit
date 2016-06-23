@@ -39,7 +39,6 @@ public class Utils {
 
     public static final String PREFERENCES_KEY = "Microbit_PairedDevices";
     public static final String PREFERENCES_PAIREDDEV_KEY = "PairedDeviceDevice";
-    public static String PREFERENCES_MICROBIT_FIRMWARE = "PairedDeviceDevice";
 
     public static final String PREFERENCES = "Preferences";
     public static final String PREFERENCES_LIST_ORDER = "Preferences.listOrder";
@@ -60,12 +59,7 @@ public class Utils {
 
     private static Utils instance;
 
-
-
-
-    //private volatile SharedPreferences preferences;
-
-    protected String TAG = "Utils";
+    protected static final String TAG = Utils.class.getSimpleName();
     protected boolean debug = BuildConfig.DEBUG;
 
     protected void logi(String message) {
@@ -81,7 +75,7 @@ public class Utils {
                 if (instance == null) {
                     Utils u = new Utils();
                     pairedDevice = new ConnectedDevice();
-                    mAudioManager = (AudioManager) MBApp.getContext().getSystemService(MBApp.getContext().AUDIO_SERVICE);
+                    mAudioManager = (AudioManager) MBApp.getContext().getSystemService(Context.AUDIO_SERVICE);
                     instance = u;
                 }
             }
@@ -93,8 +87,7 @@ public class Utils {
     public SharedPreferences getPreferences(Context ctx) {
 
         logi("getPreferences() :: ctx.getApplicationContext() = " + ctx.getApplicationContext());
-        SharedPreferences p = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
-        return p;
+        return ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
     }
 
     public void preferencesInteraction(Context ctx, PreferencesInteraction interAction) {
@@ -112,9 +105,8 @@ public class Utils {
         if (sdcardDownloads.exists()) {
             File files[] = sdcardDownloads.listFiles();
             if (files != null) {
-                for (int i = 0; i < files.length; i++) {
-                    String fileName = files[i].getName();
-                    if (fileName.endsWith(".hex")) {
+                for (File file : files) {
+                    if (file.getName().endsWith(".hex")) {
                         ++totalPrograms;
                     }
                 }
@@ -145,8 +137,8 @@ public class Utils {
         int totalPrograms = 0;
         if (sdcardDownloads.exists()) {
             File files[] = sdcardDownloads.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                String fileName = files[i].getName();
+            for (File file : files) {
+                String fileName = file.getName();
                 if (fileName.endsWith(".hex")) {
 
                     //Beautify the filename
@@ -159,7 +151,7 @@ public class Utils {
                         prettyFileNameMap.put(parsedFileName, fileName);
 
                     if (list != null)
-                        list.add(new Project(parsedFileName, files[i].getAbsolutePath(), files[i].lastModified(), null, false));
+                        list.add(new Project(parsedFileName, file.getAbsolutePath(), file.lastModified(), null, false));
 
                     ++totalPrograms;
                 }
@@ -246,8 +238,7 @@ public class Utils {
             mMediaplayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
             mMediaplayer.prepare();
         } catch (IOException e) {
-            e.printStackTrace();
-            Log.d("Utils", "playAudio: exception");
+            Log.e(TAG, e.toString());
             mMediaplayer.release();
             return;
         }
@@ -284,7 +275,7 @@ public class Utils {
     {
         if (mAudioManager == null)
         {
-            mAudioManager = (AudioManager) MBApp.getApp().getApplicationContext().getSystemService(MBApp.getApp().getApplicationContext().AUDIO_SERVICE);
+            mAudioManager = (AudioManager) MBApp.getApp().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         }
         originalRingerMode = mAudioManager.getRingerMode();
         originalRingerVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
@@ -300,7 +291,7 @@ public class Utils {
     {
         if (mAudioManager == null)
         {
-            mAudioManager = (AudioManager) MBApp.getApp().getApplicationContext().getSystemService(MBApp.getApp().getApplicationContext().AUDIO_SERVICE);
+            mAudioManager = (AudioManager) MBApp.getApp().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         }
         mAudioManager.setRingerMode(originalRingerMode);
         mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalRingerVolume, 0);
@@ -315,7 +306,7 @@ public class Utils {
             AssetFileDescriptor afd = resources.openRawResourceFd(ZIP_INTERNAL);
             //Unzip the file now
             ZipInputStream zin = new ZipInputStream(resources.openRawResource(ZIP_INTERNAL));
-            ZipEntry ze = null;
+            ZipEntry ze;
             while ((ze = zin.getNextEntry()) != null) {
                 Log.v("MicroBit", "Unzipping " + ze.getName());
 
@@ -331,12 +322,8 @@ public class Utils {
                 }
             }
             zin.close();
-        } catch (Resources.NotFoundException e) {
-            Log.e("MicroBit", "No internal zipfile present", e);
-            return false;
-        } catch (Exception e) {
-            Log.e("MicroBit", "unzip", e);
-            return false;
+        } catch (IOException e) {
+            Log.e(TAG, e.toString());
         }
         return true;
     }
@@ -368,7 +355,7 @@ public class Utils {
 
     public static List<Project> sortProjectList(List<Project> list, final int orderBy, final int sortOrder) {
 
-        Project[] projectArray = list.toArray(new Project[0]);
+        Project[] projectArray = list.toArray(new Project[list.size()]);
         Comparator<Project> comparator = new Comparator<Project>() {
             @Override
             public int compare(Project lhs, Project rhs) {
@@ -437,7 +424,7 @@ public class Utils {
         if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
             String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
             Log.v("Utils","Updating the microbit firmware");
-            ConnectedDevice deviceInSharedPref = new ConnectedDevice();
+            ConnectedDevice deviceInSharedPref;
             Gson gson = new Gson();
             deviceInSharedPref = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
             deviceInSharedPref.mfirmware_version = firmware;
@@ -451,7 +438,7 @@ public class Utils {
         if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
             String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
             Log.e("Utils","Updating the microbit firmware");
-            ConnectedDevice deviceInSharedPref = new ConnectedDevice();
+            ConnectedDevice deviceInSharedPref;
             Gson gson = new Gson();
             deviceInSharedPref = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
             deviceInSharedPref.mlast_connection_time = time;
@@ -520,7 +507,7 @@ public class Utils {
             editor.putString(PREFERENCES_PAIREDDEV_KEY, jsonActiveDevice);
         }
 
-        editor.commit();
+        editor.apply();
     }
 
     public static int getListOrderPrefs(Context ctx) {
@@ -539,7 +526,7 @@ public class Utils {
         SharedPreferences prefs = ctx.getApplicationContext().getSharedPreferences(PREFERENCES, Context.MODE_MULTI_PROCESS);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt(PREFERENCES_LIST_ORDER, orderPref);
-        editor.commit();
+        editor.apply();
     }
 
     // bit position to value mask
@@ -550,8 +537,8 @@ public class Utils {
     // multiple bit positions to value mask
     public static int getBitMask(int[] x) {
         int rc = 0;
-        for (int i = 0; i < x.length; i++) {
-            rc |= getBitMask(x[i]);
+        for (int aX : x) {
+            rc |= getBitMask(aX);
         }
 
         return rc;
