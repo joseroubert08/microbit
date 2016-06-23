@@ -17,33 +17,33 @@ import java.util.UUID;
 
 public class BLEManager {
 
-    public static int BLE_DISCONNECTED = 0x0000;
-    public static int BLE_CONNECTED = 0x0001;
-    public static int BLE_SERVICES_DISCOVERED = 0x0002;
+    public static final int BLE_DISCONNECTED = 0x0000;
+    public static final int BLE_CONNECTED = 0x0001;
+    public static final int BLE_SERVICES_DISCOVERED = 0x0002;
 
-    public static int BLE_ERROR_OK = 0x00000000;
-    public static int BLE_ERROR_FAIL = 0x00010000;
-    public static int BLE_ERROR_TIMEOUT = 0x00020000;
+    public static final int BLE_ERROR_OK = 0x00000000;
+    public static final int BLE_ERROR_FAIL = 0x00010000;
+    public static final int BLE_ERROR_TIMEOUT = 0x00020000;
 
-    public static int BLE_ERROR_NOOP = -1 & 0xFFFF0000;
-    public static int BLE_ERROR_NOGATT = -2 & 0xFFFF0000;
+    public static final int BLE_ERROR_NOOP = -1 & 0xFFFF0000;
+    public static final int BLE_ERROR_NOGATT = -2 & 0xFFFF0000;
 
-    public static long BLE_WAIT_TIMEOUT = 10000;
+    public static final long BLE_WAIT_TIMEOUT = 10000;
 
-    public static int OP_NOOP = 0;
-    public static int OP_CONNECT = 1;
-    public static int OP_DISCOVER_SERVICES = 2;
-    public static int OP_READ_CHARACTERISTIC = 3;
-    public static int OP_WRITE_CHARACTERISTIC = 4;
-    public static int OP_READ_DESCRIPTOR = 5;
-    public static int OP_WRITE_DESCRIPTOR = 6;
-    public static int OP_CHARACTERISTIC_CHANGED = 7;
-    public static int OP_RELIABLE_WRITE_COMPLETED = 8;
-    public static int OP_READ_REMOTE_RSSI = 9;
-    public static int OP_MTU_CHANGED = 10;
+    public static final int OP_NOOP = 0;
+    public static final int OP_CONNECT = 1;
+    public static final int OP_DISCOVER_SERVICES = 2;
+    public static final int OP_READ_CHARACTERISTIC = 3;
+    public static final int OP_WRITE_CHARACTERISTIC = 4;
+    public static final int OP_READ_DESCRIPTOR = 5;
+    public static final int OP_WRITE_DESCRIPTOR = 6;
+    public static final int OP_CHARACTERISTIC_CHANGED = 7;
+    public static final int OP_RELIABLE_WRITE_COMPLETED = 8;
+    public static final int OP_READ_REMOTE_RSSI = 9;
+    public static final int OP_MTU_CHANGED = 10;
     public static int extended_error = 0;
 
-    private static final String TAG = "BLEManager";
+    private static final String TAG = BLEManager.class.getSimpleName();
 
 
     private volatile int bleState = 0;
