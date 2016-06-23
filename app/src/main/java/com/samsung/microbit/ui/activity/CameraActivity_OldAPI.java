@@ -24,7 +24,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Environment;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.Gravity;
@@ -44,9 +43,10 @@ import android.widget.Toast;
 import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.model.CmdArg;
-import com.samsung.microbit.model.Constants;
-import com.samsung.microbit.model.RawConstants;
+import com.samsung.microbit.data.model.CmdArg;
+import com.samsung.microbit.data.constants.Constants;
+import com.samsung.microbit.data.constants.FileConstants;
+import com.samsung.microbit.data.constants.RawConstants;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.presentation.PlayAudioPresenter;
 import com.samsung.microbit.service.PluginService;
@@ -344,7 +344,7 @@ public class CameraActivity_OldAPI extends Activity {
             setParameters();
 
         }
-        new CountDownTimer(Constants.MAX_VIDEO_RECORDING_TIME, 1000) {
+        new CountDownTimer(Constants.MAX_VIDEO_RECORDING_TIME_MILLIS, Constants.VIDEO_FLASH_PICK_INTERVAL) {
             boolean flashON = false;
 
             public void onTick(long millisUntilFinished) {
@@ -591,10 +591,10 @@ public class CameraActivity_OldAPI extends Activity {
         //Toast.LENGTH_SHORT will keep the toast for 2s, our interval is 1s and calling toast.show()
         //after 1s will cause some count to be missed. Only call toast.show() just before 2s interval.
         //Also add delay to show the "Ready" toast.
-        new CountDownTimer(Constants.PIC_COUNTER_DURATION, Constants.PIC_COUNTER_INTERVAL) {
+        new CountDownTimer(Constants.PIC_COUNTER_DURATION_MILLIS, Constants.PIC_COUNTER_INTERVAL_MILLIS) {
 
             public void onTick(long millisUntilFinished) {
-                int count = (int) millisUntilFinished / Constants.PIC_COUNTER_INTERVAL;
+                int count = (int) millisUntilFinished / Constants.PIC_COUNTER_INTERVAL_MILLIS;
                 toast.setText("Ready in... " + count);
                 if(count%2 != 0)
                     toast.show();
@@ -793,7 +793,7 @@ public class CameraActivity_OldAPI extends Activity {
 
             // Write to SD Card
             try {
-                File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/" + Constants.MEDIA_OUTPUT_FOLDER);
+                File dir = FileConstants.MEDIA_OUTPUT_FOLDER;
 
                 if (!dir.exists()) {
                     dir.mkdirs();
@@ -864,7 +864,7 @@ public class CameraActivity_OldAPI extends Activity {
         }
 
         //Setting output file
-        File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/" + Constants.MEDIA_OUTPUT_FOLDER);
+        File dir = FileConstants.MEDIA_OUTPUT_FOLDER;
         if (!dir.exists()) {
             dir.mkdirs();
         }
@@ -873,8 +873,8 @@ public class CameraActivity_OldAPI extends Activity {
         mMediaRecorder.setOutputFile(mVideoFile.getAbsolutePath());
 
         //Setting limits
-        mMediaRecorder.setMaxDuration(Constants.MAX_VIDEO_RECORDING_TIME);
-        mMediaRecorder.setMaxFileSize(Constants.MAX_VIDEO_FILE_SIZE);
+        mMediaRecorder.setMaxDuration(Constants.MAX_VIDEO_RECORDING_TIME_MILLIS);
+        mMediaRecorder.setMaxFileSize(Constants.MAX_VIDEO_FILE_SIZE_BYTES);
 
         int rotation = getRotationCameraCorrection(mCurrentRotation);
         mMediaRecorder.setOrientationHint(rotation);

@@ -7,7 +7,7 @@ import android.util.Log;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
-import com.samsung.microbit.model.Constants;
+import com.samsung.microbit.data.constants.Constants;
 import com.samsung.microbit.utils.UnpackUtils;
 
 import java.util.HashMap;
@@ -185,7 +185,7 @@ public class EchoClientManager {
         }
     }
 
-    public void sendConnectStats(Constants.CONNECTION_STATE connectionState, String firmware, String duration) {
+    public void sendConnectStats(Constants.ConnectionState connectionState, String firmware, String duration) {
         try {
             if (echo != null) {
                 HashMap<String, String> eventLabels = new HashMap<String, String>();

@@ -4,19 +4,22 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.provider.Telephony;
-import android.telephony.TelephonyManager;
-import android.telephony.PhoneStateListener;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.RemoteException;
+import android.provider.Telephony;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.core.IPCMessageManager;
-import com.samsung.microbit.model.CmdArg;
-import com.samsung.microbit.model.Constants;
+import com.samsung.microbit.data.model.CmdArg;
+import com.samsung.microbit.data.constants.EventCategories;
+import com.samsung.microbit.data.constants.EventSubCodes;
+import com.samsung.microbit.data.constants.RegistrationIds;
 import com.samsung.microbit.service.PluginService;
+import com.samsung.microbit.utils.Utils;
 
 public class TelephonyPlugin {
 
@@ -27,7 +30,7 @@ public class TelephonyPlugin {
         }
 
         switch (cmd.getCMD()) {
-            case Constants.REG_TELEPHONY: {
+            case RegistrationIds.REG_TELEPHONY: {
                 if (register) {
                     registerIncomingCall();
                 } else {
@@ -35,7 +38,7 @@ public class TelephonyPlugin {
                 }
                 break;
             }
-            case Constants.REG_MESSAGING: {
+            case RegistrationIds.REG_MESSAGING: {
                 if (register) {
                     registerIncomingSMS();
                 } else {
@@ -70,8 +73,8 @@ public class TelephonyPlugin {
                 case TelephonyManager.CALL_STATE_RINGING:
                     Log.i("TelephonyManager", "onCallStateChanged: " + state);
 
-                    PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID,
-                            Constants.SAMSUNG_INCOMING_CALL));
+                    PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_DEVICE_INFO_ID,
+                            EventSubCodes.SAMSUNG_INCOMING_CALL));
                     break;
             }
         }
@@ -81,7 +84,8 @@ public class TelephonyPlugin {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Telephony.Sms.Intents.SMS_RECEIVED_ACTION)) {
-                PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID, Constants.SAMSUNG_INCOMING_SMS));
+                PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_DEVICE_INFO_ID,
+                         EventSubCodes.SAMSUNG_INCOMING_SMS));
             }
         }
     }

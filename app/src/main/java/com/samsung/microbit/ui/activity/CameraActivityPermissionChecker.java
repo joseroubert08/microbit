@@ -15,7 +15,7 @@ import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
-import com.samsung.microbit.model.Constants;
+import com.samsung.microbit.data.constants.PermissionCodes;
 import com.samsung.microbit.ui.PopUp;
 
 public class CameraActivityPermissionChecker extends AppCompatActivity {
@@ -106,7 +106,7 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode)
         {
-            case Constants.CAMERA_PERMISSIONS_REQUESTED: {
+            case PermissionCodes.CAMERA_PERMISSIONS_REQUESTED: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startCameraActivity();
                 } else {
@@ -135,7 +135,7 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
             logi("cameraPermissionOKHandler");
             PopUp.hide();
             String[] permissionsNeeded = {Manifest.permission.CAMERA};
-            requetPermission(permissionsNeeded, Constants.CAMERA_PERMISSIONS_REQUESTED);
+            requetPermission(permissionsNeeded, PermissionCodes.CAMERA_PERMISSIONS_REQUESTED);
         }
     };
 

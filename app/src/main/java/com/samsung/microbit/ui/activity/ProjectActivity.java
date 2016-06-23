@@ -33,9 +33,12 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.core.IPCMessageManager;
-import com.samsung.microbit.model.ConnectedDevice;
-import com.samsung.microbit.model.Constants;
-import com.samsung.microbit.model.Project;
+import com.samsung.microbit.data.constants.EventCategories;
+import com.samsung.microbit.data.model.ConnectedDevice;
+import com.samsung.microbit.data.constants.Constants;
+import com.samsung.microbit.data.constants.PermissionCodes;
+import com.samsung.microbit.data.model.Project;
+import com.samsung.microbit.data.constants.RequestCodes;
 import com.samsung.microbit.presentation.AppInfoPresenter;
 import com.samsung.microbit.service.DfuService;
 import com.samsung.microbit.service.IPCService;
@@ -118,8 +121,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
             if (mActivityState == ACTIVITY_STATE.MICROBIT_CONNECTING || mActivityState == ACTIVITY_STATE.MICROBIT_DISCONNECTING) {
 
-                if (getNotification == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED ||
-                        getNotification == IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED) {
+                if (getNotification == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL ||
+                        getNotification == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_SMS) {
                     logi("micro:bit application needs more permissions");
                     mRequestPermission.add(getNotification);
                     return;
@@ -127,7 +130,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 ConnectedDevice device = BluetoothUtils.getPairedMicrobit(context);
                 if (mActivityState == ACTIVITY_STATE.MICROBIT_CONNECTING) {
                     if (error == 0) {
-                        MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.CONNECTION_STATE.SUCCESS, device.mfirmware_version, null);
+                        MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.ConnectionState.SUCCESS, device.mfirmware_version, null);
                         BluetoothUtils.updateConnectionStartTime(context, System.currentTimeMillis());
                         //Check if more permissions were needed and request in the Application
                         if (!mRequestPermission.isEmpty()) {
@@ -137,13 +140,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             return;
                         }
                     } else {
-                        MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.CONNECTION_STATE.FAIL, null, null);
+                        MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.ConnectionState.FAIL, null, null);
                     }
                 }
                 if (error == 0 && mActivityState == ACTIVITY_STATE.MICROBIT_DISCONNECTING) {
                     long now = System.currentTimeMillis();
                     long connectionTime = (now - device.mlast_connection_time) / 1000; //Time in seconds
-                    MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.CONNECTION_STATE.DISCONNECT, device.mfirmware_version, Long.toString(connectionTime));
+                    MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.ConnectionState.DISCONNECT, device.mfirmware_version, Long.toString(connectionTime));
                 }
 
                 setActivityState(ACTIVITY_STATE.STATE_IDLE);
@@ -175,13 +178,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         public void onClick(View v) {
             logi("notificationOKHandler");
             PopUp.hide();
-            if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED) {
+            if (mRequestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL) {
                 String[] permissionsNeeded = {Manifest.permission.READ_PHONE_STATE};
-                requestPermission(permissionsNeeded, Constants.INCOMING_CALL_PERMISSIONS_REQUESTED);
+                requestPermission(permissionsNeeded, PermissionCodes.INCOMING_CALL_PERMISSIONS_REQUESTED);
             }
-            if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED) {
+            if (mRequestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_SMS) {
                 String[] permissionsNeeded = {Manifest.permission.RECEIVE_SMS};
-                requestPermission(permissionsNeeded, Constants.INCOMING_SMS_PERMISSIONS_REQUESTED);
+                requestPermission(permissionsNeeded, PermissionCodes.INCOMING_SMS_PERMISSIONS_REQUESTED);
             }
         }
     };
@@ -202,9 +205,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         public void onClick(View v) {
             logi("notificationCancelHandler");
             String msg = "Your program might not run properly";
-            if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED) {
+            if (mRequestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL) {
                 msg = getString(R.string.telephony_permission_error);
-            } else if (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_SMS_REQUESTED) {
+            } else if (mRequestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_SMS) {
                 msg = getString(R.string.sms_permission_error);
             }
             PopUp.hide();
@@ -227,7 +230,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 mRequestingPermission = mRequestPermission.get(0);
                 mRequestPermission.remove(0);
                 PopUp.show(MBApp.getApp(),
-                        (mRequestingPermission == IPCMessageManager.IPC_NOTIFICATION_INCOMING_CALL_REQUESTED)
+                        (mRequestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL)
                                 ? getString(R.string.telephony_permission)
                                 : getString(R.string.sms_permission),
                         getString(R.string.permissions_needed_title),
@@ -348,7 +351,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             logi("diskStoragePermissionOKHandler");
             PopUp.hide();
             String[] permissionsNeeded = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-            requestPermission(permissionsNeeded, Constants.APP_STORAGE_PERMISSIONS_REQUESTED);
+            requestPermission(permissionsNeeded, PermissionCodes.APP_STORAGE_PERMISSIONS_REQUESTED);
         }
     };
 
@@ -356,7 +359,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
                                            @NonNull int[] grantResults) {
         switch (requestCode) {
-            case Constants.APP_STORAGE_PERMISSIONS_REQUESTED: {
+            case PermissionCodes.APP_STORAGE_PERMISSIONS_REQUESTED: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     updateProjectsListSortOrder(true);
@@ -371,7 +374,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 }
             }
             break;
-            case Constants.INCOMING_CALL_PERMISSIONS_REQUESTED:{
+            case PermissionCodes.INCOMING_CALL_PERMISSIONS_REQUESTED:{
                 if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED ) {
                     PopUp.show(MBApp.getApp(),
                             getString(R.string.telephony_permission_error),
@@ -387,7 +390,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 }
             }
             break;
-            case Constants.INCOMING_SMS_PERMISSIONS_REQUESTED: {
+            case PermissionCodes.INCOMING_SMS_PERMISSIONS_REQUESTED: {
                 if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     PopUp.show(MBApp.getApp(),
                             getString(R.string.sms_permission_error),
@@ -563,7 +566,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == Constants.REQUEST_ENABLE_BT) {
+        if (requestCode == RequestCodes.REQUEST_ENABLE_BT) {
             if (resultCode == Activity.RESULT_OK) {
                 if (mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST ||
                         mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST) {
@@ -589,7 +592,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
     private void startBluetooth() {
         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        startActivityForResult(enableBtIntent, Constants.REQUEST_ENABLE_BT);
+        startActivityForResult(enableBtIntent, RequestCodes.REQUEST_ENABLE_BT);
     }
 
     private void toggleConnection() {

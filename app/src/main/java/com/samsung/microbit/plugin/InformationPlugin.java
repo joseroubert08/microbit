@@ -16,9 +16,12 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.samsung.microbit.MBApp;
-import com.samsung.microbit.model.CmdArg;
-import com.samsung.microbit.model.Constants;
+import com.samsung.microbit.data.model.CmdArg;
+import com.samsung.microbit.data.constants.EventCategories;
+import com.samsung.microbit.data.constants.EventSubCodes;
+import com.samsung.microbit.data.constants.RegistrationIds;
 import com.samsung.microbit.service.PluginService;
+import com.samsung.microbit.utils.Utils;
 
 public class InformationPlugin {
     //Information plugin action
@@ -35,7 +38,7 @@ public class InformationPlugin {
         }
 
         switch (cmd.getCMD()) {
-            case Constants.REG_SIGNALSTRENGTH: {
+            case RegistrationIds.REG_SIGNALSTRENGTH: {
                 if (register) {
                     registerSignalStrength();
                 } else {
@@ -44,7 +47,7 @@ public class InformationPlugin {
                 break;
             }
 
-            case Constants.REG_DEVICEORIENTATION: {
+            case RegistrationIds.REG_DEVICEORIENTATION: {
                 if (register) {
                     registerOrientation();
                 } else {
@@ -53,7 +56,7 @@ public class InformationPlugin {
                 break;
             }
 
-            case Constants.REG_DEVICEGESTURE: {
+            case RegistrationIds.REG_DEVICEGESTURE: {
                 if (register) {
                     registerShake();
                 } else {
@@ -62,7 +65,7 @@ public class InformationPlugin {
                 break;
             }
 
-            case Constants.REG_BATTERYSTRENGTH: {
+            case RegistrationIds.REG_BATTERYSTRENGTH: {
                 if (register) {
                     registerBattery();
                 } else {
@@ -71,7 +74,7 @@ public class InformationPlugin {
                 break;
             }
 
-            case Constants.REG_TEMPERATURE: {
+            case RegistrationIds.REG_TEMPERATURE: {
                 if (register) {
                     registerTemperature();
                 } else {
@@ -80,7 +83,7 @@ public class InformationPlugin {
                 break;
             }
 
-            case Constants.REG_DISPLAY: {
+            case RegistrationIds.REG_DISPLAY: {
                 if (register) {
                     registerDisplay();
                 } else {
@@ -139,16 +142,16 @@ public class InformationPlugin {
             // asu = 0 (-113dB or less) is very weak
             // signal, its better to show 0 bars to the user in such cases.
             // asu = 99 is a special case, where the signal strength is unknown.
-            if (asu <= 2 || asu == 99) level = Constants.SAMSUNG_SIGNAL_STRENGTH_EVT_NO_BAR;
-            else if (asu >= 12) level = Constants.SAMSUNG_SIGNAL_STRENGTH_EVT_FOUR_BAR;
-            else if (asu >= 8) level = Constants.SAMSUNG_SIGNAL_STRENGTH_EVT_THREE_BAR;
-            else if (asu >= 5) level = Constants.SAMSUNG_SIGNAL_STRENGTH_EVT_TWO_BAR;
-            else level = Constants.SAMSUNG_SIGNAL_STRENGTH_EVT_ONE_BAR;
+            if (asu <= 2 || asu == 99) level = EventSubCodes.SAMSUNG_SIGNAL_STRENGTH_EVT_NO_BAR;
+            else if (asu >= 12) level = EventSubCodes.SAMSUNG_SIGNAL_STRENGTH_EVT_FOUR_BAR;
+            else if (asu >= 8) level = EventSubCodes.SAMSUNG_SIGNAL_STRENGTH_EVT_THREE_BAR;
+            else if (asu >= 5) level = EventSubCodes.SAMSUNG_SIGNAL_STRENGTH_EVT_TWO_BAR;
+            else level = EventSubCodes.SAMSUNG_SIGNAL_STRENGTH_EVT_ONE_BAR;
         } else {
             level = getCdmaLevel();
         }
 
-        PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_SIGNAL_STRENGTH_ID, level));
+        PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_SIGNAL_STRENGTH_ID, level));
     }
 
     static private int getCdmaLevel() {
@@ -237,7 +240,8 @@ public class InformationPlugin {
                         //notify BLE client
                         CmdArg cmd = new CmdArg(InformationPlugin.SHAKE, "Device Shaked");
                         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
-                        PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID, Constants.SAMSUNG_DEVICE_GESTURE_DEVICE_SHAKEN));
+                        PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_DEVICE_INFO_ID,
+                                EventSubCodes.SAMSUNG_DEVICE_GESTURE_DEVICE_SHAKEN));
                         mSwingCount = 0;
                     }
                 } else {
@@ -291,16 +295,17 @@ public class InformationPlugin {
                     if (orientation!=1) {
                         Log.d("Sensor", "Landscape");
                     }
-                    orientation = Constants.SAMSUNG_DEVICE_ORIENTATION_LANDSCAPE;
+                    orientation = EventSubCodes.SAMSUNG_DEVICE_ORIENTATION_LANDSCAPE;
                 } else {
                     if (orientation!=0) {
                         Log.d("Sensor", "Portrait");
                     }
-                    orientation = Constants.SAMSUNG_DEVICE_ORIENTATION_PORTRAIT;
+                    orientation = EventSubCodes.SAMSUNG_DEVICE_ORIENTATION_PORTRAIT;
                 }
                 if (sPreviousOrientation != orientation) {
 
-                    PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID, orientation));
+                    PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_DEVICE_INFO_ID,
+                            orientation));
                     sPreviousOrientation = orientation;
                 }
             }
@@ -398,9 +403,11 @@ public class InformationPlugin {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
-                    PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID, Constants.SAMSUNG_DEVICE_DISPLAY_OFF));
+                    PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_DEVICE_INFO_ID,
+                            EventSubCodes.SAMSUNG_DEVICE_DISPLAY_OFF));
                 } else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
-                    PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID,Constants.SAMSUNG_DEVICE_DISPLAY_ON));
+                    PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_DEVICE_INFO_ID,
+                            EventSubCodes.SAMSUNG_DEVICE_DISPLAY_ON));
                 }
             }
         };

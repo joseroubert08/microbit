@@ -13,9 +13,9 @@ import android.util.Log;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.model.CmdArg;
-import com.samsung.microbit.model.Constants;
-import com.samsung.microbit.model.RawConstants;
+import com.samsung.microbit.data.model.CmdArg;
+import com.samsung.microbit.data.constants.EventSubCodes;
+import com.samsung.microbit.data.constants.RawConstants;
 import com.samsung.microbit.presentation.PlayAudioPresenter;
 import com.samsung.microbit.ui.PopUp;
 
@@ -89,7 +89,7 @@ public class AlertPlugin {
     public static void pluginEntry(Context ctx, CmdArg cmd) {
         Context context = MBApp.getApp();
         switch (cmd.getCMD()) {
-            case Constants.SAMSUNG_ALERT_EVT_DISPLAY_TOAST:
+            case EventSubCodes.SAMSUNG_ALERT_EVT_DISPLAY_TOAST:
                 PopUp.showFromService(context, cmd.getValue(),
                         "Message from Micro:Bit",
                         R.drawable.message_face, R.drawable.blue_btn,
@@ -97,30 +97,30 @@ public class AlertPlugin {
                         PopUp.TYPE_ALERT);
                 break;
 
-            case Constants.SAMSUNG_ALERT_EVT_VIBRATE:
+            case EventSubCodes.SAMSUNG_ALERT_EVT_VIBRATE:
                 vibrate(Integer.parseInt(cmd.getValue()));
                 break;
 
-            case Constants.SAMSUNG_ALERT_EVT_PLAY_SOUND:
+            case EventSubCodes.SAMSUNG_ALERT_EVT_PLAY_SOUND:
                 playNotification();
                 break;
 
-            case Constants.SAMSUNG_ALERT_EVT_PLAY_RINGTONE:
+            case EventSubCodes.SAMSUNG_ALERT_EVT_PLAY_RINGTONE:
                 playRingTone();
                 break;
 
-            case Constants.SAMSUNG_ALERT_EVT_FIND_MY_PHONE:
+            case EventSubCodes.SAMSUNG_ALERT_EVT_FIND_MY_PHONE:
                 findPhone();
                 break;
-            case Constants.SAMSUNG_ALERT_EVT_ALARM1:
-            case Constants.SAMSUNG_ALERT_EVT_ALARM2:
-            case Constants.SAMSUNG_ALERT_EVT_ALARM3:
-            case Constants.SAMSUNG_ALERT_EVT_ALARM4:
-            case Constants.SAMSUNG_ALERT_EVT_ALARM5:
-            case Constants.SAMSUNG_ALERT_EVT_ALARM6:
+            case EventSubCodes.SAMSUNG_ALERT_EVT_ALARM1:
+            case EventSubCodes.SAMSUNG_ALERT_EVT_ALARM2:
+            case EventSubCodes.SAMSUNG_ALERT_EVT_ALARM3:
+            case EventSubCodes.SAMSUNG_ALERT_EVT_ALARM4:
+            case EventSubCodes.SAMSUNG_ALERT_EVT_ALARM5:
+            case EventSubCodes.SAMSUNG_ALERT_EVT_ALARM6:
                 playAlarm(cmd.getCMD());
                 break;
-            case Constants.SAMSUNG_ALERT_STOP_PLAYING:
+            case EventSubCodes.SAMSUNG_ALERT_STOP_PLAYING:
                 if(playAudioPresenter != null) {
                     playAudioPresenter.stop();
                     playAudioPresenter = null;

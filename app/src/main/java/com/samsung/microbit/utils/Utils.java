@@ -1,6 +1,8 @@
 package com.samsung.microbit.utils;
 
-import com.samsung.microbit.model.Project;
+import com.samsung.microbit.data.constants.EventCategories;
+import com.samsung.microbit.data.constants.EventSubCodes;
+import com.samsung.microbit.data.model.Project;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -52,5 +54,16 @@ public class Utils {
         list.clear();
         list.addAll(Arrays.asList(projectArray));
         return list;
+    }
+
+    /**
+     * Going to and coming from microbit the following rule applies:
+     * low 16 bits == event category
+     * (e.g. {@link EventCategories#SAMSUNG_REMOTE_CONTROL_ID),
+     * high 16 bits ==  event sub code
+     * (eg. {@link EventSubCodes#SAMSUNG_REMOTE_CONTROL_EVT_PLAY)
+     */
+    public static int makeMicroBitValue(int category, int value) {
+        return ((value << 16) | category);
     }
 }

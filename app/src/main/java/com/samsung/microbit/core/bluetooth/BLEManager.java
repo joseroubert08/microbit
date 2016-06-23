@@ -73,7 +73,7 @@ public class BLEManager {
     public BLEManager(Context context, BluetoothDevice bluetoothDevice, UnexpectedConnectionEventListener
              unexpectedDisconnectionListener) {
         if (isDebug) {
-            logi("BLEManager(,,) :: start");
+            logi("start");
         }
 
         this.context = context;
@@ -84,7 +84,7 @@ public class BLEManager {
     public BLEManager(Context context, BluetoothDevice bluetoothDevice, CharacteristicChangeListener
              characteristicChangeListener, UnexpectedConnectionEventListener unexpectedDisconnectionListener) {
         if (isDebug) {
-            logi("BLEManager(,,,) :: start");
+            logi("start1");
         }
 
         this.context = context;
@@ -558,7 +558,6 @@ public class BLEManager {
     }
 
     public int enableCharacteristicNotification(BluetoothGattCharacteristic characteristic, BluetoothGattDescriptor descriptor, boolean enable) {
-
         if (enable) {
             gatt.setCharacteristicNotification(characteristic, enable);
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);

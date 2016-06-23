@@ -1,20 +1,24 @@
 package com.samsung.microbit.utils;
 
+import android.os.Environment;
 import android.util.Log;
 
-import com.samsung.microbit.model.Constants;
-import com.samsung.microbit.model.Project;
+import com.samsung.microbit.data.model.Project;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
 public class UnpackUtils {
+    //TODO: Change to data/data/appName/files MBApp.getContext().getFilesDir();
+    public static File HEX_FILE_DIR = Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
+    //public static File HEX_FILE_DIR = MBApp.getContext().getFilesDir();
+
     private UnpackUtils() {
     }
 
     public static int getTotalSavedPrograms() {
-        File sdcardDownloads = Constants.HEX_FILE_DIR;
+        File sdcardDownloads = HEX_FILE_DIR;
         int totalPrograms = 0;
         if (sdcardDownloads.exists()) {
             File files[] = sdcardDownloads.listFiles();
@@ -31,7 +35,7 @@ public class UnpackUtils {
     }
 
     public static int findProgramsAndPopulate(HashMap<String, String> prettyFileNameMap, List<Project> list) {
-        File sdcardDownloads = Constants.HEX_FILE_DIR;
+        File sdcardDownloads = HEX_FILE_DIR;
         Log.d("MicroBit", "Searching files in " + sdcardDownloads.getAbsolutePath());
 
         int totalPrograms = 0;

@@ -9,9 +9,13 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.samsung.microbit.core.IPCMessageManager;
-import com.samsung.microbit.model.CmdArg;
-import com.samsung.microbit.model.Constants;
-import com.samsung.microbit.model.NameValuePair;
+import com.samsung.microbit.data.constants.CharacteristicUUIDs;
+import com.samsung.microbit.data.model.CmdArg;
+import com.samsung.microbit.data.constants.EventCategories;
+import com.samsung.microbit.data.constants.EventSubCodes;
+import com.samsung.microbit.data.constants.GattFormats;
+import com.samsung.microbit.data.constants.GattServiceUUIDs;
+import com.samsung.microbit.data.model.NameValuePair;
 import com.samsung.microbit.plugin.AlertPlugin;
 import com.samsung.microbit.plugin.AudioPlugin;
 import com.samsung.microbit.plugin.CameraPlugin;
@@ -73,10 +77,10 @@ public class PluginService extends Service {
 
                     try {
                         Thread.sleep(IPCMessageManager.STARTUP_DELAY);
-                        ServiceUtils.sendtoBLEService(PluginService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager
-                                .IPC_FUNCTION_CODE_INIT, null, null);
-                        ServiceUtils.sendtoIPCService(PluginService.class, IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager
-                                .IPC_FUNCTION_CODE_INIT, null, null);
+                        ServiceUtils.sendtoBLEService(PluginService.class, IPCMessageManager.MESSAGE_ANDROID,
+                                 EventCategories.IPC_INIT, null, null);
+                        ServiceUtils.sendtoIPCService(PluginService.class, IPCMessageManager.MESSAGE_ANDROID,
+                                 EventCategories.IPC_INIT, null, null);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -113,12 +117,12 @@ public class PluginService extends Service {
         //TODO: instance is null because anysystem broadcast receiver run inside different process than the process who built the PluginService instance.
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + "sendMessageToBle()");
         NameValuePair[] args = new NameValuePair[4];
-        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_SERVICE_GUID, Constants.EVENT_SERVICE.toString());
-        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_GUID, Constants.ES_CLIENT_EVENT.toString());
+        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_SERVICE_GUID, GattServiceUUIDs.EVENT_SERVICE.toString());
+        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_GUID, CharacteristicUUIDs.ES_CLIENT_EVENT.toString());
         args[2] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_VALUE, value);
-        args[3] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE, Constants.FORMAT_UINT32);
-        ServiceUtils.sendtoBLEService(PluginService.class, IPCMessageManager.MICROBIT_MESSAGE,
-                IPCMessageManager.IPC_FUNCTION_WRITE_CHARACTERISTIC, null, args);
+        args[3] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE, GattFormats.FORMAT_UINT32);
+        ServiceUtils.sendtoBLEService(PluginService.class, IPCMessageManager.MESSAGE_MICROBIT,
+                EventCategories.IPC_WRITE_CHARACTERISTIC, null, args);
     }
 
     private void handleIncomingMessage(Message msg) {
@@ -126,15 +130,15 @@ public class PluginService extends Service {
             logi("handleIncomingMessage() :: Start PluginService");
         }
 
-        if (msg.what == IPCMessageManager.ANDROID_MESSAGE) {
+        if (msg.what == IPCMessageManager.MESSAGE_ANDROID) {
             if (DEBUG) {
-                logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
+                logi("handleIncomingMessage() :: IPCMessageManager.MESSAGE_ANDROID msg.arg1 = " + msg.arg1);
             }
 
             handleAndroidMessage(msg);
-        } else if (msg.what == IPCMessageManager.MICROBIT_MESSAGE) {
+        } else if (msg.what == IPCMessageManager.MESSAGE_MICROBIT) {
             if (DEBUG) {
-                logi("handleIncomingMessage() :: IPCMessageManager.MICROBIT_MESSAGE msg.arg1 = " + msg.arg1);
+                logi("handleIncomingMessage() :: IPCMessageManager.MESSAGE_MICROBIT msg.arg1 = " + msg.arg1);
             }
 
             handleMicroBitMessage(msg);
@@ -159,7 +163,7 @@ public class PluginService extends Service {
         }
 
         switch (msg.arg1) {
-            case Constants.SAMSUNG_REMOTE_CONTROL_ID:
+            case EventCategories.SAMSUNG_REMOTE_CONTROL_ID:
                 if (DEBUG) {
                     logi("handleMessage() ##  SAMSUNG_REMOTE_CONTROL_ID");
                 }
@@ -167,7 +171,7 @@ public class PluginService extends Service {
                 RemoteControlPlugin.pluginEntry(PluginService.this, cmd);
                 break;
 
-            case Constants.SAMSUNG_ALERTS_ID:
+            case EventCategories.SAMSUNG_ALERTS_ID:
                 if (DEBUG) {
                     logi("handleMessage() ##  SAMSUNG_ALERTS_ID");
                 }
@@ -175,7 +179,7 @@ public class PluginService extends Service {
                 AlertPlugin.pluginEntry(PluginService.this, cmd);
                 break;
 
-            case Constants.SAMSUNG_AUDIO_RECORDER_ID:
+            case EventCategories.SAMSUNG_AUDIO_RECORDER_ID:
                 if (DEBUG) {
                     logi("handleMessage() ##  SAMSUNG_AUDIO_RECORDER_ID");
                 }
@@ -183,7 +187,7 @@ public class PluginService extends Service {
                 AudioPlugin.pluginEntry(PluginService.this, cmd);
                 break;
 
-            case Constants.SAMSUNG_CAMERA_ID:
+            case EventCategories.SAMSUNG_CAMERA_ID:
                 if (DEBUG) {
                     logi("handleMessage() ##  SAMSUNG_CAMERA_ID");
                 }
@@ -191,7 +195,7 @@ public class PluginService extends Service {
                 CameraPlugin.pluginEntry(PluginService.this, cmd);
                 break;
 
-            case Constants.SAMSUNG_SIGNAL_STRENGTH_ID:
+            case EventCategories.SAMSUNG_SIGNAL_STRENGTH_ID:
                 if (DEBUG) {
                     logi("handleMessage() ##  SAMSUNG_SIGNAL_STRENGTH_ID");
                 }
@@ -199,7 +203,7 @@ public class PluginService extends Service {
                 InformationPlugin.pluginEntry(PluginService.this, cmd);
                 break;
 
-            case Constants.SAMSUNG_DEVICE_INFO_ID:
+            case EventCategories.SAMSUNG_DEVICE_INFO_ID:
                 if (DEBUG) {
                     logi("handleMessage() ##  SAMSUNG_DEVICE_INFO_ID");
                 }
@@ -207,7 +211,7 @@ public class PluginService extends Service {
                 InformationPlugin.pluginEntry(PluginService.this, cmd);
                 break;
 
-            case Constants.SAMSUNG_TELEPHONY_ID:
+            case EventCategories.SAMSUNG_TELEPHONY_ID:
                 if (DEBUG) {
                     logi("handleMessage() ##  SAMSUNG_TELEPHONY_ID");
                 }
@@ -221,8 +225,8 @@ public class PluginService extends Service {
     }
 
     private void handleAndroidMessage(Message msg) {
-        if(msg.arg1 == IPCMessageManager.IPC_FUNCTION_STOP_PLAYING) {
-            AlertPlugin.pluginEntry(PluginService.this, new CmdArg(Constants.SAMSUNG_ALERT_STOP_PLAYING, null));
+        if(msg.arg1 == EventCategories.IPC_PLUGIN_STOP_PLAYING) {
+            AlertPlugin.pluginEntry(PluginService.this, new CmdArg(EventSubCodes.SAMSUNG_ALERT_STOP_PLAYING, null));
         }
     }
 }

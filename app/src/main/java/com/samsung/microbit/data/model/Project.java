@@ -1,4 +1,4 @@
-package com.samsung.microbit.model;
+package com.samsung.microbit.data.model;
 
 public class Project {
 

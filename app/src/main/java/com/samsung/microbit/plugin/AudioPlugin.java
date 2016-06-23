@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.samsung.microbit.MBApp;
-import com.samsung.microbit.model.CmdArg;
-import com.samsung.microbit.model.Constants;
+import com.samsung.microbit.data.model.CmdArg;
+import com.samsung.microbit.data.constants.EventSubCodes;
 import com.samsung.microbit.ui.activity.AudioRecorderActivity;
 
 public class AudioPlugin {
@@ -21,19 +21,19 @@ public class AudioPlugin {
 
     public static void pluginEntry(Context ctx, CmdArg cmd) {
         switch (cmd.getCMD()) {
-            case Constants.SAMSUNG_AUDIO_RECORDER_EVT_START_CAPTURE: {
+            case EventSubCodes.SAMSUNG_AUDIO_RECORDER_EVT_START_CAPTURE: {
                 launchActivity(INTENT_ACTION_START_RECORD);
                 break;
             }
-            case Constants.SAMSUNG_AUDIO_RECORDER_EVT_STOP_CAPTURE: {
+            case EventSubCodes.SAMSUNG_AUDIO_RECORDER_EVT_STOP_CAPTURE: {
                 launchActivity(INTENT_ACTION_STOP_RECORD);
                 break;
             }
-            case Constants.SAMSUNG_AUDIO_RECORDER_EVT_LAUNCH: {
+            case EventSubCodes.SAMSUNG_AUDIO_RECORDER_EVT_LAUNCH: {
                 launchActivity(INTENT_ACTION_LAUNCH);
                 break;
             }
-            case Constants.SAMSUNG_AUDIO_RECORDER_EVT_STOP: {
+            case EventSubCodes.SAMSUNG_AUDIO_RECORDER_EVT_STOP: {
                 launchActivity(INTENT_ACTION_STOP);
                 break;
             }

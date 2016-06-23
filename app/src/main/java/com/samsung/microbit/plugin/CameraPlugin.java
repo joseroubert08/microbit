@@ -11,9 +11,9 @@ import android.util.Log;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.core.IPCMessageManager;
-import com.samsung.microbit.model.CmdArg;
-import com.samsung.microbit.model.Constants;
-import com.samsung.microbit.model.RawConstants;
+import com.samsung.microbit.data.model.CmdArg;
+import com.samsung.microbit.data.constants.EventSubCodes;
+import com.samsung.microbit.data.constants.RawConstants;
 import com.samsung.microbit.presentation.PlayAudioPresenter;
 import com.samsung.microbit.ui.activity.CameraActivityPermissionChecker;
 
@@ -41,49 +41,49 @@ public class CameraPlugin {
             mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
         }
         switch (cmd.getCMD()) {
-            case Constants.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE:
+            case EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE:
                 mWakeLock.acquire(5 * 1000);
-                m_CurrentState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE;
-                m_NextState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE;
+                m_CurrentState = EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE;
+                m_NextState = EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE;
 
                 playAudioPresenter.setNotificationForPlay(RawConstants.LAUNCH_CAMERA_AUDIO_PHOTO);
                 playAudioPresenter.setCallBack(m_OnCompletionListener);
                 playAudioPresenter.start();
                 break;
 
-            case Constants.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE:
+            case EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE:
                 mWakeLock.acquire(5 * 1000);
-                m_CurrentState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE;
-                m_NextState = Constants.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE;
+                m_CurrentState = EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE;
+                m_NextState = EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE;
 
                 playAudioPresenter.setNotificationForPlay(RawConstants.LAUNCH_CAMERA_AUDIO_VIDEO);
                 playAudioPresenter.setCallBack(m_OnCompletionListener);
                 playAudioPresenter.start();
                 break;
 
-            case Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO:
+            case EventSubCodes.SAMSUNG_CAMERA_EVT_TAKE_PHOTO:
                 mWakeLock.acquire(5 * 1000);
-                m_NextState = Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO;
+                m_NextState = EventSubCodes.SAMSUNG_CAMERA_EVT_TAKE_PHOTO;
                 performOnEnd();
                 break;
 
-            case Constants.SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE:
+            case EventSubCodes.SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE:
                 mWakeLock.acquire(5 * 1000);
-                m_NextState = Constants.SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE;
+                m_NextState = EventSubCodes.SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE;
                 performOnEnd();
                 break;
 
-            case Constants.SAMSUNG_CAMERA_EVT_STOP_VIDEO_CAPTURE:
+            case EventSubCodes.SAMSUNG_CAMERA_EVT_STOP_VIDEO_CAPTURE:
                 mWakeLock.acquire(5 * 1000);
                 recVideoStop();
                 break;
 
-            case Constants.SAMSUNG_CAMERA_EVT_STOP_PHOTO_MODE:
-            case Constants.SAMSUNG_CAMERA_EVT_STOP_VIDEO_MODE:
+            case EventSubCodes.SAMSUNG_CAMERA_EVT_STOP_PHOTO_MODE:
+            case EventSubCodes.SAMSUNG_CAMERA_EVT_STOP_VIDEO_MODE:
                 closeCamera();
                 break;
 
-            case Constants.SAMSUNG_CAMERA_EVT_TOGGLE_FRONT_REAR:
+            case EventSubCodes.SAMSUNG_CAMERA_EVT_TOGGLE_FRONT_REAR:
                 mWakeLock.acquire(5 * 1000);
                 toggleCamera();
                 break;
@@ -111,16 +111,16 @@ public class CameraPlugin {
     private static void performOnEnd() {
         Log.d("CameraPlugin", "Next state - " + m_NextState);
         switch (m_NextState) {
-            case Constants.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE:
+            case EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE:
                 launchCameraForPic();
                 break;
-            case Constants.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE:
+            case EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE:
                 launchCameraForVideo();
                 break;
-            case Constants.SAMSUNG_CAMERA_EVT_TAKE_PHOTO:
+            case EventSubCodes.SAMSUNG_CAMERA_EVT_TAKE_PHOTO:
                 takePic();
                 break;
-            case Constants.SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE:
+            case EventSubCodes.SAMSUNG_CAMERA_EVT_START_VIDEO_CAPTURE:
                 recVideoStart();
                 break;
 

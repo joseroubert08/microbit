@@ -5,7 +5,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.samsung.microbit.MBApp;
-import com.samsung.microbit.model.Constants;
+import com.samsung.microbit.data.constants.FileConstants;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,7 +33,7 @@ public class FileUtils {
             MBApp app = MBApp.getApp();
 
             Resources resources = app.getResources();
-            final int internalResource = resources.getIdentifier(Constants.ZIP_INTERNAL_NAME, "raw", app.getPackageName());
+            final int internalResource = resources.getIdentifier(FileConstants.ZIP_INTERNAL_NAME, "raw", app.getPackageName());
             final String outputDir = Environment.getExternalStoragePublicDirectory(Environment
                     .DIRECTORY_DOWNLOADS).getAbsolutePath();
             Log.d("MicroBit", "Resource id: " + internalResource);

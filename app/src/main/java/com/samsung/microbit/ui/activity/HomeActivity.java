@@ -33,7 +33,7 @@ import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.common.AppInfo;
-import com.samsung.microbit.model.Constants;
+import com.samsung.microbit.data.constants.PermissionCodes;
 import com.samsung.microbit.presentation.AppInfoPresenter;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
@@ -493,7 +493,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                                            @NonNull int[] grantResults) {
         switch (requestCode)
         {
-            case Constants.APP_STORAGE_PERMISSIONS_REQUESTED: {
+            case PermissionCodes.APP_STORAGE_PERMISSIONS_REQUESTED: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     installSamples();
@@ -526,7 +526,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.READ_EXTERNAL_STORAGE
             };
-            requestPermission(permissionsNeeded, Constants.APP_STORAGE_PERMISSIONS_REQUESTED);
+            requestPermission(permissionsNeeded, PermissionCodes.APP_STORAGE_PERMISSIONS_REQUESTED);
         }
     };
 

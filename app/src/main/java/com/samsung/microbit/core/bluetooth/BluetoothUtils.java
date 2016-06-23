@@ -10,7 +10,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.samsung.microbit.common.PreferencesInteraction;
-import com.samsung.microbit.model.ConnectedDevice;
+import com.samsung.microbit.data.model.ConnectedDevice;
 
 import java.util.Set;
 

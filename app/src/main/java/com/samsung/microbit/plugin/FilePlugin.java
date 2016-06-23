@@ -2,7 +2,7 @@ package com.samsung.microbit.plugin;
 
 import android.content.Context;
 
-import com.samsung.microbit.model.CmdArg;
+import com.samsung.microbit.data.model.CmdArg;
 
 public class FilePlugin {
 

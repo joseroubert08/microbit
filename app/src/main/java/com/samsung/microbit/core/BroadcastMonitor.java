@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.samsung.microbit.model.CmdArg;
+import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.plugin.FeedbackPlugin;
 import com.samsung.microbit.service.PluginService;
 

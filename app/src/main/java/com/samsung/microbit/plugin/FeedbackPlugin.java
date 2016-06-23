@@ -11,7 +11,7 @@ import android.os.RemoteException;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.core.BroadcastMonitor;
 import com.samsung.microbit.core.IPCMessageManager;
-import com.samsung.microbit.model.CmdArg;
+import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.service.PluginService;
 
 public class FeedbackPlugin {

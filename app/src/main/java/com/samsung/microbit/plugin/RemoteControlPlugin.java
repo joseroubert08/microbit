@@ -7,8 +7,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 
 import com.samsung.microbit.MBApp;
-import com.samsung.microbit.model.CmdArg;
-import com.samsung.microbit.model.Constants;
+import com.samsung.microbit.data.model.CmdArg;
+import com.samsung.microbit.data.constants.EventSubCodes;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -24,7 +24,7 @@ public class RemoteControlPlugin {
 
 	public static void pluginEntry(Context ctx, CmdArg cmd) {
 		switch (cmd.getCMD()) {
-			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY:
+			case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_PLAY:
 				if (DEBUG) {
                     logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_PLAY");
                 }
@@ -32,7 +32,7 @@ public class RemoteControlPlugin {
 				Play();
 				break;
 
-			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE:
+			case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE:
 				if (DEBUG) {
                     logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_PAUSE");
                 }
@@ -40,7 +40,7 @@ public class RemoteControlPlugin {
 				Pause();
 				break;
 
-			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_STOP:
+			case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_STOP:
 				if (DEBUG) {
                     logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_STOP");
                 }
@@ -48,7 +48,7 @@ public class RemoteControlPlugin {
 				Stop();
 				break;
 
-			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK:
+			case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK:
 				if (DEBUG) {
                     logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK");
                 }
@@ -56,7 +56,7 @@ public class RemoteControlPlugin {
 				NextTrack();
 				break;
 
-			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_PREVTRACK:
+			case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_PREVTRACK:
 				if (DEBUG) {
                     logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_PREVTRACK");
                 }
@@ -64,7 +64,7 @@ public class RemoteControlPlugin {
 				PrevTrack();
 				break;
 
-			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_FORWARD:
+			case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_FORWARD:
 				if (DEBUG) {
                     logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_FORWARD");
                 }
@@ -72,7 +72,7 @@ public class RemoteControlPlugin {
 				Forward();
 				break;
 
-			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_REWIND:
+			case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_REWIND:
 				if (DEBUG) {
                     logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_REWIND");
                 }
@@ -80,7 +80,7 @@ public class RemoteControlPlugin {
 				Rewind();
 				break;
 
-			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEUP:
+			case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEUP:
 				if (DEBUG) {
                     logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEUP");
                 }
@@ -88,7 +88,7 @@ public class RemoteControlPlugin {
 				VolumeUp();
 				break;
 
-			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN:
+			case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN:
 				if (DEBUG) {
                     logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN");
                 }
