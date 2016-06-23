@@ -18,6 +18,9 @@ import com.samsung.microbit.presentation.PlayAudioPresenter;
 import com.samsung.microbit.ui.activity.CameraActivityPermissionChecker;
 
 public class CameraPlugin {
+
+	private static Context context = null;
+
     private static final String TAG = CameraPlugin.class.getSimpleName();
 
     private static int m_NextState = -1;
@@ -38,7 +41,7 @@ public class CameraPlugin {
     public static void pluginEntry(Context ctx, CmdArg cmd) {
         if (mPowerManager == null) {
             mPowerManager = (PowerManager) ctx.getApplicationContext().getSystemService(Context.POWER_SERVICE);
-            mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
+            mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, TAG);
         }
         switch (cmd.getCMD()) {
             case EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE:
@@ -103,13 +106,13 @@ public class CameraPlugin {
             try {
                 IPCMessageManager.getInstance().getClientMessenger().send(msg);
             } catch (RemoteException e) {
-                e.printStackTrace();
+                Log.e(TAG, e.toString());
             }
         }
     }
 
     private static void performOnEnd() {
-        Log.d("CameraPlugin", "Next state - " + m_NextState);
+        Log.d(TAG, "Next state - " + m_NextState);
         switch (m_NextState) {
             case EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE:
                 launchCameraForPic();

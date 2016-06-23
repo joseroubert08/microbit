@@ -1,5 +1,7 @@
 package com.samsung.microbit.core;
 
+import android.util.Log;
+
 import com.samsung.microbit.utils.IOUtils;
 
 import java.io.File;
@@ -14,6 +16,8 @@ import java.net.URLConnection;
 public class DownloadManager {
 
     volatile boolean cancelled = false;
+
+    private static final String TAG = DownloadManager.class.getSimpleName();
 
     public DownloadManager() {
     }
@@ -37,9 +41,8 @@ public class DownloadManager {
             objectSize = IOUtils.copy(is, os);
             os.close();
             is.close();
-
-        } catch (MalformedURLException ex) {
         } catch (IOException ex) {
+            Log.e(TAG, ex.toString());
         }
 
         return objectSize;

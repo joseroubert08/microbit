@@ -27,7 +27,8 @@ import com.samsung.microbit.utils.ServiceUtils;
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
 public class PluginService extends Service {
-    private static final String TAG = PluginService.class.getSimpleName();
+
+	private static final String TAG = PluginService.class.getSimpleName();
 
     //MBS Services
     public static final int ALERT = 0;
@@ -38,6 +39,19 @@ public class PluginService extends Service {
     public static final int TELEPHONY = 5;
     public static final int CAMERA = 6;
     public static final int FILE = 7;
+
+	void logi(String message) {
+		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+	}
+
+	public static Messenger clientMessenger;
+	public static PluginService instance;
+
+	public PluginService() {
+		instance = this;
+		startIPCListener();
+	}
+
 
     public static void logi(String message) {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);

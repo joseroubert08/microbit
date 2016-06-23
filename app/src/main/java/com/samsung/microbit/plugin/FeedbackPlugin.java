@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.core.BroadcastMonitor;
@@ -15,6 +16,8 @@ import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.service.PluginService;
 
 public class FeedbackPlugin {
+
+	private static final String TAG = FeedbackPlugin.class.getSimpleName();
 
 	private static BroadcastReceiver sReceiver = null;
 
@@ -40,8 +43,8 @@ public class FeedbackPlugin {
 			try {
 				IPCMessageManager.getInstance().getClientMessenger().send(msg);
 			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+                Log.e(TAG, e.toString());
+            }
 		}
 	}
 

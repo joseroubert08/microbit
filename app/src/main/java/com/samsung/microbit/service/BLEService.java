@@ -93,7 +93,7 @@ public class BLEService extends BLEBaseService {
                                  EventCategories.IPC_INIT, null, null);
                         setNotification(false, 0);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, e.toString());
                     }
                 } else {
                     logi("Not first run!");
@@ -314,13 +314,12 @@ public class BLEService extends BLEBaseService {
     protected void handleCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         String UUID = characteristic.getUuid().toString();
 
-        int value = 0;
         Integer integerValue = characteristic.getIntValue(GattFormats.FORMAT_UINT32, 0);
 
         if (integerValue == null) {
             return;
         }
-        value = integerValue.intValue();
+        int value = integerValue.intValue();
         int eventSrc = value & 0x0ffff;
         if (eventSrc < 1001) {
             return;

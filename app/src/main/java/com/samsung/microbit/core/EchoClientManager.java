@@ -1,6 +1,5 @@
 package com.samsung.microbit.core;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -21,7 +20,9 @@ import uk.co.bbc.echo.enumerations.ApplicationType;
  */
 public class EchoClientManager {
 
+    private static final String TAG = EchoClientManager.class.getSimpleName();
     private static EchoClientManager instance = null;
+    private static boolean mShareStat = false ;
 
     public static synchronized EchoClientManager getInstance(MBApp mbApp) {
         if (instance == null) {
@@ -74,17 +75,17 @@ public class EchoClientManager {
 
     public EchoClient getEcho() {
         if (shareStatistic) {
-            Log.d("EchoClientManager", "Sharing stats is enabled by user");
+            Log.d(TAG, "Sharing stats is enabled by user");
             return echo;
         } else {
-            Log.d("EchoClientManager", "Sharing of stats is disabled by user");
+            Log.d(TAG, "Sharing of stats is disabled by user");
             return null;
         }
     }
 
     public void sendAppStats() {
         if (shareStatistic && echo != null) {
-            Log.d("EchoClientManager", "sendAppStats ");
+            Log.d(TAG, "sendAppStats ");
             HashMap<String, String> eventLabels = new HashMap<String, String>();
             eventLabels.put("name", "kl.education.microbit.appstart.page");
             eventLabels.put("bbc_site", "bitesize");
@@ -92,26 +93,26 @@ public class EchoClientManager {
             eventLabels.put("saved_projects", Integer.toString(UnpackUtils.getTotalSavedPrograms()));
             echo.userActionEvent(null, null, eventLabels);
         } else {
-            Log.d("EchoClientManager", "Sharing of stats is disabled by user or Echo not initialised");
+            Log.d(TAG, "Sharing of stats is disabled by user or Echo not initialised");
         }
     }
 
     public void sendViewEventStats(String viewEventString) {
         if (shareStatistic && echo != null) {
-            Log.d("EchoClientManager", "sendViewEventStats " + viewEventString);
+            Log.d(TAG, "sendViewEventStats " + viewEventString);
             String counterName = MBApp.getApp().getString(R.string.stats_view_name, viewEventString);
             HashMap<String, String> eventLabels = new HashMap<String, String>();
             eventLabels.put("bbc_site", "bitesize");
             echo.viewEvent(counterName, eventLabels);
         } else {
-            Log.d("EchoClientManager", "Sharing of stats is disabled by user or Echo not initialised");
+            Log.d(TAG, "Sharing of stats is disabled by user or Echo not initialised");
         }
     }
 
     public void sendFlashStats(boolean success, String fileName, String hexsize, String binsize, String firmware) {
         try {
             if (shareStatistic && echo != null) {
-                Log.d("EchoClientManager", "sendFlashStats fileName=" + fileName + " hexsize=" + hexsize + "  " +
+                Log.d(TAG, "sendFlashStats fileName=" + fileName + " hexsize=" + hexsize + "  " +
                          "binsize=" + binsize + " microbit_firmwwareversion= " + firmware);
                 HashMap<String, String> eventLabels = new HashMap<String, String>();
                 eventLabels.put("action_location", "app");
@@ -125,10 +126,10 @@ public class EchoClientManager {
                     echo.userActionEvent("fail", "hex-file-flash", eventLabels);
                 }
             } else {
-                Log.d("EchoClientManager", "Sharing of stats is disabled by user or Echo not initialised");
+                Log.d(TAG, "Sharing of stats is disabled by user or Echo not initialised");
             }
         } catch (RuntimeException e) {
-            Log.e("EchoClientManager", "Sending stats exception " + e.getMessage());
+            Log.e(TAG, "Sending stats exception " + e.getMessage());
         }
     }
 
@@ -141,10 +142,10 @@ public class EchoClientManager {
                 eventLabels.put("bbc_site", "bitesize");
                 echo.userActionEvent("click", "navigate", eventLabels);
             } else {
-                Log.d("EchoClientManager", "Sharing of stats is disabled by user or Echo not initialised");
+                Log.d(TAG, "Sharing of stats is disabled by user or Echo not initialised");
             }
         } catch (RuntimeException e) {
-            Log.e("EchoClientManager", "Sending stats exception " + e.getMessage());
+            Log.e(TAG, "Sending stats exception " + e.getMessage());
         }
     }
 
@@ -159,10 +160,10 @@ public class EchoClientManager {
                     echo.userActionEvent("opt-out", "stats-tracking", eventLabels);
                 }
             } else {
-                Log.d("EchoClientManager", "Sharing of stats is disabled by user or Echo not initialised");
+                Log.d(TAG, "Sharing of stats is disabled by user or Echo not initialised");
             }
         } catch (RuntimeException e) {
-            Log.e("EchoClientManager", "Sending stats exception " + e.getMessage());
+            Log.e(TAG, "Sending stats exception " + e.getMessage());
         }
     }
 
@@ -178,10 +179,10 @@ public class EchoClientManager {
                     echo.userActionEvent("fail", "pair", eventLabels);
                 }
             } else {
-                Log.d("EchoClientManager", "Sharing of stats is disabled by user or Echo not initialised");
+                Log.d(TAG, "Sharing of stats is disabled by user or Echo not initialised");
             }
         } catch (RuntimeException e) {
-            Log.e("EchoClientManager", "Sending stats exception " + e.getMessage());
+            Log.e(TAG, "Sending stats exception " + e.getMessage());
         }
     }
 
@@ -192,16 +193,16 @@ public class EchoClientManager {
                 eventLabels.put("bbc_site", "bitesize");
                 switch (connectionState) {
                     case SUCCESS:
-                        Log.d("EchoClientManager", "Sending Connection stats - MSG(SUCCESS) - Firmware = " + firmware);
+                        Log.d(TAG, "Sending Connection stats - MSG(SUCCESS) - Firmware = " + firmware);
                         eventLabels.put("firmware", firmware);
                         echo.userActionEvent("success", "connect", eventLabels);
                         break;
                     case FAIL:
-                        Log.d("EchoClientManager", "Sending Connection stats - MSG(Failed)");
+                        Log.d(TAG, "Sending Connection stats - MSG(Failed)");
                         echo.userActionEvent("fail", "connect", null);
                         break;
                     case DISCONNECT:
-                        Log.d("EchoClientManager", "Sending Connection stats - MSG(DISCONNECT) - Firmware = " + firmware + " Duration =" + duration);
+                        Log.d(TAG, "Sending Connection stats - MSG(DISCONNECT) - Firmware = " + firmware + " Duration =" + duration);
                         eventLabels.put("firmware", firmware);
                         eventLabels.put("duration", duration);
                         echo.userActionEvent("disconnect", "connectMaybeInit", eventLabels);
@@ -209,10 +210,10 @@ public class EchoClientManager {
 
                 }
             } else {
-                Log.d("EchoClientManager", "Sharing of stats is disabled by user or Echo not initialised");
+                Log.d(TAG, "Sharing of stats is disabled by user or Echo not initialised");
             }
         } catch (RuntimeException e) {
-            Log.e("EchoClientManager", "Sending stats exception " + e.getMessage());
+            Log.e(TAG, "Sending stats exception " + e.getMessage());
         }
     }
 }

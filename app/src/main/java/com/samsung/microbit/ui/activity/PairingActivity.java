@@ -271,6 +271,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
         }
     };
+
     View.OnClickListener notificationOKHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -1372,6 +1373,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         unbindDrawables(findViewById(R.id.searching_progress_spinner));
 
         unregisterReceiver(mPairReceiver);
+        LocalBroadcastManager.getInstance(MBApp.getContext()).unregisterReceiver(mLocalBroadcastReceiver);
     }
 
     private void unbindDrawables(View view) {

@@ -70,7 +70,7 @@ public class IPCService extends Service {
                         ServiceUtils.sendtoPluginService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID,
                                  EventCategories.IPC_INIT, null, null);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, e.toString());
                     }
                 }
             }).start();

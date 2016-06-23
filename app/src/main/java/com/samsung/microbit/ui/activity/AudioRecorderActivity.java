@@ -1,6 +1,5 @@
 package com.samsung.microbit.ui.activity;
 
-
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -22,7 +21,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.samsung.microbit.R;
@@ -37,8 +35,8 @@ import java.util.Calendar;
 public class AudioRecorderActivity extends Activity {
 
     static final int NOTIFICATION_ID = 1;
+    private static final String TAG = AudioRecorderActivity.class.getSimpleName();
 
-    private LinearLayout layout;
     private TextView filenameTxt;
     private Chronometer chronometer;
     private ImageView imageMic;
@@ -57,7 +55,6 @@ public class AudioRecorderActivity extends Activity {
 
     private void create(String action) {
         setContentView(R.layout.activity_audio_recorder);
-        layout = (LinearLayout) findViewById(R.id.layout);
         filenameTxt = (TextView) findViewById(R.id.filenameTxt);
         chronometer = (Chronometer) findViewById(R.id.chronometer);
         imageMic = (ImageView) findViewById(R.id.imageMic);
@@ -78,10 +75,11 @@ public class AudioRecorderActivity extends Activity {
                 .setContentTitle(getString(R.string.audio_recorder_notification));
 
         Drawable d = getResources().getDrawable(R.drawable.bg);
-        d.mutate();//prevent affecting all instances of that drawable with color filter
-        d.setColorFilter(Color.argb(187, 0, 0, 0), PorterDuff.Mode.SRC_OVER);
-        layout.setBackground(d);
-
+        if (d != null) {
+            d.mutate();//prevent affecting all instances of that drawable with color filter
+            d.setColorFilter(Color.argb(187, 0, 0, 0), PorterDuff.Mode.SRC_OVER);
+            findViewById(R.id.layout).setBackground(d);
+        }
         processIntent(action);
     }
 
@@ -175,15 +173,20 @@ public class AudioRecorderActivity extends Activity {
         if (action == null)
             return;
 
-        if (action.equals(AudioPlugin.INTENT_ACTION_START_RECORD)) {
-            startRecording();
-        } else if (action.equals(AudioPlugin.INTENT_ACTION_STOP_RECORD)) {
-            stopRecording();
-        } else if (action.equals(AudioPlugin.INTENT_ACTION_STOP)) {
-            if (mIsRecording)
+        switch (action) {
+            case AudioPlugin.INTENT_ACTION_START_RECORD:
+                startRecording();
+                break;
+            case AudioPlugin.INTENT_ACTION_STOP_RECORD:
                 stopRecording();
-            finish();
-            backPressed = true;//prevent notification creation
+                break;
+            case AudioPlugin.INTENT_ACTION_STOP:
+                if (mIsRecording)
+                    stopRecording();
+                finish();
+                backPressed = true;//prevent notification creation
+
+                break;
         }
     }
 
@@ -229,8 +232,7 @@ public class AudioRecorderActivity extends Activity {
         SimpleDateFormat sdf = new SimpleDateFormat("ddMMyy_HHmmss");
         String filename = "voice_" + sdf.format(c.getTime());
 
-        File file = new File(dir, filename + ".3gp");
-        return file;
+        return new File(dir, filename + ".3gp");
     }
 
     void startRecording() {
@@ -256,7 +258,7 @@ public class AudioRecorderActivity extends Activity {
                 mRecorder = null;
             }
             //TODO: show popup for failure?
-            Log.e("AudioPlugin", "prepare() failed" + e.toString());
+            Log.e(TAG, e.toString());
             return;
         }
 
