@@ -55,6 +55,8 @@ public class BLEService extends BLEBaseService {
 
     private void startIPCListener() {
         logi("startIPCListener()");
+        logi("make :: ble start");
+
         if (IPCMessageManager.getInstance() == null) {
 
             logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
@@ -62,7 +64,7 @@ public class BLEService extends BLEBaseService {
 
                 @Override
                 public void handleMessage(Message msg) {
-                    logi("startIPCListener().handleMessage");
+                    logi("BLEService :: startIPCListener()");
                     handleIncomingMessage(msg);
                 }
 
@@ -87,6 +89,9 @@ public class BLEService extends BLEBaseService {
                     logi("First run!");
                     try {
                         Thread.sleep(IPCMessageManager.STARTUP_DELAY + 500L);
+
+                        logi("make :: ble send");
+
                         ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID,
                                  EventCategories.IPC_INIT, null, null);
                         ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID,
@@ -96,6 +101,7 @@ public class BLEService extends BLEBaseService {
                         Log.e(TAG, e.toString());
                     }
                 } else {
+                    logi("make :: ble send failed");
                     logi("Not first run!");
                 }
 
@@ -565,7 +571,8 @@ public class BLEService extends BLEBaseService {
     }
 
     private void handleIncomingMessage(Message msg) {
-        logi("handleIncomingMessage() :: Start BLEService");
+        logi("BLEService :: handleIncomingMessage()");
+        logi("BLE :: count = " + IPCMessageManager.getInstance().getServicesCount());
         Bundle bundle = msg.getData();
         if (msg.what == IPCMessageManager.MESSAGE_ANDROID) {
             BLEManager bleManager = getBleManager();

@@ -32,13 +32,12 @@ import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
-import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.data.constants.EventCategories;
-import com.samsung.microbit.data.model.ConnectedDevice;
-import com.samsung.microbit.data.constants.Constants;
 import com.samsung.microbit.data.constants.PermissionCodes;
-import com.samsung.microbit.data.model.Project;
 import com.samsung.microbit.data.constants.RequestCodes;
+import com.samsung.microbit.data.model.ConnectedDevice;
+import com.samsung.microbit.data.model.Project;
+import com.samsung.microbit.data.model.ui.FlashActivityState;
 import com.samsung.microbit.presentation.AppInfoPresenter;
 import com.samsung.microbit.service.DfuService;
 import com.samsung.microbit.service.IPCService;
@@ -47,6 +46,7 @@ import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.adapter.ProjectAdapter;
 import com.samsung.microbit.utils.ErrorUtils;
 import com.samsung.microbit.utils.FileUtils;
+import com.samsung.microbit.utils.IPCToBLEHelper;
 import com.samsung.microbit.utils.PreferenceUtils;
 import com.samsung.microbit.utils.UnpackUtils;
 
@@ -55,7 +55,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class ProjectActivity extends Activity implements View.OnClickListener {
+public class ProjectActivity extends Activity implements View.OnClickListener, IPCToBLEHelper.BLEBroadcastHandlable {
 
     private List<Project> mProjectList = new ArrayList<>();
     private ListView mProjectListView;
@@ -73,105 +73,18 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
     protected boolean debug = BuildConfig.DEBUG;
     protected String TAG = ProjectActivity.class.getSimpleName();
 
-    private static ACTIVITY_STATE mActivityState = ACTIVITY_STATE.STATE_IDLE;
-
-    private List<Integer> mRequestPermission = new ArrayList<>();
+    private List<Integer> mRequestPermissions = new ArrayList<>();
 
     private int mRequestingPermission = -1;
 
-
-    private enum ACTIVITY_STATE {
-        STATE_IDLE,
-        STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST,
-        STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST,
-        STATE_ENABLE_BT_CONNECT,
-        FLASH_STATE_FIND_DEVICE,
-        FLASH_STATE_VERIFY_DEVICE,
-        FLASH_STATE_WAIT_DEVICE_REBOOT,
-        FLASH_STATE_INIT_DEVICE,
-        FLASH_STATE_PROGRESS,
-        MICROBIT_CONNECTING,
-        MICROBIT_DISCONNECTING
-    }
-
-    protected void logi(String message) {
-        if (debug) {
-            Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
-        }
-    }
+    private int mActivityState;
 
     /* *************************************************
      * TODO setup to Handle BLE Notifications
      */
     IntentFilter broadcastIntentFilter;
-    private BroadcastReceiver localBroadcastReceiver = new BroadcastReceiver() {
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            int error = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-            String firmware = intent.getStringExtra(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE);
-            int getNotification = intent.getIntExtra(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, -1);
-
-            setConnectedDeviceText();
-            if (firmware != null && !firmware.isEmpty()) {
-                BluetoothUtils.updateFirmwareMicrobit(context, firmware);
-                return;
-            }
-
-            if (mActivityState == ACTIVITY_STATE.MICROBIT_CONNECTING || mActivityState == ACTIVITY_STATE.MICROBIT_DISCONNECTING) {
-
-                if (getNotification == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL ||
-                        getNotification == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_SMS) {
-                    logi("micro:bit application needs more permissions");
-                    mRequestPermission.add(getNotification);
-                    return;
-                }
-                ConnectedDevice device = BluetoothUtils.getPairedMicrobit(context);
-                if (mActivityState == ACTIVITY_STATE.MICROBIT_CONNECTING) {
-                    if (error == 0) {
-                        MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.ConnectionState.SUCCESS, device.mfirmware_version, null);
-                        BluetoothUtils.updateConnectionStartTime(context, System.currentTimeMillis());
-                        //Check if more permissions were needed and request in the Application
-                        if (!mRequestPermission.isEmpty()) {
-                            setActivityState(ACTIVITY_STATE.STATE_IDLE);
-                            PopUp.hide();
-                            checkTelephonyPermissions();
-                            return;
-                        }
-                    } else {
-                        MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.ConnectionState.FAIL, null, null);
-                    }
-                }
-                if (error == 0 && mActivityState == ACTIVITY_STATE.MICROBIT_DISCONNECTING) {
-                    long now = System.currentTimeMillis();
-                    long connectionTime = (now - device.mlast_connection_time) / 1000; //Time in seconds
-                    MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.ConnectionState.DISCONNECT, device.mfirmware_version, Long.toString(connectionTime));
-                }
-
-                setActivityState(ACTIVITY_STATE.STATE_IDLE);
-                PopUp.hide();
-
-                if (error != 0) {
-                    String message = intent.getStringExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
-                    logi("localBroadcastReceiver Error message = " + message);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            MBApp application = MBApp.getApp();
-
-                            PopUp.show(application,
-                                    application.getString(R.string.micro_bit_reset_msg),
-                                    application.getString(R.string.general_error_title),
-                                    R.drawable.error_face, R.drawable.red_btn,
-                                    PopUp.GIFF_ANIMATION_ERROR,
-                                    PopUp.TYPE_ALERT, null, null);
-                        }
-                    });
-                }
-            }
-        }
-    };
+    private BroadcastReceiver localBroadcastReceiver = IPCToBLEHelper.bleHandlerReceiver(this);
 
     View.OnClickListener notificationOKHandler = new View.OnClickListener() {
         @Override
@@ -192,7 +105,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
     View.OnClickListener checkMorePermissionsNeeded = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!mRequestPermission.isEmpty()) {
+            if (!mRequestPermissions.isEmpty()) {
                 checkTelephonyPermissions();
             } else {
                 PopUp.hide();
@@ -221,14 +134,38 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         }
     };
 
-    private void checkTelephonyPermissions() {
-        if (!mRequestPermission.isEmpty()) {
+    @Override
+    public void setActivityState(int baseActivityState) {
+        mActivityState = baseActivityState;
+        setConnectedDeviceText();
+    }
+
+    @Override
+    public void preUpdateUi() {
+        setConnectedDeviceText();
+    }
+
+    @Override
+    public int getActivityState() {
+        return mActivityState;
+    }
+
+    @Override
+    public void logi(String message) {
+        if (debug) {
+            Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+        }
+    }
+
+    @Override
+    public void checkTelephonyPermissions() {
+        if (!mRequestPermissions.isEmpty()) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS)
                     != PermissionChecker.PERMISSION_GRANTED ||
                 (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
                         != PermissionChecker.PERMISSION_GRANTED)) {
-                mRequestingPermission = mRequestPermission.get(0);
-                mRequestPermission.remove(0);
+                mRequestingPermission = mRequestPermissions.get(0);
+                mRequestPermissions.remove(0);
                 PopUp.show(MBApp.getApp(),
                         (mRequestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL)
                                 ? getString(R.string.telephony_permission)
@@ -242,10 +179,14 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    private void setActivityState(ACTIVITY_STATE newState) {
-        logi("Flash state old - " + mActivityState + " new - " + newState);
-        mActivityState = newState;
-        setConnectedDeviceText();
+    @Override
+    public void addPermissionRequest(int permission) {
+        mRequestPermissions.add(permission);
+    }
+
+    @Override
+    public boolean arePermissionsGranted() {
+        return mRequestPermissions.isEmpty();
     }
 
     private AppInfoPresenter appInfoPresenter;
@@ -290,6 +231,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mActivityState = FlashActivityState.STATE_IDLE;
+
         logi("onCreate() :: ");
 
         appInfoPresenter = new AppInfoPresenter();
@@ -322,7 +265,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             fullPathOfFile = getIntent().getData().getEncodedPath();
             String path[] = fullPathOfFile.split("/");
             fileName = path[path.length - 1];
-            setActivityState(ACTIVITY_STATE.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST);
+            setActivityState(FlashActivityState.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST);
         }
         if (fullPathOfFile != null) {
             mProgramToSend = new Project(fileName, fullPathOfFile, 0, null, false);
@@ -384,7 +327,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             PopUp.TYPE_ALERT,
                             checkMorePermissionsNeeded, checkMorePermissionsNeeded);
                 } else {
-                    if (!mRequestPermission.isEmpty()) {
+                    if (!mRequestPermissions.isEmpty()) {
                         checkTelephonyPermissions();
                     }
                 }
@@ -400,7 +343,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             PopUp.TYPE_ALERT,
                             checkMorePermissionsNeeded, checkMorePermissionsNeeded);
                 } else {
-                    if (!mRequestPermission.isEmpty()) {
+                    if (!mRequestPermissions.isEmpty()) {
                         checkTelephonyPermissions();
                     }
                 }
@@ -452,11 +395,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         ImageView connectedIndicatorIcon = (ImageView) findViewById(R.id.connectedIndicatorIcon);
 
         //Override the connection Icon in case of active flashing
-        if (mActivityState == ACTIVITY_STATE.FLASH_STATE_FIND_DEVICE
-                || mActivityState == ACTIVITY_STATE.FLASH_STATE_VERIFY_DEVICE
-                || mActivityState == ACTIVITY_STATE.FLASH_STATE_WAIT_DEVICE_REBOOT
-                || mActivityState == ACTIVITY_STATE.FLASH_STATE_INIT_DEVICE
-                || mActivityState == ACTIVITY_STATE.FLASH_STATE_PROGRESS
+        if (mActivityState == FlashActivityState.FLASH_STATE_FIND_DEVICE
+                || mActivityState == FlashActivityState.FLASH_STATE_VERIFY_DEVICE
+                || mActivityState == FlashActivityState.FLASH_STATE_WAIT_DEVICE_REBOOT
+                || mActivityState == FlashActivityState.FLASH_STATE_INIT_DEVICE
+                || mActivityState == FlashActivityState.FLASH_STATE_PROGRESS
 
                 ) {
             connectedIndicatorIcon.setImageResource(R.drawable.device_status_connected);
@@ -568,16 +511,16 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
         if (requestCode == RequestCodes.REQUEST_ENABLE_BT) {
             if (resultCode == Activity.RESULT_OK) {
-                if (mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST ||
-                        mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST) {
+                if (mActivityState == FlashActivityState.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST ||
+                        mActivityState == FlashActivityState.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST) {
                     adviceOnMicrobitState();
-                } else if (mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_CONNECT) {
-                    setActivityState(ACTIVITY_STATE.STATE_IDLE);
+                } else if (mActivityState == FlashActivityState.STATE_ENABLE_BT_FOR_CONNECT) {
+                    setActivityState(FlashActivityState.STATE_IDLE);
                     toggleConnection();
                 }
             }
             if (resultCode == Activity.RESULT_CANCELED) {
-                setActivityState(ACTIVITY_STATE.STATE_IDLE);
+                setActivityState(FlashActivityState.STATE_IDLE);
                 PopUp.show(MBApp.getApp(),
                         getString(R.string.bluetooth_off_cannot_continue), //message
                         "",
@@ -599,7 +542,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
         ConnectedDevice connectedDevice = BluetoothUtils.getPairedMicrobit(this);
         if (connectedDevice.mPattern != null) {
             if (connectedDevice.mStatus) {
-                setActivityState(ACTIVITY_STATE.MICROBIT_DISCONNECTING);
+                setActivityState(FlashActivityState.STATE_DISCONNECTING);
                 PopUp.show(MBApp.getApp(),
                         getString(R.string.disconnecting),
                         "",
@@ -609,8 +552,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         null, null);
                 IPCService.bleDisconnect();
             } else {
-                mRequestPermission.clear();
-                setActivityState(ACTIVITY_STATE.MICROBIT_CONNECTING);
+                mRequestPermissions.clear();
+                setActivityState(FlashActivityState.STATE_CONNECTING);
                 PopUp.show(MBApp.getApp(),
                         getString(R.string.init_connection),
                         "",
@@ -630,7 +573,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
      */
     public void sendProject(final Project project){
         mProgramToSend = project;
-        setActivityState(ACTIVITY_STATE.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST);
+        setActivityState(FlashActivityState.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST);
         if (!BluetoothSwitch.getInstance().isBluetoothON()) {
             startBluetooth();
         } else {
@@ -657,7 +600,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
             case R.id.connectedIndicatorIcon:
                 if (!BluetoothSwitch.getInstance().isBluetoothON()) {
-                    setActivityState(ACTIVITY_STATE.STATE_ENABLE_BT_CONNECT);
+                    setActivityState(FlashActivityState.STATE_ENABLE_BT_FOR_CONNECT);
                     startBluetooth();
                 } else {
                     toggleConnection();
@@ -703,11 +646,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         null, null);
                 return;
             }
-            if (mActivityState == ACTIVITY_STATE.FLASH_STATE_FIND_DEVICE
-                    || mActivityState == ACTIVITY_STATE.FLASH_STATE_VERIFY_DEVICE
-                    || mActivityState == ACTIVITY_STATE.FLASH_STATE_WAIT_DEVICE_REBOOT
-                    || mActivityState == ACTIVITY_STATE.FLASH_STATE_INIT_DEVICE
-                    || mActivityState == ACTIVITY_STATE.FLASH_STATE_PROGRESS
+            if (mActivityState == FlashActivityState.FLASH_STATE_FIND_DEVICE
+                    || mActivityState == FlashActivityState.FLASH_STATE_VERIFY_DEVICE
+                    || mActivityState == FlashActivityState.FLASH_STATE_WAIT_DEVICE_REBOOT
+                    || mActivityState == FlashActivityState.FLASH_STATE_INIT_DEVICE
+                    || mActivityState == FlashActivityState.FLASH_STATE_PROGRESS
 
                     ) {
                 // Another download session is in progress.xml
@@ -720,8 +663,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                         null, null);
                 return;
             }
-            if (mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST ||
-                    mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST) {
+            if (mActivityState == FlashActivityState.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST ||
+                    mActivityState == FlashActivityState.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST) {
                 //Check final device from user and start flashing
                 PopUp.show(MBApp.getApp(),
                         getString(R.string.flash_start_message, currentMicrobit.mName), //message
@@ -754,7 +697,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
             LocalBroadcastManager.getInstance(MBApp.getApp()).unregisterReceiver(dfuResultReceiver);
             dfuResultReceiver = null;
         }
-        setActivityState(ACTIVITY_STATE.FLASH_STATE_FIND_DEVICE);
+        setActivityState(FlashActivityState.FLASH_STATE_FIND_DEVICE);
         registerCallbacksForFlashing();
         startFlashing();
     }
@@ -833,7 +776,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                     logi("DFUResultReceiver.onReceive :: state -- " + state);
                     switch (state) {
                         case DfuService.PROGRESS_STARTING:
-                            setActivityState(ACTIVITY_STATE.FLASH_STATE_INIT_DEVICE);
+                            setActivityState(FlashActivityState.FLASH_STATE_INIT_DEVICE);
                             PopUp.show(MBApp.getApp(),
                                     getString(R.string.dfu_status_starting_msg), //message
                                     getString(R.string.send_project), //title
@@ -851,7 +794,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             break;
                         case DfuService.PROGRESS_COMPLETED:
                             if (!isCompleted) {
-                                setActivityState(ACTIVITY_STATE.STATE_IDLE);
+                                setActivityState(FlashActivityState.STATE_IDLE);
 
                                 MBApp application = MBApp.getApp();
 
@@ -881,7 +824,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
 
                         case DfuService.PROGRESS_CONNECTING:
                             if ((!inInit) && (!isCompleted)) {
-                                setActivityState(ACTIVITY_STATE.FLASH_STATE_INIT_DEVICE);
+                                setActivityState(FlashActivityState.FLASH_STATE_INIT_DEVICE);
                                 PopUp.show(MBApp.getApp(),
                                         getString(R.string.init_connection), //message
                                         getString(R.string.send_project), //title
@@ -901,7 +844,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             isCompleted = false;
                             break;
                         case DfuService.PROGRESS_VALIDATING:
-                            setActivityState(ACTIVITY_STATE.FLASH_STATE_VERIFY_DEVICE);
+                            setActivityState(FlashActivityState.FLASH_STATE_VERIFY_DEVICE);
                             PopUp.show(MBApp.getApp(),
                                     getString(R.string.validating_microbit), //message
                                     getString(R.string.send_project), //title
@@ -918,7 +861,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                     null);//pass null to use default listener
                             break;
                         case DfuService.PROGRESS_WAITING_REBOOT:
-                            setActivityState(ACTIVITY_STATE.FLASH_STATE_WAIT_DEVICE_REBOOT);
+                            setActivityState(FlashActivityState.FLASH_STATE_WAIT_DEVICE_REBOOT);
                             PopUp.show(MBApp.getApp(),
                                     getString(R.string.waiting_reboot), //message
                                     getString(R.string.send_project), //title
@@ -935,7 +878,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                                     null);//pass null to use default listener
                             break;
                         case DfuService.PROGRESS_VALIDATION_FAILED:
-                            setActivityState(ACTIVITY_STATE.STATE_IDLE);
+                            setActivityState(FlashActivityState.STATE_IDLE);
 
                             MBApp application = MBApp.getApp();
 
@@ -956,7 +899,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                             dfuResultReceiver = null;
                             break;
                         case DfuService.PROGRESS_ABORTED:
-                            setActivityState(ACTIVITY_STATE.STATE_IDLE);
+                            setActivityState(FlashActivityState.STATE_IDLE);
 
                             application = MBApp.getApp();
 
@@ -980,7 +923,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                     }
                 } else if ((state > 0) && (state < 100)) {
                     if (!inProgress) {
-                        setActivityState(ACTIVITY_STATE.FLASH_STATE_PROGRESS);
+                        setActivityState(FlashActivityState.FLASH_STATE_PROGRESS);
 
                         MBApp application = MBApp.getApp();
 
@@ -1003,7 +946,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener {
                 logi("DFUResultReceiver.onReceive() :: Flashing ERROR!!  Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
                         + "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
 
-                setActivityState(ACTIVITY_STATE.STATE_IDLE);
+                setActivityState(FlashActivityState.STATE_IDLE);
 
                 MBApp application = MBApp.getApp();
 

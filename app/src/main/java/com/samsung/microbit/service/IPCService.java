@@ -42,6 +42,7 @@ public class IPCService extends Service {
     private void startIPCListener() {
         if (DEBUG) {
             logi("startIPCListener()");
+            logi("make :: ipc start");
         }
 
         if (IPCMessageManager.getInstance() == null) {
@@ -65,6 +66,7 @@ public class IPCService extends Service {
                 public void run() {
                     try {
                         Thread.sleep(IPCMessageManager.STARTUP_DELAY);
+                        logi("make :: ipc send");
                         ServiceUtils.sendtoBLEService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID,
                                  EventCategories.IPC_INIT, null, null);
                         ServiceUtils.sendtoPluginService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID,
@@ -125,7 +127,8 @@ public class IPCService extends Service {
 
     private void handleIncomingMessage(Message msg) {
         if (DEBUG) {
-            logi("handleIncomingMessage() :: Start BLEService");
+            logi("IPCService :: handleIncomingMessage()");
+            logi("IPC :: count = " + IPCMessageManager.getInstance().getServicesCount());
         }
 
         if (msg.what == IPCMessageManager.MESSAGE_ANDROID) {

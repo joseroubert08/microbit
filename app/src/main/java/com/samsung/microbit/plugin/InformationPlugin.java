@@ -121,23 +121,24 @@ public class InformationPlugin {
 
     //Signal strength code
     static TelephonyManager sTelephonyManager;
-    static SignalStrength sSignalStrength;
     static PowerManager mPowerManager;
+
+    static int sCurrentSignalStrength = 0;
 
     static PhoneStateListener sPhoneListener = new PhoneStateListener() {
         @Override
         public void onSignalStrengthsChanged(SignalStrength signalStrength) {
             Log.i("InformationPlugin", "onSignalStrengthsChanged: ");
-            sSignalStrength = signalStrength;
-            updateSignalStrength();
+
+            updateSignalStrength(signalStrength);
         }
     };
 
-    static private void updateSignalStrength() {
-        int level = 0;
+    private static void updateSignalStrength(SignalStrength signalStrength) {
+        final int level;
         Log.i("InformationPlugin", "updateSignalStrength: ");
-        if (!isCdma()) {
-            int asu = sSignalStrength.getGsmSignalStrength();
+        if (!isCdma(signalStrength)) {
+            int asu = signalStrength.getGsmSignalStrength();
             // ASU ranges from 0 to 31 - TS 27.007 Sec 8.5
             // asu = 0 (-113dB or less) is very weak
             // signal, its better to show 0 bars to the user in such cases.
@@ -148,33 +149,39 @@ public class InformationPlugin {
             else if (asu >= 5) level = EventSubCodes.SAMSUNG_SIGNAL_STRENGTH_EVT_TWO_BAR;
             else level = EventSubCodes.SAMSUNG_SIGNAL_STRENGTH_EVT_ONE_BAR;
         } else {
-            level = getCdmaLevel();
+            level = getCdmaLevel(signalStrength);
         }
 
-        PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_SIGNAL_STRENGTH_ID, level));
+        if (level != sCurrentSignalStrength) {
+            sCurrentSignalStrength = level;
+            PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_SIGNAL_STRENGTH_ID, level));
+        }
     }
 
-    static private int getCdmaLevel() {
-        final int cdmaDbm = sSignalStrength.getCdmaDbm();
-        final int cdmaEcio = sSignalStrength.getCdmaEcio();
-        int levelDbm = 0;
-        int levelEcio = 0;
+    private static int getCdmaLevel(SignalStrength signalStrength) {
+        final int cdmaDbm = signalStrength.getCdmaDbm();
+        final int cdmaEcio = signalStrength.getCdmaEcio();
+
+        final int levelDbm;
         if (cdmaDbm >= -75) levelDbm = 4;
         else if (cdmaDbm >= -85) levelDbm = 3;
         else if (cdmaDbm >= -95) levelDbm = 2;
         else if (cdmaDbm >= -100) levelDbm = 1;
         else levelDbm = 0;
+
+        final int levelEcio;
         // Ec/Io are in dB*10
         if (cdmaEcio >= -90) levelEcio = 4;
         else if (cdmaEcio >= -110) levelEcio = 3;
         else if (cdmaEcio >= -130) levelEcio = 2;
         else if (cdmaEcio >= -150) levelEcio = 1;
         else levelEcio = 0;
+
         return (levelDbm < levelEcio) ? levelDbm : levelEcio;
     }
 
-    static private boolean isCdma() {
-        return (sSignalStrength != null) && !sSignalStrength.isGsm();
+    private static boolean isCdma(SignalStrength signalStrength) {
+        return (signalStrength != null) && !signalStrength.isGsm();
     }
 
     /*
@@ -288,16 +295,18 @@ public class InformationPlugin {
         }
 
         sOrientationListener = new SensorEventListener() {
-            int orientation=-1;;
+            int orientation = -1;
+            ;
+
             @Override
             public void onSensorChanged(SensorEvent event) {
-                if (event.values[1]<6.5 && event.values[1]>-6.5) {
-                    if (orientation!=1) {
+                if (event.values[1] < 6.5 && event.values[1] > -6.5) {
+                    if (orientation != 1) {
                         Log.d("Sensor", "Landscape");
                     }
                     orientation = EventSubCodes.SAMSUNG_DEVICE_ORIENTATION_LANDSCAPE;
                 } else {
-                    if (orientation!=0) {
+                    if (orientation != 0) {
                         Log.d("Sensor", "Portrait");
                     }
                     orientation = EventSubCodes.SAMSUNG_DEVICE_ORIENTATION_PORTRAIT;
@@ -427,6 +436,7 @@ public class InformationPlugin {
         MBApp.getApp().unregisterReceiver(sScreenReceiver);
         sScreenReceiver = null;
     }
+
     public static boolean isTemperatureRegistered() {
         return sTemperatureListener != null;
     }
@@ -440,7 +450,7 @@ public class InformationPlugin {
 
         sShakeListener = new ShakeEventListener();
         sSensorManager.registerListener(sShakeListener, sSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                 SensorManager.SENSOR_DELAY_NORMAL);
+                SensorManager.SENSOR_DELAY_NORMAL);
 
         CmdArg cmd = new CmdArg(0, "Registered Shake.");
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);

@@ -19,6 +19,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,20 +44,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.data.constants.EventCategories;
-import com.samsung.microbit.data.model.ConnectedDevice;
-import com.samsung.microbit.data.constants.Constants;
 import com.samsung.microbit.data.constants.PermissionCodes;
 import com.samsung.microbit.data.constants.RequestCodes;
+import com.samsung.microbit.data.model.ConnectedDevice;
+import com.samsung.microbit.data.model.ui.PairingActivityState;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.ui.BluetoothSwitch;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.adapter.LEDAdapter;
+import com.samsung.microbit.utils.IPCToBLEHelper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -65,9 +65,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static com.samsung.microbit.BuildConfig.DEBUG;
+
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class PairingActivity extends Activity implements View.OnClickListener, BluetoothAdapter.LeScanCallback {
+public class PairingActivity extends Activity implements View.OnClickListener, BluetoothAdapter.LeScanCallback,
+        IPCToBLEHelper.BLEBroadcastHandlable {
 
     private static boolean DISABLE_DEVICE_LIST = false;
 
@@ -131,11 +134,11 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         STATE_DISCONNECTING
     }
 
-    private List<Integer> mRequestPermission = new ArrayList<>();
+    private List<Integer> mRequestPermissions = new ArrayList<>();
 
     private int mRequestingPermission = -1;
 
-    private static ACTIVITY_STATE mActivityState = ACTIVITY_STATE.STATE_IDLE;
+    private int mActivityState;
 
     private ScanCallback newScanCallback;
 
@@ -175,7 +178,8 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
                 logi(" mPairReceiver - state = " + state + " prevState = " + prevState);
                 if (state == BluetoothDevice.BOND_BONDED && prevState == BluetoothDevice.BOND_BONDING) {
-                    ConnectedDevice newDev = new ConnectedDevice(mNewDeviceCode.toUpperCase(), mNewDeviceCode.toUpperCase(), false, mNewDeviceAddress, 0, null, System.currentTimeMillis());
+                    ConnectedDevice newDev = new ConnectedDevice(mNewDeviceCode.toUpperCase(), mNewDeviceCode
+                             .toUpperCase(), false, mNewDeviceAddress, 0, null, System.currentTimeMillis());
                     handlePairingSuccessful(newDev);
                 } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDING) {
                     scanLeDevice(false);
@@ -206,71 +210,59 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
             }
         }
     };
-    private BroadcastReceiver localBroadcastReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver localBroadcastReceiver = IPCToBLEHelper.bleHandlerReceiver(this);
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            int error = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-            String firmware = intent.getStringExtra(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE);
-            int getNotification = intent.getIntExtra(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, -1);
-            if (firmware != null && !firmware.isEmpty()) {
-                BluetoothUtils.updateFirmwareMicrobit(context, firmware);
-                return;
+    @Override
+    public void setActivityState(int baseActivityState) {
+        mActivityState = baseActivityState;
+    }
+
+    @Override
+    public void preUpdateUi() {
+        updatePairedDeviceCard();
+    }
+
+    @Override
+    public int getActivityState() {
+        return mActivityState;
+    }
+
+    @Override
+    public void logi(String message) {
+            if (DEBUG) {
+                Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
             }
-            updatePairedDeviceCard();
-            if (mActivityState == ACTIVITY_STATE.STATE_DISCONNECTING || mActivityState == ACTIVITY_STATE.STATE_CONNECTING) {
+    }
 
-                if (getNotification == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL ||
-                        getNotification == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_SMS) {
-                    logi("micro:bit application needs more permissions");
-                    mRequestPermission.add(getNotification);
-                    return;
-                }
-                ConnectedDevice device = BluetoothUtils.getPairedMicrobit(context);
-                if (mActivityState == ACTIVITY_STATE.STATE_CONNECTING) {
-                    if (error == 0) {
-                        MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.ConnectionState.SUCCESS, device.mfirmware_version, null);
-                        BluetoothUtils.updateConnectionStartTime(context, System.currentTimeMillis());
-                        //Check if more permissions were needed and request in the Application
-                        if (!mRequestPermission.isEmpty()) {
-                            mActivityState = ACTIVITY_STATE.STATE_IDLE;
-                            PopUp.hide();
-                            checkTelephonyPermissions();
-                            return;
-                        }
-                    } else {
-                        MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.ConnectionState.FAIL, null, null);
-                    }
-                }
-                if (error == 0 && mActivityState == ACTIVITY_STATE.STATE_DISCONNECTING) {
-                    long now = System.currentTimeMillis();
-                    long connectionTime = (now - device.mlast_connection_time) / 1000; //Time in seconds
-                    MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.ConnectionState.DISCONNECT, device.mfirmware_version, Long.toString(connectionTime));
-                }
-                PopUp.hide();
-                mActivityState = ACTIVITY_STATE.STATE_IDLE;
-
-                if (error != 0) {
-                    logi("localBroadcastReceiver Error code =" + error);
-                    String message = intent.getStringExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
-                    logi("localBroadcastReceiver Error message = " + message);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            MBApp application = MBApp.getApp();
-                            PopUp.show(application,
-                                    application.getString(R.string.micro_bit_reset_msg),
-                                    application.getString(R.string.general_error_title),
-                                    R.drawable.error_face, R.drawable.red_btn,
-                                    PopUp.GIFF_ANIMATION_ERROR,
-                                    PopUp.TYPE_ALERT, null, null);
-                        }
-                    });
-                }
+    @Override
+    public void checkTelephonyPermissions() {
+        if (!mRequestPermissions.isEmpty()) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PermissionChecker.PERMISSION_GRANTED ||
+                    (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PermissionChecker.PERMISSION_GRANTED)) {
+                mRequestingPermission = mRequestPermissions.get(0);
+                mRequestPermissions.remove(0);
+                PopUp.show(MBApp.getApp(),
+                        (mRequestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL) ? getString(R.string
+                                .telephony_permission) : getString(R.string.sms_permission),
+                        getString(R.string.permissions_needed_title),
+                        R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
+                        PopUp.TYPE_CHOICE,
+                        notificationOKHandler,
+                        notificationCancelHandler);
             }
-
         }
-    };
+    }
+
+
+    @Override
+    public void addPermissionRequest(int permission) {
+        mRequestPermissions.add(permission);
+    }
+
+    @Override
+    public boolean arePermissionsGranted() {
+        return mRequestPermissions.isEmpty();
+    }
 
     View.OnClickListener notificationOKHandler = new View.OnClickListener() {
         @Override
@@ -291,7 +283,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     View.OnClickListener checkMorePermissionsNeeded = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!mRequestPermission.isEmpty()) {
+            if (!mRequestPermissions.isEmpty()) {
                 checkTelephonyPermissions();
             } else {
                 PopUp.hide();
@@ -320,33 +312,9 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         }
     };
 
-    private void checkTelephonyPermissions() {
-        if (!mRequestPermission.isEmpty()) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PermissionChecker.PERMISSION_GRANTED ||
-                    (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PermissionChecker.PERMISSION_GRANTED)) {
-                mRequestingPermission = mRequestPermission.get(0);
-                mRequestPermission.remove(0);
-                PopUp.show(MBApp.getApp(),
-                        (mRequestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL) ? getString(R.string
-                                .telephony_permission) : getString(R.string.sms_permission),
-                        getString(R.string.permissions_needed_title),
-                        R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
-                        PopUp.TYPE_CHOICE,
-                        notificationOKHandler,
-                        notificationCancelHandler);
-            }
-        }
-    }
     // *************************************************
 
-    // DEBUG
-    protected boolean debug = BuildConfig.DEBUG;
-    protected String TAG = PairingActivity.class.getSimpleName();
-
-    protected void logi(String message) {
-        if (debug)
-            Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
-    }
+    private static final String TAG = PairingActivity.class.getSimpleName();
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -362,95 +330,104 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
      * Setup font styles by setting an appropriate typefaces.
      */
     private void setupFontStyle() {
-        deviceConnectionStatusBtn.setTypeface(MBApp.getApp().getTypeface());
-        // Connect Screen
-        TextView appBarTitle = (TextView) findViewById(R.id.flash_projects_title_txt);
-        appBarTitle.setTypeface(MBApp.getApp().getTypeface());
-
-        TextView manageMicrobit = (TextView) findViewById(R.id.title_manage_microbit);
-        manageMicrobit.setTypeface(MBApp.getApp().getTypefaceBold());
-
-        TextView manageMicorbitStatus = (TextView) findViewById(R.id.device_status_txt);
-        manageMicorbitStatus.setTypeface(MBApp.getApp().getTypefaceBold());
-
-        TextView descriptionManageMicrobit = (TextView) findViewById(R.id.description_manage_microbit);
-        descriptionManageMicrobit.setTypeface(MBApp.getApp().getRobotoTypeface());
-
-        TextView pairBtnText = (TextView) findViewById(R.id.custom_pair_button_text);
-        pairBtnText.setTypeface(MBApp.getApp().getTypeface());
-
-        TextView problemsMicrobit = (TextView) findViewById(R.id.connect_microbit_problems_message);
-        problemsMicrobit.setTypeface(MBApp.getApp().getRobotoTypeface());
-
-        // How to pair your micro:bit - Screen #1
-        TextView pairTipTitle = (TextView) findViewById(R.id.pairTipTitle);
-        pairTipTitle.setTypeface(MBApp.getApp().getTypefaceBold());
-
-        TextView stepOneTitle = (TextView) findViewById(R.id.pair_tip_step_1_step);
-        stepOneTitle.setTypeface(MBApp.getApp().getTypefaceBold());
-
-        TextView stepOneInstructions = (TextView) findViewById(R.id.pair_tip_step_1_instructions);
-        stepOneInstructions.setTypeface(MBApp.getApp().getRobotoTypeface());
-
-        Button cancelPairButton = (Button) findViewById(R.id.cancel_tip_step_1_btn);
-        cancelPairButton.setTypeface(MBApp.getApp().getRobotoTypeface());
-
-        Button nextPairButton = (Button) findViewById(R.id.ok_tip_step_1_btn);
-        nextPairButton.setTypeface(MBApp.getApp().getRobotoTypeface());
-
-        // How to pair your micro:bit - Screen #2
-        TextView howToPairStepThreeTitle = (TextView) findViewById(R.id.how_to_pair_screen_two_title);
-        howToPairStepThreeTitle.setTypeface(MBApp.getApp().getTypefaceBold());
-
-        TextView howToPairStepThreeStep = (TextView) findViewById(R.id.pair_tip_step_3_step);
-        howToPairStepThreeStep.setTypeface(MBApp.getApp().getTypefaceBold());
-
-        TextView howToPairStepThreeText = (TextView) findViewById(R.id.pair_tip_step_3_instructions);
-        howToPairStepThreeText.setTypeface(MBApp.getApp().getRobotoTypeface());
-
-        TextView howToPairStepFourTitle = (TextView) findViewById(R.id.pair_tip_step_4_step);
-        howToPairStepFourTitle.setTypeface(MBApp.getApp().getTypefaceBold());
-
-        TextView howToPairStepFourText = (TextView) findViewById(R.id.pair_tip_step_4_instructions);
-        howToPairStepFourText.setTypeface(MBApp.getApp().getRobotoTypeface());
-
-        Button cancelPairScreenTwoButton = (Button) findViewById(R.id.cancel_tip_step_3_btn);
-        cancelPairScreenTwoButton.setTypeface(MBApp.getApp().getRobotoTypeface());
-
-        Button nextPairScreenTwoButton = (Button) findViewById(R.id.ok_tip_step_3_btn);
-        nextPairScreenTwoButton.setTypeface(MBApp.getApp().getRobotoTypeface());
-
-        // Step 2 - Enter Pattern
-        TextView enterPatternTitle = (TextView) findViewById(R.id.enter_pattern_step_2_title);
-        enterPatternTitle.setTypeface(MBApp.getApp().getTypefaceBold());
-
-        TextView stepTwoTitle = (TextView) findViewById(R.id.pair_enter_pattern_step_2);
-        stepTwoTitle.setTypeface(MBApp.getApp().getTypefaceBold());
-
-        TextView stepTwoInstructions = (TextView) findViewById(R.id.pair_enter_pattern_step_2_instructions);
-        stepTwoInstructions.setTypeface(MBApp.getApp().getRobotoTypeface());
-
         ImageView ohPrettyImg = (ImageView) findViewById(R.id.oh_pretty_emoji);
         ohPrettyImg.setVisibility(View.INVISIBLE);
 
-        Button cancelEnterPattern = (Button) findViewById(R.id.cancel_enter_pattern_step_2_btn);
-        cancelEnterPattern.setTypeface(MBApp.getApp().getRobotoTypeface());
+        MBApp application = MBApp.getApp();
 
-        Button okEnterPatternButton = (Button) findViewById(R.id.ok_enter_pattern_step_2_btn);
-        okEnterPatternButton.setTypeface(MBApp.getApp().getRobotoTypeface());
+        Typeface defaultTypeface = application.getTypeface();
+
+        deviceConnectionStatusBtn.setTypeface(defaultTypeface);
+        // Connect Screen
+        TextView appBarTitle = (TextView) findViewById(R.id.flash_projects_title_txt);
+        appBarTitle.setTypeface(defaultTypeface);
+
+        TextView pairBtnText = (TextView) findViewById(R.id.custom_pair_button_text);
+        pairBtnText.setTypeface(defaultTypeface);
+
+        Typeface boldTypeface = application.getTypefaceBold();
+
+        TextView manageMicrobit = (TextView) findViewById(R.id.title_manage_microbit);
+        manageMicrobit.setTypeface(boldTypeface);
+
+        TextView manageMicorbitStatus = (TextView) findViewById(R.id.device_status_txt);
+        manageMicorbitStatus.setTypeface(boldTypeface);
+
+        // How to pair your micro:bit - Screen #1
+        TextView pairTipTitle = (TextView) findViewById(R.id.pairTipTitle);
+        pairTipTitle.setTypeface(boldTypeface);
+
+        TextView stepOneTitle = (TextView) findViewById(R.id.pair_tip_step_1_step);
+        stepOneTitle.setTypeface(boldTypeface);
+
+        // How to pair your micro:bit - Screen #2
+        TextView howToPairStepThreeTitle = (TextView) findViewById(R.id.how_to_pair_screen_two_title);
+        howToPairStepThreeTitle.setTypeface(boldTypeface);
+
+        TextView howToPairStepThreeStep = (TextView) findViewById(R.id.pair_tip_step_3_step);
+        howToPairStepThreeStep.setTypeface(boldTypeface);
+
+        // Step 2 - Enter Pattern
+        TextView enterPatternTitle = (TextView) findViewById(R.id.enter_pattern_step_2_title);
+        enterPatternTitle.setTypeface(boldTypeface);
+
+        TextView stepTwoTitle = (TextView) findViewById(R.id.pair_enter_pattern_step_2);
+        stepTwoTitle.setTypeface(boldTypeface);
+
+        TextView howToPairStepFourTitle = (TextView) findViewById(R.id.pair_tip_step_4_step);
+        howToPairStepFourTitle.setTypeface(boldTypeface);
 
         // Step 3 - Searching for micro:bit
         TextView searchMicrobitTitle = (TextView) findViewById(R.id.search_microbit_step_3_title);
-        searchMicrobitTitle.setTypeface(MBApp.getApp().getTypefaceBold());
+        searchMicrobitTitle.setTypeface(boldTypeface);
 
         TextView stepThreeTitle = (TextView) findViewById(R.id.searching_microbit_step);
-        stepThreeTitle.setTypeface(MBApp.getApp().getTypefaceBold());
+        stepThreeTitle.setTypeface(boldTypeface);
+
+        Typeface robotoTypeface = application.getRobotoTypeface();
+
+        TextView descriptionManageMicrobit = (TextView) findViewById(R.id.description_manage_microbit);
+        descriptionManageMicrobit.setTypeface(robotoTypeface);
+
+        TextView problemsMicrobit = (TextView) findViewById(R.id.connect_microbit_problems_message);
+        problemsMicrobit.setTypeface(robotoTypeface);
+
+        TextView stepOneInstructions = (TextView) findViewById(R.id.pair_tip_step_1_instructions);
+        stepOneInstructions.setTypeface(robotoTypeface);
+
+        Button cancelPairButton = (Button) findViewById(R.id.cancel_tip_step_1_btn);
+        cancelPairButton.setTypeface(robotoTypeface);
+
+        Button nextPairButton = (Button) findViewById(R.id.ok_tip_step_1_btn);
+        nextPairButton.setTypeface(robotoTypeface);
+
+        TextView howToPairStepThreeText = (TextView) findViewById(R.id.pair_tip_step_3_instructions);
+        howToPairStepThreeText.setTypeface(robotoTypeface);
+
+
+        TextView howToPairStepFourText = (TextView) findViewById(R.id.pair_tip_step_4_instructions);
+        howToPairStepFourText.setTypeface(robotoTypeface);
+
+        Button cancelPairScreenTwoButton = (Button) findViewById(R.id.cancel_tip_step_3_btn);
+        cancelPairScreenTwoButton.setTypeface(robotoTypeface);
+
+        Button nextPairScreenTwoButton = (Button) findViewById(R.id.ok_tip_step_3_btn);
+        nextPairScreenTwoButton.setTypeface(robotoTypeface);
+
+        TextView stepTwoInstructions = (TextView) findViewById(R.id.pair_enter_pattern_step_2_instructions);
+        stepTwoInstructions.setTypeface(robotoTypeface);
+
+        Button cancelEnterPattern = (Button) findViewById(R.id.cancel_enter_pattern_step_2_btn);
+        cancelEnterPattern.setTypeface(robotoTypeface);
+
+        Button okEnterPatternButton = (Button) findViewById(R.id.ok_enter_pattern_step_2_btn);
+        okEnterPatternButton.setTypeface(robotoTypeface);
 
         TextView stepThreeInstructions = (TextView) findViewById(R.id.searching_microbit_step_instructions);
-        stepThreeInstructions.setTypeface(MBApp.getApp().getRobotoTypeface());
+        stepThreeInstructions.setTypeface(robotoTypeface);
 
         Button cancelSearchMicroBit = (Button) findViewById(R.id.cancel_search_microbit_step_3_btn);
-        cancelSearchMicroBit.setTypeface(MBApp.getApp().getRobotoTypeface());
+        cancelSearchMicroBit.setTypeface(robotoTypeface);
     }
 
     private void initViews() {
@@ -568,9 +545,9 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         logi("onActivityResult");
         if (requestCode == RequestCodes.REQUEST_ENABLE_BT) {
             if (resultCode == Activity.RESULT_OK) {
-                if (mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_FOR_PAIRING) {
+                if (mActivityState == PairingActivityState.STATE_ENABLE_BT_FOR_PAIRING) {
                     startWithPairing();
-                } else if (mActivityState == ACTIVITY_STATE.STATE_ENABLE_BT_FOR_CONNECT) {
+                } else if (mActivityState == PairingActivityState.STATE_ENABLE_BT_FOR_CONNECT) {
                     toggleConnection();
                 }
             }
@@ -584,7 +561,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                         null, null);
             }
             //Change state back to Idle
-            mActivityState = ACTIVITY_STATE.STATE_IDLE;
+            mActivityState = PairingActivityState.STATE_IDLE;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -855,8 +832,8 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         if (currentDevice.mAddress != null) {
             boolean currentState = currentDevice.mStatus;
             if (!currentState) {
-                mActivityState = ACTIVITY_STATE.STATE_CONNECTING;
-                mRequestPermission.clear();
+                mActivityState = PairingActivityState.STATE_CONNECTING;
+                mRequestPermissions.clear();
                 PopUp.show(MBApp.getApp(),
                         getString(R.string.init_connection),
                         "",
@@ -866,7 +843,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                         null, null);
                 IPCService.bleConnect();
             } else {
-                mActivityState = ACTIVITY_STATE.STATE_DISCONNECTING;
+                mActivityState = PairingActivityState.STATE_DISCONNECTING;
                 PopUp.show(MBApp.getApp(),
                         getString(R.string.disconnecting),
                         "",
@@ -907,7 +884,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                             PopUp.TYPE_ALERT,
                             checkMorePermissionsNeeded, checkMorePermissionsNeeded);
                 } else {
-                    if (!mRequestPermission.isEmpty()) {
+                    if (!mRequestPermissions.isEmpty()) {
                         checkTelephonyPermissions();
                     }
                 }
@@ -923,7 +900,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                             PopUp.TYPE_ALERT,
                             checkMorePermissionsNeeded, checkMorePermissionsNeeded);
                 } else {
-                    if (!mRequestPermission.isEmpty()) {
+                    if (!mRequestPermissions.isEmpty()) {
                         checkTelephonyPermissions();
                     }
                 }
@@ -934,7 +911,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
     private void proceedAfterBlePermissionGranted() {
         if (!BluetoothSwitch.getInstance().isBluetoothON()) {
-            mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_PAIRING;
+            mActivityState = PairingActivityState.STATE_ENABLE_BT_FOR_PAIRING;
             startBluetooth();
             return;
         }
@@ -1038,7 +1015,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
             case R.id.connected_device_status_button:
                 logi("onClick() :: connectBtn");
                 if (!BluetoothSwitch.getInstance().isBluetoothON()) {
-                    mActivityState = ACTIVITY_STATE.STATE_ENABLE_BT_FOR_CONNECT;
+                    mActivityState = PairingActivityState.STATE_ENABLE_BT_FOR_CONNECT;
                     startBluetooth();
                     return;
                 }

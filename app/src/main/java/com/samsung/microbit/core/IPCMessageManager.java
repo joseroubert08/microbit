@@ -50,7 +50,7 @@ public final class IPCMessageManager {
     private static volatile IPCMessageManager instance;
     private static final Object lock = new Object();
 
-    private HashMap<String, Messenger> remoteServices = new HashMap<String, Messenger>();
+    private HashMap<String, Messenger> remoteServices = new HashMap<>();
 
     ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -141,6 +141,7 @@ public final class IPCMessageManager {
     public void configureClientHandler(String serviceName, Handler clientHandler) {
         if(debug) {
             logi("configureClientHandler()");
+            logi("Init handler ::" +  clientHandler.getLooper().getThread().getName());
         }
 
         synchronized (lock) {
@@ -181,6 +182,10 @@ public final class IPCMessageManager {
             msg.replyTo = clientMessenger;
             messenger.send(msg);
         }
+    }
+
+    public int getServicesCount() {
+        return remoteServices.size();
     }
 
     public static Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {

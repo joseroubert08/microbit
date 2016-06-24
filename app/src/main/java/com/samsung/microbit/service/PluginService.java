@@ -52,6 +52,7 @@ public class PluginService extends Service {
     public void startIPCListener() {
         if (DEBUG) {
             logi("startIPCListener()");
+            logi("make :: plugin start");
         }
 
         if (IPCMessageManager.getInstance() == null) {
@@ -78,6 +79,9 @@ public class PluginService extends Service {
 
                     try {
                         Thread.sleep(IPCMessageManager.STARTUP_DELAY);
+
+                        logi("make :: plugin send");
+
                         ServiceUtils.sendtoBLEService(PluginService.class, IPCMessageManager.MESSAGE_ANDROID,
                                  EventCategories.IPC_INIT, null, null);
                         ServiceUtils.sendtoIPCService(PluginService.class, IPCMessageManager.MESSAGE_ANDROID,
@@ -128,7 +132,8 @@ public class PluginService extends Service {
 
     private void handleIncomingMessage(Message msg) {
         if (DEBUG) {
-            logi("handleIncomingMessage() :: Start PluginService");
+            logi("PluginService :: handleIncomingMessage()");
+            logi("Plugin :: count = " + IPCMessageManager.getInstance().getServicesCount());
         }
 
         if (msg.what == IPCMessageManager.MESSAGE_ANDROID) {
@@ -151,7 +156,7 @@ public class PluginService extends Service {
      */
     private void handleMicroBitMessage(Message msg) {
         if (DEBUG) {
-            logi("handleMessage() ");
+            logi("PluginService :: handleMessage()");
         }
 
         Bundle data = msg.getData();
