@@ -273,7 +273,7 @@ public class BLEService extends BLEBaseService {
         logi("registerNotifications() : " + enable);
 
         //Read microbit firmware version
-        BluetoothGattService deviceInfoService = getService(GattServiceUUIDs.DEVICE_INFORMATION_SERVICE_UUID);
+        BluetoothGattService deviceInfoService = getService(GattServiceUUIDs.DEVICE_INFORMATION_SERVICE);
         if (deviceInfoService != null) {
             BluetoothGattCharacteristic firmwareCharacteristic = deviceInfoService.getCharacteristic
                      (CharacteristicUUIDs.FIRMWARE_REVISION_UUID);
@@ -286,9 +286,14 @@ public class BLEService extends BLEBaseService {
                 sendMicrobitFirmware(firmware);
                 logi("Micro:bit firmware version String = " + firmware);
             }
+        } else {
+            Log.e(TAG, "Not found DeviceInformationService");
         }
+
+
         BluetoothGattService eventService = getService(GattServiceUUIDs.EVENT_SERVICE);
         if (eventService == null) {
+            Log.e(TAG, "Not found EventService");
             logi("registerNotifications() :: not found service : Constants.EVENT_SERVICE");
             return false;
         }

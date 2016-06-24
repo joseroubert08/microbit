@@ -524,7 +524,7 @@ public class BLEManager {
 
                 inBleOp = OP_READ_CHARACTERISTIC;
                 lastCharacteristic = null;
-                this.error = 0;
+                error = 0;
                 int bleState = this.bleState;
                 try {
                     callbackCompleted = false;
@@ -533,7 +533,6 @@ public class BLEManager {
                         if (!callbackCompleted) {
                             error = (BLE_ERROR_FAIL | BLE_ERROR_TIMEOUT);
                         } else {
-                            error = this.error;
                             bleState = this.bleState;
                         }
 
@@ -562,12 +561,44 @@ public class BLEManager {
         return lastDescriptor;
     }
 
-    public int enableCharacteristicNotification(BluetoothGattCharacteristic characteristic, BluetoothGattDescriptor descriptor, boolean enable) {
-        gatt.setCharacteristicNotification(characteristic, enable);
-        descriptor.setValue(enable ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : BluetoothGattDescriptor
-                 .DISABLE_NOTIFICATION_VALUE);
+    public int enableCharacteristicNotification(BluetoothGattCharacteristic characteristic, BluetoothGattDescriptor
+             descriptor, boolean enable) {
 
-        return writeDescriptor(descriptor);
+        int rc = BLE_ERROR_NOOP;
+
+        synchronized (locker) {
+            try {
+                error = 0;
+                int bleState = this.bleState;
+                callbackCompleted = false;
+
+                if (gatt.setCharacteristicNotification(characteristic, enable)) {
+                    //TODO why thread not waiting
+                    //locker.wait(BLE_WAIT_TIMEOUT);
+
+                    if(false) {
+                        throw new InterruptedException();
+                    } else {
+                        callbackCompleted = true;
+                    }
+
+                    if (!callbackCompleted) {
+                        error = (BLE_ERROR_FAIL | BLE_ERROR_TIMEOUT);
+                    } else {
+                        bleState = this.bleState;
+                    }
+
+                    rc = error | bleState;
+
+                    descriptor.setValue(enable ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : BluetoothGattDescriptor
+                            .DISABLE_NOTIFICATION_VALUE);
+                }
+            } catch (InterruptedException e) {
+                Log.e(TAG, e.toString());
+            }
+        }
+
+        return writeDescriptor(descriptor) | rc;
     }
 
     final protected BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
