@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -342,14 +341,14 @@ public class RemoteConfig
             try {
                 status = reader.getJSONObject("status");
                 String appStatus = status.getString("appStatus");
-                editor.putString(RC_APPSTATUS_KEY, appStatus).commit();
+                editor.putString(RC_APPSTATUS_KEY, appStatus).apply();
                 //Get extended message if needed
                 if (appStatus.equalsIgnoreCase("OFF"))
                 {
                     String title = status.getString("title");
                     String message = status.getString("message");
-                    editor.putString(RC_EXCEPTIONTITLE_KEY, title).commit();
-                    editor.putString(RC_EXCEPTIONMSG_KEY, message).commit();
+                    editor.putString(RC_EXCEPTIONTITLE_KEY, title).apply();
+                    editor.putString(RC_EXCEPTIONMSG_KEY, message).apply();
                 }
             } catch (JSONException e) {
                 Log.e(TAG, "readAppStatus: failed with exception " + e.toString());
@@ -367,12 +366,12 @@ public class RemoteConfig
                 String discover = endpoints.getString("discover");
                 String myscripts = endpoints.getString("myScripts");
 
-                editor.putString(RC_ENDPOINT_ABOUT , about).commit();
-                editor.putString(RC_ENDPOINT_TOU, tou).commit();
-                editor.putString(RC_ENDPOINT_PP, pp).commit();
-                editor.putString(RC_ENDPOINT_CREATECODE , createcode).commit();
-                editor.putString(RC_ENDPOINT_DISCOVER, discover).commit();
-                editor.putString(RC_APPSTATUS_MYSCRIPTS, myscripts).commit();
+                editor.putString(RC_ENDPOINT_ABOUT , about).apply();
+                editor.putString(RC_ENDPOINT_TOU, tou).apply();
+                editor.putString(RC_ENDPOINT_PP, pp).apply();
+                editor.putString(RC_ENDPOINT_CREATECODE , createcode).apply();
+                editor.putString(RC_ENDPOINT_DISCOVER, discover).apply();
+                editor.putString(RC_APPSTATUS_MYSCRIPTS, myscripts).apply();
 
             } catch (JSONException e) {
                 Log.e(TAG, "readEndPoints: failed with exception " + e.toString());

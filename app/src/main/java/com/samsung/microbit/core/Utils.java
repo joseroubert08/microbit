@@ -424,9 +424,8 @@ public class Utils {
         if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
             String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
             Log.v("Utils","Updating the microbit firmware");
-            ConnectedDevice deviceInSharedPref;
             Gson gson = new Gson();
-            deviceInSharedPref = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
+            ConnectedDevice deviceInSharedPref = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
             deviceInSharedPref.mfirmware_version = firmware;
             setPairedMicrobit(ctx,deviceInSharedPref);
         }
@@ -438,9 +437,8 @@ public class Utils {
         if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
             String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
             Log.e("Utils","Updating the microbit firmware");
-            ConnectedDevice deviceInSharedPref;
             Gson gson = new Gson();
-            deviceInSharedPref = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
+            ConnectedDevice deviceInSharedPref = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
             deviceInSharedPref.mlast_connection_time = time;
             setPairedMicrobit(ctx,deviceInSharedPref);
         }
