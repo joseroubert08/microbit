@@ -231,7 +231,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mActivityState = FlashActivityState.STATE_IDLE;
+        if(savedInstanceState == null) {
+            mActivityState = FlashActivityState.STATE_IDLE;
+        }
 
         logi("onCreate() :: ");
 

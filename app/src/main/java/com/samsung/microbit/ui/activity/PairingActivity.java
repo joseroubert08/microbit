@@ -487,10 +487,13 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         logi("onCreate() ::");
 
         super.onCreate(savedInstanceState);
+
+        if(savedInstanceState == null) {
+            mActivityState = PairingActivityState.STATE_IDLE;
+        }
 
         // Make sure to call this before any other userActionEvent is sent
         MBApp.getApp().getEchoClientManager().sendViewEventStats("pairingactivity");
