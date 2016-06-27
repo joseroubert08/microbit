@@ -144,7 +144,7 @@
     <string name="connectNew">Pair a new micro:bit</string>
     <string name="connect_tip_title">How to pair your micro:bit</string>
     <string name="step_connect_tip_text_step_three">Step 3</string>
-    <string name="step_connect_tip_text_step_four_text">When you see the success message, \npress RESET and you\'re done!</string>
+    <string name="pairing_successful_tip_message">Please press RESET button and you\'re done!</string>
     <string name="connect_tip_text_step">Step 1</string>
     <string name="step_connect_tip_text_step_four">Step 4</string>
     <string name="desc_step_connect_tip_text_step_four_text">When you see the success message, press RESET and you\'re done!</string>

@@ -63,6 +63,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import pl.droidsonroids.gif.GifImageView;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class PairingActivity extends Activity implements View.OnClickListener {
@@ -793,7 +794,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                     if (tvTitle != null) {
                         tvTitle.setText(R.string.searchingTitle);
                         findViewById(R.id.searching_progress_spinner).setVisibility(View.VISIBLE);
-                        findViewById(R.id.searching_microbit_found_giffview).setVisibility(View.GONE);
+                        ((GifImageView) findViewById(R.id.searching_microbit_found_giffview))
+                                .setImageResource(R.drawable.pairing_pin_screen_two);
                         if(mCurrentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
                             tvSearchingStep.setText(R.string.searching_tip_step_text_one_line);
                         } else {
@@ -1096,7 +1098,7 @@ public class PairingActivity extends Activity implements View.OnClickListener {
         updatePairedDeviceCard();
         // Pop up to show pairing successful
         PopUp.show(MBApp.getContext(),
-                " micro:bit paired successfully", // message
+                getString(R.string.pairing_successful_tip_message), // message
                 getString(R.string.pairing_success_message_1), //title
                 R.drawable.message_face, //image icon res id
                 R.drawable.green_btn,
@@ -1257,7 +1259,8 @@ public class PairingActivity extends Activity implements View.OnClickListener {
                         if (textView != null) {
                             textView.setText(getString(R.string.searchingTitle));
                             findViewById(R.id.searching_progress_spinner).setVisibility(View.GONE);
-                            findViewById(R.id.searching_microbit_found_giffview).setVisibility(View.VISIBLE);
+                            ((GifImageView) findViewById(R.id.searching_microbit_found_giffview))
+                                    .setImageResource(R.drawable.emoji_microbit_found);
                             if(mCurrentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
                                 tvSearchingStep.setText(R.string.searching_microbit_found_message_one_line);
                             } else {
