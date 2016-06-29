@@ -15,7 +15,10 @@ import com.samsung.microbit.BuildConfig;
 import java.util.List;
 import java.util.UUID;
 
+import no.nordicsemi.android.error.GattError;
+
 public class BLEManager {
+    public static final String TAG = BLEManager.class.getSimpleName();
 
     public static final int BLE_DISCONNECTED = 0x0000;
     public static final int BLE_CONNECTED = 0x0001;
@@ -25,7 +28,7 @@ public class BLEManager {
     public static final int BLE_ERROR_FAIL = 0x00010000;
     public static final int BLE_ERROR_TIMEOUT = 0x00020000;
 
-    public static final int BLE_ERROR_NOOP = -1 & 0xFFFF0000;
+    public static final int BLE_ERROR_NOOP = 0xFFFF0000;
     public static final int BLE_ERROR_NOGATT = -2 & 0xFFFF0000;
 
     public static final long BLE_WAIT_TIMEOUT = 10000;
@@ -41,10 +44,6 @@ public class BLEManager {
     public static final int OP_RELIABLE_WRITE_COMPLETED = 8;
     public static final int OP_READ_REMOTE_RSSI = 9;
     public static final int OP_MTU_CHANGED = 10;
-    public static int extended_error = 0;
-
-    private static final String TAG = BLEManager.class.getSimpleName();
-
 
     private volatile int bleState = 0;
     private volatile int error = 0;
@@ -63,6 +62,8 @@ public class BLEManager {
     private final Object locker = new Object();
     private CharacteristicChangeListener characteristicChangeListener;
     private UnexpectedConnectionEventListener unexpectedDisconnectionListener;
+
+    private int extendedError = 0;
 
     private boolean isDebug = BuildConfig.DEBUG;
 
@@ -162,6 +163,10 @@ public class BLEManager {
         }
     }
 
+    public int getExtendedError() {
+        return extendedError;
+    }
+
     public int connect(boolean autoReconnect) {
         int rc = BLE_ERROR_NOOP;
 
@@ -183,7 +188,7 @@ public class BLEManager {
                         if (gatt == null) {
                             if (isDebug)
                                 logi("connectGatt failed with AutoReconnect = false. Trying again.. autoReconnect=" + autoReconnect);
-                            bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback);
+                            gatt = bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback);
                         }
 
                         if (gatt != null) {
@@ -631,6 +636,9 @@ public class BLEManager {
                     }
                 }
                 break;
+                default:
+                    Log.e(TAG, "Connection error: " + GattError.parseConnectionError(status));
+                break;
             }
 
             if (status != BluetoothGatt.GATT_SUCCESS) {
@@ -649,7 +657,7 @@ public class BLEManager {
                     }
                     callbackCompleted = true;
                     BLEManager.this.error = error;
-                    extended_error = status;
+                    extendedError = status;
                     locker.notify();
                 } else {
                     if (isDebug) {

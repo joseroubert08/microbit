@@ -357,5 +357,6 @@
     <string name="sms_permission">Connected micro:bit program needs to know the Incoming SMS status. We need SMS permission to complete this action. NOTE: Application will not send any SMS. \n Proceed?</string>
     <string name="telephony_permission_error">Your connected micro:bit will not receive any Incoming call notification</string>
     <string name="sms_permission_error">Your connected micro:bit will not receive any Incoming SMS notification</string>
+    <string name="bluetooth_pairing_internal_error">Bluetooth pairing error happened. Disconnecting now &#8230;</string>
 </resources>
 

@@ -110,7 +110,8 @@ public abstract class BLEBaseService extends Service {
                             @Override
                             public void handleConnectionEvent(int event) {
                                 if (isDebug) {
-                                    logi("setupBLE().CharacteristicChangeListener.handleUnexpectedConnectionEvent()");
+                                    logi("setupBLE().CharacteristicChangeListener.handleUnexpectedConnectionEvent()"
+                                            + event);
                                 }
 
                                 if (bleManager != null) {
@@ -133,20 +134,20 @@ public abstract class BLEBaseService extends Service {
 
         boolean rc = true;
 
-        if (rc && bluetoothManager == null) {
+        if (bluetoothManager == null) {
             bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-            rc = (bluetoothManager != null) ? true : false;
+            rc = bluetoothManager != null;
         }
 
         if (rc && (bluetoothAdapter == null)) {
             bluetoothAdapter = bluetoothManager.getAdapter();
-            rc = (bluetoothAdapter != null) ? true : false;
+            rc = bluetoothAdapter != null;
         }
 
         if (rc && (bluetoothDevice == null)) {
             if (deviceAddress != null) {
                 bluetoothDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
-                rc = (bluetoothAdapter != null) ? true : false;
+                rc = bluetoothAdapter != null;
             } else {
                 rc = false;
             }
@@ -195,7 +196,7 @@ public abstract class BLEBaseService extends Service {
     int interpretCode(int rc, int goodCode) {
         if (rc > 0) {
             if ((rc & BLEManager.BLE_ERROR_FAIL) != 0) {
-                actualError = bleManager.extended_error;
+                actualError = bleManager.getExtendedError();
                 if ((rc & BLEManager.BLE_ERROR_TIMEOUT) != 0) {
                     rc = 10;
                 } else {

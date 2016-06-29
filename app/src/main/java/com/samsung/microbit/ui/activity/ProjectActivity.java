@@ -44,7 +44,6 @@ import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.ui.BluetoothSwitch;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.adapter.ProjectAdapter;
-import com.samsung.microbit.utils.ErrorUtils;
 import com.samsung.microbit.utils.FileUtils;
 import com.samsung.microbit.utils.IPCToBLEHelper;
 import com.samsung.microbit.utils.PreferenceUtils;
@@ -53,6 +52,8 @@ import com.samsung.microbit.utils.UnpackUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import no.nordicsemi.android.error.GattError;
 
 
 public class ProjectActivity extends Activity implements View.OnClickListener, IPCToBLEHelper.BLEBroadcastHandlable {
@@ -943,7 +944,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
 
                 }
             } else if (intent.getAction().equals(DfuService.BROADCAST_ERROR)) {
-                String error_message = ErrorUtils.broadcastGetErrorMessage(intent.getIntExtra(DfuService.EXTRA_DATA, 0));
+                String error_message = GattError.parse(intent.getIntExtra(DfuService.EXTRA_DATA, 0));
 
                 logi("DFUResultReceiver.onReceive() :: Flashing ERROR!!  Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
                         + "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");

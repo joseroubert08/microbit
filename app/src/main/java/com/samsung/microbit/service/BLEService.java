@@ -12,25 +12,29 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.bluetooth.BLEManager;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.data.constants.CharacteristicUUIDs;
-import com.samsung.microbit.data.model.CmdArg;
-import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.EventSubCodes;
 import com.samsung.microbit.data.constants.GattFormats;
 import com.samsung.microbit.data.constants.GattServiceUUIDs;
-import com.samsung.microbit.data.model.NameValuePair;
 import com.samsung.microbit.data.constants.RegistrationIds;
 import com.samsung.microbit.data.constants.UUIDs;
-import com.samsung.microbit.utils.ErrorUtils;
+import com.samsung.microbit.data.model.CmdArg;
+import com.samsung.microbit.data.model.ConnectedDevice;
+import com.samsung.microbit.data.model.NameValuePair;
 import com.samsung.microbit.utils.ServiceUtils;
 
+import java.util.List;
 import java.util.UUID;
+
+import no.nordicsemi.android.error.GattError;
 
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
@@ -153,6 +157,7 @@ public class BLEService extends BLEBaseService {
             if (getBleManager() != null) {
                 reset();
                 setNotification(false, rc);
+                Toast.makeText(MBApp.getApp(), R.string.bluetooth_pairing_internal_error, Toast.LENGTH_LONG).show();
             }
         }
 
@@ -411,7 +416,7 @@ public class BLEService extends BLEBaseService {
 
         args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
         args[1] = new NameValuePair(IPCMessageManager.BUNDLE_DEVICE_ADDRESS, getInitializedDeviceAddress());
-        args[2] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_MESSAGE, ErrorUtils.broadcastGetErrorMessage(actual_Error));
+        args[2] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_MESSAGE, GattError.parse(actual_Error));
 
         if (!isConnected) {
             logi("setNotification() :: !isConnected");
