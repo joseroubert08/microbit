@@ -619,6 +619,9 @@ public class BLEManager {
 
             int state = BLE_DISCONNECTED;
             int error = 0;
+
+            boolean gattForceClosed = false;
+
             switch (status) {
                 case BluetoothGatt.GATT_SUCCESS: {
                     if (newState == BluetoothProfile.STATE_CONNECTED) {
@@ -632,6 +635,7 @@ public class BLEManager {
 
                             gatt.disconnect();
                             gatt.close();
+                            gattForceClosed = true;
                         }
                     }
                 }
@@ -665,14 +669,13 @@ public class BLEManager {
                     }
 
                     bleState = state;
-                    unexpectedDisconnectionListener.handleConnectionEvent(bleState);
+                    unexpectedDisconnectionListener.handleConnectionEvent(bleState, gattForceClosed);
                 }
 
                 if (isDebug) {
                     logi("BluetoothGattCallback.onConnectionStateChange() :: end");
                 }
             }
-
         }
 
         @Override

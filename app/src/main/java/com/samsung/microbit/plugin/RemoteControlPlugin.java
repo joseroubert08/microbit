@@ -29,7 +29,7 @@ public class RemoteControlPlugin {
                     logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_PLAY");
                 }
 
-				Play();
+				play();
 				break;
 
 			case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE:
@@ -37,7 +37,7 @@ public class RemoteControlPlugin {
                     logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_PAUSE");
                 }
 
-				Pause();
+				pause();
 				break;
 
 			case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_STOP:
@@ -45,7 +45,7 @@ public class RemoteControlPlugin {
                     logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_STOP");
                 }
 
-				Stop();
+				stop();
 				break;
 
 			case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK:
@@ -53,7 +53,7 @@ public class RemoteControlPlugin {
                     logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK");
                 }
 
-				NextTrack();
+				nextTrack();
 				break;
 
 			case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_PREVTRACK:
@@ -61,7 +61,7 @@ public class RemoteControlPlugin {
                     logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_PREVTRACK");
                 }
 
-				PrevTrack();
+				previousTrack();
 				break;
 
 			case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_FORWARD:
@@ -69,7 +69,7 @@ public class RemoteControlPlugin {
                     logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_FORWARD");
                 }
 
-				Forward();
+				forward();
 				break;
 
 			case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_REWIND:
@@ -77,7 +77,7 @@ public class RemoteControlPlugin {
                     logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_REWIND");
                 }
 
-				Rewind();
+				rewind();
 				break;
 
 			case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEUP:
@@ -85,7 +85,7 @@ public class RemoteControlPlugin {
                     logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEUP");
                 }
 
-				VolumeUp();
+				volumeUp();
 				break;
 
 			case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN:
@@ -93,7 +93,7 @@ public class RemoteControlPlugin {
                     logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN");
                 }
 
-				VolumeDown();
+				volumeDown();
 				break;
 
 			default:
@@ -108,51 +108,51 @@ public class RemoteControlPlugin {
 		MBApp.getApp().sendOrderedBroadcast(mediaEvent, null);
 	}
 
-	private static void scheduleMediaKeyEvent(final int action, final int code, final int duration) {
+	private static void scheduleMediaKeyEvent(final int action, final int code, final int delay) {
 		new Timer().schedule(new TimerTask() {
 			@Override
 			public void run() {
 				sendMediaKeyEvent(action, code);
 			}
-		}, duration);
+		}, delay);
 	}
 
-	private static void Play() {
+	private static void play() {
 		scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY, 0);
 		scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY, 100);
 	}
 
-	private static void Pause() {
+	private static void pause() {
 		scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE, 0);
 		scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE, 100);
 	}
 
-	private static void Stop() {
+	private static void stop() {
 		scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_STOP, 0);
 		scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_STOP, 100);
 	}
 
-	private static void NextTrack() {
+	private static void nextTrack() {
 		scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT, 0);
 		scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_NEXT, 100);
 	}
 
-	private static void PrevTrack() {
+	private static void previousTrack() {
 		scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS, 0);
 		scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PREVIOUS, 100);
 	}
 
-	private static void Forward() {
+	private static void forward() {
 		scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, 0);
 		scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, 100);
 	}
 
-	private static void Rewind() {
+	private static void rewind() {
 		scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_REWIND, 0);
 		scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_REWIND, 100);
 	}
 
-	private static void VolumeUp() {
+	private static void volumeUp() {
 		AudioManager audio = (AudioManager) MBApp.getApp().getSystemService(Context.AUDIO_SERVICE);
 		audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
 			AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
@@ -162,7 +162,7 @@ public class RemoteControlPlugin {
         */
 	}
 
-	private static void VolumeDown() {
+	private static void volumeDown() {
 		AudioManager audio = (AudioManager) MBApp.getApp().getSystemService(Context.AUDIO_SERVICE);
 		audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
 			AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);

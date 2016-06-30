@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,6 +42,7 @@ import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.utils.FileUtils;
 
+import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
@@ -280,18 +282,25 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void unbindDrawables(View view) {
-        if(view == null)
+        if(view == null) {
             return;
+        }
 
         if (view.getBackground() != null) {
-            view.getBackground().setCallback(null);
+            Drawable backgroundDrawable = view.getBackground();
+            backgroundDrawable.setCallback(null);
+            view.unscheduleDrawable(backgroundDrawable);
+
+            if(backgroundDrawable instanceof GifDrawable) {
+                ((GifDrawable) backgroundDrawable).recycle();
+            }
         }
         if (view instanceof ViewGroup) {
-            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-                unbindDrawables(((ViewGroup) view).getChildAt(i));
+            ViewGroup viewGroup = (ViewGroup) view;
+
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                unbindDrawables(viewGroup.getChildAt(i));
             }
-            ((ViewGroup) view).removeAllViews();
-            view.setBackgroundResource(0);
         }
     }
     @Override

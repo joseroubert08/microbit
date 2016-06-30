@@ -120,6 +120,28 @@ public class BluetoothUtils {
         }
     }
 
+    public static BluetoothDevice getPairedDeviceMicrobit(Context context) {
+        SharedPreferences pairedDevicePref = context.getApplicationContext().getSharedPreferences(PREFERENCES_KEY,
+                Context.MODE_MULTI_PROCESS);
+        if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
+            boolean pairedMicrobitInSystemList = false;
+            String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
+            Gson gson = new Gson();
+            sConnectedDevice = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
+            //Check if the microbit is still paired with our mobile
+            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (mBluetoothAdapter.isEnabled()) {
+                Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+                for (BluetoothDevice bt : pairedDevices) {
+                    if (bt.getAddress().equals(sConnectedDevice.mAddress)) {
+                        return bt;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     public static ConnectedDevice getPairedMicrobit(Context ctx) {
         SharedPreferences pairedDevicePref = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY,
                 Context.MODE_MULTI_PROCESS);

@@ -39,6 +39,7 @@ import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.data.model.Project;
 import com.samsung.microbit.data.model.ui.FlashActivityState;
 import com.samsung.microbit.presentation.AppInfoPresenter;
+import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.DfuService;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.ui.BluetoothSwitch;
@@ -65,9 +66,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
 
     private Project mProgramToSend;
 
-    private String m_HexFileSizeStats = "0" ;
-    private String m_BinSizeStats = "0" ;
-    private String m_MicroBitFirmware = "0.0" ;
+    private String m_HexFileSizeStats = "0";
+    private String m_BinSizeStats = "0";
+    private String m_MicroBitFirmware = "0.0";
 
     private DFUResultReceiver dfuResultReceiver;
 
@@ -80,12 +81,16 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
 
     private int mActivityState;
 
-    /* *************************************************
-     * TODO setup to Handle BLE Notifications
-     */
-    IntentFilter broadcastIntentFilter;
-
     private BroadcastReceiver localBroadcastReceiver = IPCToBLEHelper.bleHandlerReceiver(this);
+
+    private final BroadcastReceiver gattForceClosedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(BLEService.GATT_FORCE_CLOSED)) {
+                setConnectedDeviceText();
+            }
+        }
+    };
 
     View.OnClickListener notificationOKHandler = new View.OnClickListener() {
         @Override
@@ -163,8 +168,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
         if (!mRequestPermissions.isEmpty()) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS)
                     != PermissionChecker.PERMISSION_GRANTED ||
-                (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
-                        != PermissionChecker.PERMISSION_GRANTED)) {
+                    (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
+                            != PermissionChecker.PERMISSION_GRANTED)) {
                 mRequestingPermission = mRequestPermissions.get(0);
                 mRequestPermissions.remove(0);
                 PopUp.show(MBApp.getApp(),
@@ -232,7 +237,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             mActivityState = FlashActivityState.STATE_IDLE;
         }
 
@@ -242,8 +247,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
 
         appInfoPresenter.start();
 
+        MBApp application = MBApp.getApp();
+
         // Make sure to call this before any other userActionEvent is sent
-        MBApp.getApp().getEchoClientManager().sendViewEventStats("projectactivity");
+        application.getEchoClientManager().sendViewEventStats("projectactivity");
 
         //Remove title bar
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -253,14 +260,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
         setupFontStyle();
         checkMinimumPermissionsForThisScreen();
 
-		/* *************************************************
-         * TODO setup to Handle BLE Notification
-		 */
-        if (broadcastIntentFilter == null) {
-            broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
-            LocalBroadcastManager.getInstance(MBApp.getApp()).registerReceiver(localBroadcastReceiver,
-                    broadcastIntentFilter);
-        }
+        IntentFilter broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
+        LocalBroadcastManager.getInstance(application).registerReceiver(localBroadcastReceiver,
+                broadcastIntentFilter);
+
+        LocalBroadcastManager.getInstance(application).registerReceiver(gattForceClosedReceiver, new
+                IntentFilter(BLEService.GATT_FORCE_CLOSED));
+
         setConnectedDeviceText();
         String fullPathOfFile = null;
         String fileName = null;
@@ -283,6 +289,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
     @Override
     protected void onDestroy() {
         appInfoPresenter.destroy();
+
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(MBApp.getApp());
+
+        localBroadcastManager.unregisterReceiver(gattForceClosedReceiver);
+        localBroadcastManager.unregisterReceiver(localBroadcastReceiver);
         super.onDestroy();
         releaseViews();
     }
@@ -320,8 +331,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
                 }
             }
             break;
-            case PermissionCodes.INCOMING_CALL_PERMISSIONS_REQUESTED:{
-                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED ) {
+            case PermissionCodes.INCOMING_CALL_PERMISSIONS_REQUESTED: {
+                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     PopUp.show(MBApp.getApp(),
                             getString(R.string.telephony_permission_error),
                             getString(R.string.permissions_needed_title),
@@ -416,12 +427,16 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
             connectedIndicatorText.setText(getString(R.string.not_connected));
             if (device.mName != null) {
                 deviceName.setText(device.mName);
+            } else {
+                deviceName.setText("");
             }
         } else {
             connectedIndicatorIcon.setImageResource(R.drawable.device_status_connected);
             connectedIndicatorText.setText(getString(R.string.connected_to));
             if (device.mName != null) {
                 deviceName.setText(device.mName);
+            } else {
+                deviceName.setText("");
             }
         }
     }
@@ -497,12 +512,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
             projectAdapter = new ProjectAdapter(this, leftList);
             ProjectAdapter projectAdapterRight = new ProjectAdapter(this, rightList);
             mProjectListViewRight.setAdapter(projectAdapterRight);
-            if(projectAdapter.isEmpty() && projectAdapterRight.isEmpty()) {
+            if (projectAdapter.isEmpty() && projectAdapterRight.isEmpty()) {
                 emptyText.setVisibility(View.VISIBLE);
             }
         } else {
             projectAdapter = new ProjectAdapter(this, mProjectList);
-            if(projectAdapter.isEmpty()) {
+            if (projectAdapter.isEmpty()) {
                 emptyText.setVisibility(View.VISIBLE);
             }
         }
@@ -551,7 +566,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
                         "",
                         R.drawable.flash_face, R.drawable.blue_btn,
                         PopUp.GIFF_ANIMATION_NONE,
-                        PopUp.TYPE_SPINNER_NOT_CANCELABLE,
+                        PopUp.TYPE_SPINNER,
                         null, null);
                 IPCService.bleDisconnect();
             } else {
@@ -562,7 +577,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
                         "",
                         R.drawable.flash_face, R.drawable.blue_btn,
                         PopUp.GIFF_ANIMATION_NONE,
-                        PopUp.TYPE_SPINNER_NOT_CANCELABLE,
+                        PopUp.TYPE_SPINNER,
                         null, null);
 
                 IPCService.bleConnect();
@@ -572,9 +587,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
 
     /**
      * Sends a project to flash on a mi0crobit board. If bluetooth is off then turn it on.
+     *
      * @param project Project to flash.
      */
-    public void sendProject(final Project project){
+    public void sendProject(final Project project) {
         mProgramToSend = project;
         setActivityState(FlashActivityState.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST);
         if (!BluetoothSwitch.getInstance().isBluetoothON()) {

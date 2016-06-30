@@ -16,6 +16,7 @@ public class PlayAudioPresenter implements Presenter {
     private AudioManager audioManager;
 
     private int originalRingerMode;
+    private int originalRingerVolume;
 
     private String notificationForPlay;
     private MediaPlayer mediaplayer;
@@ -45,7 +46,6 @@ public class PlayAudioPresenter implements Presenter {
         mediaplayer = new MediaPlayer();
 
         mediaplayer.reset();
-        mediaplayer.setVolume(1.0f, 1.0f);
         mediaplayer.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
         try {
             mediaplayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
@@ -76,13 +76,19 @@ public class PlayAudioPresenter implements Presenter {
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         originalRingerMode = audioManager.getRingerMode();
 
-        //if (originalRingerMode != AudioManager.RINGER_MODE_NORMAL) {
-        //    audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-        //}
+        originalRingerMode = audioManager.getRingerMode();
+        originalRingerVolume = audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+
+        if (originalRingerMode != AudioManager.RINGER_MODE_NORMAL) {
+            audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+        }
+        audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, audioManager.getStreamMaxVolume
+                (AudioManager.STREAM_NOTIFICATION), 0);
     }
 
     private void restoreAudioMode() {
         audioManager.setRingerMode(originalRingerMode);
+        audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalRingerVolume, 0);
     }
 
     @Override
@@ -91,6 +97,7 @@ public class PlayAudioPresenter implements Presenter {
             try {
                 if(mediaplayer.isPlaying()) {
                     mediaplayer.stop();
+                    restoreAudioMode();
                 }
             } catch (IllegalStateException e) {
                 e.printStackTrace();

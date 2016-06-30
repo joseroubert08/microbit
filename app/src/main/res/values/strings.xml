@@ -19,7 +19,7 @@
     <string name="app_name">micro:bit</string>
     <string name="home_activity_name"></string>
     <string name="poweredBy">Powered by\r\n SAMSUNG</string>
-    <string name="copyright">Copyright © 1995-2015 SAMSUNG</string>
+    <string name="copyright">Copyright © 1995&#8211;2015 SAMSUNG</string>
     <string name="developed_by">Developed by</string>
 
     <string name="createCodeURL">https://www.microbit.co.uk/</string>

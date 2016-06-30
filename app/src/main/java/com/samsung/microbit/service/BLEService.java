@@ -2,15 +2,18 @@ package com.samsung.microbit.service;
 
 import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -31,7 +34,7 @@ import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.data.model.NameValuePair;
 import com.samsung.microbit.utils.ServiceUtils;
 
-import java.util.List;
+import java.lang.reflect.Method;
 import java.util.UUID;
 
 import no.nordicsemi.android.error.GattError;
@@ -40,6 +43,8 @@ import static com.samsung.microbit.BuildConfig.DEBUG;
 
 public class BLEService extends BLEBaseService {
     private static final String TAG = BLEService.class.getSimpleName();
+
+    public static final String GATT_FORCE_CLOSED = "com.microbit.gatt_force_closed";
 
     private boolean firstRun = true;
 
@@ -350,8 +355,21 @@ public class BLEService extends BLEBaseService {
     }
 
     @Override
-    protected void handleUnexpectedConnectionEvent(int event) {
+    protected void handleUnexpectedConnectionEvent(int event, boolean gattForceClosed) {
         logi("handleUnexpectedConnectionEvent() :: event = " + event);
+
+        if(gattForceClosed) {
+            Context appContext = getApplicationContext();
+
+            BluetoothDevice pairedDevice = BluetoothUtils.getPairedDeviceMicrobit(appContext);
+
+            if(pairedDevice != null) {
+                removeBond(pairedDevice);
+                BluetoothUtils.setPairedMicroBit(appContext, null);
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(new Intent(GATT_FORCE_CLOSED));
+            }
+            return;
+        }
 
         if ((event & BLEManager.BLE_CONNECTED) != 0) {
             new Thread(new Runnable() {
@@ -367,6 +385,17 @@ public class BLEService extends BLEBaseService {
         } else if (event == BLEManager.BLE_DISCONNECTED) {
             logi("handleUnexpectedConnectionEvent() :: BLE_DISCONNECTED");
             setNotification(false, 0);
+        }
+    }
+
+    private void removeBond(BluetoothDevice bluetoothDevice) {
+        try {
+            Class<BluetoothDevice> bluetoothDeviceClass = BluetoothDevice.class;
+            Method m = bluetoothDeviceClass.getDeclaredMethod("removeBond", null);
+            m.setAccessible(true);
+            m.invoke(bluetoothDevice);
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
         }
     }
 

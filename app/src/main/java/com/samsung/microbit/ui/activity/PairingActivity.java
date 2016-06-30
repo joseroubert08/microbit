@@ -52,6 +52,7 @@ import com.samsung.microbit.data.constants.PermissionCodes;
 import com.samsung.microbit.data.constants.RequestCodes;
 import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.data.model.ui.PairingActivityState;
+import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.ui.BluetoothSwitch;
 import com.samsung.microbit.ui.PopUp;
@@ -72,7 +73,7 @@ import static com.samsung.microbit.BuildConfig.DEBUG;
 public class PairingActivity extends Activity implements View.OnClickListener, BluetoothAdapter.LeScanCallback,
         IPCToBLEHelper.BLEBroadcastHandlable {
 
-    private static boolean DISABLE_DEVICE_LIST = false;
+    private static boolean sDeviceListAvailable = false;
 
     private enum PAIRING_STATE {
         PAIRING_STATE_CONNECT_BUTTON,
@@ -126,14 +127,6 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     private int mCurrentOrientation;
     private BluetoothLeScanner mLEScanner = null;
 
-    private enum ACTIVITY_STATE {
-        STATE_IDLE,
-        STATE_ENABLE_BT_FOR_CONNECT,
-        STATE_ENABLE_BT_FOR_PAIRING,
-        STATE_CONNECTING,
-        STATE_DISCONNECTING
-    }
-
     private List<Integer> mRequestPermissions = new ArrayList<>();
 
     private int mRequestingPermission = -1;
@@ -168,6 +161,16 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
             displayScreen(PAIRING_STATE.PAIRING_STATE_SEARCHING);
         }
     };
+
+    private final BroadcastReceiver gattForceClosedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(BLEService.GATT_FORCE_CLOSED)) {
+                updatePairedDeviceCard();
+            }
+        }
+    };
+
     private final BroadcastReceiver mPairReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -495,15 +498,20 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
             mActivityState = PairingActivityState.STATE_IDLE;
         }
 
-        // Make sure to call this before any other userActionEvent is sent
-        MBApp.getApp().getEchoClientManager().sendViewEventStats("pairingactivity");
+        MBApp application = MBApp.getApp();
 
-        IntentFilter broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
-        LocalBroadcastManager.getInstance(MBApp.getApp()).registerReceiver(localBroadcastReceiver, broadcastIntentFilter);
+        // Make sure to call this before any other userActionEvent is sent
+        application.getEchoClientManager().sendViewEventStats("pairingactivity");
 
         //Register receiver
         IntentFilter intent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(mPairReceiver, intent);
+
+        IntentFilter broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
+        LocalBroadcastManager.getInstance(application).registerReceiver(localBroadcastReceiver, broadcastIntentFilter);
+
+        LocalBroadcastManager.getInstance(application).registerReceiver(gattForceClosedReceiver, new
+                IntentFilter(BLEService.GATT_FORCE_CLOSED));
 
         setupBleController();
 
@@ -733,15 +741,17 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 deviceConnectionStatusBtn.setBackgroundResource(R.drawable.grey_btn);
                 deviceConnectionStatusBtn.setText("-");
                 deviceConnectionStatusBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                deviceConnectionStatusBtn.setOnClickListener(null);
             } else {
                 deviceConnectionStatusBtn.setText(connectedDevice.mName);
                 updateConnectionStatus();
+                deviceConnectionStatusBtn.setOnClickListener(this);
             }
         }
     }
 
-    public static boolean disableListView() {
-        return DISABLE_DEVICE_LIST;
+    public static boolean deviceListAvailable() {
+        return sDeviceListAvailable;
     }
 
     private void displayScreen(PAIRING_STATE gotoState) {
@@ -755,10 +765,10 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         logi("********** Connect: state from " + mState + " to " + gotoState);
         mState = gotoState;
 
-        DISABLE_DEVICE_LIST = !((gotoState == PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON) ||
+        sDeviceListAvailable = ((gotoState == PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON) ||
                 (gotoState == PAIRING_STATE.PAIRING_STATE_ERROR));
 
-        if (!disableListView()) {
+        if (deviceListAvailable()) {
             updatePairedDeviceCard();
             mConnectDeviceView.setVisibility(View.VISIBLE);
         }
@@ -842,7 +852,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                         "",
                         R.drawable.message_face, R.drawable.blue_btn,
                         PopUp.GIFF_ANIMATION_NONE,
-                        PopUp.TYPE_SPINNER_NOT_CANCELABLE,
+                        PopUp.TYPE_SPINNER,
                         null, null);
                 IPCService.bleConnect();
             } else {
@@ -852,7 +862,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                         "",
                         R.drawable.message_face, R.drawable.blue_btn,
                         PopUp.GIFF_ANIMATION_NONE,
-                        PopUp.TYPE_SPINNER_NOT_CANCELABLE,
+                        PopUp.TYPE_SPINNER,
                         null, null);
                 IPCService.bleDisconnect();
             }
@@ -1256,7 +1266,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
             //Replace all : to blank - Fix for #64
             //TODO Use pattern recognition instead
             s = s.replaceAll(":", "");
-            if (mNewDeviceName.toLowerCase().equals(s)) {
+            if (mNewDeviceName.toLowerCase().startsWith(s)) {
                 logi("mLeScanCallback.onLeScan() ::   Found micro:bit -" + device.getName().toLowerCase() + " " + device.getAddress());
                 // Stop scanning as device is found.
                 scanLeDevice(false);
@@ -1283,7 +1293,8 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                     }
                 });
             } else {
-                logi("mLeScanCallback.onLeScan() ::   Found - device.getName() == " + device.getName().toLowerCase());
+                logi("mLeScanCallback.onLeScan() ::   Found - device.getName() == " + device.getName().toLowerCase()
+                        + " , device address - " + device.getAddress());
             }
         }
     }
@@ -1353,7 +1364,11 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         unbindDrawables(findViewById(R.id.searching_progress_spinner));
 
         unregisterReceiver(mPairReceiver);
-        LocalBroadcastManager.getInstance(MBApp.getApp()).unregisterReceiver(localBroadcastReceiver);
+
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(MBApp.getApp());
+
+        localBroadcastManager.unregisterReceiver(gattForceClosedReceiver);
+        localBroadcastManager.unregisterReceiver(localBroadcastReceiver);
     }
 
     private void unbindDrawables(View view) {

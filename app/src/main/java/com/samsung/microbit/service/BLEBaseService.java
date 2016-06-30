@@ -108,14 +108,14 @@ public abstract class BLEBaseService extends Service {
                         },
                         new UnexpectedConnectionEventListener() {
                             @Override
-                            public void handleConnectionEvent(int event) {
+                            public void handleConnectionEvent(int event, boolean gattForceClosed) {
                                 if (isDebug) {
                                     logi("setupBLE().CharacteristicChangeListener.handleUnexpectedConnectionEvent()"
                                             + event);
                                 }
 
                                 if (bleManager != null) {
-                                    handleUnexpectedConnectionEvent(event);
+                                    handleUnexpectedConnectionEvent(event, gattForceClosed);
                                 }
                             }
                         });
@@ -168,7 +168,7 @@ public abstract class BLEBaseService extends Service {
 
     protected abstract void handleCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic);
 
-    protected abstract void handleUnexpectedConnectionEvent(int event);
+    protected abstract void handleUnexpectedConnectionEvent(int event, boolean gattForceClosed);
 
     protected abstract void setNotification(boolean isConnected, int errorCode);
 
