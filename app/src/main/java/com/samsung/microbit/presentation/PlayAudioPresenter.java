@@ -12,6 +12,7 @@ import com.samsung.microbit.MBApp;
 import java.io.IOException;
 
 public class PlayAudioPresenter implements Presenter {
+    private static final String TAG = PlayAudioPresenter.class.getSimpleName();
 
     private AudioManager audioManager;
 
@@ -52,7 +53,7 @@ public class PlayAudioPresenter implements Presenter {
             mediaplayer.prepare();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.d("Utils", "playAudio: exception");
+            Log.e(TAG, e.toString());
             mediaplayer.release();
             mediaplayer = null;
             return;
@@ -100,14 +101,16 @@ public class PlayAudioPresenter implements Presenter {
                     restoreAudioMode();
                 }
             } catch (IllegalStateException e) {
-                e.printStackTrace();
+                Log.e(TAG, e.toString());
             }
         }
     }
 
     @Override
     public void destroy() {
-        mediaplayer.release();
-        mediaplayer = null;
+        if(mediaplayer != null) {
+            mediaplayer.release();
+            mediaplayer = null;
+        }
     }
 }
