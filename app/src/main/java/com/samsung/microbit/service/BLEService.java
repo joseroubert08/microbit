@@ -7,13 +7,11 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -358,7 +356,8 @@ public class BLEService extends BLEBaseService {
     protected void handleUnexpectedConnectionEvent(int event, boolean gattForceClosed) {
         logi("handleUnexpectedConnectionEvent() :: event = " + event);
 
-        if(gattForceClosed) {
+        //TODO make something when unexpected disconnect happened
+        /*if(gattForceClosed) {
             Context appContext = getApplicationContext();
 
             BluetoothDevice pairedDevice = BluetoothUtils.getPairedDeviceMicrobit(appContext);
@@ -369,7 +368,7 @@ public class BLEService extends BLEBaseService {
                 LocalBroadcastManager.getInstance(appContext).sendBroadcast(new Intent(GATT_FORCE_CLOSED));
             }
             return;
-        }
+        }*/
 
         if ((event & BLEManager.BLE_CONNECTED) != 0) {
             new Thread(new Runnable() {
