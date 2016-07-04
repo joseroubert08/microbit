@@ -118,6 +118,7 @@ public class BLEService extends BLEBaseService {
         return rc;
     }
 
+    @Override
     protected String getDeviceAddress() {
         logi("getDeviceAddress()");
 
@@ -130,6 +131,7 @@ public class BLEService extends BLEBaseService {
         return pairedDeviceName;
     }
 
+    @Override
     protected void startupConnection() {
         logi("startupConnection() bleManager=" + getBleManager());
 
@@ -172,161 +174,10 @@ public class BLEService extends BLEBaseService {
         logi("onDestroy()");
     }
 
-    public boolean registerMicrobitRequirements(BluetoothGattService eventService, boolean enable) {
-        /*
-        Register to know about the micro:bit requirements. What events does the micro:bit need from us
-        read repeatedly from (3) to find out the events that the micro:bit is interested in receiving.
-        e.g. if a kids app registers to receive events <10,3><15,2> then the first read will give you <10,3> the second <15,2>,
-        the third will give you a zero length value.
-        You can send events to the micro:bit that haven't been asked for, but as no-one will be listening, they will be silently dropped.
-        */
-        BluetoothGattCharacteristic microbit_requirements = eventService.getCharacteristic(CharacteristicUUIDs
-                 .ES_MICROBIT_REQUIREMENTS);
-        if (microbit_requirements == null) {
-            logi("register_eventsFromMicrobit() :: ES_MICROBIT_REQUIREMENTS Not found");
-            return false;
-        }
-
-        BluetoothGattDescriptor microbit_requirementsDescriptor = microbit_requirements.getDescriptor(UUIDs
-                .CLIENT_DESCRIPTOR);
-        if (microbit_requirementsDescriptor == null) {
-            logi("register_eventsFromMicrobit() :: CLIENT_DESCRIPTOR Not found");
-            return false;
-        }
-
-        BluetoothGattCharacteristic characteristic = readCharacteristic(microbit_requirements);
-        while (characteristic != null && characteristic.getValue() != null && characteristic.getValue().length != 0) {
-            String service = BluetoothUtils.parse(characteristic);
-            logi("microbit interested in  = " + service);
-            if (service.equalsIgnoreCase("4F-04-07-00")) //Incoming Call service
-            {
-                sendMicroBitNeedsCallNotification();
-            }
-            if (service.equalsIgnoreCase("4F-04-08-00")) //Incoming SMS service
-            {
-                sendMicroBitNeedsSmsNotification();
-            }
-            characteristic = readCharacteristic(microbit_requirements);
-        }
-
-        registerForSignalStrength(enable);
-        registerForDeviceInfo(enable);
-
-        logi("registerMicrobitRequirements() :: found Constants.ES_MICROBIT_REQUIREMENTS ");
-        enableCharacteristicNotification(microbit_requirements, microbit_requirementsDescriptor, enable);
-        return true;
-    }
-
-    public void register_AppRequirement(BluetoothGattService eventService, boolean enable) {
-        /*
-        write repeatedly to (4) to register for the events your app wants to see from the micro:bit.
-        e.g. write <1,1> to register for a 'DOWN' event on ButtonA.
-        Any events matching this will then start to be delivered via the MicroBit Event characteristic.
-        */
-        if (!enable) {
-            return;
-        }
-
-        BluetoothGattCharacteristic app_requirements = eventService.getCharacteristic(CharacteristicUUIDs.ES_CLIENT_REQUIREMENTS);
-        if (app_requirements != null) {
-            logi("register_AppRequirement() :: found Constants.ES_CLIENT_REQUIREMENTS ");
-            /*
-            Registering for everything at the moment
-            <1,0> which means give me all the events from ButtonA.
-            <2,0> which means give me all the events from ButtonB.
-            <0,0> which means give me all the events from everything.
-            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), 0, BluetoothGattCharacteristic.FORMAT_UINT32);
-            */
-            writeCharacteristic(GattServiceUUIDs.EVENT_SERVICE.toString(), CharacteristicUUIDs.ES_CLIENT_REQUIREMENTS.toString(),
-                     EventCategories.SAMSUNG_REMOTE_CONTROL_ID, GattFormats.FORMAT_UINT32);
-            writeCharacteristic(GattServiceUUIDs.EVENT_SERVICE.toString(), CharacteristicUUIDs.ES_CLIENT_REQUIREMENTS.toString(),
-                     EventCategories.SAMSUNG_CAMERA_ID, GattFormats.FORMAT_UINT32);
-            writeCharacteristic(GattServiceUUIDs.EVENT_SERVICE.toString(), CharacteristicUUIDs.ES_CLIENT_REQUIREMENTS.toString(),
-                     EventCategories.SAMSUNG_ALERTS_ID, GattFormats.FORMAT_UINT32);
-            writeCharacteristic(GattServiceUUIDs.EVENT_SERVICE.toString(), CharacteristicUUIDs.ES_CLIENT_REQUIREMENTS.toString(),
-                     EventCategories.SAMSUNG_SIGNAL_STRENGTH_ID, GattFormats.FORMAT_UINT32);
-            writeCharacteristic(GattServiceUUIDs.EVENT_SERVICE.toString(), CharacteristicUUIDs.ES_CLIENT_REQUIREMENTS.toString(),
-                    EventCategories.SAMSUNG_DEVICE_INFO_ID, GattFormats.FORMAT_UINT32);
-            //writeCharacteristic(GattServiceUUIDs.EVENT_SERVICE.toString(), CharacteristicUUIDs
-            //        .ES_CLIENT_REQUIREMENTS.toString(), EventCategories.SAMSUNG_TELEPHONY_ID,
-            //        GattFormats.FORMAT_UINT32);
-        }
-    }
-
-    public boolean registerMicroBitEvents(BluetoothGattService eventService, boolean enable) {
-        // Read (or register for notify) on (1) to receive events generated by the micro:bit.
-        BluetoothGattCharacteristic microbit_requirements = eventService.getCharacteristic(CharacteristicUUIDs
-                 .ES_MICROBIT_EVENT);
-        if (microbit_requirements == null) {
-            logi("register_eventsFromMicrobit() :: ES_MICROBIT_EVENT Not found");
-            return false;
-        }
-        BluetoothGattDescriptor microbit_requirementsDescriptor = microbit_requirements.getDescriptor(UUIDs
-                .CLIENT_DESCRIPTOR);
-        if (microbit_requirementsDescriptor == null) {
-            logi("register_eventsFromMicrobit() :: CLIENT_DESCRIPTOR Not found");
-            return false;
-        }
-
-        enableCharacteristicNotification(microbit_requirements, microbit_requirementsDescriptor, enable);
-        return true;
-    }
-
-    public void disconnectAll() {
+    @Override
+    protected void disconnectAll() {
         logi("disconnectAll()");
         registerNotifications(false);
-    }
-
-    public boolean registerNotifications(boolean enable) {
-        logi("registerNotifications() : " + enable);
-
-        //Read microbit firmware version
-        BluetoothGattService deviceInfoService = getService(GattServiceUUIDs.DEVICE_INFORMATION_SERVICE);
-        if (deviceInfoService != null) {
-            BluetoothGattCharacteristic firmwareCharacteristic = deviceInfoService.getCharacteristic
-                     (CharacteristicUUIDs.FIRMWARE_REVISION_UUID);
-            if (firmwareCharacteristic != null) {
-                String firmware = "";
-                BluetoothGattCharacteristic characteristic = readCharacteristic(firmwareCharacteristic);
-                if (characteristic != null && characteristic.getValue() != null && characteristic.getValue().length != 0) {
-                    firmware = firmwareCharacteristic.getStringValue(0);
-                }
-                sendMicrobitFirmware(firmware);
-                logi("Micro:bit firmware version String = " + firmware);
-            }
-        } else {
-            Log.e(TAG, "Not found DeviceInformationService");
-        }
-
-
-        BluetoothGattService eventService = getService(GattServiceUUIDs.EVENT_SERVICE);
-        if (eventService == null) {
-            Log.e(TAG, "Not found EventService");
-            logi("registerNotifications() :: not found service : Constants.EVENT_SERVICE");
-            return false;
-        }
-
-        if (DEBUG) {
-            logi("Constants.EVENT_SERVICE   = " + GattServiceUUIDs.EVENT_SERVICE.toString());
-            logi("Constants.ES_MICROBIT_REQUIREMENTS   = " + CharacteristicUUIDs.ES_MICROBIT_REQUIREMENTS.toString());
-            logi("Constants.ES_CLIENT_EVENT   = " + CharacteristicUUIDs.ES_CLIENT_EVENT.toString());
-            logi("Constants.ES_MICROBIT_EVENT   = " + CharacteristicUUIDs.ES_MICROBIT_EVENT.toString());
-            logi("Constants.ES_CLIENT_REQUIREMENTS   = " + CharacteristicUUIDs.ES_CLIENT_REQUIREMENTS.toString());
-        }
-        if (!registerMicrobitRequirements(eventService, enable)) {
-            if (DEBUG) {
-                logi("***************** Cannot Register Microbit Requirements.. Will continue ************** ");
-            }
-        }
-
-        register_AppRequirement(eventService, enable);
-
-        if (!registerMicroBitEvents(eventService, enable)) {
-            logi("Failed to registerMicroBitEvents");
-            return false;
-        }
-        logi("registerNotifications() : done");
-        return true;
     }
 
     @Override
@@ -387,46 +238,6 @@ public class BLEService extends BLEBaseService {
         }
     }
 
-    private void removeBond(BluetoothDevice bluetoothDevice) {
-        try {
-            Class<BluetoothDevice> bluetoothDeviceClass = BluetoothDevice.class;
-            Method m = bluetoothDeviceClass.getDeclaredMethod("removeBond", null);
-            m.setAccessible(true);
-            m.invoke(bluetoothDevice);
-        } catch (Exception e) {
-            Log.e(TAG, e.toString());
-        }
-    }
-
-    private static void sendMicrobitFirmware(String firmware) {
-        logi("sendMicrobitFirmware() :: firmware = " + firmware);
-        NameValuePair[] args = new NameValuePair[2];
-        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE, firmware);
-        ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
-                .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
-    }
-
-    private static void sendMicroBitNeedsCallNotification() {
-        logi("sendMicroBitNeedsCallNotification()");
-        NameValuePair[] args = new NameValuePair[2];
-        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, EventCategories
-                .IPC_BLE_NOTIFICATION_INCOMING_CALL);
-        ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
-                .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
-    }
-
-    private static void sendMicroBitNeedsSmsNotification() {
-        logi("sendMicroBitNeedsSmsNotification()");
-        NameValuePair[] args = new NameValuePair[2];
-        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, EventCategories
-                .IPC_BLE_NOTIFICATION_INCOMING_SMS);
-        ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
-                .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
-    }
-
     @Override
     protected void setNotification(boolean isConnected, int errorCode) {
         int actual_Error = getActualError();
@@ -477,11 +288,211 @@ public class BLEService extends BLEBaseService {
         }
     }
 
+    /*
+     * IPC Messenger handling
+     */
+    @Override
+    public IBinder onBind(Intent intent) {
+        return IPCMessageManager.getInstance().getClientMessenger().getBinder();
+    }
+
+    private boolean registerNotifications(boolean enable) {
+        logi("registerNotifications() : " + enable);
+
+        //Read microbit firmware version
+        BluetoothGattService deviceInfoService = getService(GattServiceUUIDs.DEVICE_INFORMATION_SERVICE);
+        if (deviceInfoService != null) {
+            BluetoothGattCharacteristic firmwareCharacteristic = deviceInfoService.getCharacteristic
+                    (CharacteristicUUIDs.FIRMWARE_REVISION_UUID);
+            if (firmwareCharacteristic != null) {
+                String firmware = "";
+                BluetoothGattCharacteristic characteristic = readCharacteristic(firmwareCharacteristic);
+                if (characteristic != null && characteristic.getValue() != null && characteristic.getValue().length != 0) {
+                    firmware = firmwareCharacteristic.getStringValue(0);
+                }
+                sendMicrobitFirmware(firmware);
+                logi("Micro:bit firmware version String = " + firmware);
+            }
+        } else {
+            Log.e(TAG, "Not found DeviceInformationService");
+        }
+
+
+        BluetoothGattService eventService = getService(GattServiceUUIDs.EVENT_SERVICE);
+        if (eventService == null) {
+            Log.e(TAG, "Not found EventService");
+            logi("registerNotifications() :: not found service : Constants.EVENT_SERVICE");
+            return false;
+        }
+
+        if (DEBUG) {
+            logi("Constants.EVENT_SERVICE   = " + GattServiceUUIDs.EVENT_SERVICE.toString());
+            logi("Constants.ES_MICROBIT_REQUIREMENTS   = " + CharacteristicUUIDs.ES_MICROBIT_REQUIREMENTS.toString());
+            logi("Constants.ES_CLIENT_EVENT   = " + CharacteristicUUIDs.ES_CLIENT_EVENT.toString());
+            logi("Constants.ES_MICROBIT_EVENT   = " + CharacteristicUUIDs.ES_MICROBIT_EVENT.toString());
+            logi("Constants.ES_CLIENT_REQUIREMENTS   = " + CharacteristicUUIDs.ES_CLIENT_REQUIREMENTS.toString());
+        }
+        if (!registerMicrobitRequirements(eventService, enable)) {
+            if (DEBUG) {
+                logi("***************** Cannot Register Microbit Requirements.. Will continue ************** ");
+            }
+        }
+
+        register_AppRequirement(eventService, enable);
+
+        if (!registerMicroBitEvents(eventService, enable)) {
+            logi("Failed to registerMicroBitEvents");
+            return false;
+        }
+        logi("registerNotifications() : done");
+        return true;
+    }
+
+    private boolean registerMicrobitRequirements(BluetoothGattService eventService, boolean enable) {
+        /*
+        Register to know about the micro:bit requirements. What events does the micro:bit need from us
+        read repeatedly from (3) to find out the events that the micro:bit is interested in receiving.
+        e.g. if a kids app registers to receive events <10,3><15,2> then the first read will give you <10,3> the second <15,2>,
+        the third will give you a zero length value.
+        You can send events to the micro:bit that haven't been asked for, but as no-one will be listening, they will be silently dropped.
+        */
+        BluetoothGattCharacteristic microbit_requirements = eventService.getCharacteristic(CharacteristicUUIDs
+                .ES_MICROBIT_REQUIREMENTS);
+        if (microbit_requirements == null) {
+            logi("register_eventsFromMicrobit() :: ES_MICROBIT_REQUIREMENTS Not found");
+            return false;
+        }
+
+        BluetoothGattDescriptor microbit_requirementsDescriptor = microbit_requirements.getDescriptor(UUIDs
+                .CLIENT_DESCRIPTOR);
+        if (microbit_requirementsDescriptor == null) {
+            logi("register_eventsFromMicrobit() :: CLIENT_DESCRIPTOR Not found");
+            return false;
+        }
+
+        BluetoothGattCharacteristic characteristic = readCharacteristic(microbit_requirements);
+        while (characteristic != null && characteristic.getValue() != null && characteristic.getValue().length != 0) {
+            String service = BluetoothUtils.parse(characteristic);
+            logi("microbit interested in  = " + service);
+            if (service.equalsIgnoreCase("4F-04-07-00")) //Incoming Call service
+            {
+                sendMicroBitNeedsCallNotification();
+            }
+            if (service.equalsIgnoreCase("4F-04-08-00")) //Incoming SMS service
+            {
+                sendMicroBitNeedsSmsNotification();
+            }
+            characteristic = readCharacteristic(microbit_requirements);
+        }
+
+        registerForSignalStrength(enable);
+        registerForDeviceInfo(enable);
+
+        logi("registerMicrobitRequirements() :: found Constants.ES_MICROBIT_REQUIREMENTS ");
+        enableCharacteristicNotification(microbit_requirements, microbit_requirementsDescriptor, enable);
+        return true;
+    }
+
+    private void register_AppRequirement(BluetoothGattService eventService, boolean enable) {
+        /*
+        write repeatedly to (4) to register for the events your app wants to see from the micro:bit.
+        e.g. write <1,1> to register for a 'DOWN' event on ButtonA.
+        Any events matching this will then start to be delivered via the MicroBit Event characteristic.
+        */
+        if (!enable) {
+            return;
+        }
+
+        BluetoothGattCharacteristic app_requirements = eventService.getCharacteristic(CharacteristicUUIDs.ES_CLIENT_REQUIREMENTS);
+        if (app_requirements != null) {
+            logi("register_AppRequirement() :: found Constants.ES_CLIENT_REQUIREMENTS ");
+            /*
+            Registering for everything at the moment
+            <1,0> which means give me all the events from ButtonA.
+            <2,0> which means give me all the events from ButtonB.
+            <0,0> which means give me all the events from everything.
+            writeCharacteristic(Constants.EVENT_SERVICE.toString(), Constants.ES_CLIENT_REQUIREMENTS.toString(), 0, BluetoothGattCharacteristic.FORMAT_UINT32);
+            */
+            writeCharacteristic(GattServiceUUIDs.EVENT_SERVICE.toString(), CharacteristicUUIDs.ES_CLIENT_REQUIREMENTS.toString(),
+                    EventCategories.SAMSUNG_REMOTE_CONTROL_ID, GattFormats.FORMAT_UINT32);
+            writeCharacteristic(GattServiceUUIDs.EVENT_SERVICE.toString(), CharacteristicUUIDs.ES_CLIENT_REQUIREMENTS.toString(),
+                    EventCategories.SAMSUNG_CAMERA_ID, GattFormats.FORMAT_UINT32);
+            writeCharacteristic(GattServiceUUIDs.EVENT_SERVICE.toString(), CharacteristicUUIDs.ES_CLIENT_REQUIREMENTS.toString(),
+                    EventCategories.SAMSUNG_ALERTS_ID, GattFormats.FORMAT_UINT32);
+            writeCharacteristic(GattServiceUUIDs.EVENT_SERVICE.toString(), CharacteristicUUIDs.ES_CLIENT_REQUIREMENTS.toString(),
+                    EventCategories.SAMSUNG_SIGNAL_STRENGTH_ID, GattFormats.FORMAT_UINT32);
+            writeCharacteristic(GattServiceUUIDs.EVENT_SERVICE.toString(), CharacteristicUUIDs.ES_CLIENT_REQUIREMENTS.toString(),
+                    EventCategories.SAMSUNG_DEVICE_INFO_ID, GattFormats.FORMAT_UINT32);
+            //writeCharacteristic(GattServiceUUIDs.EVENT_SERVICE.toString(), CharacteristicUUIDs
+            //        .ES_CLIENT_REQUIREMENTS.toString(), EventCategories.SAMSUNG_TELEPHONY_ID,
+            //        GattFormats.FORMAT_UINT32);
+        }
+    }
+
+    private boolean registerMicroBitEvents(BluetoothGattService eventService, boolean enable) {
+        // Read (or register for notify) on (1) to receive events generated by the micro:bit.
+        BluetoothGattCharacteristic microbit_requirements = eventService.getCharacteristic(CharacteristicUUIDs
+                .ES_MICROBIT_EVENT);
+        if (microbit_requirements == null) {
+            logi("register_eventsFromMicrobit() :: ES_MICROBIT_EVENT Not found");
+            return false;
+        }
+        BluetoothGattDescriptor microbit_requirementsDescriptor = microbit_requirements.getDescriptor(UUIDs
+                .CLIENT_DESCRIPTOR);
+        if (microbit_requirementsDescriptor == null) {
+            logi("register_eventsFromMicrobit() :: CLIENT_DESCRIPTOR Not found");
+            return false;
+        }
+
+        enableCharacteristicNotification(microbit_requirements, microbit_requirementsDescriptor, enable);
+        return true;
+    }
+
+    private void removeBond(BluetoothDevice bluetoothDevice) {
+        try {
+            Class<BluetoothDevice> bluetoothDeviceClass = BluetoothDevice.class;
+            Method m = bluetoothDeviceClass.getDeclaredMethod("removeBond", null);
+            m.setAccessible(true);
+            m.invoke(bluetoothDevice);
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
+    }
+
+    private static void sendMicrobitFirmware(String firmware) {
+        logi("sendMicrobitFirmware() :: firmware = " + firmware);
+        NameValuePair[] args = new NameValuePair[2];
+        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE, firmware);
+        ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
+                .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
+    }
+
+    private static void sendMicroBitNeedsCallNotification() {
+        logi("sendMicroBitNeedsCallNotification()");
+        NameValuePair[] args = new NameValuePair[2];
+        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, EventCategories
+                .IPC_BLE_NOTIFICATION_INCOMING_CALL);
+        ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
+                .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
+    }
+
+    private static void sendMicroBitNeedsSmsNotification() {
+        logi("sendMicroBitNeedsSmsNotification()");
+        NameValuePair[] args = new NameValuePair[2];
+        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
+        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, EventCategories
+                .IPC_BLE_NOTIFICATION_INCOMING_SMS);
+        ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
+                .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
+    }
+
     // ######################################################################
 
     int lastEvent = EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE;
 
-    void sendMessage(int eventSrc, int event) {
+    private void sendMessage(int eventSrc, int event) {
 
         logi("Sending eventSrc " + eventSrc + "  event=" + event);
         int msgService = 0;
@@ -505,7 +516,7 @@ public class BLEService extends BLEBaseService {
         }
     }
 
-    void registerForSignalStrength(boolean register) {
+    private void registerForSignalStrength(boolean register) {
         logi("registerForSignalStrength() -- " + register);
         CmdArg cmd = register ? new CmdArg(RegistrationIds.REG_SIGNALSTRENGTH, "On") : new CmdArg(RegistrationIds
                  .REG_SIGNALSTRENGTH, "Off");
@@ -513,7 +524,7 @@ public class BLEService extends BLEBaseService {
                 .SAMSUNG_SIGNAL_STRENGTH_ID, cmd, null);
     }
 
-    void registerForDeviceInfo(boolean register) {
+    private void registerForDeviceInfo(boolean register) {
         logi("registerForDeviceInfo() -- " + register);
         //Device Orientation
         CmdArg cmd = register ? new CmdArg(RegistrationIds.REG_DEVICEORIENTATION, "On") : new CmdArg(RegistrationIds
@@ -556,15 +567,7 @@ public class BLEService extends BLEBaseService {
                 .SAMSUNG_DEVICE_INFO_ID, cmd6, null);
     }
 
-    /*
-     * IPC Messenger handling
-     */
-    @Override
-    public IBinder onBind(Intent intent) {
-        return IPCMessageManager.getInstance().getClientMessenger().getBinder();
-    }
-
-    public void writeCharacteristicByte(String serviceGuid, String characteristic, byte[] value) {
+    private void writeCharacteristicByte(String serviceGuid, String characteristic, byte[] value) {
         if (!isConnected()) {
             logi("writeCharacteristic() :: Not connected. Returning");
             return;
@@ -585,7 +588,7 @@ public class BLEService extends BLEBaseService {
         writeCharacteristic(c);
     }
 
-    public void writeCharacteristic(String serviceGuid, String characteristic, int value, int type) {
+    private void writeCharacteristic(String serviceGuid, String characteristic, int value, int type) {
         if (!isConnected()) {
             logi("writeCharacteristic() :: Not connected. Returning");
             return;

@@ -177,7 +177,7 @@ public abstract class BLEBaseService extends Service {
         Log.i(TAG, "onDestroy called");
     }
 
-    public BluetoothGattService getService(UUID uuid) {
+    protected BluetoothGattService getService(UUID uuid) {
         if (bleManager != null) {
             return bleManager.getService(uuid);
         }
@@ -185,7 +185,7 @@ public abstract class BLEBaseService extends Service {
         return null;
     }
 
-    public List<BluetoothGattService> getServices() {
+    protected List<BluetoothGattService> getServices() {
         if (bleManager != null) {
             return bleManager.getServices();
         }
@@ -193,7 +193,7 @@ public abstract class BLEBaseService extends Service {
         return null;
     }
 
-    int interpretCode(int rc, int goodCode) {
+    private int interpretCode(int rc, int goodCode) {
         if (rc > 0) {
             if ((rc & BLEManager.BLE_ERROR_FAIL) != 0) {
                 actualError = bleManager.getExtendedError();
@@ -216,7 +216,7 @@ public abstract class BLEBaseService extends Service {
         return rc;
     }
 
-    int interpretCode(int rc) {
+    private int interpretCode(int rc) {
         if (rc > 0) {
             if ((rc & BLEManager.BLE_ERROR_FAIL) != 0) {
                 if ((rc & BLEManager.BLE_ERROR_TIMEOUT) != 0) {
@@ -237,7 +237,7 @@ public abstract class BLEBaseService extends Service {
         return rc;
     }
 
-    public int getError() {
+    protected int getError() {
         int rc = 99;
 
         if (bleManager != null) {
@@ -247,15 +247,11 @@ public abstract class BLEBaseService extends Service {
         return rc;
     }
 
-    public boolean isConnected() {
-        if (bleManager != null) {
-            return bleManager.isConnected();
-        }
-
-        return false;
+    protected boolean isConnected() {
+        return bleManager != null && bleManager.isConnected();
     }
 
-    public int getBleState() {
+    protected int getBleState() {
         int rc = 99;
 
         if (bleManager != null) {
@@ -265,7 +261,7 @@ public abstract class BLEBaseService extends Service {
         return rc;
     }
 
-    public int connect() {
+    protected int connect() {
         int rc = 99;
 
         if (bleManager != null) {
@@ -276,7 +272,7 @@ public abstract class BLEBaseService extends Service {
         return rc;
     }
 
-    public int disconnect() {
+    protected int disconnect() {
         int rc = 99;
 
         if (bleManager != null) {
@@ -287,7 +283,7 @@ public abstract class BLEBaseService extends Service {
         return rc;
     }
 
-    public int waitDisconnect() {
+    protected int waitDisconnect() {
         int rc = 99;
 
         if (bleManager != null) {
@@ -298,7 +294,7 @@ public abstract class BLEBaseService extends Service {
         return rc;
     }
 
-    public int discoverServices() {
+    protected int discoverServices() {
         int rc = 99;
 
         if (bleManager != null) {
@@ -313,8 +309,8 @@ public abstract class BLEBaseService extends Service {
         return rc;
     }
 
-    public int enableCharacteristicNotification(BluetoothGattCharacteristic characteristic, BluetoothGattDescriptor
-             descriptor, boolean enable) {
+    protected int enableCharacteristicNotification(BluetoothGattCharacteristic characteristic, BluetoothGattDescriptor
+            descriptor, boolean enable) {
         int rc = 99;
 
         if (bleManager != null) {
@@ -322,10 +318,9 @@ public abstract class BLEBaseService extends Service {
         }
 
         return rc;
-
     }
 
-    public int writeDescriptor(BluetoothGattDescriptor descriptor) {
+    protected int writeDescriptor(BluetoothGattDescriptor descriptor) {
         int rc = 99;
 
         if (bleManager != null) {
@@ -336,7 +331,7 @@ public abstract class BLEBaseService extends Service {
         return rc;
     }
 
-    public BluetoothGattDescriptor readDescriptor(BluetoothGattDescriptor descriptor) {
+    protected BluetoothGattDescriptor readDescriptor(BluetoothGattDescriptor descriptor) {
         if (bleManager != null) {
             int rc = bleManager.readDescriptor(descriptor);
             rc = interpretCode(rc);
@@ -348,7 +343,7 @@ public abstract class BLEBaseService extends Service {
         return null;
     }
 
-    public int writeCharacteristic(BluetoothGattCharacteristic characteristic) {
+    protected int writeCharacteristic(BluetoothGattCharacteristic characteristic) {
         int rc = 99;
 
         if (bleManager != null) {
@@ -356,12 +351,12 @@ public abstract class BLEBaseService extends Service {
             rc = interpretCode(rc);
 
             logi("Data written to " + characteristic.getUuid() + " value : (0x)" + BluetoothUtils.parse
-                     (characteristic) + " Return Value = 0x" + Integer.toHexString(rc));
+                    (characteristic) + " Return Value = 0x" + Integer.toHexString(rc));
         }
         return rc;
     }
 
-    public BluetoothGattCharacteristic readCharacteristic(BluetoothGattCharacteristic characteristic) {
+    protected BluetoothGattCharacteristic readCharacteristic(BluetoothGattCharacteristic characteristic) {
         if (bleManager != null) {
             int rc = bleManager.readCharacteristic(characteristic);
             rc = interpretCode(rc);

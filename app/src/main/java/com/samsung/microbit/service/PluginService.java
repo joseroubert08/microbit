@@ -49,7 +49,7 @@ public class PluginService extends Service {
         startIPCListener();
     }
 
-    public void startIPCListener() {
+    private void startIPCListener() {
         if (DEBUG) {
             logi("startIPCListener()");
             logi("make :: plugin start");
