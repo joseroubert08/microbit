@@ -59,6 +59,7 @@ import no.nordicsemi.android.error.GattError;
 
 
 public class ProjectActivity extends Activity implements View.OnClickListener, IPCToBLEHelper.BLEBroadcastHandlable {
+    private static final String TAG = ProjectActivity.class.getSimpleName();
 
     private static final int ALERT_DIALOG_RECONNECT = 1;
 
@@ -76,7 +77,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
     private DFUResultReceiver dfuResultReceiver;
 
     protected boolean debug = BuildConfig.DEBUG;
-    protected String TAG = ProjectActivity.class.getSimpleName();
 
     private List<Integer> mRequestPermissions = new ArrayList<>();
 

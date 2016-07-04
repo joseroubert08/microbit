@@ -241,10 +241,13 @@ public class PopUp {
         ctx = context;
 
         if (!registered) {
-            LocalBroadcastManager.getInstance(context).registerReceiver(broadcastReceiver, new IntentFilter(PopUpActivity.INTENT_ACTION_OK_PRESSED));
-            LocalBroadcastManager.getInstance(context).registerReceiver(broadcastReceiver, new IntentFilter(PopUpActivity.INTENT_ACTION_CANCEL_PRESSED));
-            LocalBroadcastManager.getInstance(context).registerReceiver(broadcastReceiver, new IntentFilter(PopUpActivity.INTENT_ACTION_DESTROYED));
-            LocalBroadcastManager.getInstance(context).registerReceiver(broadcastReceiver, new IntentFilter(PopUpActivity.INTENT_ACTION_CREATED));
+            IntentFilter popupIntentFilter = new IntentFilter();
+            popupIntentFilter.addAction(PopUpActivity.INTENT_ACTION_OK_PRESSED);
+            popupIntentFilter.addAction(PopUpActivity.INTENT_ACTION_CANCEL_PRESSED);
+            popupIntentFilter.addAction(PopUpActivity.INTENT_ACTION_DESTROYED);
+            popupIntentFilter.addAction(PopUpActivity.INTENT_ACTION_CREATED);
+
+            LocalBroadcastManager.getInstance(context).registerReceiver(broadcastReceiver, popupIntentFilter);
             registered = true;
         }
 

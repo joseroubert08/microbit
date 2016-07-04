@@ -25,8 +25,6 @@ public class SplashScreenActivity extends Activity {
     private static final int ANIM_STEP_THREE_DURATION = 800;
     private static final int ANIM_FADE_OUT_GIF_FIRST_FRAME_DURATION = 400;
 
-    private boolean mAnimationStarted = false;
-
     private ViewGroup mLogoLayout;
     private TextView mDevByText;
     private ImageView mLogo;
@@ -35,6 +33,8 @@ public class SplashScreenActivity extends Activity {
     private GifImageView mGifImage;
     private GifDrawable mGifDrawable;
     private Handler mLastAnimStepHandler;
+
+    private boolean mAnimationStarted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +45,7 @@ public class SplashScreenActivity extends Activity {
 
         MBApp.getApp().getEchoClientManager().sendAppStats();
     }
-        //Track fresh app launch
-
+    //Track fresh app launch
 
     private void initViews() {
         mLogoLayout = (RelativeLayout) findViewById(R.id.splash_screen_logo_layout);

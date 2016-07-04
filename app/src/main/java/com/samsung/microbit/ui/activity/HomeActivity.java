@@ -46,8 +46,10 @@ import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String TAG = HomeActivity.class.getSimpleName();
 
     public static final String FIRST_RUN = "firstrun";
+
     // share stats checkbox
     private CheckBox mShareStatsCheckBox;
 
@@ -56,14 +58,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     // Hello animation
     private GifImageView gifAnimationHelloEmoji;
 
-    private MBApp app = null;
-    protected String TAG = HomeActivity.class.getSimpleName();
     protected boolean debug = BuildConfig.DEBUG;
 
     /* Debug code*/
     private String urlToOpen = null;
     /* Debug code ends*/
-
 
     private String emailBodyString = null;
 
@@ -99,9 +98,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         setupDrawer();
         setupButtonsFontStyle();
-
-        if (app == null)
-            app = (MBApp) MBApp.getApp().getApplicationContext();
 
         checkMinimumPermissionsForThisScreen();
         startOtherServices();
@@ -282,7 +278,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void unbindDrawables(View view) {
-        if(view == null) {
+        if (view == null) {
             return;
         }
 
@@ -291,7 +287,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             backgroundDrawable.setCallback(null);
             view.unscheduleDrawable(backgroundDrawable);
 
-            if(backgroundDrawable instanceof GifDrawable) {
+            if (backgroundDrawable instanceof GifDrawable) {
                 ((GifDrawable) backgroundDrawable).recycle();
             }
         }
@@ -303,6 +299,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -500,14 +497,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
                                            @NonNull int[] grantResults) {
-        switch (requestCode)
-        {
+        switch (requestCode) {
             case PermissionCodes.APP_STORAGE_PERMISSIONS_REQUESTED: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     installSamples();
                 } else {
-                    if (mPrefs!= null) mPrefs.edit().putBoolean(FIRST_RUN, false).apply();
+                    if (mPrefs != null) mPrefs.edit().putBoolean(FIRST_RUN, false).apply();
                     PopUp.show(MBApp.getApp(),
                             getString(R.string.storage_permission_for_samples_error),
                             "",
@@ -551,7 +547,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     PopUp.GIFF_ANIMATION_ERROR,
                     PopUp.TYPE_ALERT,
                     null, null);
-            if (mPrefs!= null) mPrefs.edit().putBoolean(FIRST_RUN, false).apply();
+            if (mPrefs != null) mPrefs.edit().putBoolean(FIRST_RUN, false).apply();
         }
     };
 

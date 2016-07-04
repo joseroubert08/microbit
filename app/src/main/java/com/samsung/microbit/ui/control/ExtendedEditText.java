@@ -7,8 +7,8 @@ import android.view.KeyEvent;
 import android.widget.EditText;
 
 public class ExtendedEditText extends EditText {
+	private static final String TAG = ExtendedEditText.class.getSimpleName();
 
-	protected String TAG = "ExtendedEditText";
 	protected boolean debug = true;
 
 	protected void logi(String message) {
@@ -32,7 +32,6 @@ public class ExtendedEditText extends EditText {
 
 	@Override
 	public boolean onKeyPreIme(int keyCode, KeyEvent event) {
-
 		if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
 			onEditorAction(-1);
 			dispatchKeyEvent(event);

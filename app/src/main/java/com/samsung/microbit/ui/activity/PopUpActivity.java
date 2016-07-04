@@ -153,13 +153,19 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         isCancelable = getIntent().getBooleanExtra(INTENT_EXTRA_CANCELABLE, true);
 
         setLayout(getIntent());
+
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+
+        IntentFilter popupActivityFilter = new IntentFilter();
+        popupActivityFilter.addAction(INTENT_ACTION_CLOSE);
+        popupActivityFilter.addAction(INTENT_ACTION_UPDATE_PROGRESS);
+        popupActivityFilter.addAction(INTENT_ACTION_UPDATE_LAYOUT);
+
         //listen for close or update progress.xml request
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(INTENT_ACTION_CLOSE));
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(INTENT_ACTION_UPDATE_PROGRESS));
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(INTENT_ACTION_UPDATE_LAYOUT));
+        localBroadcastManager.registerReceiver(broadcastReceiver, popupActivityFilter);
 
         //notify creation of activity to calling code PopUp class
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(INTENT_ACTION_CREATED));
+        localBroadcastManager.sendBroadcast(new Intent(INTENT_ACTION_CREATED));
     }
 
     @Override
@@ -271,8 +277,11 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     protected void onDestroy() {
         super.onDestroy();
         Log.d("PopUpActivity", "onDestroy()");
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(INTENT_ACTION_DESTROYED));
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
+
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+
+        localBroadcastManager.sendBroadcast(new Intent(INTENT_ACTION_DESTROYED));
+        localBroadcastManager.unregisterReceiver(broadcastReceiver);
         releaseViews();
     }
 

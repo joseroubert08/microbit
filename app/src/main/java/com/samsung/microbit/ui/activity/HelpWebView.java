@@ -11,7 +11,8 @@ import com.samsung.microbit.R;
 
 public class HelpWebView extends Activity {
 
-    WebView webView = null ;
+    private WebView webView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

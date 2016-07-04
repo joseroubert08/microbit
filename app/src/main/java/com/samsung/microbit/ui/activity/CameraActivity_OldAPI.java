@@ -61,33 +61,37 @@ import java.util.List;
 import java.util.Locale;
 
 public class CameraActivity_OldAPI extends Activity {
+    private static final String TAG = CameraActivity_OldAPI.class.getSimpleName();
 
     private CameraPreview mPreview;
     private ImageButton mButtonClick, mButtonBack_portrait, mButtonBack_landscape;
+
+    private BroadcastReceiver mMessageReceiver;
+
     private Camera mCamera;
     private int mCameraIdx;
-    private static boolean mfrontCamera = true;
-    private BroadcastReceiver mMessageReceiver;
-    private boolean mVideo = false;
-    private boolean mIsRecording = false;
+    private boolean mFrontCamera;
+
+    private boolean mVideo;
+    private boolean mIsRecording;
     private MediaRecorder mMediaRecorder;
-    private File mVideoFile = null;
+    private File mVideoFile;
+
     private OrientationEventListener myOrientationEventListener;
     private int mCurrentRotation = -1;
     private int mStoredRotation = -1;
     private int mOrientationOffset = 0;
     private int mCurrentIconIndex = 0;
     private ArrayList<Drawable> mTakePhoto, mStartRecord, mStopRecord, mCurrentIconList;
-    private Camera.Parameters mParameters = null;
-    private Boolean bActivityInBackground = false;
-    private Boolean bTakePicOnResume = false;
-    private Boolean bRecordVideoOnResume = false;
+    private Camera.Parameters mParameters;
 
-    private static final String TAG = CameraActivity_OldAPI.class.getSimpleName();
+    private boolean isActivityInBackground;
+    private boolean isMakingPicOnResume;
+    private boolean isRecordingVideoOnResume;
+
     private PlayAudioPresenter playAudioPresenter;
 
     private boolean debug = BuildConfig.DEBUG;
-
 
     private MediaRecorder.OnInfoListener m_MediaInfoListner = new MediaRecorder.OnInfoListener() {
 
@@ -119,10 +123,10 @@ public class CameraActivity_OldAPI extends Activity {
         int cameraCount = Camera.getNumberOfCameras();
         for (int camIdx = 0; camIdx < cameraCount; camIdx++) {
             Camera.getCameraInfo(camIdx, cameraInfo);
-            if (mfrontCamera && cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            if (mFrontCamera && cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
                 logi("returning front camera");
                 return camIdx;
-            } else if (!mfrontCamera && cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
+            } else if (!mFrontCamera && cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
                 logi("returning back camera");
                 return camIdx;
             }
@@ -240,8 +244,8 @@ public class CameraActivity_OldAPI extends Activity {
     }
 
     private void setButtonForPicture() {
-
         mCurrentIconList = mTakePhoto;
+
         updateButtonClickIcon();
         mButtonClick.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
@@ -396,7 +400,7 @@ public class CameraActivity_OldAPI extends Activity {
             //TODO: Use Camera API 2 to fix this correctly
             result = (mOrientationOffset + degree) % 360;
 
-            if (!mfrontCamera) {
+            if (!mFrontCamera) {
                 if (result == 0)
                     result += 180;
                 else if (result == 180)
@@ -404,7 +408,7 @@ public class CameraActivity_OldAPI extends Activity {
             }
 
         } else {
-            if (mfrontCamera) {
+            if (mFrontCamera) {
                 result = (mOrientationOffset + degree) % 360;
             } else { // back-facing
                 result = (mOrientationOffset - degree + 360) % 360;
@@ -459,6 +463,10 @@ public class CameraActivity_OldAPI extends Activity {
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        if(savedInstanceState == null) {
+            mFrontCamera = true;
+        }
+
         playAudioPresenter = new PlayAudioPresenter();
 
         createRotatedIcons();
@@ -491,7 +499,6 @@ public class CameraActivity_OldAPI extends Activity {
         mPreview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         ((FrameLayout) findViewById(R.id.camera_preview_container)).addView(mPreview);
         mPreview.setKeepScreenOn(true);
-        mPreview.setParentActivity(this);
 
         mButtonClick = (ImageButton) findViewById(R.id.picture);
         mButtonBack_portrait = (ImageButton) findViewById(R.id.back_portrait);
@@ -518,15 +525,15 @@ public class CameraActivity_OldAPI extends Activity {
                 if (intent.getAction().equals("CLOSE")) {
                     finish();
                 } else if (!mVideo && intent.getAction().equals("TAKE_PIC")) {
-                    mfrontCamera = true;
+                    mFrontCamera = true;
                     takePic();
                 } else if (intent.getAction().equals("TOGGLE_CAMERA")) {
                     toggleCamera();
                 } else if (mVideo && !mIsRecording && intent.getAction().equals("START_VIDEO")) {
-                    mfrontCamera = true;
-                    if(bActivityInBackground) {
+                    mFrontCamera = true;
+                    if(isActivityInBackground) {
                         bringActivityToFront();
-                        bRecordVideoOnResume = true;
+                        isRecordingVideoOnResume = true;
                     } else {
                         recordVideo();
                     }
@@ -562,8 +569,8 @@ public class CameraActivity_OldAPI extends Activity {
     }
 
     private void toggleCamera() {
-        mfrontCamera = !mfrontCamera;
-        if(bActivityInBackground) {
+        mFrontCamera = !mFrontCamera;
+        if(isActivityInBackground) {
             bringActivityToFront();
         } else {
             recreate();
@@ -571,9 +578,9 @@ public class CameraActivity_OldAPI extends Activity {
     }
 
     private void takePic() {
-        if(bActivityInBackground) {
+        if(isActivityInBackground) {
             bringActivityToFront();
-            bTakePicOnResume = true;
+            isMakingPicOnResume = true;
         } else {
             startTakePicCounter();
         }
@@ -619,7 +626,7 @@ public class CameraActivity_OldAPI extends Activity {
 
         super.onResume();
 
-        bActivityInBackground = false;
+        isActivityInBackground = false;
         //This intent filter has to be set even if no camera is found otherwise the unregisterReceiver()
         //fails during the onPause()
         if (myOrientationEventListener.canDetectOrientation()) {
@@ -646,11 +653,11 @@ public class CameraActivity_OldAPI extends Activity {
             updateCameraRotation();
             logi("onCreate() :: onResume # ");
 
-            if(bTakePicOnResume) {
-                bTakePicOnResume = false;
+            if(isMakingPicOnResume) {
+                isMakingPicOnResume = false;
                 startTakePicCounter();
-            } else if(bRecordVideoOnResume) {
-                bRecordVideoOnResume = false;
+            } else if(isRecordingVideoOnResume) {
+                isRecordingVideoOnResume = false;
                 recordVideo();
             }
 
@@ -696,7 +703,7 @@ public class CameraActivity_OldAPI extends Activity {
         }
         super.onPause();
 
-        bActivityInBackground = true;
+        isActivityInBackground = true;
     }
 
     private void resetCam() {

@@ -10,13 +10,11 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 
 public class BluetoothSwitch {
+    private static final String TAG = BluetoothSwitch.class.getSimpleName();
 
     private static BluetoothSwitch instance = null;
 
     private static BluetoothAdapter mBluetoothAdapter = null;
-
-    static final String TAG = "BluetoothSwitch";
-
 
     private BluetoothSwitch() {
         if (mBluetoothAdapter == null) {

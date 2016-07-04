@@ -2,11 +2,11 @@ package com.samsung.microbit.data.model;
 
 public class Project {
 
-    public String name;
-    public long timestamp;
-    public String filePath;
-    public String codeUrl;
-    public boolean runStatus;
+    public final String name;
+    public final long timestamp;
+    public final String filePath;
+    public final String codeUrl;
+    public final boolean runStatus;
     public boolean actionBarExpanded;
     public boolean inEditMode;
 

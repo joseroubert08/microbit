@@ -41,8 +41,8 @@ public class UnpackUtils {
         int totalPrograms = 0;
         if (sdcardDownloads.exists()) {
             File files[] = sdcardDownloads.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                String fileName = files[i].getName();
+            for (File file : files) {
+                String fileName = file.getName();
                 if (fileName.endsWith(".hex")) {
 
                     //Beautify the filename
@@ -56,7 +56,7 @@ public class UnpackUtils {
                     }
 
                     if (list != null) {
-                        list.add(new Project(parsedFileName, files[i].getAbsolutePath(), files[i].lastModified(),
+                        list.add(new Project(parsedFileName, file.getAbsolutePath(), file.lastModified(),
                                 null, false));
                     }
 

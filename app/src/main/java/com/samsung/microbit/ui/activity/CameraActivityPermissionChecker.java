@@ -19,28 +19,26 @@ import com.samsung.microbit.data.constants.PermissionCodes;
 import com.samsung.microbit.ui.PopUp;
 
 public class CameraActivityPermissionChecker extends AppCompatActivity {
+    private static final String TAG = CameraActivityPermissionChecker.class.getSimpleName();
 
-
-    private Intent mIntent = null ;
-    private boolean mOPenForPic = false ;
+    private Intent mIntent;
+    private boolean mOPenForPic;
 
     protected boolean debug = BuildConfig.DEBUG;
 
-
-    private enum  REQUEST_STATE{
+    private enum REQUEST_STATE {
         LAUNCH_CAMERA_FOR_PIC,
         LAUNCH_CAMERA_FOR_VIDEO,
-    };
-
+    }
 
     private REQUEST_STATE mRequestedState;
 
-    protected String TAG = "CameraActivityPermissionChecker";
     protected void logi(String message) {
         if (debug) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,12 +55,10 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
     }
 
 
-    private void startCameraActivity()
-    {
+    private void startCameraActivity() {
         //Do not launch camera if in Do not Disturb Mode
         //Check more details on #122
-        if (BluetoothUtils.inZenMode(this))
-        {
+        if (BluetoothUtils.inZenMode(this)) {
             PopUp.show(MBApp.getApp(),
                     getString(R.string.dnd_error_msg),
                     getString(R.string.dnd_error_title),
@@ -87,9 +83,9 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
         //Finish current activity
         finish();
     }
+
     private void checkPermissionsForCamera() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA )!= PermissionChecker.PERMISSION_GRANTED)
-        {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PermissionChecker.PERMISSION_GRANTED) {
             PopUp.show(MBApp.getApp(),
                     getString(R.string.camera_permission),
                     getString(R.string.permissions_needed_title),
@@ -104,8 +100,7 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode)
-        {
+        switch (requestCode) {
             case PermissionCodes.CAMERA_PERMISSIONS_REQUESTED: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startCameraActivity();

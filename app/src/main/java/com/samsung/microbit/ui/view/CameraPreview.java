@@ -32,12 +32,6 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
     Camera mCamera;
     int mCameraIdx;
 
-    private Activity mParentActivity;
-
-    public void setParentActivity(Activity parentActivity) {
-        mParentActivity = parentActivity;
-    }
-
     public SurfaceHolder getHolder() {
         return mHolder;
     }
@@ -69,6 +63,8 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
     }
 
     public int getCameraDisplayOrientation(int cameraId, android.hardware.Camera mCamera) {
+        Activity mParentActivity = (Activity) getContext();
+
         android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
         android.hardware.Camera.getCameraInfo(cameraId, info);
         int rotation = mParentActivity.getWindowManager().getDefaultDisplay().getRotation();

@@ -66,13 +66,32 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static com.samsung.microbit.BuildConfig.DEBUG;
-
 import pl.droidsonroids.gif.GifImageView;
+
+import static com.samsung.microbit.BuildConfig.DEBUG;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class PairingActivity extends Activity implements View.OnClickListener, BluetoothAdapter.LeScanCallback,
         IPCToBLEHelper.BLEBroadcastHandlable {
+
+    // @formatter:off
+    private static final String DEVICE_CODE_ARRAY[] = {
+            "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0",
+            "0", "0", "0", "0", "0"};
+
+    private static final String DEVICE_NAME_MAP_ARRAY[] = {
+            "T", "A", "T", "A", "T",
+            "P", "E", "P", "E", "P",
+            "G", "I", "G", "I", "G",
+            "V", "O", "V", "O", "V",
+            "Z", "U", "Z", "U", "Z"};
+    // @formatter:on
+
+    // Stops scanning after 10 seconds.
+    private static final long SCAN_PERIOD = 15000;
 
     private static boolean sDeviceListAvailable = false;
 
@@ -89,22 +108,6 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     private static String mNewDeviceCode;
     private static String mNewDeviceAddress;
 
-    // @formatter:off
-    private static String deviceCodeArray[] = {
-            "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0",
-            "0", "0", "0", "0", "0"};
-
-    private String deviceNameMapArray[] = {
-            "T", "A", "T", "A", "T",
-            "P", "E", "P", "E", "P",
-            "G", "I", "G", "I", "G",
-            "V", "O", "V", "O", "V",
-            "Z", "U", "Z", "U", "Z"};
-    // @formatter:on
-
     LinearLayout mPairButtonView;
     LinearLayout mPairTipView;
     View mConnectDeviceView;
@@ -117,14 +120,11 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
     private Handler mHandler;
 
-    // Stops scanning after 10 seconds.
-    private static final long SCAN_PERIOD = 15000;
-
-    private BluetoothAdapter mBluetoothAdapter = null;
-    private volatile boolean mScanning = false;
+    private BluetoothAdapter mBluetoothAdapter;
+    private volatile boolean mScanning;
 
     private int mCurrentOrientation;
-    private BluetoothLeScanner mLEScanner = null;
+    private BluetoothLeScanner mLEScanner;
 
     private List<Integer> mRequestPermissions = new ArrayList<>();
 
@@ -212,6 +212,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
             }
         }
     };
+
     private BroadcastReceiver localBroadcastReceiver = IPCToBLEHelper.bleHandlerReceiver(this);
 
     @Override
@@ -553,7 +554,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     private void displayLedGrid() {
 
         final GridView gridview = (GridView) findViewById(R.id.enter_pattern_step_2_gridview);
-        gridview.setAdapter(new LEDAdapter(this, deviceCodeArray));
+        gridview.setAdapter(new LEDAdapter(this, DEVICE_CODE_ARRAY));
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
@@ -570,9 +571,9 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
     private void checkPatternSuccess() {
         final ImageView ohPrettyImage = (ImageView) findViewById(R.id.oh_pretty_emoji);
-        if (deviceCodeArray[20].equals("1") && deviceCodeArray[21].equals("1")
-                && deviceCodeArray[22].equals("1") && deviceCodeArray[23].equals("1")
-                && deviceCodeArray[24].equals("1")) {
+        if (DEVICE_CODE_ARRAY[20].equals("1") && DEVICE_CODE_ARRAY[21].equals("1")
+                && DEVICE_CODE_ARRAY[22].equals("1") && DEVICE_CODE_ARRAY[23].equals("1")
+                && DEVICE_CODE_ARRAY[24].equals("1")) {
             findViewById(R.id.ok_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
             ohPrettyImage.setImageResource(R.drawable.emoji_entering_pattern_valid_pattern);
         } else {
@@ -589,8 +590,8 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         for (int col = 0; col < 5; col++) {
             //Rows
             for (int row = 0; row < 5; row++) {
-                if (deviceCodeArray[(col + (5 * row))].equals("1")) {
-                    mNewDeviceName += deviceNameMapArray[(col + (5 * row))];
+                if (DEVICE_CODE_ARRAY[(col + (5 * row))].equals("1")) {
+                    mNewDeviceName += DEVICE_NAME_MAP_ARRAY[(col + (5 * row))];
                     break;
                 }
             }
@@ -609,7 +610,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
             v.setBackground(getApplication().getResources().getDrawable(R.drawable.white_red_led_btn));
             v.setTag(R.id.ledState, 0);
             v.setSelected(false);
-            deviceCodeArray[index] = "0";
+            DEVICE_CODE_ARRAY[index] = "0";
             int position = (Integer) v.getTag(R.id.position);
             v.setContentDescription("" + position + getLEDStatus(index)); // TODO - calculate correct position
             index -= 5;
@@ -620,7 +621,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
             v.setBackground(getApplication().getResources().getDrawable(R.drawable.red_white_led_btn));
             v.setTag(R.id.ledState, 1);
             v.setSelected(false);
-            deviceCodeArray[index] = "1";
+            DEVICE_CODE_ARRAY[index] = "1";
             int position = (Integer) v.getTag(R.id.position);
             v.setContentDescription("" + position + getLEDStatus(index));
             index += 5;
@@ -633,19 +634,19 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         //Toast.makeText(this, "Pos :" +  pos, Toast.LENGTH_SHORT).show();
         int state = (Integer) image.getTag(R.id.ledState);
         if (state != 1) {
-            deviceCodeArray[pos] = "1";
+            DEVICE_CODE_ARRAY[pos] = "1";
             image.setBackground(getApplication().getResources().getDrawable(R.drawable.red_white_led_btn));
             image.setTag(R.id.ledState, 1);
             isOn = true;
 
         } else {
-            deviceCodeArray[pos] = "0";
+            DEVICE_CODE_ARRAY[pos] = "0";
             image.setBackground(getApplication().getResources().getDrawable(R.drawable.white_red_led_btn));
             image.setTag(R.id.ledState, 0);
             isOn = false;
             // Update the code to consider the still ON LED below the toggled one
             if (pos < 20) {
-                deviceCodeArray[pos + 5] = "1";
+                DEVICE_CODE_ARRAY[pos + 5] = "1";
             }
         }
 
@@ -658,7 +659,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     // To read out the status of the currently selected LED at a given position
     private String getLEDStatus(int position) {
         String statusRead;
-        if (deviceCodeArray[position].equals("1")) {
+        if (DEVICE_CODE_ARRAY[position].equals("1")) {
             statusRead = "on";
         } else {
             statusRead = "off";
@@ -750,7 +751,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 break;
 
             case PAIRING_STATE_ERROR:
-                Arrays.fill(deviceCodeArray, "0");
+                Arrays.fill(DEVICE_CODE_ARRAY, "0");
                 findViewById(R.id.enter_pattern_step_2_gridview).setEnabled(true);
                 mNewDeviceName = "";
                 mNewDeviceCode = "";
@@ -1051,7 +1052,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     }
 
     private void handleResetAll() {
-        Arrays.fill(deviceCodeArray, "0");
+        Arrays.fill(DEVICE_CODE_ARRAY, "0");
         scanLeDevice(false);
         cancelPairing();
 
