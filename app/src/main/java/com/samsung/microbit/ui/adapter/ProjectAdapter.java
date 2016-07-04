@@ -29,7 +29,7 @@ import com.samsung.microbit.utils.FileUtils;
 import java.util.List;
 
 public class ProjectAdapter extends BaseAdapter {
-`    private static final String TAG = ProjectAdapter.class.getSimpleName();
+    private static final String TAG = ProjectAdapter.class.getSimpleName();
 
     private List<Project> mProjects;
     private ProjectActivity mProjectActivity;
