@@ -24,7 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.samsung.microbit.R;
-import com.samsung.microbit.plugin.AudioPlugin;
+import com.samsung.microbit.plugin.AudioRecordPlugin;
 import com.samsung.microbit.ui.PopUp;
 
 import java.io.File;
@@ -169,13 +169,13 @@ public class AudioRecorderActivity extends Activity {
             return;
 
         switch (action) {
-            case AudioPlugin.INTENT_ACTION_START_RECORD:
+            case AudioRecordPlugin.INTENT_ACTION_START_RECORD:
                 startRecording();
                 break;
-            case AudioPlugin.INTENT_ACTION_STOP_RECORD:
+            case AudioRecordPlugin.INTENT_ACTION_STOP_RECORD:
                 stopRecording();
                 break;
-            case AudioPlugin.INTENT_ACTION_STOP:
+            case AudioRecordPlugin.INTENT_ACTION_STOP:
                 if (mIsRecording)
                     stopRecording();
                 finish();
@@ -219,7 +219,7 @@ public class AudioRecorderActivity extends Activity {
         File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
-                Log.e("AudioPlugin", "Failed to create directory");
+                Log.e(TAG, "Failed to create directory");
             }
         }
 

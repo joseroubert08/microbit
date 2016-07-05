@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.data.constants.CharacteristicUUIDs;
@@ -16,12 +15,8 @@ import com.samsung.microbit.data.constants.GattFormats;
 import com.samsung.microbit.data.constants.GattServiceUUIDs;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.data.model.NameValuePair;
-import com.samsung.microbit.plugin.AlertPlugin;
-import com.samsung.microbit.plugin.AudioPlugin;
-import com.samsung.microbit.plugin.CameraPlugin;
-import com.samsung.microbit.plugin.InformationPlugin;
-import com.samsung.microbit.plugin.RemoteControlPlugin;
-import com.samsung.microbit.plugin.TelephonyPlugin;
+import com.samsung.microbit.plugin.AbstractPlugin;
+import com.samsung.microbit.plugin.PluginsCreator;
 import com.samsung.microbit.utils.ServiceUtils;
 
 import static com.samsung.microbit.BuildConfig.DEBUG;
@@ -106,7 +101,7 @@ public class PluginService extends Service {
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "Plugin Service Destroyed", Toast.LENGTH_SHORT).show();
+        PluginsCreator.getInstance().destroy();
     }
 
 	/*
@@ -168,71 +163,14 @@ public class PluginService extends Service {
             logi("handleMessage() ## data.getString=" + data.getString(IPCMessageManager.BUNDLE_VALUE));
         }
 
-        switch (msg.arg1) {
-            case EventCategories.SAMSUNG_REMOTE_CONTROL_ID:
-                if (DEBUG) {
-                    logi("handleMessage() ##  SAMSUNG_REMOTE_CONTROL_ID");
-                }
-
-                RemoteControlPlugin.pluginEntry(PluginService.this, cmd);
-                break;
-
-            case EventCategories.SAMSUNG_ALERTS_ID:
-                if (DEBUG) {
-                    logi("handleMessage() ##  SAMSUNG_ALERTS_ID");
-                }
-
-                AlertPlugin.pluginEntry(PluginService.this, cmd);
-                break;
-
-            case EventCategories.SAMSUNG_AUDIO_RECORDER_ID:
-                if (DEBUG) {
-                    logi("handleMessage() ##  SAMSUNG_AUDIO_RECORDER_ID");
-                }
-
-                AudioPlugin.pluginEntry(PluginService.this, cmd);
-                break;
-
-            case EventCategories.SAMSUNG_CAMERA_ID:
-                if (DEBUG) {
-                    logi("handleMessage() ##  SAMSUNG_CAMERA_ID");
-                }
-
-                CameraPlugin.pluginEntry(PluginService.this, cmd);
-                break;
-
-            case EventCategories.SAMSUNG_SIGNAL_STRENGTH_ID:
-                if (DEBUG) {
-                    logi("handleMessage() ##  SAMSUNG_SIGNAL_STRENGTH_ID");
-                }
-
-                InformationPlugin.pluginEntry(PluginService.this, cmd);
-                break;
-
-            case EventCategories.SAMSUNG_DEVICE_INFO_ID:
-                if (DEBUG) {
-                    logi("handleMessage() ##  SAMSUNG_DEVICE_INFO_ID");
-                }
-
-                InformationPlugin.pluginEntry(PluginService.this, cmd);
-                break;
-
-            case EventCategories.SAMSUNG_TELEPHONY_ID:
-                if (DEBUG) {
-                    logi("handleMessage() ##  SAMSUNG_TELEPHONY_ID");
-                }
-
-                TelephonyPlugin.pluginEntry(PluginService.this, cmd);
-                break;
-
-            default:
-                break;
-        }
+        AbstractPlugin abstractPlugin = PluginsCreator.getInstance().createPlugin(msg.arg1);
+        abstractPlugin.handleEntry(cmd);
     }
 
     private void handleAndroidMessage(Message msg) {
         if(msg.arg1 == EventCategories.IPC_PLUGIN_STOP_PLAYING) {
-            AlertPlugin.pluginEntry(PluginService.this, new CmdArg(EventSubCodes.SAMSUNG_ALERT_STOP_PLAYING, null));
+            AbstractPlugin abstractPlugin = PluginsCreator.getInstance().createPlugin(EventCategories.SAMSUNG_ALERTS_ID);
+            abstractPlugin.handleEntry(new CmdArg(EventSubCodes.SAMSUNG_ALERT_STOP_PLAYING, null));
         }
     }
 }

@@ -2,13 +2,15 @@ package com.samsung.microbit.plugin;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.samsung.microbit.MBApp;
-import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.data.constants.EventSubCodes;
+import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.ui.activity.AudioRecorderActivity;
 
-public class AudioPlugin {
+public class AudioRecordPlugin implements AbstractPlugin {
+    private static final String TAG = AudioRecordPlugin.class.getSimpleName();
 
     public static final String INTENT_ACTION_LAUNCH = "com.samsung.microbit.ui.activity.AudioRecorderActivity.action" +
             ".LAUNCH";
@@ -19,28 +21,36 @@ public class AudioPlugin {
     public static final String INTENT_ACTION_STOP = "com.samsung.microbit.ui.activity.AudioRecorderActivity.action" +
             ".STOP";//close
 
-    public static void pluginEntry(Context ctx, CmdArg cmd) {
+    @Override
+    public void handleEntry(CmdArg cmd) {
+        final String audioRecordAction;
+
         switch (cmd.getCMD()) {
-            case EventSubCodes.SAMSUNG_AUDIO_RECORDER_EVT_START_CAPTURE: {
-                launchActivity(INTENT_ACTION_START_RECORD);
+            case EventSubCodes.SAMSUNG_AUDIO_RECORDER_EVT_START_CAPTURE:
+                audioRecordAction = INTENT_ACTION_START_RECORD;
                 break;
-            }
-            case EventSubCodes.SAMSUNG_AUDIO_RECORDER_EVT_STOP_CAPTURE: {
-                launchActivity(INTENT_ACTION_STOP_RECORD);
+
+            case EventSubCodes.SAMSUNG_AUDIO_RECORDER_EVT_STOP_CAPTURE:
+                audioRecordAction = INTENT_ACTION_STOP_RECORD;
                 break;
-            }
-            case EventSubCodes.SAMSUNG_AUDIO_RECORDER_EVT_LAUNCH: {
-                launchActivity(INTENT_ACTION_LAUNCH);
+
+            case EventSubCodes.SAMSUNG_AUDIO_RECORDER_EVT_LAUNCH:
+                audioRecordAction = INTENT_ACTION_LAUNCH;
                 break;
-            }
-            case EventSubCodes.SAMSUNG_AUDIO_RECORDER_EVT_STOP: {
-                launchActivity(INTENT_ACTION_STOP);
+
+            case EventSubCodes.SAMSUNG_AUDIO_RECORDER_EVT_STOP:
+                audioRecordAction = INTENT_ACTION_STOP;
                 break;
-            }
+
+            default:
+                Log.e(TAG, "Unknown Event subCode : " + cmd.getCMD());
+                return;
         }
+
+        launchActivity(audioRecordAction);
     }
 
-    static private void launchActivity(String action) {
+    private static void launchActivity(String action) {
         Context context = MBApp.getApp();
 
         Intent mIntent = new Intent(context, AudioRecorderActivity.class);
@@ -49,5 +59,10 @@ public class AudioPlugin {
         // keep same instance of activity
         mIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         context.startActivity(mIntent);
+    }
+
+    @Override
+    public void destroy() {
+
     }
 }

@@ -44,14 +44,15 @@ import android.widget.Toast;
 import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.data.constants.Constants;
 import com.samsung.microbit.data.constants.FileConstants;
 import com.samsung.microbit.data.constants.RawConstants;
-import com.samsung.microbit.plugin.CameraPlugin;
-import com.samsung.microbit.presentation.PlayAudioPresenter;
+import com.samsung.microbit.data.model.CmdArg;
+import com.samsung.microbit.plugin.CameraPluginNew;
+import com.samsung.microbit.presentation.PlayRawPresenter;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.view.CameraPreview;
+import com.samsung.microbit.utils.ServiceUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -89,7 +90,7 @@ public class CameraActivity_OldAPI extends Activity {
     private boolean isMakingPicOnResume;
     private boolean isRecordingVideoOnResume;
 
-    private PlayAudioPresenter playAudioPresenter;
+    private PlayRawPresenter playRawPresenter;
 
     private boolean debug = BuildConfig.DEBUG;
 
@@ -100,8 +101,8 @@ public class CameraActivity_OldAPI extends Activity {
             switch (what) {
                 case MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED:
                 case MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED:
-                    playAudioPresenter.setNotificationForPlay(RawConstants.MAX_VIDEO_RECORDED);
-                    playAudioPresenter.start();
+                    playRawPresenter.setRawNameForPlay(RawConstants.MAX_VIDEO_RECORDED);
+                    playRawPresenter.start();
                     stopRecording();
                     break;
                 case MediaRecorder.MEDIA_RECORDER_INFO_UNKNOWN:
@@ -420,7 +421,7 @@ public class CameraActivity_OldAPI extends Activity {
 
     private void sendCameraError() {
         CmdArg cmd = new CmdArg(0, "Camera Error");
-        CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);
+        ServiceUtils.sendReplyCommand(PluginService.CAMERA, cmd);
     }
 
     private void setOrientationOffset() {
@@ -467,7 +468,7 @@ public class CameraActivity_OldAPI extends Activity {
             mFrontCamera = true;
         }
 
-        playAudioPresenter = new PlayAudioPresenter();
+        playRawPresenter = new PlayRawPresenter();
 
         createRotatedIcons();
 
@@ -488,9 +489,9 @@ public class CameraActivity_OldAPI extends Activity {
 
         setContentView(R.layout.activity_camera_old_api);
         Intent intent = getIntent();
-        if (intent.getAction().contains("OPEN_FOR_PIC")) {
+        if (intent.getAction().equals(CameraPluginNew.OPEN_FOR_PIC_ACTION)) {
             mVideo = false;
-        } else if (intent.getAction().contains("OPEN_FOR_VIDEO")) {
+        } else if (intent.getAction().equals(CameraPluginNew.OPEN_FOR_VIDEO_ACTION)) {
             mVideo = true;
         }
 
@@ -542,7 +543,7 @@ public class CameraActivity_OldAPI extends Activity {
                 } else {
                     //Wrong sequence of commands
                     CmdArg cmd = new CmdArg(0, "Wrong Camera Command Sequence");
-                    CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);
+                    ServiceUtils.sendReplyCommand(PluginService.CAMERA, cmd);
                     Log.e(TAG, "Wrong command sequence");
                 }
             }
@@ -588,8 +589,8 @@ public class CameraActivity_OldAPI extends Activity {
 
     private void startTakePicCounter () {
 
-        playAudioPresenter.setNotificationForPlay(RawConstants.TAKING_PHOTO_AUDIO);
-        playAudioPresenter.start();
+        playRawPresenter.setRawNameForPlay(RawConstants.TAKING_PHOTO_AUDIO);
+        playRawPresenter.start();
 
         @SuppressLint("ShowToast") final Toast toast = Toast.makeText(MBApp.getApp().getApplicationContext(),"bbb", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
@@ -670,8 +671,8 @@ public class CameraActivity_OldAPI extends Activity {
     }
 
     private void recordVideo() {
-        playAudioPresenter.setNotificationForPlay(RawConstants.RECORDING_VIDEO_AUDIO);
-        playAudioPresenter.start();
+        playRawPresenter.setRawNameForPlay(RawConstants.RECORDING_VIDEO_AUDIO);
+        playRawPresenter.start();
         mButtonClick.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -748,8 +749,8 @@ public class CameraActivity_OldAPI extends Activity {
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
 
-            playAudioPresenter.setNotificationForPlay(RawConstants.PICTURE_TAKEN_AUDIO);
-            playAudioPresenter.start();
+            playRawPresenter.setRawNameForPlay(RawConstants.PICTURE_TAKEN_AUDIO);
+            playRawPresenter.start();
 
         }
     };
@@ -773,7 +774,7 @@ public class CameraActivity_OldAPI extends Activity {
         logi("onCreate() :: onStart");
         //Informing microbit that the mCamera is active now
         CmdArg cmd = new CmdArg(0, "Camera on");
-        CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);
+        ServiceUtils.sendReplyCommand(PluginService.CAMERA, cmd);
         super.onStart();
     }
 
@@ -782,11 +783,11 @@ public class CameraActivity_OldAPI extends Activity {
         logi("onCreate() :: onDestroy");
         //Informing microbit that the mCamera is active now
         CmdArg cmd = new CmdArg(0, "Camera off");
-        CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);
+        ServiceUtils.sendReplyCommand(PluginService.CAMERA, cmd);
 
         this.unregisterReceiver(mMessageReceiver);
 
-        playAudioPresenter.destroy();
+        playRawPresenter.destroy();
 
         super.onDestroy();
     }
@@ -817,13 +818,12 @@ public class CameraActivity_OldAPI extends Activity {
                 refreshGallery(outFile);
 
                 CmdArg cmd = new CmdArg(0, "Camera picture saved");
-                CameraPlugin.sendReplyCommand(PluginService.CAMERA, cmd);
+                ServiceUtils.sendReplyCommand(PluginService.CAMERA, cmd);
             } catch (IOException e) {
                 Log.e(TAG, e.toString());
             }
             return null;
         }
-
     }
 
     private void releaseMediaRecorder() {

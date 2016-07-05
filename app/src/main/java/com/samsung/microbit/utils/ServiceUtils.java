@@ -1,5 +1,10 @@
 package com.samsung.microbit.utils;
 
+import android.os.Bundle;
+import android.os.Message;
+import android.os.RemoteException;
+import android.util.Log;
+
 import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.PopUpServiceReceiver;
 import com.samsung.microbit.data.model.CmdArg;
@@ -11,6 +16,8 @@ import com.samsung.microbit.service.PluginService;
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
 public class ServiceUtils {
+    private static final String TAG = ServiceUtils.class.getSimpleName();
+
     private ServiceUtils() {
     }
 
@@ -70,5 +77,21 @@ public class ServiceUtils {
         }
 
         IPCMessageManager.sendIPCMessage(BLEService.class, messageType, eventCategory, cmd, args);
+    }
+
+    public static void sendReplyCommand(int mbsService, CmdArg cmd) {
+        if (IPCMessageManager.getInstance().getClientMessenger() != null) {
+            Message msg = Message.obtain(null, mbsService);
+            Bundle bundle = new Bundle();
+            bundle.putInt("cmd", cmd.getCMD());
+            bundle.putString("value", cmd.getValue());
+            msg.setData(bundle);
+
+            try {
+                IPCMessageManager.getInstance().getClientMessenger().send(msg);
+            } catch (RemoteException e) {
+                Log.e(TAG, e.toString());
+            }
+        }
     }
 }
