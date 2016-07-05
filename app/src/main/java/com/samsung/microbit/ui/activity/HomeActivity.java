@@ -395,8 +395,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 if (urlToOpen == null) {
                     urlToOpen = MBApp.getApp().getAppInfo().getCreateCodeURL();
                 }
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(urlToOpen));
+
+                //TODO create code open in same app
+                Intent intent = new Intent(this, HelpWebView.class);
+                intent.putExtra("url", urlToOpen);
+
+                //Intent intent = new Intent(Intent.ACTION_VIEW);
+                //intent.setData(Uri.parse(urlToOpen));
 
                 startActivity(intent);
             }

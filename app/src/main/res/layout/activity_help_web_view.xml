@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    tools:context="com.samsung.microbit.ui.activity.GeneralWebView">
+    tools:context="com.samsung.microbit.ui.activity.HelpWebView">
 
     <WebView
         android:id="@+id/generalView"

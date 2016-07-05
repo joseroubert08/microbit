@@ -16,6 +16,7 @@ import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.data.constants.PermissionCodes;
+import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.ui.PopUp;
 
 /**
@@ -45,16 +46,19 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
         }
     }
 
+    private String intentAction;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_activity_permission_checker);
         Intent intent = getIntent(); //Store this for later use
 
+        intentAction = intent.getAction();
 
-        if (intent.getAction().contains("OPEN_FOR_PIC")) {
+        if (intentAction.equals(CameraPlugin.OPEN_FOR_PIC_ACTION)) {
             mRequestedState = REQUEST_STATE.LAUNCH_CAMERA_FOR_PIC;
-        } else if (intent.getAction().contains("OPEN_FOR_VIDEO")) {
+        } else if (intentAction.equals(CameraPlugin.OPEN_FOR_VIDEO_ACTION)) {
             mRequestedState = REQUEST_STATE.LAUNCH_CAMERA_FOR_VIDEO;
         }
         checkPermissionsForCamera();
@@ -79,11 +83,11 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             switch (mRequestedState) {
                 case LAUNCH_CAMERA_FOR_PIC:
-                    intent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_PIC");
-                    break;
                 case LAUNCH_CAMERA_FOR_VIDEO:
-                    intent.setAction("com.samsung.microbit.activity.CameraActivity.action.OPEN_FOR_VIDEO");
+                    intent.setAction(intentAction);
                     break;
+                default:
+                    Log.e(TAG, "Unknown action");
             }
 
             startActivity(intent);
