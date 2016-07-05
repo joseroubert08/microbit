@@ -48,7 +48,7 @@ import com.samsung.microbit.data.constants.Constants;
 import com.samsung.microbit.data.constants.FileConstants;
 import com.samsung.microbit.data.constants.RawConstants;
 import com.samsung.microbit.data.model.CmdArg;
-import com.samsung.microbit.plugin.CameraPluginNew;
+import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.presentation.PlayRawPresenter;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.view.CameraPreview;
@@ -489,9 +489,9 @@ public class CameraActivity_OldAPI extends Activity {
 
         setContentView(R.layout.activity_camera_old_api);
         Intent intent = getIntent();
-        if (intent.getAction().equals(CameraPluginNew.OPEN_FOR_PIC_ACTION)) {
+        if (intent.getAction().equals(CameraPlugin.OPEN_FOR_PIC_ACTION)) {
             mVideo = false;
-        } else if (intent.getAction().equals(CameraPluginNew.OPEN_FOR_VIDEO_ACTION)) {
+        } else if (intent.getAction().equals(CameraPlugin.OPEN_FOR_VIDEO_ACTION)) {
             mVideo = true;
         }
 

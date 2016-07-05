@@ -10,7 +10,7 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.EventSubCodes;
 import com.samsung.microbit.data.model.CmdArg;
-import com.samsung.microbit.plugin.TelephonyPluginNew;
+import com.samsung.microbit.plugin.TelephonyPlugin;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.utils.Utils;
 
@@ -27,23 +27,23 @@ public class IncomingSMSPresenter implements Presenter {
 
     private MBApp microBitApp;
     private IncomingSMSListener incomingSMSListener = new IncomingSMSListener();
-    private TelephonyPluginNew telephonyPluginNew;
+    private TelephonyPlugin telephonyPlugin;
 
     public IncomingSMSPresenter() {
         microBitApp = MBApp.getApp();
     }
 
-    public void setTelephonyPluginNew(TelephonyPluginNew telephonyPluginNew) {
-        this.telephonyPluginNew = telephonyPluginNew;
+    public void setTelephonyPlugin(TelephonyPlugin telephonyPlugin) {
+        this.telephonyPlugin = telephonyPlugin;
     }
 
     @Override
     public void start() {
         microBitApp.registerReceiver(incomingSMSListener, new IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION));
 
-        if(telephonyPluginNew != null) {
+        if(telephonyPlugin != null) {
             CmdArg cmd = new CmdArg(0, "Registered Incoming SMS Alert");
-            telephonyPluginNew.sendCommandBLE(PluginService.TELEPHONY, cmd);//TODO: do we need to report registration status?
+            telephonyPlugin.sendCommandBLE(PluginService.TELEPHONY, cmd);//TODO: do we need to report registration status?
         }
     }
 
@@ -51,9 +51,9 @@ public class IncomingSMSPresenter implements Presenter {
     public void stop() {
         microBitApp.unregisterReceiver(incomingSMSListener);
 
-        if(telephonyPluginNew != null) {
+        if(telephonyPlugin != null) {
             CmdArg cmd = new CmdArg(0, "Unregistered Incoming SMS Alert");
-            telephonyPluginNew.sendCommandBLE(PluginService.TELEPHONY, cmd);//TODO: do we need to report registration status?
+            telephonyPlugin.sendCommandBLE(PluginService.TELEPHONY, cmd);//TODO: do we need to report registration status?
         }
     }
 

@@ -16,7 +16,7 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.data.constants.PermissionCodes;
-import com.samsung.microbit.plugin.CameraPluginNew;
+import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.ui.PopUp;
 
 public class CameraActivityPermissionChecker extends AppCompatActivity {
@@ -50,9 +50,9 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
 
         intentAction = intent.getAction();
 
-        if (intentAction.equals(CameraPluginNew.OPEN_FOR_PIC_ACTION)) {
+        if (intentAction.equals(CameraPlugin.OPEN_FOR_PIC_ACTION)) {
             mRequestedState = REQUEST_STATE.LAUNCH_CAMERA_FOR_PIC;
-        } else if (intentAction.equals(CameraPluginNew.OPEN_FOR_VIDEO_ACTION)) {
+        } else if (intentAction.equals(CameraPlugin.OPEN_FOR_VIDEO_ACTION)) {
             mRequestedState = REQUEST_STATE.LAUNCH_CAMERA_FOR_VIDEO;
         }
         checkPermissionsForCamera();

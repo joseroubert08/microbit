@@ -9,7 +9,7 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.EventSubCodes;
 import com.samsung.microbit.data.model.CmdArg;
-import com.samsung.microbit.plugin.TelephonyPluginNew;
+import com.samsung.microbit.plugin.TelephonyPlugin;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.utils.Utils;
 
@@ -32,14 +32,14 @@ public class IncomingCallPresenter implements Presenter {
 
     private TelephonyManager telephonyManager;
     private boolean isRegistered;
-    private TelephonyPluginNew telephonyPluginNew;
+    private TelephonyPlugin telephonyPlugin;
 
     public IncomingCallPresenter() {
         telephonyManager = (TelephonyManager) MBApp.getApp().getSystemService(Context.TELEPHONY_SERVICE);
     }
 
-    public void setTelephonyPluginNew(TelephonyPluginNew telephonyPluginNew) {
-        this.telephonyPluginNew = telephonyPluginNew;
+    public void setTelephonyPlugin(TelephonyPlugin telephonyPlugin) {
+        this.telephonyPlugin = telephonyPlugin;
     }
 
     @Override
@@ -48,9 +48,9 @@ public class IncomingCallPresenter implements Presenter {
             isRegistered = true;
             telephonyManager.listen(incomingCallListener, PhoneStateListener.LISTEN_CALL_STATE);
 
-            if(telephonyPluginNew != null) {
+            if(telephonyPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Registered Incoming Call Alert");
-                telephonyPluginNew.sendCommandBLE(PluginService.TELEPHONY, cmd);//TODO: do we need to report registration status?
+                telephonyPlugin.sendCommandBLE(PluginService.TELEPHONY, cmd);//TODO: do we need to report registration status?
             }
         }
     }
@@ -60,9 +60,9 @@ public class IncomingCallPresenter implements Presenter {
         if (isRegistered) {
             telephonyManager.listen(incomingCallListener, TelephonyManager.PHONE_TYPE_NONE);
 
-            if(telephonyPluginNew != null) {
+            if(telephonyPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Unregistered Incoming Call Alert");
-                telephonyPluginNew.sendCommandBLE(PluginService.TELEPHONY, cmd);//TODO: do we need to report registration status?
+                telephonyPlugin.sendCommandBLE(PluginService.TELEPHONY, cmd);//TODO: do we need to report registration status?
             }
 
             isRegistered = false;

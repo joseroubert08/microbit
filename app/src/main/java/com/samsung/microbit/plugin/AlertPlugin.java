@@ -28,10 +28,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.samsung.microbit.plugin.AlertPluginNew.AlertType.*;
+import static com.samsung.microbit.plugin.AlertPlugin.AlertType.*;
 
-public class AlertPluginNew implements AbstractPlugin {
-    private static final String TAG = AlertPluginNew.class.getSimpleName();
+public class AlertPlugin implements AbstractPlugin {
+    private static final String TAG = AlertPlugin.class.getSimpleName();
 
     private static final int MAX_RINGTONE_DURATION = (int) TimeUnit.SECONDS.toMillis(10);
 

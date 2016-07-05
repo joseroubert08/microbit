@@ -7,7 +7,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 
 import com.samsung.microbit.MBApp;
-import com.samsung.microbit.plugin.AlertPluginNew;
+import com.samsung.microbit.plugin.AlertPlugin;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -36,7 +36,7 @@ public class PlayRingtonePresenter implements Presenter{
 
     @Override
     public void start() {
-        int duration = AlertPluginNew.getDuration(mediaPlayer, ringtoneUri);
+        int duration = AlertPlugin.getDuration(mediaPlayer, ringtoneUri);
 
         if (maxDuration > 0 && duration > maxDuration) {
             duration = maxDuration;

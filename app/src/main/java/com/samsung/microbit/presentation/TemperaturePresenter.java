@@ -8,7 +8,7 @@ import android.hardware.SensorManager;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.model.CmdArg;
-import com.samsung.microbit.plugin.InformationPluginNew;
+import com.samsung.microbit.plugin.InformationPlugin;
 import com.samsung.microbit.service.PluginService;
 
 public class TemperaturePresenter implements Presenter {
@@ -20,10 +20,10 @@ public class TemperaturePresenter implements Presenter {
         public void onSensorChanged(SensorEvent event) {
             float temperature = event.values[0];
 
-            if(informationPluginNew != null) {
+            if(informationPlugin != null) {
                 //notify BLE
-                CmdArg cmd = new CmdArg(InformationPluginNew.AlertType.TYPE_TEMPERATURE, "Temperature " + temperature);
-                informationPluginNew.sendReplyCommand(PluginService.INFORMATION, cmd);
+                CmdArg cmd = new CmdArg(InformationPlugin.AlertType.TYPE_TEMPERATURE, "Temperature " + temperature);
+                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
             }
         }
 
@@ -33,7 +33,7 @@ public class TemperaturePresenter implements Presenter {
     };
 
     private SensorManager sensorManager;
-    private InformationPluginNew informationPluginNew;
+    private InformationPlugin informationPlugin;
     private Sensor temperatureSensor;
     private boolean isRegistered;
 
@@ -42,8 +42,8 @@ public class TemperaturePresenter implements Presenter {
         temperatureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
     }
 
-    public void setInformationPluginNew(InformationPluginNew informationPluginNew) {
-        this.informationPluginNew = informationPluginNew;
+    public void setInformationPlugin(InformationPlugin informationPlugin) {
+        this.informationPlugin = informationPlugin;
     }
 
     @Override
@@ -58,9 +58,9 @@ public class TemperaturePresenter implements Presenter {
 
             sensorManager.registerListener(temperatureListener, temperatureSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
-            if(informationPluginNew != null) {
+            if(informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Registered Temperature.");
-                informationPluginNew.sendReplyCommand(PluginService.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
             }
         }
     }
@@ -74,9 +74,9 @@ public class TemperaturePresenter implements Presenter {
         if(isRegistered) {
             sensorManager.unregisterListener(temperatureListener);
 
-            if(informationPluginNew != null) {
+            if(informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Unregistered Temperature.");
-                informationPluginNew.sendReplyCommand(PluginService.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
             }
 
             isRegistered = false;

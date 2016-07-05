@@ -10,7 +10,7 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.EventSubCodes;
 import com.samsung.microbit.data.model.CmdArg;
-import com.samsung.microbit.plugin.InformationPluginNew;
+import com.samsung.microbit.plugin.InformationPlugin;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.utils.Utils;
 
@@ -29,14 +29,14 @@ public class SignalStrengthPresenter implements Presenter {
     private int sCurrentSignalStrength;
     private TelephonyManager telephonyManager;
     private boolean isRegistered;
-    private InformationPluginNew informationPluginNew;
+    private InformationPlugin informationPlugin;
 
     public SignalStrengthPresenter() {
         telephonyManager = (TelephonyManager) MBApp.getApp().getSystemService(Context.TELEPHONY_SERVICE);
     }
 
-    public void setInformationPluginNew(InformationPluginNew informationPluginNew) {
-        this.informationPluginNew = informationPluginNew;
+    public void setInformationPlugin(InformationPlugin informationPlugin) {
+        this.informationPlugin = informationPlugin;
     }
 
     @Override
@@ -46,9 +46,9 @@ public class SignalStrengthPresenter implements Presenter {
             Log.i(TAG, "registerSignalStrength");
             telephonyManager.listen(phoneListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 
-            if(informationPluginNew != null) {
+            if(informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Registered Signal Strength.");
-                informationPluginNew.sendReplyCommand(PluginService.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
             }
         }
     }
@@ -58,9 +58,9 @@ public class SignalStrengthPresenter implements Presenter {
         if (isRegistered) {
             telephonyManager.listen(phoneListener, PhoneStateListener.LISTEN_NONE);
 
-            if(informationPluginNew != null) {
+            if(informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Unregistered Signal Strength.");
-                informationPluginNew.sendReplyCommand(PluginService.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
             }
 
             isRegistered = false;

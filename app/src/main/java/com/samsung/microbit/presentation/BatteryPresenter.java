@@ -8,7 +8,7 @@ import android.os.BatteryManager;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.model.CmdArg;
-import com.samsung.microbit.plugin.InformationPluginNew;
+import com.samsung.microbit.plugin.InformationPlugin;
 import com.samsung.microbit.service.PluginService;
 
 public class BatteryPresenter implements Presenter{
@@ -20,9 +20,9 @@ public class BatteryPresenter implements Presenter{
             int batteryPct = (int) (level / (float) scale * 100);
 
             if (batteryPct != previousBatteryPct) {
-                if(informationPluginNew != null) {
-                    CmdArg cmd = new CmdArg(InformationPluginNew.AlertType.TYPE_BATTERY, "Battery level " + batteryPct);
-                    informationPluginNew.sendReplyCommand(PluginService.INFORMATION, cmd);
+                if(informationPlugin != null) {
+                    CmdArg cmd = new CmdArg(InformationPlugin.AlertType.TYPE_BATTERY, "Battery level " + batteryPct);
+                    informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
                 }
 
                 previousBatteryPct = batteryPct;
@@ -31,7 +31,7 @@ public class BatteryPresenter implements Presenter{
     };
 
     private MBApp application;
-    private InformationPluginNew informationPluginNew;
+    private InformationPlugin informationPlugin;
     private int previousBatteryPct;
     private boolean isRegistered;
 
@@ -39,8 +39,8 @@ public class BatteryPresenter implements Presenter{
         application = MBApp.getApp();
     }
 
-    public void setInformationPluginNew(InformationPluginNew informationPluginNew) {
-        this.informationPluginNew = informationPluginNew;
+    public void setInformationPlugin(InformationPlugin informationPlugin) {
+        this.informationPlugin = informationPlugin;
     }
 
     @Override
@@ -50,9 +50,9 @@ public class BatteryPresenter implements Presenter{
             IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
             application.registerReceiver(batteryReceiver, filter);
 
-            if(informationPluginNew != null) {
+            if(informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Registered Battery.");
-                informationPluginNew.sendReplyCommand(PluginService.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
             }
         }
     }
@@ -62,9 +62,9 @@ public class BatteryPresenter implements Presenter{
         if(isRegistered) {
             application.unregisterReceiver(batteryReceiver);
 
-            if(informationPluginNew != null) {
+            if(informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Unregistered Battery.");
-                informationPluginNew.sendReplyCommand(PluginService.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
             }
             isRegistered = false;
         }

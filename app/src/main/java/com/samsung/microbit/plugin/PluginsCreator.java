@@ -37,11 +37,11 @@ public class PluginsCreator {
 
         switch (eventCategory) {
             case EventCategories.SAMSUNG_REMOTE_CONTROL_ID:
-                abstractPlugin = new RemoteControlPluginNew();
+                abstractPlugin = new RemoteControlPlugin();
                 break;
 
             case EventCategories.SAMSUNG_ALERTS_ID:
-                abstractPlugin = new AlertPluginNew();
+                abstractPlugin = new AlertPlugin();
                 break;
 
             case EventCategories.SAMSUNG_AUDIO_RECORDER_ID:
@@ -49,19 +49,19 @@ public class PluginsCreator {
                 break;
 
             case EventCategories.SAMSUNG_CAMERA_ID:
-                abstractPlugin = new CameraPluginNew();
+                abstractPlugin = new CameraPlugin();
                 break;
 
             case EventCategories.SAMSUNG_SIGNAL_STRENGTH_ID:
-                abstractPlugin = new InformationPluginNew();
+                abstractPlugin = new InformationPlugin();
                 break;
 
             case EventCategories.SAMSUNG_DEVICE_INFO_ID:
-                abstractPlugin = new InformationPluginNew();
+                abstractPlugin = new InformationPlugin();
                 break;
 
             case EventCategories.SAMSUNG_TELEPHONY_ID:
-                abstractPlugin = new TelephonyPluginNew();
+                abstractPlugin = new TelephonyPlugin();
                 break;
             default:
                 abstractPlugin = null;

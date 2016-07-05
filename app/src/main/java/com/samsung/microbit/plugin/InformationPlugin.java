@@ -18,16 +18,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.samsung.microbit.plugin.InformationPluginNew.AlertType.TYPE_BATTERY;
-import static com.samsung.microbit.plugin.InformationPluginNew.AlertType.TYPE_ORIENTATION;
-import static com.samsung.microbit.plugin.InformationPluginNew.AlertType.TYPE_SCREEN_ON_OFF;
-import static com.samsung.microbit.plugin.InformationPluginNew.AlertType.TYPE_SHAKE;
-import static com.samsung.microbit.plugin.InformationPluginNew.AlertType.TYPE_SIGNAL_STRENGTH;
-import static com.samsung.microbit.plugin.InformationPluginNew.AlertType.TYPE_TEMPERATURE;
+import static com.samsung.microbit.plugin.InformationPlugin.AlertType.TYPE_BATTERY;
+import static com.samsung.microbit.plugin.InformationPlugin.AlertType.TYPE_ORIENTATION;
+import static com.samsung.microbit.plugin.InformationPlugin.AlertType.TYPE_SCREEN_ON_OFF;
+import static com.samsung.microbit.plugin.InformationPlugin.AlertType.TYPE_SHAKE;
+import static com.samsung.microbit.plugin.InformationPlugin.AlertType.TYPE_SIGNAL_STRENGTH;
+import static com.samsung.microbit.plugin.InformationPlugin.AlertType.TYPE_TEMPERATURE;
 
 
-public class InformationPluginNew implements AbstractPlugin {
-    private static final String TAG = InformationPluginNew.class.getSimpleName();
+public class InformationPlugin implements AbstractPlugin {
+    private static final String TAG = InformationPlugin.class.getSimpleName();
 
     private List<Presenter> activePresenters = new ArrayList<>();
     private List<Integer> alertTypes = new ArrayList<>();
@@ -45,7 +45,7 @@ public class InformationPluginNew implements AbstractPlugin {
                     Presenter presenter = findPresenterByType(AlertType.TYPE_SIGNAL_STRENGTH);
                     if(presenter == null) {
                         SignalStrengthPresenter signalStrengthPresenter = new SignalStrengthPresenter();
-                        signalStrengthPresenter.setInformationPluginNew(this);
+                        signalStrengthPresenter.setInformationPlugin(this);
                         activePresenters.add(signalStrengthPresenter);
                         alertTypes.add(AlertType.TYPE_SIGNAL_STRENGTH);
 
@@ -86,7 +86,7 @@ public class InformationPluginNew implements AbstractPlugin {
                     Presenter presenter = findPresenterByType(AlertType.TYPE_SHAKE);
                     if(presenter == null) {
                         ShakePresenter shakePresenter = new ShakePresenter();
-                        shakePresenter.setInformationPluginNew(this);
+                        shakePresenter.setInformationPlugin(this);
                         activePresenters.add(shakePresenter);
                         alertTypes.add(AlertType.TYPE_SHAKE);
 
@@ -107,7 +107,7 @@ public class InformationPluginNew implements AbstractPlugin {
                     Presenter presenter = findPresenterByType(AlertType.TYPE_BATTERY);
                     if(presenter == null) {
                         BatteryPresenter batteryPresenter = new BatteryPresenter();
-                        batteryPresenter.setInformationPluginNew(this);
+                        batteryPresenter.setInformationPlugin(this);
                         activePresenters.add(batteryPresenter);
                         alertTypes.add(AlertType.TYPE_BATTERY);
 
@@ -128,7 +128,7 @@ public class InformationPluginNew implements AbstractPlugin {
                     Presenter presenter = findPresenterByType(AlertType.TYPE_TEMPERATURE);
                     if(presenter == null) {
                         TemperaturePresenter temperaturePresenter = new TemperaturePresenter();
-                        temperaturePresenter.setInformationPluginNew(this);
+                        temperaturePresenter.setInformationPlugin(this);
                         activePresenters.add(temperaturePresenter);
                         alertTypes.add(AlertType.TYPE_TEMPERATURE);
 

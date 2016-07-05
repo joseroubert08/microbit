@@ -13,8 +13,8 @@ import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.presentation.PlayRawPresenter;
 import com.samsung.microbit.ui.activity.CameraActivityPermissionChecker;
 
-public class CameraPluginNew implements AbstractPlugin {
-    private static final String TAG = CameraPluginNew.class.getSimpleName();
+public class CameraPlugin implements AbstractPlugin {
+    private static final String TAG = CameraPlugin.class.getSimpleName();
 
     public static final String OPEN_FOR_PIC_ACTION = "OPEN_FOR_PIC";
     public static final String OPEN_FOR_VIDEO_ACTION = "OPEN_FOR_VIDEO";

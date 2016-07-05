@@ -11,8 +11,8 @@ import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.presentation.IncomingCallPresenter;
 import com.samsung.microbit.presentation.IncomingSMSPresenter;
 
-public class TelephonyPluginNew implements AbstractPlugin {
-    private static final String TAG = TelephonyPluginNew.class.getSimpleName();
+public class TelephonyPlugin implements AbstractPlugin {
+    private static final String TAG = TelephonyPlugin.class.getSimpleName();
 
     private IncomingCallPresenter incomingCallPresenter;
     private IncomingSMSPresenter incomingSMSPresenter;
@@ -35,7 +35,7 @@ public class TelephonyPluginNew implements AbstractPlugin {
                     }
 
                     if (!callPresenterInited) {
-                        incomingCallPresenter.setTelephonyPluginNew(this);
+                        incomingCallPresenter.setTelephonyPlugin(this);
                         callPresenterInited = true;
                     }
 
@@ -54,7 +54,7 @@ public class TelephonyPluginNew implements AbstractPlugin {
                     }
 
                     if (!smsPresenterInited) {
-                        incomingSMSPresenter.setTelephonyPluginNew(this);
+                        incomingSMSPresenter.setTelephonyPlugin(this);
                         smsPresenterInited = true;
                     }
 
@@ -73,14 +73,14 @@ public class TelephonyPluginNew implements AbstractPlugin {
     public void destroy() {
         if (incomingCallPresenter != null) {
             incomingCallPresenter.stop();
-            incomingCallPresenter.setTelephonyPluginNew(null);
+            incomingCallPresenter.setTelephonyPlugin(null);
             incomingCallPresenter.destroy();
             callPresenterInited = false;
         }
 
         if (incomingSMSPresenter != null) {
             incomingSMSPresenter.stop();
-            incomingSMSPresenter.setTelephonyPluginNew(null);
+            incomingSMSPresenter.setTelephonyPlugin(null);
             incomingSMSPresenter.destroy();
             smsPresenterInited = false;
         }

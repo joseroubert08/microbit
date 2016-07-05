@@ -10,7 +10,7 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.EventSubCodes;
 import com.samsung.microbit.data.model.CmdArg;
-import com.samsung.microbit.plugin.InformationPluginNew;
+import com.samsung.microbit.plugin.InformationPlugin;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.utils.Utils;
 
@@ -47,10 +47,10 @@ public class ShakePresenter implements Presenter{
                 if (speed > SPEED_THRESHOLD) {
                     mSwingCount++;
                     if (mSwingCount >= THRESHOLD_SWING_COUNT) {
-                        if(informationPluginNew != null) {
+                        if(informationPlugin != null) {
                             //notify BLE client
-                            CmdArg cmd = new CmdArg(InformationPluginNew.AlertType.TYPE_SHAKE, "Device Shaked");
-                            informationPluginNew.sendReplyCommand(PluginService.INFORMATION, cmd);
+                            CmdArg cmd = new CmdArg(InformationPlugin.AlertType.TYPE_SHAKE, "Device Shaked");
+                            informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
                         }
 
                         PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_DEVICE_INFO_ID,
@@ -73,7 +73,7 @@ public class ShakePresenter implements Presenter{
         }
     };
 
-    private InformationPluginNew informationPluginNew;
+    private InformationPlugin informationPlugin;
     private SensorManager sensorManager;
     private boolean isRegistered;
 
@@ -81,8 +81,8 @@ public class ShakePresenter implements Presenter{
         sensorManager = (SensorManager) MBApp.getApp().getSystemService(Context.SENSOR_SERVICE);
     }
 
-    public void setInformationPluginNew(InformationPluginNew informationPluginNew) {
-        this.informationPluginNew = informationPluginNew;
+    public void setInformationPlugin(InformationPlugin informationPlugin) {
+        this.informationPlugin = informationPlugin;
     }
 
     @Override
@@ -92,9 +92,9 @@ public class ShakePresenter implements Presenter{
             sensorManager.registerListener(shakeEventListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                     SensorManager.SENSOR_DELAY_NORMAL);
 
-            if(informationPluginNew != null) {
+            if(informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Registered Shake.");
-                informationPluginNew.sendReplyCommand(PluginService.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
             }
         }
     }
@@ -104,9 +104,9 @@ public class ShakePresenter implements Presenter{
         if (isRegistered) {
             sensorManager.unregisterListener(shakeEventListener);
 
-            if(informationPluginNew != null) {
+            if(informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Unregistered Shake.");
-                informationPluginNew.sendReplyCommand(PluginService.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
             }
 
             isRegistered = false;

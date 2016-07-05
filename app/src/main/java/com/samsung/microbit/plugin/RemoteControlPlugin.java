@@ -15,8 +15,8 @@ import java.util.TimerTask;
 
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
-public class RemoteControlPluginNew implements AbstractPlugin {
-    private static final String TAG = RemoteControlPluginNew.class.getSimpleName();
+public class RemoteControlPlugin implements AbstractPlugin {
+    private static final String TAG = RemoteControlPlugin.class.getSimpleName();
 
     private static void logi(String message) {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
