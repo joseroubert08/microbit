@@ -5,28 +5,28 @@
     <group android:id="@+id/group_nav_menu">
         <item
             android:id="@+id/nav_menu"
-            android:title="Menu" />
+            android:title="@string/menu_main_menu" />
     </group>
 
     <!-- Explore-->
     <group android:id="@+id/group_nav_explore">
         <item
             android:id="@+id/nav_explore"
-            android:title="Explore" />
+            android:title="@string/menu_main_explore" />
     </group>
 
     <!-- About-->
     <group android:id="@+id/group_about">
         <item
             android:id="@+id/nav_about"
-            android:title="About" />
+            android:title="@string/menu_main_about" />
     </group>
 
     <!-- Help -->
     <group android:id="@+id/group_nav_help">
         <item
             android:id="@+id/nav_help"
-            android:title="Help" />
+            android:title="@string/menu_main_help" />
     </group>
 
     <!-- Privacy & cookies-->
@@ -34,7 +34,7 @@
         <item
             android:id="@+id/nav_privacy"
             android:icon="@drawable/message_face"
-            android:title="Privacy &amp; Cookies" />
+            android:title="@string/menu_main_privacy_cookies" />
     </group>
 
     <!-- Terms & Conditions-->
@@ -42,14 +42,14 @@
         <item
             android:id="@+id/nav_terms_conditions"
             android:icon="@drawable/message_face"
-            android:title="Terms &amp; Conditions" />
+            android:title="@string/menu_main_terms_conditions" />
     </group>
 
     <!-- Send us your feedback -->
     <group android:id="@+id/menu_feedback">
         <item
             android:id="@+id/nav_feedback"
-            android:title="Send us your feedback" />
+            android:title="@string/menu_main_terms_conditions" />
     </group>
 
     <!-- Share statistics -->
@@ -58,7 +58,7 @@
         android:checkableBehavior="all">
         <item
             android:id="@+id/nav_shareable"
-            android:title="Share statistics"
+            android:title="@string/menu_main_share_statistics"
             />
     </group>
 </menu>
