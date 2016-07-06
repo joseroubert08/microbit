@@ -32,6 +32,7 @@ import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.data.model.NameValuePair;
 import com.samsung.microbit.utils.ServiceUtils;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.UUID;
 
@@ -65,20 +66,7 @@ public class BLEService extends BLEBaseService {
         logi("startIPCListener()");
         logi("make :: ble start");
 
-        if (IPCMessageManager.getInstance() == null) {
-
-            logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
-            //TODO: consider to fix potential memory leaks, such as using a non-static Handler
-            IPCMessageManager inst = IPCMessageManager.getInstance("BLEServiceReceiver", new Handler() {
-
-                @Override
-                public void handleMessage(Message msg) {
-                    logi("BLEService :: startIPCListener()");
-                    handleIncomingMessage(msg);
-                }
-
-            });
-        }
+        IPCMessageManager.configureMessageManager("BLEServiceReceiver", new BLEMessagesHandler(this));
     }
 
     @Override
@@ -191,7 +179,7 @@ public class BLEService extends BLEBaseService {
         if (integerValue == null) {
             return;
         }
-        int value = integerValue;
+        int value = integerValue.intValue();
         int eventSrc = value & 0x0ffff;
         if (eventSrc < 1001) {
             return;
@@ -248,6 +236,11 @@ public class BLEService extends BLEBaseService {
         logi("setNotification() :: errorCode = " + errorCode);
         logi("setNotification() :: actual_Error = " + actual_Error);
 
+
+        NotificationManager notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        String notificationString = null;
+        boolean onGoingNotification = false;
+
         NameValuePair[] args = new NameValuePair[3];
 
         args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
@@ -267,12 +260,16 @@ public class BLEService extends BLEBaseService {
                     setBluetoothDevice(null);
                 }
             }
+            notificationString = getString(R.string.tray_notification_failure);
+            onGoingNotification = false;
 
             ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
                     .IPC_BLE_NOTIFICATION_GATT_DISCONNECTED, null, args);
             ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
                     .IPC_BLE_NOTIFICATION_GATT_DISCONNECTED, null, args);
         } else {
+            notificationString = getString(R.string.tray_notification_sucsess);
+            onGoingNotification = true;
 
             ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
                     .IPC_BLE_NOTIFICATION_GATT_CONNECTED, null, args);
@@ -281,7 +278,7 @@ public class BLEService extends BLEBaseService {
         }
     }
 
-    /**
+    /*
      * IPC Messenger handling
      */
     @Override
@@ -292,7 +289,7 @@ public class BLEService extends BLEBaseService {
     private boolean registerNotifications(boolean enable) {
         logi("registerNotifications() : " + enable);
 
-        //Read micro:bit firmware version
+        //Read microbit firmware version
         BluetoothGattService deviceInfoService = getService(GattServiceUUIDs.DEVICE_INFORMATION_SERVICE);
         if (deviceInfoService != null) {
             BluetoothGattCharacteristic firmwareCharacteristic = deviceInfoService.getCharacteristic
@@ -498,11 +495,15 @@ public class BLEService extends BLEBaseService {
                 .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
     }
 
+    // ######################################################################
+
+    int lastEvent = EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE;
+
     private void sendMessage(int eventSrc, int event) {
 
         logi("Sending eventSrc " + eventSrc + "  event=" + event);
-        int msgService;
-        CmdArg cmd;
+        int msgService = 0;
+        CmdArg cmd = null;
         switch (eventSrc) {
             case EventCategories.SAMSUNG_REMOTE_CONTROL_ID:
             case EventCategories.SAMSUNG_ALERTS_ID:
@@ -516,8 +517,10 @@ public class BLEService extends BLEBaseService {
             default:
                 return;
         }
-        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT,
-                msgService, cmd, null);
+        if (cmd != null) {
+            ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, msgService, cmd,
+                    null);
+        }
     }
 
     /**
@@ -625,6 +628,24 @@ public class BLEService extends BLEBaseService {
         c.setValue(value, type, 0);
         int ret = writeCharacteristic(c);
         logi("writeCharacteristic() :: returns - " + ret);
+    }
+
+    private static class BLEMessagesHandler extends Handler {
+        private final WeakReference<BLEService> bleServiceWeakReference;
+
+        public BLEMessagesHandler(BLEService bleService) {
+            super();
+            bleServiceWeakReference = new WeakReference<>(bleService);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (bleServiceWeakReference.get() != null) {
+                logi("BLEService :: startIPCListener()");
+                bleServiceWeakReference.get().handleIncomingMessage(msg);
+            }
+        }
     }
 
     private void handleIncomingMessage(Message msg) {
