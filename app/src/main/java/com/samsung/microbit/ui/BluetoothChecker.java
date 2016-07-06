@@ -9,14 +9,14 @@ import android.view.View;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 
-public class BluetoothSwitch {
-    private static final String TAG = BluetoothSwitch.class.getSimpleName();
+public class BluetoothChecker {
+    private static final String TAG = BluetoothChecker.class.getSimpleName();
 
-    private static BluetoothSwitch instance = null;
+    private static BluetoothChecker instance = null;
 
     private static BluetoothAdapter mBluetoothAdapter = null;
 
-    private BluetoothSwitch() {
+    private BluetoothChecker() {
         if (mBluetoothAdapter == null) {
             final BluetoothManager bluetoothManager = (BluetoothManager) MBApp.getApp().getSystemService(Context
                     .BLUETOOTH_SERVICE);
@@ -24,9 +24,9 @@ public class BluetoothSwitch {
         }
     }
 
-    public static BluetoothSwitch getInstance() {
+    public static BluetoothChecker getInstance() {
         if (instance == null) {
-            instance = new BluetoothSwitch();
+            instance = new BluetoothChecker();
         }
         return instance;
     }

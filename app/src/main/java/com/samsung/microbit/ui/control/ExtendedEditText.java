@@ -9,8 +9,6 @@ import android.widget.EditText;
 public class ExtendedEditText extends EditText {
 	private static final String TAG = ExtendedEditText.class.getSimpleName();
 
-	protected boolean debug = true;
-
 	protected void logi(String message) {
 		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
 	}

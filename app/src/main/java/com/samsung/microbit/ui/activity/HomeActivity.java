@@ -3,6 +3,7 @@ package com.samsung.microbit.ui.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
@@ -29,7 +30,6 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.common.AppInfo;
@@ -44,10 +44,8 @@ import com.samsung.microbit.utils.FileUtils;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
-/**
- * Represents a home screen. Allows to navigate to all functionality
- * that the app provides.
- */
+import static com.samsung.microbit.BuildConfig.DEBUG;
+
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = HomeActivity.class.getSimpleName();
 
@@ -61,23 +59,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     // Hello animation
     private GifImageView gifAnimationHelloEmoji;
 
-    protected boolean debug = BuildConfig.DEBUG;
-
     /* Debug code*/
-    private String urlToOpen = null;
+    private String urlToOpen;
     /* Debug code ends*/
 
-    private String emailBodyString = null;
+    private String emailBodyString;
 
     private AppInfoPresenter appInfoPresenter;
 
-    /**
-     * Provides simplified way to log informational messages.
-     *
-     * @param message Message to log.
-     */
-    protected void logi(String message) {
-        if (debug) {
+    private void logi(String message) {
+        if (DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
@@ -85,20 +76,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         //handle orientation change to prevent re-creation of activity.
+        //i.e. while recording we need to preserve state of recorder
         super.onConfigurationChanged(newConfig);
 
         setContentView(R.layout.activity_home);
         setupDrawer();
         setupButtonsFontStyle();
-        initGifImage();
-    }
-
-    /**
-     * Initializes the gif image and sets a resource.
-     */
-    private void initGifImage() {
-        gifAnimationHelloEmoji = (GifImageView) findViewById(R.id.homeHelloAnimationGifView);
-        gifAnimationHelloEmoji.setImageResource(R.drawable.hello_emoji_animation);
     }
 
     @Override
@@ -131,7 +114,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (!appInfo.isAppStatusOn()) {
             finish();
             //Cannot proceed with the application. Shutdown NOW
-            PopUp.show(appInfo.getExceptionMsg(),
+            PopUp.show(MBApp.getApp(),
+                    appInfo.getExceptionMsg(),
                     appInfo.getExceptionTitle(),
                     R.drawable.error_face,//image icon res id
                     R.drawable.red_btn,
@@ -141,14 +125,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     null);
 
         }
-
-        initGifImage();
+        // animation for loading hello .giff
+        gifAnimationHelloEmoji = (GifImageView) findViewById(R.id.homeHelloAnimationGifView);
     }
 
-    /**
-     * Sets buttons font style by setting an appropriate typeface.
-     */
     private void setupButtonsFontStyle() {
+        // Font Style for buttons
         Button connectButton = (Button) findViewById(R.id.connect_device_btn);
         connectButton.setTypeface(MBApp.getApp().getTypeface());
         Button flashButton = (Button) findViewById(R.id.flash_microbit_btn);
@@ -159,10 +141,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         discoverButton.setTypeface(MBApp.getApp().getTypeface());
     }
 
-    /**
-     * Starts amount of additional services such as IPC service,
-     * BLE service and Plugin service.
-     */
     private void startOtherServices() {
         // IPC service to communicate between the services
         Intent ipcIntent = new Intent(this, IPCService.class);
@@ -177,9 +155,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         startService(intent);
     }
 
-    /**
-     * Creates and setups side navigation menu.
-     */
     private void setupDrawer() {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -192,6 +167,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         drawer.setDrawerTitle(GravityCompat.START, "Menu"); // TODO - Accessibility for touching the drawer
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
 
         boolean shareStats = false;
         mPrefs = getSharedPreferences("com.samsung.microbit", MODE_PRIVATE);
@@ -241,20 +217,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mShareStatsCheckBox.setChecked(shareStats);
     }
 
-    /**
-     * Creates email body to send statistics. Adds information about a device.
-     *
-     * @return Email body with device information.
-     */
     private String prepareEmailBody() {
         if (emailBodyString != null) {
             return emailBodyString;
         }
         String emailBody = getString(R.string.email_body);
         String version = "0.1.0";
+        PackageManager manager = MBApp.getApp().getPackageManager();
+        PackageInfo info = null;
         try {
-            version = MBApp.getApp().getPackageManager()
-                    .getPackageInfo(MBApp.getApp().getPackageName(), 0).versionName;
+            info = manager.getPackageInfo(MBApp.getApp().getPackageName(), 0);
+            version = info.versionName;
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, e.toString());
         }
@@ -377,7 +350,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(final View v) {
-        if (debug) logi("onBtnClicked() :: ");
+        if (DEBUG) logi("onBtnClicked() :: ");
 
         // Drawer closes only after certain items are selected from the Navigation View
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -490,9 +463,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }//Switch Ends
     }
 
-    /**
-     * Allows to turn on/off sharing statistics ability.
-     */
+
     private void toggleShareStatistics() {
         if (mShareStatsCheckBox == null) {
             return;
@@ -505,10 +476,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         MBApp.getApp().getEchoClientManager().sendStatSharing(shareStatistics);
     }
 
-    /**
-     * Loads standard samples provided by Samsung. The samples can be used to
-     * flash on a micro:bit board.
-     */
+
     private void installSamples() {
         if (mPrefs.getBoolean(FIRST_RUN, true)) {
             mPrefs.edit().putBoolean(FIRST_RUN, false).apply();
@@ -516,7 +484,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    PopUp.show(getString(R.string.samples_are_about_to_be_copied),
+                    PopUp.show(MBApp.getApp(),
+                            "Samples will now be copied to your device. You can check them out in the Flash section.",
                             "Thank you",
                             R.drawable.message_face, R.drawable.blue_btn,
                             PopUp.GIFF_ANIMATION_NONE,
@@ -539,7 +508,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     installSamples();
                 } else {
                     if (mPrefs != null) mPrefs.edit().putBoolean(FIRST_RUN, false).apply();
-                    PopUp.show(getString(R.string.storage_permission_for_samples_error),
+                    PopUp.show(MBApp.getApp(),
+                            getString(R.string.storage_permission_for_samples_error),
                             "",
                             R.drawable.error_face, R.drawable.red_btn,
                             PopUp.GIFF_ANIMATION_ERROR,
@@ -556,9 +526,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         ActivityCompat.requestPermissions(this, permissions, requestCode);
     }
 
-    /**
-     * Requests required external storage permissions.
-     */
     View.OnClickListener diskStoragePermissionOKHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -572,15 +539,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-    /**
-     * Provides action if a user canceled storage permission granting.
-     */
     View.OnClickListener diskStoragePermissionCancelHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             logi("diskStoragePermissionCancelHandler");
             PopUp.hide();
-            PopUp.show(getString(R.string.storage_permission_for_samples_error),
+            PopUp.show(MBApp.getApp(),
+                    getString(R.string.storage_permission_for_samples_error),
                     "",
                     R.drawable.error_face, R.drawable.red_btn,
                     PopUp.GIFF_ANIMATION_ERROR,
@@ -590,10 +555,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-    /**
-     * Checks and requests for external storage permissions
-     * if the app is started at the first time.
-     */
+
     private void checkMinimumPermissionsForThisScreen() {
         //Check reading permissions & writing permission to populate the HEX files & show program list
         if (mPrefs.getBoolean(FIRST_RUN, true)) {
@@ -601,7 +563,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     != PermissionChecker.PERMISSION_GRANTED ||
                     (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                             != PermissionChecker.PERMISSION_GRANTED)) {
-                PopUp.show(getString(R.string.storage_permission_for_samples),
+                PopUp.show(MBApp.getApp(),
+                        getString(R.string.storage_permission_for_samples),
                         getString(R.string.permissions_needed_title),
                         R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
                         PopUp.TYPE_CHOICE,
@@ -624,8 +587,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onResume() {
-        if (debug) logi("onResume() :: ");
+        if (DEBUG) logi("onResume() :: ");
         super.onResume();
-        gifAnimationHelloEmoji.animate();
+        findViewById(R.id.homeHelloAnimationGifView).animate();
     }
 }

@@ -8,20 +8,15 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.util.Log;
-
-import com.samsung.microbit.BuildConfig;
 
 import java.util.List;
 import java.util.UUID;
 
 import no.nordicsemi.android.error.GattError;
 
-/**
- * Bluetooth low energy manager. Provides methods to establish
- * and manage bluetooth low energy connection.
- */
+import static com.samsung.microbit.BuildConfig.DEBUG;
+
 public class BLEManager {
     public static final String TAG = BLEManager.class.getSimpleName();
 
@@ -50,12 +45,7 @@ public class BLEManager {
     public static final int OP_READ_REMOTE_RSSI = 9;
     public static final int OP_MTU_CHANGED = 10;
 
-    /**
-     * It represents ble device state.
-     * Can be one of possible values:
-     * {@link BLEManager#BLE_DISCONNECTED}, {@link BLEManager#BLE_CONNECTED}, {@link BLEManager#BLE_SERVICES_DISCOVERED}
-     */
-    private volatile int bleState = BLE_DISCONNECTED;
+    private volatile int bleState = 0;
     private volatile int error = 0;
 
     private volatile int inBleOp = 0;
@@ -75,20 +65,13 @@ public class BLEManager {
 
     private int extendedError = 0;
 
-    private boolean isDebug = BuildConfig.DEBUG;
-
-    /**
-     * Provides simplified way to log app informational messages.
-     *
-     * @param message Message to log.
-     */
     void logi(String message) {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
     }
 
     public BLEManager(Context context, BluetoothDevice bluetoothDevice, UnexpectedConnectionEventListener
             unexpectedDisconnectionListener) {
-        if (isDebug) {
+        if (DEBUG) {
             logi("start");
         }
 
@@ -99,7 +82,7 @@ public class BLEManager {
 
     public BLEManager(Context context, BluetoothDevice bluetoothDevice, CharacteristicChangeListener
             characteristicChangeListener, UnexpectedConnectionEventListener unexpectedDisconnectionListener) {
-        if (isDebug) {
+        if (DEBUG) {
             logi("start1");
         }
 
@@ -129,7 +112,6 @@ public class BLEManager {
         return inBleOp;
     }
 
-    @Nullable
     public BluetoothGattService getService(UUID uuid) {
         if ((bleState & BLE_SERVICES_DISCOVERED) != 0) {
             return gatt.getService(uuid);
@@ -138,7 +120,6 @@ public class BLEManager {
         return null;
     }
 
-    @Nullable
     public List<BluetoothGattService> getServices() {
         if ((bleState & BLE_SERVICES_DISCOVERED) != 0) {
             return gatt.getServices();
@@ -147,13 +128,8 @@ public class BLEManager {
         return null;
     }
 
-    /**
-     * Resets bluetooth GATT connection.
-     *
-     * @return True if successful.
-     */
     public boolean reset() {
-        if (isDebug) {
+        if (DEBUG) {
             logi("reset()");
         }
 
@@ -173,7 +149,7 @@ public class BLEManager {
             inBleOp = OP_NOOP;
             callbackCompleted = false;
             if (gatt != null) {
-                if (isDebug) {
+                if (DEBUG) {
                     logi("reset() :: gatt != null : closing gatt");
                 }
 
@@ -189,26 +165,11 @@ public class BLEManager {
         return extendedError;
     }
 
-    /**
-     * Allows to establish connection with ability to auto reconnect.
-     * <p/>
-     * Simulating of synchronous request from asynchronous is making in following way:
-     * <p/>
-     * 1. Trigger asynchronous request
-     * 2. Wait for defined delay ({@value BLE_WAIT_TIMEOUT}) for asynchronous callback is invoked.
-     * 3. If callback is invoked in that time, then just return {@link BLEManager#bleState}.
-     * 4. Else mask error using
-     * {@link BLEManager#BLE_ERROR_FAIL} and {@link BLEManager#BLE_ERROR_TIMEOUT} and {@link BLEManager#bleState} and
-     * return it.
-     *
-     * @param autoReconnect Defines if connection  should provide auto reconnect.
-     * @return Connection result with an appropriate error code if connection is failed.
-     */
     public int connect(boolean autoReconnect) {
         int rc = BLE_ERROR_NOOP;
 
         if (gatt == null) {
-            if (isDebug) {
+            if (DEBUG) {
                 logi("connectMaybeInit() :: gatt == null");
             }
 
@@ -216,14 +177,14 @@ public class BLEManager {
                 if (inBleOp == OP_NOOP) {
                     inBleOp = OP_CONNECT;
                     try {
-                        if (isDebug) {
+                        if (DEBUG) {
                             logi("connectMaybeInit() :: bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback)");
                         }
 
                         gatt = bluetoothDevice.connectGatt(context, false, bluetoothGattCallback);
 
                         if (gatt == null) {
-                            if (isDebug)
+                            if (DEBUG)
                                 logi("connectGatt failed with AutoReconnect = false. Trying again.. autoReconnect=" + autoReconnect);
                             gatt = bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback);
                         }
@@ -232,7 +193,7 @@ public class BLEManager {
                             error = 0;
                             locker.wait(BLE_WAIT_TIMEOUT);
 
-                            if (isDebug) {
+                            if (DEBUG) {
                                 logi("connectMaybeInit() :: remote device = " + gatt.getDevice().getAddress());
                             }
 
@@ -253,23 +214,14 @@ public class BLEManager {
             rc = gattConnect();
         }
 
-        if (isDebug) {
+        if (DEBUG) {
             logi("connectMaybeInit() :: rc = " + rc);
         }
         return rc;
     }
 
-    /**
-     * Trigger connection to remote GATT device.
-     * <p/>
-     * Simulating of synchronous request from asynchronous. For description of that process,
-     * and result encoding see {@link BLEManager#connect(boolean)}
-     *
-     * @return Connection result.
-     * @see BLEManager#connect(boolean)
-     */
     private int gattConnect() {
-        if (isDebug) {
+        if (DEBUG) {
             logi("gattConnect() :: start");
         }
 
@@ -277,7 +229,7 @@ public class BLEManager {
 
         synchronized (locker) {
             if (gatt != null && inBleOp == OP_NOOP) {
-                if (isDebug) {
+                if (DEBUG) {
                     logi("gattConnect() :: gatt != null");
                 }
 
@@ -285,7 +237,7 @@ public class BLEManager {
                 error = 0;
                 try {
                     if (bleState == 0) {
-                        if (isDebug) {
+                        if (DEBUG) {
                             logi("gattConnect() :: gatt.connectMaybeInit()");
                         }
 
@@ -295,7 +247,7 @@ public class BLEManager {
                         logi("gatt.connectMaybeInit() returns = " + result);
                         locker.wait(BLE_WAIT_TIMEOUT);
 
-                        if (isDebug) {
+                        if (DEBUG) {
                             logi("gattConnect() :: remote device = " + gatt.getDevice().getAddress());
                         }
 
@@ -313,24 +265,15 @@ public class BLEManager {
             }
         }
 
-        if (isDebug) {
+        if (DEBUG) {
             logi("gattConnect() :: rc = " + rc);
         }
 
         return rc;
     }
 
-    /**
-     * Trigger closing active connection with remote GATT.
-     * <p/>
-     * Simulating of synchronous request from asynchronous. For description of that process,
-     * and result encoding see {@link BLEManager#connect(boolean)}
-     *
-     * @return Disconnection result.
-     * @see BLEManager#connect(boolean)
-     */
     public int disconnect() {
-        if (isDebug) {
+        if (DEBUG) {
             logi("disconnect() :: start");
         }
 
@@ -360,20 +303,15 @@ public class BLEManager {
             }
         }
 
-        if (isDebug) {
+        if (DEBUG) {
             logi("disconnect() :: rc = " + rc);
         }
 
         return rc;
     }
 
-    /**
-     * Wait {@value BLE_WAIT_TIMEOUT} millis for disconnection if it's not finished yet.
-     *
-     * @return Wait result.
-     */
     public int waitDisconnect() {
-        if (isDebug) {
+        if (DEBUG) {
             logi("waitDisconnect() :: start");
         }
 
@@ -383,7 +321,7 @@ public class BLEManager {
             if (gatt != null && inBleOp == OP_NOOP) {
 
                 inBleOp = OP_CONNECT;
-                error = 0;
+                this.error = 0;
                 int bleState = this.bleState;
                 try {
                     if (bleState != 0) {
@@ -392,6 +330,7 @@ public class BLEManager {
                         if (!callbackCompleted) {
                             error = (BLE_ERROR_FAIL | BLE_ERROR_TIMEOUT);
                         } else {
+                            error = this.error;
                             bleState = this.bleState;
                         }
                     }
@@ -405,26 +344,15 @@ public class BLEManager {
             }
         }
 
-        if (isDebug) {
+        if (DEBUG) {
             logi("waitDisconnect() :: rc = " + rc);
         }
 
         return rc;
     }
 
-    /**
-     * Trigger service discovering.
-     * <p/>
-     * Simulating of synchronous request from asynchronous. For description of that process,
-     * and result encoding see {@link BLEManager#connect(boolean)}
-     * <p/>
-     * After successful discovering, you can search of device services via {@link #getServices()} method.
-     *
-     * @return Result of discovering.
-     * @see BLEManager#connect(boolean)
-     */
     public int discoverServices() {
-        if (isDebug) {
+        if (DEBUG) {
             logi("discoverServices() :: start");
         }
 
@@ -452,7 +380,7 @@ public class BLEManager {
             }
         }
 
-        if (isDebug) {
+        if (DEBUG) {
             logi("discoverServices() :: end : rc = " + rc);
         }
 
@@ -464,18 +392,8 @@ public class BLEManager {
                 BLE_SERVICES_DISCOVERED);
     }
 
-    /**
-     * Write descriptor to connected GATT device.
-     * <p/>
-     * Simulating of synchronous request from asynchronous. For description of that process,
-     * and result encoding see {@link BLEManager#connect(boolean)}
-     *
-     * @param descriptor Descriptor for writing to remote GATT.
-     * @return Result of descriptor writing.
-     * @see BLEManager#connect(boolean)
-     */
     public int writeDescriptor(BluetoothGattDescriptor descriptor) {
-        if (isDebug) {
+        if (DEBUG) {
             logi("writeDescriptor() :: start");
         }
 
@@ -506,25 +424,15 @@ public class BLEManager {
             }
         }
 
-        if (isDebug) {
+        if (DEBUG) {
             logi("writeDescriptor() :: end : rc = " + rc);
         }
 
         return rc;
     }
 
-    /**
-     * Reads descriptor from connected GATT device.
-     * <p/>
-     * Simulating of synchronous request from asynchronous. For description of that process,
-     * and result encoding see {@link BLEManager#connect(boolean)}
-     *
-     * @param descriptor Descriptor for read to from remote GATT.
-     * @return Result of descriptor reading.
-     * @see BLEManager#connect(boolean)
-     */
     public int readDescriptor(BluetoothGattDescriptor descriptor) {
-        if (isDebug) {
+        if (DEBUG) {
             logi("readDescriptor() :: start");
         }
 
@@ -554,25 +462,15 @@ public class BLEManager {
             }
         }
 
-        if (isDebug) {
+        if (DEBUG) {
             logi("readDescriptor() :: end : rc = " + rc);
         }
 
         return rc;
     }
 
-    /**
-     * Write characteristic to connected GATT device.
-     * <p/>
-     * Simulating of synchronous request from asynchronous. For description of that process,
-     * and result encoding see {@link BLEManager#connect(boolean)}
-     *
-     * @param characteristic Characteristic for writing to remote GATT.
-     * @return Result of characteristic writing.
-     * @see BLEManager#connect(boolean)
-     */
     public int writeCharacteristic(BluetoothGattCharacteristic characteristic) {
-        if (isDebug) {
+        if (DEBUG) {
             logi("writeCharacteristic() :: start");
         }
 
@@ -593,7 +491,7 @@ public class BLEManager {
 
                         rc = error | bleState;
                     } else {
-                        if (isDebug) {
+                        if (DEBUG) {
                             logi("writeCharacteristic() :: failed");
                         }
                     }
@@ -610,25 +508,15 @@ public class BLEManager {
 
         }
 
-        if (isDebug) {
+        if (DEBUG) {
             logi("writeCharacteristic() :: end : rc = " + rc);
         }
 
         return rc;
     }
 
-    /**
-     * Read characteristic from connected GATT device.
-     * <p/>
-     * Simulating of synchronous request from asynchronous. For description of that process,
-     * and result encoding see {@link BLEManager#connect(boolean)}
-     *
-     * @param characteristic Characteristic for reading from remote GATT.
-     * @return Result of characteristic reading.
-     * @see BLEManager#connect(boolean)
-     */
     public int readCharacteristic(BluetoothGattCharacteristic characteristic) {
-        if (isDebug) {
+        if (DEBUG) {
             logi("readCharacteristic() :: start");
         }
 
@@ -661,7 +549,7 @@ public class BLEManager {
             }
         }
 
-        if (isDebug) {
+        if (DEBUG) {
             logi("readCharacteristic() :: end : rc = " + rc);
         }
 
@@ -676,42 +564,53 @@ public class BLEManager {
         return lastDescriptor;
     }
 
-    /**
-     * Enable or disable notifications/indications for a given characteristic.
-     *
-     * @param characteristic The characteristic for which to enable notifications.
-     * @param descriptor     Bluetooth GATT descriptor.
-     * @param enable         Enable or disable notification.
-     * @return Result of enabling notifications.
-     */
     public int enableCharacteristicNotification(BluetoothGattCharacteristic characteristic, BluetoothGattDescriptor
-            descriptor, boolean enable) {
+             descriptor, boolean enable) {
+
         int rc = BLE_ERROR_NOOP;
 
         synchronized (locker) {
-            error = 0;
+            try {
+                error = 0;
+                int bleState = this.bleState;
+                callbackCompleted = false;
 
-            if (gatt.setCharacteristicNotification(characteristic, enable)) {
-                rc = error | bleState;
+                if (gatt.setCharacteristicNotification(characteristic, enable)) {
+                    //TODO why thread not waiting
+                    //locker.wait(BLE_WAIT_TIMEOUT);
 
-                descriptor.setValue(enable ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE :
-                         BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
+                    if(false) {
+                        throw new InterruptedException();
+                    } else {
+                        callbackCompleted = true;
+                    }
+
+                    if (!callbackCompleted) {
+                        error = (BLE_ERROR_FAIL | BLE_ERROR_TIMEOUT);
+                    } else {
+                        bleState = this.bleState;
+                    }
+
+                    rc = error | bleState;
+
+                    descriptor.setValue(enable ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : BluetoothGattDescriptor
+                            .DISABLE_NOTIFICATION_VALUE);
+                }
+            } catch (InterruptedException e) {
+                Log.e(TAG, e.toString());
             }
         }
 
         return writeDescriptor(descriptor) | rc;
     }
 
-    /**
-     * Callback for handling bluetooth GATT interaction.
-     */
-    private final BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
+    final protected BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
 
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
 
-            if (isDebug) {
+            if (DEBUG) {
                 logi("BluetoothGattCallback.onConnectionStateChange() :: start : status = " + status + " newState = " +
                         "" + newState);
             }
@@ -728,7 +627,7 @@ public class BLEManager {
                     } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                         state = BLE_DISCONNECTED;
                         if (gatt != null) {
-                            if (isDebug) {
+                            if (DEBUG) {
                                 logi("onConnectionStateChange() :: gatt != null : closing gatt");
                             }
 
@@ -741,7 +640,7 @@ public class BLEManager {
                 break;
                 default:
                     Log.e(TAG, "Connection error: " + GattError.parseConnectionError(status));
-                    break;
+                break;
             }
 
             if (status != BluetoothGatt.GATT_SUCCESS) {
@@ -751,7 +650,7 @@ public class BLEManager {
 
             synchronized (locker) {
                 if (inBleOp == OP_CONNECT) {
-                    if (isDebug) {
+                    if (DEBUG) {
                         logi("BluetoothGattCallback.onConnectionStateChange() :: inBleOp == OP_CONNECT");
                     }
 
@@ -763,7 +662,7 @@ public class BLEManager {
                     extendedError = status;
                     locker.notify();
                 } else {
-                    if (isDebug) {
+                    if (DEBUG) {
                         logi("onConnectionStateChange() :: inBleOp != OP_CONNECT");
                     }
 
@@ -771,7 +670,7 @@ public class BLEManager {
                     unexpectedDisconnectionListener.handleConnectionEvent(bleState, gattForceClosed);
                 }
 
-                if (isDebug) {
+                if (DEBUG) {
                     logi("BluetoothGattCallback.onConnectionStateChange() :: end");
                 }
             }
@@ -784,12 +683,12 @@ public class BLEManager {
             int state = BLE_SERVICES_DISCOVERED;
 
             synchronized (locker) {
-                if (isDebug) {
+                if (DEBUG) {
                     logi("BluetoothGattCallback.onServicesDiscovered() :: start : status = " + status);
                 }
 
                 if (inBleOp == OP_DISCOVER_SERVICES) {
-                    if (isDebug) {
+                    if (DEBUG) {
                         logi("BluetoothGattCallback.onServicesDiscovered() :: inBleOp == OP_DISCOVER_SERVICES");
                     }
 
@@ -804,7 +703,7 @@ public class BLEManager {
                     locker.notify();
                 }
 
-                if (isDebug) {
+                if (DEBUG) {
                     logi("BluetoothGattCallback.onServicesDiscovered() :: end");
                 }
             }
@@ -815,12 +714,12 @@ public class BLEManager {
             super.onCharacteristicRead(gatt, characteristic, status);
 
             synchronized (locker) {
-                if (isDebug) {
+                if (DEBUG) {
                     logi("BluetoothGattCallback.onCharacteristicRead() :: start : status = " + status);
                 }
 
                 if (inBleOp == OP_READ_CHARACTERISTIC) {
-                    if (isDebug) {
+                    if (DEBUG) {
                         logi("BluetoothGattCallback.onCharacteristicRead() :: inBleOp == OP_READ_CHARACTERISTIC");
                     }
 
@@ -835,7 +734,7 @@ public class BLEManager {
                     locker.notify();
                 }
 
-                if (isDebug) {
+                if (DEBUG) {
                     logi("BluetoothGattCallback.onCharacteristicRead() :: end");
                 }
             }
@@ -846,12 +745,12 @@ public class BLEManager {
             super.onCharacteristicWrite(gatt, characteristic, status);
 
             synchronized (locker) {
-                if (isDebug) {
+                if (DEBUG) {
                     logi("BluetoothGattCallback.onCharacteristicWrite() :: start : status = " + status);
                 }
 
                 if (inBleOp == OP_WRITE_CHARACTERISTIC) {
-                    if (isDebug) {
+                    if (DEBUG) {
                         logi("BluetoothGattCallback.onCharacteristicWrite() :: inBleOp == OP_WRITE_CHARACTERISTIC");
                     }
 
@@ -866,7 +765,7 @@ public class BLEManager {
                     locker.notify();
                 }
 
-                if (isDebug) {
+                if (DEBUG) {
                     logi("BluetoothGattCallback.onCharacteristicWrite() :: end");
                 }
             }
@@ -874,14 +773,14 @@ public class BLEManager {
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            if (isDebug) {
+            if (DEBUG) {
                 logi("BluetoothGattCallback.onCharacteristicChanged() :: start");
             }
 
             super.onCharacteristicChanged(gatt, characteristic);
             characteristicChangeListener.onCharacteristicChanged(gatt, characteristic);
 
-            if (isDebug) {
+            if (DEBUG) {
                 logi("BluetoothGattCallback.onCharacteristicChanged() :: end");
             }
         }
@@ -891,12 +790,12 @@ public class BLEManager {
             super.onDescriptorRead(gatt, descriptor, status);
 
             synchronized (locker) {
-                if (isDebug) {
+                if (DEBUG) {
                     logi("BluetoothGattCallback.onDescriptorRead() :: start : status = " + status);
                 }
 
                 if (inBleOp == OP_READ_DESCRIPTOR) {
-                    if (isDebug) {
+                    if (DEBUG) {
                         logi("BluetoothGattCallback.onDescriptorRead() :: inBleOp == OP_READ_DESCRIPTOR");
                     }
                     if (status == BluetoothGatt.GATT_SUCCESS) {
@@ -910,7 +809,7 @@ public class BLEManager {
                     locker.notify();
                 }
 
-                if (isDebug) {
+                if (DEBUG) {
                     logi("BluetoothGattCallback.onDescriptorRead() :: end");
                 }
             }
@@ -921,12 +820,12 @@ public class BLEManager {
             super.onDescriptorWrite(gatt, descriptor, status);
 
             synchronized (locker) {
-                if (isDebug) {
+                if (DEBUG) {
                     logi("BluetoothGattCallback.onDescriptorWrite() :: start : status = " + status);
                 }
 
                 if (inBleOp == OP_WRITE_DESCRIPTOR) {
-                    if (isDebug) {
+                    if (DEBUG) {
                         logi("BluetoothGattCallback.onDescriptorWrite() :: inBleOp == OP_WRITE_DESCRIPTOR");
                     }
 
@@ -941,7 +840,7 @@ public class BLEManager {
                     locker.notify();
                 }
 
-                if (isDebug) {
+                if (DEBUG) {
                     logi("BluetoothGattCallback.onDescriptorWrite() :: end");
                 }
             }
@@ -952,7 +851,7 @@ public class BLEManager {
             super.onReliableWriteCompleted(gatt, status);
 
             synchronized (locker) {
-                if (isDebug) {
+                if (DEBUG) {
                     logi("BluetoothGattCallback.onReliableWriteCompleted() :: start");
                 }
 
@@ -965,7 +864,7 @@ public class BLEManager {
                 callbackCompleted = true;
                 locker.notify();
 
-                if (isDebug) {
+                if (DEBUG) {
                     logi("BluetoothGattCallback.onReliableWriteCompleted() :: end");
                 }
             }
@@ -976,12 +875,12 @@ public class BLEManager {
             super.onReadRemoteRssi(gatt, rssi, status);
 
             synchronized (locker) {
-                if (isDebug) {
+                if (DEBUG) {
                     logi("BluetoothGattCallback.onReadRemoteRssi() :: start");
                 }
 
                 if (inBleOp == OP_READ_REMOTE_RSSI) {
-                    if (isDebug) {
+                    if (DEBUG) {
                         logi("BluetoothGattCallback.onReadRemoteRssi() :: inBleOp == OP_READ_REMOTE_RSSI");
                     }
 
@@ -996,7 +895,7 @@ public class BLEManager {
                     locker.notify();
                 }
 
-                if (isDebug) {
+                if (DEBUG) {
                     logi("BluetoothGattCallback.onMtuChanged() :: end");
                 }
             }
@@ -1007,7 +906,7 @@ public class BLEManager {
             super.onMtuChanged(gatt, mtu, status);
 
             synchronized (locker) {
-                if (isDebug) {
+                if (DEBUG) {
                     logi("BluetoothGattCallback.onMtuChanged() :: start");
                 }
 
@@ -1017,7 +916,7 @@ public class BLEManager {
                     error = BLE_ERROR_FAIL;
                 }
 
-                if (isDebug) {
+                if (DEBUG) {
                     logi("BluetoothGattCallback.onMtuChanged() :: end");
                 }
             }
