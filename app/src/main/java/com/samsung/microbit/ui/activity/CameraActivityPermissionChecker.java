@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
@@ -19,13 +18,13 @@ import com.samsung.microbit.data.constants.PermissionCodes;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.ui.PopUp;
 
+import static com.samsung.microbit.BuildConfig.DEBUG;
+
 public class CameraActivityPermissionChecker extends AppCompatActivity {
     private static final String TAG = CameraActivityPermissionChecker.class.getSimpleName();
 
     private Intent mIntent;
     private boolean mOPenForPic;
-
-    protected boolean debug = BuildConfig.DEBUG;
 
     private enum REQUEST_STATE {
         LAUNCH_CAMERA_FOR_PIC,
@@ -35,7 +34,7 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
     private REQUEST_STATE mRequestedState;
 
     protected void logi(String message) {
-        if (debug) {
+        if (DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }

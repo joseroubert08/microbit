@@ -37,9 +37,7 @@ public class VibratePresenter implements Presenter {
 
     @Override
     public void destroy() {
-        if (startVibration) {
-            vibrator.cancel();
-        }
+        stop();
         vibrator = null;
     }
 }

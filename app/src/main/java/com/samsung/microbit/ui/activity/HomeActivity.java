@@ -30,7 +30,6 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.common.AppInfo;
@@ -45,6 +44,8 @@ import com.samsung.microbit.utils.FileUtils;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
+import static com.samsung.microbit.BuildConfig.DEBUG;
+
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = HomeActivity.class.getSimpleName();
 
@@ -58,18 +59,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     // Hello animation
     private GifImageView gifAnimationHelloEmoji;
 
-    protected boolean debug = BuildConfig.DEBUG;
-
     /* Debug code*/
-    private String urlToOpen = null;
+    private String urlToOpen;
     /* Debug code ends*/
 
-    private String emailBodyString = null;
+    private String emailBodyString;
 
     private AppInfoPresenter appInfoPresenter;
 
-    protected void logi(String message) {
-        if (debug) {
+    private void logi(String message) {
+        if (DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
@@ -351,7 +350,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(final View v) {
-        if (debug) logi("onBtnClicked() :: ");
+        if (DEBUG) logi("onBtnClicked() :: ");
 
         // Drawer closes only after certain items are selected from the Navigation View
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -588,7 +587,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onResume() {
-        if (debug) logi("onResume() :: ");
+        if (DEBUG) logi("onResume() :: ");
         super.onResume();
         findViewById(R.id.homeHelloAnimationGifView).animate();
     }

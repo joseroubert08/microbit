@@ -12,14 +12,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.core.bluetooth.BLEManager;
+import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.core.bluetooth.CharacteristicChangeListener;
 import com.samsung.microbit.core.bluetooth.UnexpectedConnectionEventListener;
-import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 
 import java.util.List;
 import java.util.UUID;
+
+import static com.samsung.microbit.BuildConfig.DEBUG;
 
 public abstract class BLEBaseService extends Service {
     private static final String TAG = BLEBaseService.class.getSimpleName();
@@ -36,10 +37,8 @@ public abstract class BLEBaseService extends Service {
 
     private int actualError = 0;
 
-    private boolean isDebug = BuildConfig.DEBUG;
-
     private void logi(String message) {
-        if (isDebug) {
+        if (DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
@@ -58,7 +57,7 @@ public abstract class BLEBaseService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (isDebug) {
+        if (DEBUG) {
             logi("onStartCommand()");
         }
 
@@ -79,13 +78,13 @@ public abstract class BLEBaseService extends Service {
     }
 
     protected void setupBLE() {
-        if (isDebug) {
+        if (DEBUG) {
             logi("setupBLE()");
         }
 
         this.deviceAddress = getDeviceAddress();
 
-        if (isDebug) {
+        if (DEBUG) {
             logi("setupBLE() :: deviceAddress = " + deviceAddress);
         }
 
@@ -97,7 +96,7 @@ public abstract class BLEBaseService extends Service {
                             @Override
                             public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 
-                                if (isDebug) {
+                                if (DEBUG) {
                                     logi("setupBLE().CharacteristicChangeListener.onCharacteristicChanged()");
                                 }
 
@@ -109,7 +108,7 @@ public abstract class BLEBaseService extends Service {
                         new UnexpectedConnectionEventListener() {
                             @Override
                             public void handleConnectionEvent(int event, boolean gattForceClosed) {
-                                if (isDebug) {
+                                if (DEBUG) {
                                     logi("setupBLE().CharacteristicChangeListener.handleUnexpectedConnectionEvent()"
                                             + event);
                                 }
@@ -128,7 +127,7 @@ public abstract class BLEBaseService extends Service {
     }
 
     private boolean initialize() {
-        if (isDebug) {
+        if (DEBUG) {
             logi("initialize() :: remoteDevice = " + deviceAddress);
         }
 
@@ -153,7 +152,7 @@ public abstract class BLEBaseService extends Service {
             }
         }
 
-        if (isDebug) {
+        if (DEBUG) {
             logi("initialize() :: complete rc = " + rc);
         }
 
@@ -298,7 +297,7 @@ public abstract class BLEBaseService extends Service {
         int rc = 99;
 
         if (bleManager != null) {
-            if (isDebug) {
+            if (DEBUG) {
                 logi("discoverServices() :: bleManager != null");
             }
 

@@ -14,11 +14,11 @@ import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.data.model.ui.BaseActivityState;
 import com.samsung.microbit.ui.PopUp;
 
-public class IPCToBLEHelper {
-    private IPCToBLEHelper() {
+public class BLEConnectionHandler {
+    private BLEConnectionHandler() {
     }
 
-    public static BroadcastReceiver bleHandlerReceiver(final BLEBroadcastHandlable bleBroadcastHandlable) {
+    public static BroadcastReceiver bleConnectionChangedReceiver(final BLEConnectionManager bleConnectionManager) {
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -26,22 +26,22 @@ public class IPCToBLEHelper {
                 String firmware = intent.getStringExtra(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE);
                 int getNotification = intent.getIntExtra(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, -1);
 
-                bleBroadcastHandlable.preUpdateUi();
+                bleConnectionManager.preUpdateUi();
                 //setConnectedDeviceText();
                 if (firmware != null && !firmware.isEmpty()) {
                     BluetoothUtils.updateFirmwareMicrobit(context, firmware);
                     return;
                 }
 
-                int mActivityState = bleBroadcastHandlable.getActivityState();
+                int mActivityState = bleConnectionManager.getActivityState();
 
                 if (mActivityState == BaseActivityState.STATE_CONNECTING || mActivityState == BaseActivityState
                         .STATE_DISCONNECTING) {
 
                     if (getNotification == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL ||
                             getNotification == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_SMS) {
-                        bleBroadcastHandlable.logi("micro:bit application needs more permissions");
-                        bleBroadcastHandlable.addPermissionRequest(getNotification);
+                        bleConnectionManager.logi("micro:bit application needs more permissions");
+                        bleConnectionManager.addPermissionRequest(getNotification);
                         return;
                     }
                     ConnectedDevice device = BluetoothUtils.getPairedMicrobit(context);
@@ -50,10 +50,10 @@ public class IPCToBLEHelper {
                             MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.ConnectionState.SUCCESS, device.mfirmware_version, null);
                             BluetoothUtils.updateConnectionStartTime(context, System.currentTimeMillis());
                             //Check if more permissions were needed and request in the Application
-                            if (!bleBroadcastHandlable.arePermissionsGranted()) {
-                                bleBroadcastHandlable.setActivityState(BaseActivityState.STATE_IDLE);
+                            if (!bleConnectionManager.arePermissionsGranted()) {
+                                bleConnectionManager.setActivityState(BaseActivityState.STATE_IDLE);
                                 PopUp.hide();
-                                bleBroadcastHandlable.checkTelephonyPermissions();
+                                bleConnectionManager.checkTelephonyPermissions();
                                 return;
                             }
                         } else {
@@ -66,38 +66,39 @@ public class IPCToBLEHelper {
                         MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.ConnectionState.DISCONNECT, device.mfirmware_version, Long.toString(connectionTime));
                     }
 
-                    bleBroadcastHandlable.setActivityState(BaseActivityState.STATE_IDLE);
+                    bleConnectionManager.setActivityState(BaseActivityState.STATE_IDLE);
                     PopUp.hide();
 
                     if (error != 0) {
                         String message = intent.getStringExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
-                        bleBroadcastHandlable.logi("localBroadcastReceiver Error message = " + message);
-                        /*runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {*/
-                                MBApp application = MBApp.getApp();
+                        bleConnectionManager.logi("localBroadcastReceiver Error message = " + message);
+                        MBApp application = MBApp.getApp();
 
-                                PopUp.show(application,
-                                        application.getString(R.string.micro_bit_reset_msg),
-                                        application.getString(R.string.general_error_title),
-                                        R.drawable.error_face, R.drawable.red_btn,
-                                        PopUp.GIFF_ANIMATION_ERROR,
-                                        PopUp.TYPE_ALERT, null, null);
-/*                            }
-                        });*/
+                        PopUp.show(application,
+                                application.getString(R.string.micro_bit_reset_msg),
+                                application.getString(R.string.general_error_title),
+                                R.drawable.error_face, R.drawable.red_btn,
+                                PopUp.GIFF_ANIMATION_ERROR,
+                                PopUp.TYPE_ALERT, null, null);
                     }
                 }
             }
         };
     }
 
-    public interface BLEBroadcastHandlable {
+    public interface BLEConnectionManager {
         void setActivityState(int baseActivityState);
+
         void preUpdateUi();
+
         int getActivityState();
+
         void logi(String message);
+
         void checkTelephonyPermissions();
+
         void addPermissionRequest(int permission);
+
         boolean arePermissionsGranted();
     }
 }

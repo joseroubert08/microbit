@@ -11,9 +11,9 @@ import com.samsung.microbit.R;
 
 public class LEDAdapter extends BaseAdapter {
     private Context mContext;
-    private String mDeviceCodeArray[];
+    private int mDeviceCodeArray[];
 
-    public LEDAdapter(Context c, String deviceCodeArray[]) {
+    public LEDAdapter(Context c, int deviceCodeArray[]) {
         mContext = c;
         mDeviceCodeArray = deviceCodeArray;
     }
@@ -44,14 +44,14 @@ public class LEDAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        if (mDeviceCodeArray[position].equals("1")) {
+        if (mDeviceCodeArray[position] == 1) {
             imageView.setBackground(mContext.getResources().getDrawable(R.drawable.red_white_led_btn));
         } else {
             imageView.setBackground(mContext.getResources().getDrawable(R.drawable.white_red_led_btn));
 
             int startIndex = position - 5;
             while (startIndex >= 0) {
-                if (mDeviceCodeArray[startIndex].equals("1")) {
+                if (mDeviceCodeArray[startIndex] == 1) {
                     imageView.setBackground(mContext.getResources().getDrawable(R.drawable.red_white_led_btn));
                 }
                 startIndex -= 5;
@@ -76,7 +76,7 @@ public class LEDAdapter extends BaseAdapter {
     private String getLEDStatus(int position) {
         String statusRead;
 
-        if (mDeviceCodeArray[position].equals("1")) {
+        if (mDeviceCodeArray[position] == 1) {
             statusRead = "on";
         } else {
             statusRead = "off";

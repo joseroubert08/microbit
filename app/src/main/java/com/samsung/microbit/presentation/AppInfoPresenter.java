@@ -101,10 +101,7 @@ public class AppInfoPresenter implements Presenter {
 
     @Override
     public void destroy() {
-        if(retrieveAppInfoTask != null && retrieveAppInfoTask.getStatus() == AsyncTask.Status.RUNNING) {
-            retrieveAppInfoTask.cancel(true);
-            retrieveAppInfoTask = null;
-        }
+       stop();
 
         HttpResponseCache cache = HttpResponseCache.getInstalled();
         if (cache != null) {

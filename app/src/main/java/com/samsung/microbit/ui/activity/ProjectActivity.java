@@ -29,7 +29,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
@@ -43,11 +42,11 @@ import com.samsung.microbit.presentation.AppInfoPresenter;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.DfuService;
 import com.samsung.microbit.service.IPCService;
-import com.samsung.microbit.ui.BluetoothSwitch;
+import com.samsung.microbit.ui.BluetoothChecker;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.adapter.ProjectAdapter;
 import com.samsung.microbit.utils.FileUtils;
-import com.samsung.microbit.utils.IPCToBLEHelper;
+import com.samsung.microbit.utils.BLEConnectionHandler;
 import com.samsung.microbit.utils.PreferenceUtils;
 import com.samsung.microbit.utils.UnpackUtils;
 
@@ -57,8 +56,10 @@ import java.util.List;
 
 import no.nordicsemi.android.error.GattError;
 
+import static com.samsung.microbit.BuildConfig.DEBUG;
 
-public class ProjectActivity extends Activity implements View.OnClickListener, IPCToBLEHelper.BLEBroadcastHandlable {
+
+public class ProjectActivity extends Activity implements View.OnClickListener, BLEConnectionHandler.BLEConnectionManager {
     private static final String TAG = ProjectActivity.class.getSimpleName();
 
     private static final int ALERT_DIALOG_RECONNECT = 1;
@@ -76,15 +77,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
 
     private DFUResultReceiver dfuResultReceiver;
 
-    protected boolean debug = BuildConfig.DEBUG;
-
     private List<Integer> mRequestPermissions = new ArrayList<>();
 
     private int mRequestingPermission = -1;
 
     private int mActivityState;
 
-    private BroadcastReceiver localBroadcastReceiver = IPCToBLEHelper.bleHandlerReceiver(this);
+    private BroadcastReceiver connectionChangedReceiver = BLEConnectionHandler.bleConnectionChangedReceiver(this);
 
     private final BroadcastReceiver gattForceClosedReceiver = new BroadcastReceiver() {
         @Override
@@ -161,7 +160,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
 
     @Override
     public void logi(String message) {
-        if (debug) {
+        if (DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
@@ -263,12 +262,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
         setupFontStyle();
         checkMinimumPermissionsForThisScreen();
 
-        IntentFilter broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
-        LocalBroadcastManager.getInstance(application).registerReceiver(localBroadcastReceiver,
-                broadcastIntentFilter);
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(application);
 
-        LocalBroadcastManager.getInstance(application).registerReceiver(gattForceClosedReceiver, new
-                IntentFilter(BLEService.GATT_FORCE_CLOSED));
+        IntentFilter broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
+        localBroadcastManager.registerReceiver(connectionChangedReceiver, broadcastIntentFilter);
+
+        localBroadcastManager.registerReceiver(gattForceClosedReceiver, new IntentFilter(BLEService.GATT_FORCE_CLOSED));
 
         setConnectedDeviceText();
         String fullPathOfFile = null;
@@ -281,7 +280,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
         }
         if (fullPathOfFile != null) {
             mProgramToSend = new Project(fileName, fullPathOfFile, 0, null, false);
-            if (!BluetoothSwitch.getInstance().isBluetoothON()) {
+            if (!BluetoothChecker.getInstance().isBluetoothON()) {
                 startBluetooth();
             } else {
                 adviceOnMicrobitState();
@@ -296,7 +295,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(MBApp.getApp());
 
         localBroadcastManager.unregisterReceiver(gattForceClosedReceiver);
-        localBroadcastManager.unregisterReceiver(localBroadcastReceiver);
+        localBroadcastManager.unregisterReceiver(connectionChangedReceiver);
         super.onDestroy();
         releaseViews();
     }
@@ -596,7 +595,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
     public void sendProject(final Project project) {
         mProgramToSend = project;
         setActivityState(FlashActivityState.STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST);
-        if (!BluetoothSwitch.getInstance().isBluetoothON()) {
+        if (!BluetoothChecker.getInstance().isBluetoothON()) {
             startBluetooth();
         } else {
             adviceOnMicrobitState();
@@ -621,7 +620,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, I
                 break;
 
             case R.id.connectedIndicatorIcon:
-                if (!BluetoothSwitch.getInstance().isBluetoothON()) {
+                if (!BluetoothChecker.getInstance().isBluetoothON()) {
                     setActivityState(FlashActivityState.STATE_ENABLE_BT_FOR_CONNECT);
                     startBluetooth();
                 } else {

@@ -112,6 +112,7 @@ public class PlayRawPresenter implements Presenter {
     @Override
     public void destroy() {
         if(mediaplayer != null) {
+            stop();
             mediaplayer.release();
             mediaplayer = null;
         }
