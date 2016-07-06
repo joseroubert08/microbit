@@ -3,6 +3,7 @@ package com.samsung.microbit.service;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
@@ -45,22 +46,15 @@ public class IPCService extends Service {
             logi("make :: ipc start");
         }
 
-        if (IPCMessageManager.getInstance() == null) {
-            if (DEBUG) {
-                logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
-            }
+        IPCMessageManager ipcMessageManager = IPCMessageManager.getInstance();
 
-            IPCMessageManager inst = IPCMessageManager.getInstance("IPCServiceListener", new android.os.Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    super.handleMessage(msg);
-                    handleIncomingMessage(msg);
-                }
-            });
+        IPCMessageManager.configureMessageManager("IPCServiceListener", new IPCMessagesHandler());
 
-			/*
+        //TODO why we need that check
+        if(ipcMessageManager == null) {
+		    /*
              * Make the initial connection to other processes
-			 */
+    	     */
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -68,9 +62,9 @@ public class IPCService extends Service {
                         Thread.sleep(IPCMessageManager.STARTUP_DELAY);
                         logi("make :: ipc send");
                         ServiceUtils.sendtoBLEService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID,
-                                 EventCategories.IPC_INIT, null, null);
+                                EventCategories.IPC_INIT, null, null);
                         ServiceUtils.sendtoPluginService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID,
-                                 EventCategories.IPC_INIT, null, null);
+                                EventCategories.IPC_INIT, null, null);
                     } catch (InterruptedException e) {
                         Log.e(TAG, e.toString());
                     }
@@ -94,7 +88,7 @@ public class IPCService extends Service {
 
     public static void bleDisconnect() {
         ServiceUtils.sendtoBLEService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
-                 .IPC_BLE_DISCONNECT, null, null);
+                .IPC_BLE_DISCONNECT, null, null);
     }
 
     public static void bleConnect() {
@@ -104,7 +98,7 @@ public class IPCService extends Service {
 
     public static void bleReconnect() {
         ServiceUtils.sendtoBLEService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
-                 .IPC_BLE_RECONNECT, null, null);
+                .IPC_BLE_RECONNECT, null, null);
     }
 
     public static void writeCharacteristic(UUID service, UUID characteristic, int value, int type) {
@@ -125,7 +119,15 @@ public class IPCService extends Service {
         return IPCMessageManager.getInstance().getClientMessenger().getBinder();
     }
 
-    private void handleIncomingMessage(Message msg) {
+    private static class IPCMessagesHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            handleIncomingMessage(msg);
+        }
+    }
+
+    private static void handleIncomingMessage(Message msg) {
         if (DEBUG) {
             logi("IPCService :: handleIncomingMessage()");
             logi("IPC :: count = " + IPCMessageManager.getInstance().getServicesCount());

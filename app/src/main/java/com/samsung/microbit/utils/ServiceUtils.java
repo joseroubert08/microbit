@@ -45,7 +45,7 @@ public class ServiceUtils {
             }
         }
 
-        IPCMessageManager.sendIPCMessage(IPCService.class, messageType, eventCategory, cmd, args);
+        IPCMessageManager.getInstance().sendIPCMessage(IPCService.class, messageType, eventCategory, cmd, args);
     }
 
     public static void sendtoPluginService(Class serviceClass, int messageType, int eventCategory, CmdArg cmd,
@@ -61,7 +61,7 @@ public class ServiceUtils {
             }
         }
 
-        IPCMessageManager.sendIPCMessage(PluginService.class, messageType, eventCategory, cmd, args);
+        IPCMessageManager.getInstance().sendIPCMessage(PluginService.class, messageType, eventCategory, cmd, args);
     }
 
     public static void sendtoBLEService(Class serviceClass, int messageType, int eventCategory, CmdArg cmd,
@@ -76,7 +76,7 @@ public class ServiceUtils {
             }
         }
 
-        IPCMessageManager.sendIPCMessage(BLEService.class, messageType, eventCategory, cmd, args);
+        IPCMessageManager.getInstance().sendIPCMessage(BLEService.class, messageType, eventCategory, cmd, args);
     }
 
     public static void sendReplyCommand(int mbsService, CmdArg cmd) {

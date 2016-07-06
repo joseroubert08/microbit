@@ -32,6 +32,7 @@ import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.data.model.NameValuePair;
 import com.samsung.microbit.utils.ServiceUtils;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.UUID;
 
@@ -64,19 +65,7 @@ public class BLEService extends BLEBaseService {
         logi("startIPCListener()");
         logi("make :: ble start");
 
-        if (IPCMessageManager.getInstance() == null) {
-
-            logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
-            IPCMessageManager inst = IPCMessageManager.getInstance("BLEServiceReceiver", new Handler() {
-
-                @Override
-                public void handleMessage(Message msg) {
-                    logi("BLEService :: startIPCListener()");
-                    handleIncomingMessage(msg);
-                }
-
-            });
-        }
+        IPCMessageManager.configureMessageManager("BLEServiceReceiver", new BLEMessagesHandler(this));
     }
 
     @Override
@@ -84,7 +73,7 @@ public class BLEService extends BLEBaseService {
         logi("onStartCommand()");
         int rc = super.onStartCommand(intent, flags, startId);
         /*
-		 * Make the initial connection to other processes
+         * Make the initial connection to other processes
 		 */
         new Thread(new Runnable() {
             @Override
@@ -100,9 +89,9 @@ public class BLEService extends BLEBaseService {
                         logi("make :: ble send");
 
                         ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID,
-                                 EventCategories.IPC_INIT, null, null);
+                                EventCategories.IPC_INIT, null, null);
                         ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID,
-                                 EventCategories.IPC_INIT, null, null);
+                                EventCategories.IPC_INIT, null, null);
                         setNotification(false, 0);
                     } catch (InterruptedException e) {
                         Log.e(TAG, e.toString());
@@ -519,7 +508,7 @@ public class BLEService extends BLEBaseService {
     private void registerForSignalStrength(boolean register) {
         logi("registerForSignalStrength() -- " + register);
         CmdArg cmd = register ? new CmdArg(RegistrationIds.REG_SIGNALSTRENGTH, "On") : new CmdArg(RegistrationIds
-                 .REG_SIGNALSTRENGTH, "Off");
+                .REG_SIGNALSTRENGTH, "Off");
         ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
                 .SAMSUNG_SIGNAL_STRENGTH_ID, cmd, null);
     }
@@ -609,6 +598,24 @@ public class BLEService extends BLEBaseService {
         c.setValue(value, type, 0);
         int ret = writeCharacteristic(c);
         logi("writeCharacteristic() :: returns - " + ret);
+    }
+
+    private static class BLEMessagesHandler extends Handler {
+        private final WeakReference<BLEService> bleServiceWeakReference;
+
+        public BLEMessagesHandler(BLEService bleService) {
+            super();
+            bleServiceWeakReference = new WeakReference<>(bleService);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (bleServiceWeakReference.get() != null) {
+                logi("BLEService :: startIPCListener()");
+                bleServiceWeakReference.get().handleIncomingMessage(msg);
+            }
+        }
     }
 
     private void handleIncomingMessage(Message msg) {

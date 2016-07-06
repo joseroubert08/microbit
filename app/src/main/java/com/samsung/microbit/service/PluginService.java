@@ -3,6 +3,7 @@ package com.samsung.microbit.service;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
@@ -19,11 +20,13 @@ import com.samsung.microbit.plugin.AbstractPlugin;
 import com.samsung.microbit.plugin.PluginsCreator;
 import com.samsung.microbit.utils.ServiceUtils;
 
+import java.lang.ref.WeakReference;
+
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
 public class PluginService extends Service {
 
-	private static final String TAG = PluginService.class.getSimpleName();
+    private static final String TAG = PluginService.class.getSimpleName();
 
     //MBS Services
     public static final int ALERT = 0;
@@ -39,6 +42,8 @@ public class PluginService extends Service {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
     }
 
+    private PluginsCreator pluginsCreator;
+
     public PluginService() {
         super();
         startIPCListener();
@@ -50,22 +55,15 @@ public class PluginService extends Service {
             logi("make :: plugin start");
         }
 
-        if (IPCMessageManager.getInstance() == null) {
-            if (DEBUG) {
-                logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
-            }
+        pluginsCreator = new PluginsCreator();
 
-            IPCMessageManager inst = IPCMessageManager.getInstance("PluginServiceReceiver", new android.os.Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    if (DEBUG) {
-                        logi("startIPCListener().handleMessage");
-                    }
-                    handleIncomingMessage(msg);
-                }
-            });
+        IPCMessageManager ipcMessageManager = IPCMessageManager.getInstance();
 
-			/*
+        IPCMessageManager.configureMessageManager("PluginServiceReceiver", new PluginMessagesHandler(this));
+
+        //TODO check if we really need that
+        if (ipcMessageManager == null) {
+            /*
 			 * Make the initial connection to other processes
 			 */
             new Thread(new Runnable() {
@@ -78,15 +76,14 @@ public class PluginService extends Service {
                         logi("make :: plugin send");
 
                         ServiceUtils.sendtoBLEService(PluginService.class, IPCMessageManager.MESSAGE_ANDROID,
-                                 EventCategories.IPC_INIT, null, null);
+                                EventCategories.IPC_INIT, null, null);
                         ServiceUtils.sendtoIPCService(PluginService.class, IPCMessageManager.MESSAGE_ANDROID,
-                                 EventCategories.IPC_INIT, null, null);
+                                EventCategories.IPC_INIT, null, null);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
             }).start();
-
         }
     }
 
@@ -101,7 +98,7 @@ public class PluginService extends Service {
 
     @Override
     public void onDestroy() {
-        PluginsCreator.getInstance().destroy();
+        pluginsCreator.destroy();
     }
 
 	/*
@@ -123,6 +120,25 @@ public class PluginService extends Service {
         args[3] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE, GattFormats.FORMAT_UINT32);
         ServiceUtils.sendtoBLEService(PluginService.class, IPCMessageManager.MESSAGE_MICROBIT,
                 EventCategories.IPC_WRITE_CHARACTERISTIC, null, args);
+    }
+
+    private static class PluginMessagesHandler extends Handler {
+        private final WeakReference<PluginService> pluginServiceWeakReference;
+
+        private PluginMessagesHandler(PluginService pluginService) {
+            this.pluginServiceWeakReference = new WeakReference<>(pluginService);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if(pluginServiceWeakReference.get() != null) {
+                if (DEBUG) {
+                    logi("startIPCListener().handleMessage");
+                }
+                pluginServiceWeakReference.get().handleIncomingMessage(msg);
+            }
+        }
     }
 
     private void handleIncomingMessage(Message msg) {
@@ -163,13 +179,13 @@ public class PluginService extends Service {
             logi("handleMessage() ## data.getString=" + data.getString(IPCMessageManager.BUNDLE_VALUE));
         }
 
-        AbstractPlugin abstractPlugin = PluginsCreator.getInstance().createPlugin(msg.arg1);
+        AbstractPlugin abstractPlugin = pluginsCreator.createPlugin(msg.arg1);
         abstractPlugin.handleEntry(cmd);
     }
 
     private void handleAndroidMessage(Message msg) {
-        if(msg.arg1 == EventCategories.IPC_PLUGIN_STOP_PLAYING) {
-            AbstractPlugin abstractPlugin = PluginsCreator.getInstance().createPlugin(EventCategories.SAMSUNG_ALERTS_ID);
+        if (msg.arg1 == EventCategories.IPC_PLUGIN_STOP_PLAYING) {
+            AbstractPlugin abstractPlugin = pluginsCreator.createPlugin(EventCategories.SAMSUNG_ALERTS_ID);
             abstractPlugin.handleEntry(new CmdArg(EventSubCodes.SAMSUNG_ALERT_STOP_PLAYING, null));
         }
     }

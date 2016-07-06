@@ -10,12 +10,6 @@ import static com.samsung.microbit.BuildConfig.DEBUG;
 public class PluginsCreator {
     private static final String TAG = PluginsCreator.class.getSimpleName();
 
-    private static final PluginsCreator instance = new PluginsCreator();
-
-    public static PluginsCreator getInstance() {
-        return instance;
-    }
-
     private static void logi(String message) {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
     }
