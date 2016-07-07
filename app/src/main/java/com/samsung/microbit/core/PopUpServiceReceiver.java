@@ -48,7 +48,7 @@ public class PopUpServiceReceiver extends BroadcastReceiver {
             okListener = null;
         }
 
-        PopUp.show(MBApp.getApp(), intent.getStringExtra(PopUpActivity.INTENT_EXTRA_MESSAGE),
+        PopUp.show(intent.getStringExtra(PopUpActivity.INTENT_EXTRA_MESSAGE),
                 intent.getStringExtra(PopUpActivity.INTENT_EXTRA_TITLE),
                 intent.getIntExtra(PopUpActivity.INTENT_EXTRA_ICON, 0),
                 intent.getIntExtra(PopUpActivity.INTENT_EXTRA_ICONBG, 0),

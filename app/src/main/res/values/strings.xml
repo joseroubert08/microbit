@@ -372,5 +372,7 @@
     <string name="telephony_permission_error">Your connected micro:bit will not receive any Incoming call notification</string>
     <string name="sms_permission_error">Your connected micro:bit will not receive any Incoming SMS notification</string>
     <string name="bluetooth_pairing_internal_error">Bluetooth pairing error happened. Disconnecting now &#8230;</string>
+
+    <string name="samples_are_about_to_be_copied">Samples will now be copied to your device. You can check them out in the Flash section.</string>
 </resources>
 

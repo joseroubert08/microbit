@@ -9,6 +9,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 
+import com.samsung.microbit.MBApp;
 import com.samsung.microbit.ui.activity.PopUpActivity;
 
 import java.util.ArrayDeque;
@@ -54,7 +55,7 @@ public class PopUp {
 
     private static int sCurrentType = TYPE_MAX; //current type of displayed popup  (TYPE_CHOICE, ...)
 
-    private static Context ctx = null;
+    private static final Context ctx = MBApp.getApp();
 
     private static boolean isCurrentRequestPending = false;
 
@@ -178,7 +179,6 @@ public class PopUp {
     }
 
     private static class PopUpTask extends AsyncTask<Void, Void, Void> {
-        private final Context context;
         private final String message;
         private final String title;
         private final int imageResId;
@@ -191,15 +191,14 @@ public class PopUp {
         @Override
         protected Void doInBackground(Void... voids) {
             Log.d("PopUpTask", "doInBackground");
-            PopUp.showInternal(context, message, title, imageResId, imageBackgroundResId, giffAnimationCode, type,
+            PopUp.showInternal(message, title, imageResId, imageBackgroundResId, giffAnimationCode, type,
                     okListener, cancelListener);
             return null;
         }
 
-        public PopUpTask(Context context, String message, String title,
+        public PopUpTask(String message, String title,
                          int imageResId, int imageBackgroundResId, int animationCode, int type,
                          View.OnClickListener okListener, View.OnClickListener cancelListener) {
-            this.context = context;
             this.message = message;
             this.title = title;
             this.imageResId = imageResId;
@@ -214,7 +213,6 @@ public class PopUp {
     /**
      * Method used by activities to display Pop ups
      *
-     * @param context              - context
      * @param message              - pop up message
      * @param title,               - pop up title
      * @param imageResId           - pass 0 to imageResId to use default icon
@@ -226,19 +224,18 @@ public class PopUp {
      * @param cancelListener       - pass null to use default listener (which hides the pops)
      */
     //Interface function for showing popup inside an application activity
-    public static boolean show(Context context, String message, String title,
+    public static boolean show(String message, String title,
                                int imageResId, int imageBackgroundResId, int animationCode, int type,
                                View.OnClickListener okListener, View.OnClickListener cancelListener) {
-        new PopUpTask(context, message, title, imageResId, imageBackgroundResId, animationCode, type,
+        new PopUpTask(message, title, imageResId, imageBackgroundResId, animationCode, type,
                 okListener, cancelListener).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         return true;
     }
 
-    private static synchronized boolean showInternal(Context context, String message, String title,
+    private static synchronized boolean showInternal(String message, String title,
                                                      int imageResId, int imageBackgroundResId, int animationCode, int type,
                                                      View.OnClickListener okListener, View.OnClickListener cancelListener) {
         Log.d("PopUp", "show START popup type " + type);
-        ctx = context;
 
         if (!registered) {
             IntentFilter popupIntentFilter = new IntentFilter();
@@ -247,11 +244,11 @@ public class PopUp {
             popupIntentFilter.addAction(PopUpActivity.INTENT_ACTION_DESTROYED);
             popupIntentFilter.addAction(PopUpActivity.INTENT_ACTION_CREATED);
 
-            LocalBroadcastManager.getInstance(context).registerReceiver(broadcastReceiver, popupIntentFilter);
+            LocalBroadcastManager.getInstance(ctx).registerReceiver(broadcastReceiver, popupIntentFilter);
             registered = true;
         }
 
-        Intent intent = new Intent(context, PopUpActivity.class);
+        Intent intent = new Intent(ctx, PopUpActivity.class);
         putIntentExtra(intent, message, title, imageResId, imageBackgroundResId, animationCode, type);
 
         pendingQueue.add(new PendingRequest(intent, okListener, cancelListener, REQUEST_TYPE_SHOW));

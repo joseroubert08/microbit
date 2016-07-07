@@ -212,8 +212,7 @@ public class ProjectAdapter extends BaseAdapter {
             if (application.getEchoClientManager().getEcho() != null) {
                 application.getEchoClientManager().getEcho().userActionEvent("click", "DeleteProject", null);
             }
-            PopUp.show(application,
-                    application.getString(R.string.delete_project_message),
+            PopUp.show(application.getString(R.string.delete_project_message),
                     application.getString(R.string.delete_project_title),
                     R.drawable.ic_trash, R.drawable.red_btn,
                     PopUp.GIFF_ANIMATION_NONE,
