@@ -39,8 +39,7 @@ public class BluetoothSwitch {
         if (!mBluetoothAdapter.isEnabled()) {
             MBApp application = MBApp.getApp();
 
-            PopUp.show(application,
-                    application.getString(R.string.bluetooth_turn_on_guide),
+            PopUp.show(application.getString(R.string.bluetooth_turn_on_guide),
                     application.getString(R.string.turn_on_bluetooth),
                     R.drawable.bluetooth, R.drawable.blue_btn,
                     0, /* TODO - nothing needs to be done */

@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.View;
 
 import com.samsung.microbit.BuildConfig;
-import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.data.constants.PermissionCodes;
@@ -69,8 +68,7 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
         //Do not launch camera if in Do not Disturb Mode
         //Check more details on #122
         if (BluetoothUtils.inZenMode(this)) {
-            PopUp.show(MBApp.getApp(),
-                    getString(R.string.dnd_error_msg),
+            PopUp.show(getString(R.string.dnd_error_msg),
                     getString(R.string.dnd_error_title),
                     R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
                     PopUp.TYPE_ALERT,
@@ -101,8 +99,7 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
     private void checkPermissionsForCamera() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PermissionChecker.PERMISSION_GRANTED) {
-            PopUp.show(MBApp.getApp(),
-                    getString(R.string.camera_permission),
+            PopUp.show(getString(R.string.camera_permission),
                     getString(R.string.permissions_needed_title),
                     R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
                     PopUp.TYPE_CHOICE,
@@ -121,8 +118,7 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startCameraActivity();
                 } else {
-                    PopUp.show(MBApp.getApp(),
-                            getString(R.string.camera_permission_error),
+                    PopUp.show(getString(R.string.camera_permission_error),
                             "",
                             R.drawable.error_face, R.drawable.red_btn,
                             PopUp.GIFF_ANIMATION_ERROR,
@@ -161,8 +157,7 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
         public void onClick(View v) {
             logi("cameraPermissionCancelHandler");
             PopUp.hide();
-            PopUp.show(MBApp.getApp(),
-                    getString(R.string.camera_permission_error),
+            PopUp.show(getString(R.string.camera_permission_error),
                     "",
                     R.drawable.error_face, R.drawable.red_btn,
                     PopUp.GIFF_ANIMATION_ERROR,

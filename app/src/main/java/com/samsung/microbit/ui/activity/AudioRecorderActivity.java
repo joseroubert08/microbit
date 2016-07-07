@@ -87,8 +87,7 @@ public class AudioRecorderActivity extends Activity {
     }
 
     private boolean showPopup(final String action) {
-        return PopUp.show(this,
-                "",
+        return PopUp.show("",
                 getString(R.string.record_audio),
                 R.drawable.record_icon, //image icon res id (pass 0 to use default icon)
                 R.drawable.white_btn, //image icon background res id (pass 0 if there is no background)
