@@ -32,6 +32,7 @@ import android.widget.TextView;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
+import com.samsung.microbit.data.constants.Constants;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.PermissionCodes;
 import com.samsung.microbit.data.constants.RequestCodes;
@@ -84,6 +85,49 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     private int mActivityState;
 
     private BroadcastReceiver connectionChangedReceiver = BLEConnectionHandler.bleConnectionChangedReceiver(this);
+
+    private Handler handler = new Handler();
+    private int countOfReconnecting;
+    private boolean sentPause;
+
+    private final Runnable tryToConnectAgain = new Runnable() {
+
+        private final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(ProjectActivity
+                .this);
+
+        @Override
+        public void run() {
+            if(sentPause) {
+                countOfReconnecting++;
+            }
+
+            if(countOfReconnecting == Constants.MAX_COUNT_OF_RE_CONNECTIONS_FOR_DFU) {
+                countOfReconnecting = 0;
+                Intent intent = new Intent(DfuService.BROADCAST_ACTION);
+                intent.putExtra(DfuService.EXTRA_ACTION, DfuService.ACTION_ABORT);
+                localBroadcastManager.sendBroadcast(intent);
+            } else {
+                final int nextAction;
+                final long delayForNewlyBroadcast;
+
+                if(sentPause) {
+                    nextAction = DfuService.ACTION_RESUME;
+                    delayForNewlyBroadcast = Constants.TIME_FOR_RECONNECTION;
+                } else {
+                    nextAction = DfuService.ACTION_PAUSE;
+                    delayForNewlyBroadcast = Constants.DELAY_BETWEEN_PAUSE_AND_RESUME;
+                }
+
+                sentPause = !sentPause;
+
+                Intent intent = new Intent(DfuService.BROADCAST_ACTION);
+                intent.putExtra(DfuService.EXTRA_ACTION, nextAction);
+                localBroadcastManager.sendBroadcast(intent);
+
+                handler.postDelayed(this, delayForNewlyBroadcast);
+            }
+        }
+    };
 
     private final BroadcastReceiver gattForceClosedReceiver = new BroadcastReceiver() {
         @Override
@@ -754,16 +798,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     }
 
     private void registerCallbacksForFlashing() {
-        IntentFilter filter = new IntentFilter(DfuService.BROADCAST_PROGRESS);
-        IntentFilter filter1 = new IntentFilter(DfuService.BROADCAST_ERROR);
-        IntentFilter filter2 = new IntentFilter(DfuService.BROADCAST_LOG);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(DfuService.BROADCAST_PROGRESS);
+        filter.addAction(DfuService.BROADCAST_ERROR);
+        filter.addAction(DfuService.BROADCAST_LOG);
         dfuResultReceiver = new DFUResultReceiver();
 
-        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(MBApp.getApp());
-
-        localBroadcastManager.registerReceiver(dfuResultReceiver, filter);
-        localBroadcastManager.registerReceiver(dfuResultReceiver, filter1);
-        localBroadcastManager.registerReceiver(dfuResultReceiver, filter2);
+        LocalBroadcastManager.getInstance(MBApp.getApp()).registerReceiver(dfuResultReceiver, filter);
     }
 
     /**
@@ -892,6 +933,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
                             break;
                         case DfuService.PROGRESS_DISCONNECTING:
+                            Log.e(TAG, "Progress disconnecting");
                             break;
 
                         case DfuService.PROGRESS_CONNECTING:
@@ -910,6 +952,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                                             }
                                         },//override click listener for ok button
                                         null);//pass null to use default listener
+
+                                countOfReconnecting = 0;
+                                sentPause = false;
+                                handler.postDelayed(tryToConnectAgain, Constants.TIME_FOR_RECONNECTION);
                             }
 
                             inInit = true;
@@ -1007,6 +1053,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                                 PopUp.TYPE_PROGRESS_NOT_CANCELABLE, null, null);
 
                         inProgress = true;
+
+                        handler.removeCallbacks(tryToConnectAgain);
+                        countOfReconnecting = 0;
+                        sentPause = false;
                     }
 
                     PopUp.updateProgressBar(state);
