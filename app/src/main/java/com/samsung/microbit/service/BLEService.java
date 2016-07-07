@@ -451,7 +451,7 @@ public class BLEService extends BLEBaseService {
     private void removeBond(BluetoothDevice bluetoothDevice) {
         try {
             Class<BluetoothDevice> bluetoothDeviceClass = BluetoothDevice.class;
-            Method m = bluetoothDeviceClass.getDeclaredMethod("removeBond", null);
+            Method m = bluetoothDeviceClass.getDeclaredMethod("removeBond");
             m.setAccessible(true);
             m.invoke(bluetoothDevice);
         } catch (Exception e) {

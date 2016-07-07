@@ -186,8 +186,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDING) {
                     scanLeDevice(false);
                     MBApp.getApp().getEchoClientManager().sendPairingStats(false, null);
-                    PopUp.show(MBApp.getApp(),
-                            getString(R.string.pairing_failed_message), //message
+                    PopUp.show(getString(R.string.pairing_failed_message), //message
                             getString(R.string.pairing_failed_title), //title
                             R.drawable.error_face, //image icon res id
                             R.drawable.red_btn,
@@ -244,8 +243,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                     (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PermissionChecker.PERMISSION_GRANTED)) {
                 mRequestingPermission = mRequestPermissions.get(0);
                 mRequestPermissions.remove(0);
-                PopUp.show(MBApp.getApp(),
-                        (mRequestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL) ? getString(R.string
+                PopUp.show((mRequestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL) ? getString(R.string
                                 .telephony_permission) : getString(R.string.sms_permission),
                         getString(R.string.permissions_needed_title),
                         R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
@@ -305,8 +303,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 msg = getString(R.string.sms_permission_error);
             }
             PopUp.hide();
-            PopUp.show(MBApp.getApp(),
-                    msg,
+            PopUp.show(msg,
                     getString(R.string.permissions_needed_title),
                     R.drawable.error_face, R.drawable.red_btn,
                     PopUp.GIFF_ANIMATION_ERROR,
@@ -537,8 +534,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 }
             }
             if (resultCode == Activity.RESULT_CANCELED) {
-                PopUp.show(MBApp.getApp(),
-                        getString(R.string.bluetooth_off_cannot_continue), //message
+                PopUp.show(getString(R.string.bluetooth_off_cannot_continue), //message
                         "",
                         R.drawable.error_face, R.drawable.red_btn,
                         PopUp.GIFF_ANIMATION_ERROR,
@@ -817,8 +813,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
             if (!currentState) {
                 mActivityState = PairingActivityState.STATE_CONNECTING;
                 mRequestPermissions.clear();
-                PopUp.show(MBApp.getApp(),
-                        getString(R.string.init_connection),
+                PopUp.show(getString(R.string.init_connection),
                         "",
                         R.drawable.message_face, R.drawable.blue_btn,
                         PopUp.GIFF_ANIMATION_NONE,
@@ -827,8 +822,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 IPCService.bleConnect();
             } else {
                 mActivityState = PairingActivityState.STATE_DISCONNECTING;
-                PopUp.show(MBApp.getApp(),
-                        getString(R.string.disconnecting),
+                PopUp.show(getString(R.string.disconnecting),
                         "",
                         R.drawable.message_face, R.drawable.blue_btn,
                         PopUp.GIFF_ANIMATION_NONE,
@@ -847,8 +841,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     proceedAfterBlePermissionGranted();
                 } else {
-                    PopUp.show(MBApp.getApp(),
-                            getString(R.string.location_permission_error),
+                    PopUp.show(getString(R.string.location_permission_error),
                             getString(R.string.permissions_needed_title),
                             R.drawable.error_face, R.drawable.red_btn,
                             PopUp.GIFF_ANIMATION_ERROR,
@@ -859,8 +852,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
             break;
             case PermissionCodes.INCOMING_CALL_PERMISSIONS_REQUESTED: {
                 if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    PopUp.show(MBApp.getApp(),
-                            getString(R.string.telephony_permission_error),
+                    PopUp.show(getString(R.string.telephony_permission_error),
                             getString(R.string.permissions_needed_title),
                             R.drawable.error_face, R.drawable.red_btn,
                             PopUp.GIFF_ANIMATION_ERROR,
@@ -875,8 +867,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
             break;
             case PermissionCodes.INCOMING_SMS_PERMISSIONS_REQUESTED: {
                 if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    PopUp.show(MBApp.getApp(),
-                            getString(R.string.sms_permission_error),
+                    PopUp.show(getString(R.string.sms_permission_error),
                             getString(R.string.permissions_needed_title),
                             R.drawable.error_face, R.drawable.red_btn,
                             PopUp.GIFF_ANIMATION_ERROR,
@@ -919,8 +910,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         public void onClick(View v) {
             logi("bluetoothPermissionCancelHandler");
             PopUp.hide();
-            PopUp.show(MBApp.getApp(),
-                    getString(R.string.location_permission_error),
+            PopUp.show(getString(R.string.location_permission_error),
                     getString(R.string.permissions_needed_title),
                     R.drawable.error_face, R.drawable.red_btn,
                     PopUp.GIFF_ANIMATION_ERROR,
@@ -933,8 +923,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PermissionChecker.PERMISSION_GRANTED) {
-            PopUp.show(MBApp.getApp(),
-                    getString(R.string.location_permission_pairing),
+            PopUp.show(getString(R.string.location_permission_pairing),
                     getString(R.string.permissions_needed_title),
                     R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
                     PopUp.TYPE_CHOICE,
@@ -1012,8 +1001,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     }
 
     private void handleDeleteMicrobit() {
-        PopUp.show(this,
-                getString(R.string.deleteMicrobitMessage), //message
+        PopUp.show(getString(R.string.deleteMicrobitMessage), //message
                 getString(R.string.deleteMicrobitTitle), //title
                 R.drawable.ic_trash, R.drawable.red_btn,
                 PopUp.GIFF_ANIMATION_NONE,
@@ -1067,8 +1055,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
         logi("handlePairingFailed() :: Start");
         MBApp.getApp().getEchoClientManager().sendPairingStats(false, null);
-        PopUp.show(this,
-                getString(R.string.pairingErrorMessage), //message
+        PopUp.show(getString(R.string.pairingErrorMessage), //message
                 getString(R.string.timeOut), //title
                 R.drawable.error_face, //image icon res id
                 R.drawable.red_btn,
@@ -1084,8 +1071,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         BluetoothUtils.setPairedMicroBit(MBApp.getApp(), newDev);
         updatePairedDeviceCard();
         // Pop up to show pairing successful
-        PopUp.show(MBApp.getApp(),
-                getString(R.string.pairing_successful_tip_message), // message
+        PopUp.show(getString(R.string.pairing_successful_tip_message), // message
                 getString(R.string.pairing_success_message_1), //title
                 R.drawable.message_face, //image icon res id
                 R.drawable.green_btn,
