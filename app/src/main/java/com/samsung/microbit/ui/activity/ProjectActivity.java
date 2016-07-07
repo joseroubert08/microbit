@@ -292,10 +292,15 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     protected void onDestroy() {
         appInfoPresenter.destroy();
 
-        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(MBApp.getApp());
+        MBApp application = MBApp.getApp();
+
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(application);
 
         localBroadcastManager.unregisterReceiver(gattForceClosedReceiver);
         localBroadcastManager.unregisterReceiver(connectionChangedReceiver);
+
+        application.stopService(new Intent(application, DfuService.class));
+
         super.onDestroy();
         releaseViews();
     }
@@ -731,7 +736,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         m_HexFileSizeStats = FileUtils.getFileSize(mProgramToSend.filePath);
 
         ConnectedDevice currentMicrobit = BluetoothUtils.getPairedMicrobit(this);
-        final Intent service = new Intent(ProjectActivity.this, DfuService.class);
+
+        MBApp application = MBApp.getApp();
+
+        final Intent service = new Intent(application, DfuService.class);
         service.putExtra(DfuService.EXTRA_DEVICE_ADDRESS, currentMicrobit.mAddress);
         service.putExtra(DfuService.EXTRA_DEVICE_NAME, currentMicrobit.mPattern);
         service.putExtra(DfuService.EXTRA_DEVICE_PAIR_CODE, currentMicrobit.mPairingCode);
@@ -740,7 +748,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         service.putExtra(DfuService.EXTRA_KEEP_BOND, false);
         service.putExtra(DfuService.INTENT_RESULT_RECEIVER, resultReceiver);
         service.putExtra(DfuService.INTENT_REQUESTED_PHASE, 2);
-        startService(service);
+
+        application.stopService(service);
+        application.startService(service);
     }
 
     private void registerCallbacksForFlashing() {
