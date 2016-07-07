@@ -21,10 +21,21 @@ import com.samsung.microbit.data.constants.RegistrationIds;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.utils.Utils;
 
+/**
+ * Allows to handle incoming telephone calls and sms on a mobile device
+ * using a micro:bit board.
+ */
 public class TelephonyPlugin {
 
     private static final String TAG = TelephonyPlugin.class.getSimpleName();
 
+    /**
+     * Provides general method to perform all available plugin action
+     * using a command argument to identify which action should be performed.
+     *
+     * @param ctx Context.
+     * @param cmd Command argument that defines action that should be pro
+     */
     public static void pluginEntry(Context ctx, CmdArg cmd) {
         boolean register = false;
         if (cmd.getValue() != null) {
@@ -68,6 +79,9 @@ public class TelephonyPlugin {
         }
     }
 
+    /**
+     * Listener to handle incoming call.
+     */
     static class IncomingCallListener extends PhoneStateListener {
         @Override
         public void onCallStateChanged(int state, String incomingNumber) {
@@ -82,12 +96,15 @@ public class TelephonyPlugin {
         }
     }
 
+    /**
+     * Listener to handle incoming SMS messages.
+     */
     static class IncomingSMSListener extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Telephony.Sms.Intents.SMS_RECEIVED_ACTION)) {
                 PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_DEVICE_INFO_ID,
-                         EventSubCodes.SAMSUNG_INCOMING_SMS));
+                        EventSubCodes.SAMSUNG_INCOMING_SMS));
             }
         }
     }
@@ -102,6 +119,9 @@ public class TelephonyPlugin {
         sIncomingSMSListener = null;
     }
 
+    /**
+     * Registers incoming call listener.
+     */
     public static void registerIncomingCall() {
         Log.i(TAG, "registerIncomingCall: ");
 
@@ -118,6 +138,9 @@ public class TelephonyPlugin {
         TelephonyPlugin.sendCommandBLE(PluginService.TELEPHONY, cmd);//TODO: do we need to report registration status?
     }
 
+    /**
+     * Unregisters incoming call listener.
+     */
     public static void unregisterIncomingCall() {
         Log.i(TAG, "unregisterIncomingCall: ");
 
@@ -140,10 +163,14 @@ public class TelephonyPlugin {
         TelephonyPlugin.sendCommandBLE(PluginService.TELEPHONY, cmd);//TODO: do we need to report registration status?
     }
 
+    //TODO: consider to use or remove
     public static boolean isIncomingCallRegistered() {
         return sIncomingCallListener != null;
     }
 
+    /**
+     * Registers incoming sms message listener.
+     */
     public static void registerIncomingSMS() {
         Log.i(TAG, "registerIncomingSMS: ");
 
@@ -164,6 +191,9 @@ public class TelephonyPlugin {
         TelephonyPlugin.sendCommandBLE(PluginService.TELEPHONY, cmd);//TODO: do we need to report registration status?
     }
 
+    /**
+     * Uregisters incoming sms message listener.
+     */
     public static void unregisterIncomingSMS() {
         Log.i(TAG, "unregisterIncomingSMS: ");
 
@@ -185,6 +215,7 @@ public class TelephonyPlugin {
         TelephonyPlugin.sendCommandBLE(PluginService.TELEPHONY, cmd);//TODO: do we need to report registration status?
     }
 
+    //TODO: consider to use or remove
     public static boolean isIncomingSMSRegistered() {
         return sIncomingSMSListener != null;
     }

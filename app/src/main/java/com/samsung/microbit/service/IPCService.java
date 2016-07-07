@@ -20,8 +20,12 @@ import java.util.UUID;
 
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
+/**
+ * Inter process communication service that uses to manage BLE connection,
+ * handle and send messages from/to IPCMessageManager.
+ */
 public class IPCService extends Service {
-    private static final String TAG = "IPCService";
+    private static final String TAG = IPCService.class.getSimpleName();
 
     public static final String INTENT_MICROBIT_BUTTON_NOTIFICATION = "com.samsung.microbit.service.IPCService.INTENT_MICROBIT_BUTTON_NOTIFICATION";
 
@@ -50,6 +54,7 @@ public class IPCService extends Service {
                 logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
             }
 
+            //TODO: fix potential memory leak such as using a non-static Handler
             IPCMessageManager inst = IPCMessageManager.getInstance("IPCServiceListener", new android.os.Handler() {
                 @Override
                 public void handleMessage(Message msg) {
@@ -68,9 +73,9 @@ public class IPCService extends Service {
                         Thread.sleep(IPCMessageManager.STARTUP_DELAY);
                         logi("make :: ipc send");
                         ServiceUtils.sendtoBLEService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID,
-                                 EventCategories.IPC_INIT, null, null);
+                                EventCategories.IPC_INIT, null, null);
                         ServiceUtils.sendtoPluginService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID,
-                                 EventCategories.IPC_INIT, null, null);
+                                EventCategories.IPC_INIT, null, null);
                     } catch (InterruptedException e) {
                         Log.e(TAG, e.toString());
                     }
@@ -94,7 +99,7 @@ public class IPCService extends Service {
 
     public static void bleDisconnect() {
         ServiceUtils.sendtoBLEService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
-                 .IPC_BLE_DISCONNECT, null, null);
+                .IPC_BLE_DISCONNECT, null, null);
     }
 
     public static void bleConnect() {
@@ -104,7 +109,7 @@ public class IPCService extends Service {
 
     public static void bleReconnect() {
         ServiceUtils.sendtoBLEService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
-                 .IPC_BLE_RECONNECT, null, null);
+                .IPC_BLE_RECONNECT, null, null);
     }
 
     public static void writeCharacteristic(UUID service, UUID characteristic, int value, int type) {

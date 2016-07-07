@@ -11,6 +11,9 @@ import com.samsung.microbit.MBApp;
 
 import java.io.IOException;
 
+/**
+ * Provides methods to manage a media player and play audio files.
+ */
 public class PlayAudioPresenter implements Presenter {
     private static final String TAG = PlayAudioPresenter.class.getSimpleName();
 
@@ -94,9 +97,9 @@ public class PlayAudioPresenter implements Presenter {
 
     @Override
     public void stop() {
-        if(mediaplayer != null) {
+        if (mediaplayer != null) {
             try {
-                if(mediaplayer.isPlaying()) {
+                if (mediaplayer.isPlaying()) {
                     mediaplayer.stop();
                     restoreAudioMode();
                 }
@@ -108,7 +111,7 @@ public class PlayAudioPresenter implements Presenter {
 
     @Override
     public void destroy() {
-        if(mediaplayer != null) {
+        if (mediaplayer != null) {
             mediaplayer.release();
             mediaplayer = null;
         }

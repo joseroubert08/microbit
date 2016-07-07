@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.samsung.microbit.BuildConfig;
@@ -17,6 +18,10 @@ import java.util.UUID;
 
 import no.nordicsemi.android.error.GattError;
 
+/**
+ * Bluetooth low energy manager. Provides methods to establish
+ * and manage bluetooth low energy connection.
+ */
 public class BLEManager {
     public static final String TAG = BLEManager.class.getSimpleName();
 
@@ -67,6 +72,11 @@ public class BLEManager {
 
     private boolean isDebug = BuildConfig.DEBUG;
 
+    /**
+     * Provides simplified way to log app informational messages.
+     *
+     * @param message Message to log.
+     */
     void logi(String message) {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
     }
@@ -114,6 +124,7 @@ public class BLEManager {
         return inBleOp;
     }
 
+    @Nullable
     public BluetoothGattService getService(UUID uuid) {
         if ((bleState & BLE_SERVICES_DISCOVERED) != 0) {
             return gatt.getService(uuid);
@@ -122,6 +133,7 @@ public class BLEManager {
         return null;
     }
 
+    @Nullable
     public List<BluetoothGattService> getServices() {
         if ((bleState & BLE_SERVICES_DISCOVERED) != 0) {
             return gatt.getServices();
@@ -130,6 +142,11 @@ public class BLEManager {
         return null;
     }
 
+    /**
+     * Resets bluetooth GATT connection.
+     *
+     * @return True if successful.
+     */
     public boolean reset() {
         if (isDebug) {
             logi("reset()");
@@ -167,6 +184,12 @@ public class BLEManager {
         return extendedError;
     }
 
+    /**
+     * Allows to establish connection with ability to auto reconnect.
+     *
+     * @param autoReconnect Defines if connection  should provide auto reconnect.
+     * @return Connection result with an appropriate error code if connection is failed.
+     */
     public int connect(boolean autoReconnect) {
         int rc = BLE_ERROR_NOOP;
 
@@ -222,6 +245,11 @@ public class BLEManager {
         return rc;
     }
 
+    /**
+     * Provides wrapper to start GATT connection.
+     *
+     * @return Connection results.
+     */
     private int gattConnect() {
         if (isDebug) {
             logi("gattConnect() :: start");
@@ -274,6 +302,11 @@ public class BLEManager {
         return rc;
     }
 
+    /**
+     * Allows to close bluetooth connection.
+     *
+     * @return Disconnection results.
+     */
     public int disconnect() {
         if (isDebug) {
             logi("disconnect() :: start");
@@ -312,6 +345,11 @@ public class BLEManager {
         return rc;
     }
 
+    /**
+     * Checks if connection is disabled and returns error code if some error occurred.
+     *
+     * @return Disconnection results.
+     */
     public int waitDisconnect() {
         if (isDebug) {
             logi("waitDisconnect() :: start");
@@ -323,7 +361,7 @@ public class BLEManager {
             if (gatt != null && inBleOp == OP_NOOP) {
 
                 inBleOp = OP_CONNECT;
-                this.error = 0;
+                error = 0;
                 int bleState = this.bleState;
                 try {
                     if (bleState != 0) {
@@ -332,7 +370,6 @@ public class BLEManager {
                         if (!callbackCompleted) {
                             error = (BLE_ERROR_FAIL | BLE_ERROR_TIMEOUT);
                         } else {
-                            error = this.error;
                             bleState = this.bleState;
                         }
                     }
@@ -353,6 +390,12 @@ public class BLEManager {
         return rc;
     }
 
+    /**
+     * Provides asynchronous operation to discover for services. If the discovery was
+     * successful, the remote services can be accessed through {@link #getServices()} method.
+     *
+     * @return Discovery results.
+     */
     public int discoverServices() {
         if (isDebug) {
             logi("discoverServices() :: start");
@@ -394,6 +437,12 @@ public class BLEManager {
                 BLE_SERVICES_DISCOVERED);
     }
 
+    /**
+     * Write the value of a given descriptor to the associated remote device.
+     *
+     * @param descriptor Descriptor to write to the associated remote device.
+     * @return Operation result code.
+     */
     public int writeDescriptor(BluetoothGattDescriptor descriptor) {
         if (isDebug) {
             logi("writeDescriptor() :: start");
@@ -433,6 +482,12 @@ public class BLEManager {
         return rc;
     }
 
+    /**
+     * Reads the value for a given descriptor from the associated remote device.
+     *
+     * @param descriptor Descriptor value to read from the remote device.
+     * @return Operation result code.
+     */
     public int readDescriptor(BluetoothGattDescriptor descriptor) {
         if (isDebug) {
             logi("readDescriptor() :: start");
@@ -471,6 +526,12 @@ public class BLEManager {
         return rc;
     }
 
+    /**
+     * Writes a given characteristic and its values to the associated remote device.
+     *
+     * @param characteristic Characteristic to write on the remote device.
+     * @return Operation result code.
+     */
     public int writeCharacteristic(BluetoothGattCharacteristic characteristic) {
         if (isDebug) {
             logi("writeCharacteristic() :: start");
@@ -517,6 +578,12 @@ public class BLEManager {
         return rc;
     }
 
+    /**
+     * Reads the requested characteristic from the associated remote device.
+     *
+     * @param characteristic Characteristic to read from the remote device.
+     * @return Operation result code.
+     */
     public int readCharacteristic(BluetoothGattCharacteristic characteristic) {
         if (isDebug) {
             logi("readCharacteristic() :: start");
@@ -566,8 +633,16 @@ public class BLEManager {
         return lastDescriptor;
     }
 
+    /**
+     * Enable or disable notifications/indications for a given characteristic.
+     *
+     * @param characteristic The characteristic for which to enable notifications.
+     * @param descriptor     Bluetooth GATT descriptor.
+     * @param enable         Enable or disable notification.
+     * @return Result code number.
+     */
     public int enableCharacteristicNotification(BluetoothGattCharacteristic characteristic, BluetoothGattDescriptor
-             descriptor, boolean enable) {
+            descriptor, boolean enable) {
 
         int rc = BLE_ERROR_NOOP;
 
@@ -581,7 +656,7 @@ public class BLEManager {
                     //TODO why thread not waiting
                     //locker.wait(BLE_WAIT_TIMEOUT);
 
-                    if(false) {
+                    if (false) {
                         throw new InterruptedException();
                     } else {
                         callbackCompleted = true;
@@ -642,7 +717,7 @@ public class BLEManager {
                 break;
                 default:
                     Log.e(TAG, "Connection error: " + GattError.parseConnectionError(status));
-                break;
+                    break;
             }
 
             if (status != BluetoothGatt.GATT_SUCCESS) {

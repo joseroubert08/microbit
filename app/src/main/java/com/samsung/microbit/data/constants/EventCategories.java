@@ -1,7 +1,7 @@
 package com.samsung.microbit.data.constants;
 
-/*
- * Events categories, that Samsung devices respond to:
+/**
+ * Events categories, that Samsung devices respond to.
  */
 public class EventCategories {
     private EventCategories() {
@@ -24,6 +24,7 @@ public class EventCategories {
 
     /**
      * Category for device info
+     *
      * @see EventSubCodes for available sub codes
      * @see com.samsung.microbit.utils.Utils#makeMicroBitValue(int, int)
      */
@@ -31,7 +32,7 @@ public class EventCategories {
 
     /**
      * Category for internal registration
-     *
+     * <p/>
      * ----------------------------------------------
      * DON'T DELETE. Used for internal proposes!!!!
      * ----------------------------------------------
@@ -40,6 +41,7 @@ public class EventCategories {
 
     /**
      * Category for signal strength
+     *
      * @see EventSubCodes for available sub codes
      * @see com.samsung.microbit.utils.Utils#makeMicroBitValue(int, int)
      */
@@ -47,6 +49,7 @@ public class EventCategories {
 
     /**
      * Category for remote controls
+     *
      * @see EventSubCodes for available sub codes
      * @see com.samsung.microbit.utils.Utils#makeMicroBitValue(int, int)
      */
@@ -54,6 +57,7 @@ public class EventCategories {
 
     /**
      * Category for alerts
+     *
      * @see EventSubCodes for available sub codes
      * @see com.samsung.microbit.utils.Utils#makeMicroBitValue(int, int)
      */
@@ -61,6 +65,7 @@ public class EventCategories {
 
     /**
      * Category for audio records
+     *
      * @see EventSubCodes for available sub codes
      * @see com.samsung.microbit.utils.Utils#makeMicroBitValue(int, int)
      */
@@ -68,6 +73,7 @@ public class EventCategories {
 
     /**
      * Category for camera
+     *
      * @see EventSubCodes for available sub codes
      * @see com.samsung.microbit.utils.Utils#makeMicroBitValue(int, int)
      */

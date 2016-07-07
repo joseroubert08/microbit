@@ -4,6 +4,10 @@ import com.samsung.microbit.utils.UUIDsUtils;
 
 import java.util.UUID;
 
+/**
+ * Contains universally unique identifier constants.
+ * Basically, it uses to write characteristic in BLEService.
+ */
 public class GattServiceUUIDs {
     private GattServiceUUIDs() {
     }

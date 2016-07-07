@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
@@ -18,11 +19,12 @@ import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.data.constants.PermissionCodes;
 import com.samsung.microbit.ui.PopUp;
 
+/**
+ * Provides methods to check camera permission on the camera activity.
+ */
 public class CameraActivityPermissionChecker extends AppCompatActivity {
-    private static final String TAG = CameraActivityPermissionChecker.class.getSimpleName();
 
-    private Intent mIntent;
-    private boolean mOPenForPic;
+    private static final String TAG = CameraActivityPermissionChecker.class.getSimpleName();
 
     protected boolean debug = BuildConfig.DEBUG;
 
@@ -33,6 +35,11 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
 
     private REQUEST_STATE mRequestedState;
 
+    /**
+     * Simplified method to log informational messages.
+     *
+     * @param message Message to log.
+     */
     protected void logi(String message) {
         if (debug) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
@@ -54,7 +61,10 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
         checkPermissionsForCamera();
     }
 
-
+    /**
+     * Starts the camera activity to take a picture or a video
+     * if a device is not in <em>Do not disturb mode</em>.
+     */
     private void startCameraActivity() {
         //Do not launch camera if in Do not Disturb Mode
         //Check more details on #122
@@ -84,8 +94,13 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Checks permission for a camera. If permission is granted then start
+     * the camera activity, else show a dialog window to ask for it.
+     */
     private void checkPermissionsForCamera() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PermissionChecker.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PermissionChecker.PERMISSION_GRANTED) {
             PopUp.show(MBApp.getApp(),
                     getString(R.string.camera_permission),
                     getString(R.string.permissions_needed_title),
@@ -99,7 +114,8 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
             case PermissionCodes.CAMERA_PERMISSIONS_REQUESTED: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -120,21 +136,27 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
         }
     }
 
-    private void requetPermission(String[] permissions, final int requestCode) {
+    private void requestPermission(String[] permissions, final int requestCode) {
         ActivityCompat.requestPermissions(this, permissions, requestCode);
     }
 
-    View.OnClickListener cameraPermissionOKHandler = new View.OnClickListener() {
+    /**
+     * Provides action after OK button is pressed.
+     */
+    private final View.OnClickListener cameraPermissionOKHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             logi("cameraPermissionOKHandler");
             PopUp.hide();
             String[] permissionsNeeded = {Manifest.permission.CAMERA};
-            requetPermission(permissionsNeeded, PermissionCodes.CAMERA_PERMISSIONS_REQUESTED);
+            requestPermission(permissionsNeeded, PermissionCodes.CAMERA_PERMISSIONS_REQUESTED);
         }
     };
 
-    View.OnClickListener cameraPermissionCancelHandler = new View.OnClickListener() {
+    /**
+     * Provides action after Cancel button is pressed.
+     */
+    private final View.OnClickListener cameraPermissionCancelHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             logi("cameraPermissionCancelHandler");

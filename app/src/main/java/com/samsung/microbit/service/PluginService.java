@@ -17,7 +17,7 @@ import com.samsung.microbit.data.constants.GattServiceUUIDs;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.data.model.NameValuePair;
 import com.samsung.microbit.plugin.AlertPlugin;
-import com.samsung.microbit.plugin.AudioPlugin;
+import com.samsung.microbit.plugin.AudioRecorderPlugin;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.plugin.InformationPlugin;
 import com.samsung.microbit.plugin.RemoteControlPlugin;
@@ -28,7 +28,7 @@ import static com.samsung.microbit.BuildConfig.DEBUG;
 
 public class PluginService extends Service {
 
-	private static final String TAG = PluginService.class.getSimpleName();
+    private static final String TAG = PluginService.class.getSimpleName();
 
     //MBS Services
     public static final int ALERT = 0;
@@ -71,7 +71,7 @@ public class PluginService extends Service {
             });
 
 			/*
-			 * Make the initial connection to other processes
+             * Make the initial connection to other processes
 			 */
             new Thread(new Runnable() {
                 @Override
@@ -83,9 +83,9 @@ public class PluginService extends Service {
                         logi("make :: plugin send");
 
                         ServiceUtils.sendtoBLEService(PluginService.class, IPCMessageManager.MESSAGE_ANDROID,
-                                 EventCategories.IPC_INIT, null, null);
+                                EventCategories.IPC_INIT, null, null);
                         ServiceUtils.sendtoIPCService(PluginService.class, IPCMessageManager.MESSAGE_ANDROID,
-                                 EventCategories.IPC_INIT, null, null);
+                                EventCategories.IPC_INIT, null, null);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -190,7 +190,7 @@ public class PluginService extends Service {
                     logi("handleMessage() ##  SAMSUNG_AUDIO_RECORDER_ID");
                 }
 
-                AudioPlugin.pluginEntry(PluginService.this, cmd);
+                AudioRecorderPlugin.pluginEntry(PluginService.this, cmd);
                 break;
 
             case EventCategories.SAMSUNG_CAMERA_ID:
@@ -231,7 +231,7 @@ public class PluginService extends Service {
     }
 
     private void handleAndroidMessage(Message msg) {
-        if(msg.arg1 == EventCategories.IPC_PLUGIN_STOP_PLAYING) {
+        if (msg.arg1 == EventCategories.IPC_PLUGIN_STOP_PLAYING) {
             AlertPlugin.pluginEntry(PluginService.this, new CmdArg(EventSubCodes.SAMSUNG_ALERT_STOP_PLAYING, null));
         }
     }

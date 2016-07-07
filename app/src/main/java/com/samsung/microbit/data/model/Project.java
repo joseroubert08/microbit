@@ -1,5 +1,10 @@
 package com.samsung.microbit.data.model;
 
+/**
+ * Represents a program that can be loaded to a micro:bit board.
+ * It contains common information about the program such as program name,
+ * file path, run status and etc.
+ */
 public class Project {
 
     public final String name;

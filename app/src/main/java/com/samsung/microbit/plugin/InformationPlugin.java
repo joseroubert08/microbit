@@ -23,6 +23,10 @@ import com.samsung.microbit.data.constants.RegistrationIds;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.utils.Utils;
 
+/**
+ * Provides ability to get information about some part of
+ * micro:bit board such as orientation, shake events, temperature and etc.
+ */
 public class InformationPlugin {
     //Information plugin action
     public static final int ORIENTATION = 0;
@@ -30,7 +34,12 @@ public class InformationPlugin {
     public static final int BATTERY = 2;
     public static final int TEMPERATURE = 3;
 
-
+    /**
+     * Starts plugin and run action defined in a command argument.
+     *
+     * @param ctx Context. TODO: consider to use somewhere or remove
+     * @param cmd Command argument to define which command should be performed.
+     */
     public static void pluginEntry(Context ctx, CmdArg cmd) {
         boolean register = false;
         if (cmd.getValue() != null) {
@@ -125,6 +134,9 @@ public class InformationPlugin {
 
     static int sCurrentSignalStrength = 0;
 
+    /**
+     * Listener to update signal strength when signal strengths changed.
+     */
     static PhoneStateListener sPhoneListener = new PhoneStateListener() {
         @Override
         public void onSignalStrengthsChanged(SignalStrength signalStrength) {
@@ -134,6 +146,11 @@ public class InformationPlugin {
         }
     };
 
+    /**
+     * Updates given signal strength to a new one.
+     *
+     * @param signalStrength Signal strength needed to be updated.
+     */
     private static void updateSignalStrength(SignalStrength signalStrength) {
         final int level;
         Log.i("InformationPlugin", "updateSignalStrength: ");
@@ -184,8 +201,8 @@ public class InformationPlugin {
         return (signalStrength != null) && !signalStrength.isGsm();
     }
 
-    /*
-     *
+    /**
+     * Listener to handle temperature changing.
      */
     static class TemperatureListener implements SensorEventListener {
         @Override
@@ -204,8 +221,8 @@ public class InformationPlugin {
 
     static TemperatureListener sTemperatureListener;
 
-    /*
-     * ShakeEventListener
+    /**
+     * Listener to handle board shaking.
      */
     static class ShakeEventListener implements SensorEventListener {
         static final int THRESHOLD_SWING_COUNT = 3;//nb of times swing must be detected before we call it a shake event
@@ -282,8 +299,8 @@ public class InformationPlugin {
         sPreviousOrientation = -1;
     }
 
-    /*
-     * ORIENTATION
+    /**
+     * Registers orientation changes listener.
      */
     public static void registerOrientation() {
         if (sOrientationListener != null) {
@@ -294,9 +311,11 @@ public class InformationPlugin {
             sSensorManager = (SensorManager) MBApp.getApp().getSystemService(Context.SENSOR_SERVICE);
         }
 
+        /**
+         * Listener to handle orientation changes.
+         */
         sOrientationListener = new SensorEventListener() {
             int orientation = -1;
-            ;
 
             @Override
             public void onSensorChanged(SensorEvent event) {
@@ -328,6 +347,9 @@ public class InformationPlugin {
         sSensorManager.registerListener(sOrientationListener, sSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
     }
 
+    /**
+     * Unregisters orientation changes listener.
+     */
     public static void unregisterOrientation() {
         if (sOrientationListener == null) {
             return;
@@ -337,12 +359,13 @@ public class InformationPlugin {
         sOrientationListener = null;
     }
 
+    //TODO: consider to use or remove
     public static boolean isOrientationRegistered() {
         return sOrientationListener != null;
     }
 
     /*
-     * registerSignalStrength
+     * Registers signal strength listener.
      */
     public static void registerSignalStrength() {
         Log.i("Information Plugin", "registerSignalStrength 1 ");
@@ -356,6 +379,9 @@ public class InformationPlugin {
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
+    /**
+     * Unregisters signal strength listener.
+     */
     public static void unregisterSignalStrength() {
         if (sTelephonyManager == null) {
             return;
@@ -367,10 +393,14 @@ public class InformationPlugin {
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
+    //TODO: consider to use or remove
     public static boolean isSignalStrengthRegistered() {
         return sTelephonyManager != null;
     }
 
+    /**
+     * Registers temperature changes listener.
+     */
     public static void registerTemperature() {
         if (sTemperatureListener != null) {
             return;
@@ -390,6 +420,9 @@ public class InformationPlugin {
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
+    /**
+     * Unregisters temperature changes listener.
+     */
     public static void unregisterTemperature() {
         if (sTemperatureListener == null) {
             return;
@@ -402,6 +435,9 @@ public class InformationPlugin {
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
+    /**
+     * Registers display broadcast receiver.
+     */
     public static void registerDisplay() {
         if (sScreenReceiver != null) {
             return;
@@ -427,6 +463,9 @@ public class InformationPlugin {
         MBApp.getApp().registerReceiver(sScreenReceiver, screenStateFilter);
     }
 
+    /**
+     * Unregisters display display broadcast receiver.
+     */
     public static void unregisterDisplay() {
         Log.i("Information Plugin", "unregisterDisplay() ");
         if (sScreenReceiver == null) {
@@ -437,10 +476,14 @@ public class InformationPlugin {
         sScreenReceiver = null;
     }
 
+    //TODO: consider to use somewhere
     public static boolean isTemperatureRegistered() {
         return sTemperatureListener != null;
     }
 
+    /**
+     * Registers shake listener.
+     */
     public static void registerShake() {
         if (sShakeListener != null) {
             return;
@@ -456,6 +499,9 @@ public class InformationPlugin {
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
+    /**
+     * Unregisters shake listener.
+     */
     public static void unregisterShake() {
         if (sShakeListener == null) {
             return;
@@ -468,15 +514,20 @@ public class InformationPlugin {
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
+    //TODO: consider to use or remove
     public static boolean isShakeRegistered() {
         return sShakeListener != null;
     }
 
+    /**
+     * Registers battery changes broadcast receiver.
+     */
     public static void registerBattery() {
         if (sBatteryReceiver != null) {
             return;
         }
 
+        //Buttery changes broadcast receiver.
         sBatteryReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -500,6 +551,9 @@ public class InformationPlugin {
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
+    /**
+     * Unregisters buttery changes broadcast receiver.
+     */
     public static void unregisterBattery() {
         if (sBatteryReceiver == null) {
             return;
@@ -512,6 +566,7 @@ public class InformationPlugin {
         InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
     }
 
+    //TODO: consider to use or remove
     public static boolean isBatteryRegistered() {
         return sBatteryReceiver != null;
     }

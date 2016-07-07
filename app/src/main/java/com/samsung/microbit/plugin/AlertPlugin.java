@@ -22,6 +22,11 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Represents a module that can provide actions to raise a big smoke.
+ * It can make your mobile device ring and vibrate so you can figure out
+ * where it is if you can't find it.
+ */
 public class AlertPlugin {
 
     private static final String TAG = AlertPlugin.class.getSimpleName();
@@ -31,12 +36,23 @@ public class AlertPlugin {
     private static Vibrator mVibrator = null;
     private static Timer mTimer = null;
 
+    /**
+     * Makes your device to stop ringing.
+     */
     private static void stopPlaying() {
         if (mRingtone != null && mRingtone.isPlaying()) {
             mRingtone.stop();
         }
     }
 
+    /**
+     * Makes your phone to play given sound.
+     *
+     * @param alarm       Sound to play.
+     * @param maxDuration Playback max duration.
+     * @param vibrate     If true, then phone will also vibrate.
+     * @param isAlarm     Defines if it is an alarm sound.
+     */
     private static void playSound(Uri alarm, int maxDuration, boolean vibrate, boolean isAlarm) {
         Context context = MBApp.getApp();
 
@@ -80,6 +96,13 @@ public class AlertPlugin {
         }
     }
 
+    /**
+     * Makes plugin start. Allows to define type of the alarm using command argument.
+     *
+     * @param ctx Context.
+     * @param cmd Command that defines some parameters of the alarm.
+     */
+    //TODO: consider to use ctx somewhere or remove
     public static void pluginEntry(Context ctx, CmdArg cmd) {
         Context context = MBApp.getApp();
         switch (cmd.getCMD()) {
@@ -115,7 +138,7 @@ public class AlertPlugin {
                 playAlarm(cmd.getCMD());
                 break;
             case EventSubCodes.SAMSUNG_ALERT_STOP_PLAYING:
-                if(playAudioPresenter != null) {
+                if (playAudioPresenter != null) {
                     playAudioPresenter.stop();
                     playAudioPresenter = null;
                 }
@@ -125,6 +148,11 @@ public class AlertPlugin {
         }
     }
 
+    /**
+     * Finds which sound should be played and starts playback.
+     *
+     * @param alarmId Defines an id of a sound for the alarm.
+     */
     private static void playAlarm(int alarmId) {
         Context context = MBApp.getApp();
 
@@ -144,18 +172,27 @@ public class AlertPlugin {
         playSound(alarm, 10000, false, false);
     }
 
+    /**
+     * Finds available ringtone and starts playback.
+     */
     private static void playRingTone() {
         showDialog(MBApp.getApp().getString(R.string.ringtone_via_microbit));
         Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
         playSound(ringtone, 10000, false, false);
     }
 
+    /**
+     * Finds available notification and starts playback.
+     */
     private static void playNotification() {
         showDialog(MBApp.getApp().getString(R.string.sound_via_microbit));
         Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         playSound(ringtone, 10000, false, false);
     }
 
+    /**
+     * Makes your device play sound and vibrate to find out where it is.
+     */
     private static void findPhone() {
         Context context = MBApp.getApp();
 
@@ -175,6 +212,11 @@ public class AlertPlugin {
         playAudioPresenter.start();
     }
 
+    /**
+     * Makes your device vibrate. You can set the time for which a device will vibrate.
+     *
+     * @param duration The time for which a device will vibrate.
+     */
     private static void vibrate(int duration) {
         Context context = MBApp.getApp();
 
@@ -183,16 +225,16 @@ public class AlertPlugin {
         v.vibrate(duration);
     }
 
-	private static int getDuration(Uri file) {
-		int duration = 500;
-		MediaPlayer mp = new MediaPlayer();
-		try {
-			mp.setDataSource(MBApp.getApp(), file);
-			mp.prepare();
-			duration = mp.getDuration();
-		} catch (IOException e) {
-			Log.e(TAG, e.toString());
-		}
+    private static int getDuration(Uri file) {
+        int duration = 500;
+        MediaPlayer mp = new MediaPlayer();
+        try {
+            mp.setDataSource(MBApp.getApp(), file);
+            mp.prepare();
+            duration = mp.getDuration();
+        } catch (IOException e) {
+            Log.e(TAG, e.toString());
+        }
 
         mp.reset();
         mp = null;
@@ -200,6 +242,12 @@ public class AlertPlugin {
         return duration;
     }
 
+    /**
+     * Allows to show additional dialog window while alarm is on.
+     *
+     * @param textMsg     Text message to show.
+     * @param popupAction Popup code action.
+     */
     private static void showDialogWithAction(String textMsg, int popupAction) {
         PopUp.showFromService(MBApp.getApp(), "",
                 textMsg,
@@ -208,6 +256,11 @@ public class AlertPlugin {
                 PopUp.TYPE_ALERT, popupAction);
     }
 
+    /**
+     * Simplified version to show additional dialog window while alarm.
+     *
+     * @param textMsg Text message to show.
+     */
     private static void showDialog(String textMsg) {
         PopUp.showFromService(MBApp.getApp(), "",
                 textMsg,

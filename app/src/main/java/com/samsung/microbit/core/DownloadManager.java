@@ -9,18 +9,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+//TODO: consider to use somewhere or remove
 public class DownloadManager {
 
     volatile boolean cancelled = false;
 
     private static final String TAG = DownloadManager.class.getSimpleName();
-
-    public DownloadManager() {
-    }
 
     public boolean isCancelled() {
         return cancelled;

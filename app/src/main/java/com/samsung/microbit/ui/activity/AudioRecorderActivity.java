@@ -24,7 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.samsung.microbit.R;
-import com.samsung.microbit.plugin.AudioPlugin;
+import com.samsung.microbit.plugin.AudioRecorderPlugin;
 import com.samsung.microbit.ui.PopUp;
 
 import java.io.File;
@@ -32,6 +32,9 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
 
+/**
+ * Allows to perform recording an audio.
+ */
 public class AudioRecorderActivity extends Activity {
 
     private static final int NOTIFICATION_ID = 1;
@@ -164,18 +167,23 @@ public class AudioRecorderActivity extends Activity {
         }
     }
 
+    /**
+     * Processes action passed through parameter.
+     *
+     * @param action Action to process.
+     */
     private void processIntent(String action) {
         if (action == null)
             return;
 
         switch (action) {
-            case AudioPlugin.INTENT_ACTION_START_RECORD:
+            case AudioRecorderPlugin.INTENT_ACTION_START_RECORD:
                 startRecording();
                 break;
-            case AudioPlugin.INTENT_ACTION_STOP_RECORD:
+            case AudioRecorderPlugin.INTENT_ACTION_STOP_RECORD:
                 stopRecording();
                 break;
-            case AudioPlugin.INTENT_ACTION_STOP:
+            case AudioRecorderPlugin.INTENT_ACTION_STOP:
                 if (mIsRecording)
                     stopRecording();
                 finish();
@@ -219,7 +227,7 @@ public class AudioRecorderActivity extends Activity {
         File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
-                Log.e("AudioPlugin", "Failed to create directory");
+                Log.e("AudioRecorderPlugin", "Failed to create directory");
             }
         }
 
@@ -265,7 +273,7 @@ public class AudioRecorderActivity extends Activity {
 
     private void releaseRecorder() {
         if (mRecorder != null) {
-            if(mIsRecording) {
+            if (mIsRecording) {
                 mRecorder.stop();
             } else {
                 mRecorder.reset();

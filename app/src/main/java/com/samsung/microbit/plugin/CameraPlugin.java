@@ -17,9 +17,12 @@ import com.samsung.microbit.data.constants.RawConstants;
 import com.samsung.microbit.presentation.PlayAudioPresenter;
 import com.samsung.microbit.ui.activity.CameraActivityPermissionChecker;
 
+/**
+ * Allows to start and interact with a device camera to proceed with wished actions.
+ */
 public class CameraPlugin {
 
-	private static Context context = null;
+    private static Context context = null;
 
     private static final String TAG = CameraPlugin.class.getSimpleName();
 
@@ -38,6 +41,12 @@ public class CameraPlugin {
         }
     };
 
+    /**
+     * Starts camera plugin and performs action provided by a command argument.
+     *
+     * @param ctx Context.
+     * @param cmd Command argument that defines which action should be processed.
+     */
     public static void pluginEntry(Context ctx, CmdArg cmd) {
         if (mPowerManager == null) {
             mPowerManager = (PowerManager) ctx.getApplicationContext().getSystemService(Context.POWER_SERVICE);
@@ -111,6 +120,9 @@ public class CameraPlugin {
         }
     }
 
+    /**
+     * Provides some actions needed to perform at the end.
+     */
     private static void performOnEnd() {
         Log.d(TAG, "Next state - " + m_NextState);
         switch (m_NextState) {
@@ -130,8 +142,11 @@ public class CameraPlugin {
         }
     }
 
-    //This function should trigger an Activity that would be responsible of starting the camera app to take a picture.
-    //The same activity should also store the result of the camera app, if valid
+    /**
+     * This function should trigger an Activity that would be
+     * responsible of starting the camera app to take a picture.
+     * The same activity should also store the result of the camera app, if valid
+     */
     private static void launchCameraForPic() {
         Context context = MBApp.getApp();
 
@@ -141,16 +156,25 @@ public class CameraPlugin {
         context.startActivity(mIntent);
     }
 
+    /**
+     * Sends a broadcast intent to take a picture.
+     */
     private static void takePic() {
         Intent intent = new Intent("TAKE_PIC");
         MBApp.getApp().sendBroadcast(intent);
     }
 
+    /**
+     * Sends a broadcast intent to turn on/off a camera.
+     */
     private static void toggleCamera() {
         Intent intent = new Intent("TOGGLE_CAMERA");
         MBApp.getApp().sendBroadcast(intent);
     }
 
+    /**
+     * Starts activity to record a video.
+     */
     private static void launchCameraForVideo() {
         Context context = MBApp.getApp();
 
@@ -160,16 +184,25 @@ public class CameraPlugin {
         context.startActivity(mIntent);
     }
 
+    /**
+     * Sends a broadcast intent to start video recording.
+     */
     private static void recVideoStart() {
         Intent intent = new Intent("START_VIDEO");
         MBApp.getApp().sendBroadcast(intent);
     }
 
+    /**
+     * Sends a broadcast intent to stop video recording.
+     */
     private static void recVideoStop() {
         Intent intent = new Intent("STOP_VIDEO");
         MBApp.getApp().sendBroadcast(intent);
     }
 
+    /**
+     * Sends a broadcast intent to close a camera.
+     */
     private static void closeCamera() {
         Intent intent = new Intent("CLOSE");
         MBApp.getApp().sendBroadcast(intent);

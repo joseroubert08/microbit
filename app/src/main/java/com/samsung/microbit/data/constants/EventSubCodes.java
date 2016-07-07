@@ -1,7 +1,8 @@
 package com.samsung.microbit.data.constants;
 
-/*
- * Events sub codes, that Samsung devices respond to:
+/**
+ * Events sub codes, that Samsung devices respond to.
+ * It commonly uses in plugins to identify appropriate event.
  */
 public class EventSubCodes {
     private EventSubCodes() {
@@ -9,6 +10,7 @@ public class EventSubCodes {
 
     /**
      * Samsung remote control sub codes. Related to event Category {@link EventCategories#SAMSUNG_REMOTE_CONTROL_ID}
+     *
      * @see com.samsung.microbit.utils.Utils#makeMicroBitValue(int, int)
      */
     public static final int SAMSUNG_REMOTE_CONTROL_EVT_PLAY = 1;
@@ -23,6 +25,7 @@ public class EventSubCodes {
 
     /**
      * Samsung remote control sub codes. Related to event Category {@link EventCategories#SAMSUNG_CAMERA_ID}
+     *
      * @see com.samsung.microbit.utils.Utils#makeMicroBitValue(int, int)
      */
     public static final int SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE = 1;
@@ -36,6 +39,7 @@ public class EventSubCodes {
 
     /**
      * Samsung remote control sub codes. Related to event Category {@link EventCategories#SAMSUNG_AUDIO_RECORDER_ID}
+     *
      * @see com.samsung.microbit.utils.Utils#makeMicroBitValue(int, int)
      */
     public static final int SAMSUNG_AUDIO_RECORDER_ID = 1003; //0x03EB
@@ -46,6 +50,7 @@ public class EventSubCodes {
 
     /**
      * Samsung remote control sub codes. Related to event Category {@link EventCategories#SAMSUNG_ALERTS_ID}
+     *
      * @see com.samsung.microbit.utils.Utils#makeMicroBitValue(int, int)
      */
     public static final int SAMSUNG_ALERT_EVT_DISPLAY_TOAST = 1;
@@ -62,13 +67,13 @@ public class EventSubCodes {
     public static final int SAMSUNG_ALERT_STOP_PLAYING = 12;
 
 
-
-    /*
+    /**
      * Events that Samsung devices generate:
      */
 
     /**
      * Samsung remote control sub codes. Related to event Category {@link EventCategories#SAMSUNG_SIGNAL_STRENGTH_ID}
+     *
      * @see com.samsung.microbit.utils.Utils#makeMicroBitValue(int, int)
      */
     public static final int SAMSUNG_SIGNAL_STRENGTH_EVT_NO_BAR = 1;
@@ -79,6 +84,7 @@ public class EventSubCodes {
 
     /**
      * Samsung remote control sub codes. Related to event Category {@link EventCategories#SAMSUNG_DEVICE_INFO_ID}
+     *
      * @see com.samsung.microbit.utils.Utils#makeMicroBitValue(int, int)
      */
     public static final int SAMSUNG_DEVICE_ORIENTATION_LANDSCAPE = 1;

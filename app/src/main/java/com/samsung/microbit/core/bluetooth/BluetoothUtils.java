@@ -9,7 +9,6 @@ import android.provider.Settings;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.samsung.microbit.common.PreferencesInteraction;
 import com.samsung.microbit.data.model.ConnectedDevice;
 
 import java.util.Set;
@@ -33,13 +32,7 @@ public class BluetoothUtils {
     public static SharedPreferences getPreferences(Context ctx) {
 
         logi("getPreferences() :: ctx.getApplicationContext() = " + ctx.getApplicationContext());
-        SharedPreferences p = ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
-        return p;
-    }
-
-    public static synchronized void preferencesInteraction(Context ctx, PreferencesInteraction interAction) {
-        logi("preferencesInteraction()");
-        interAction.interAct(getPreferences(ctx));
+        return ctx.getApplicationContext().getSharedPreferences(PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
     }
 
     public static int getTotalPairedMicroBitsFromSystem() {
@@ -204,51 +197,4 @@ public class BluetoothUtils {
 
         editor.apply();
     }
-
-    //TODO moved to BitUtils
-    /*
-    // bit position to value mask
-    public static int getBitMask(int x) {
-        return (0x01 << x);
-    }
-
-    // multiple bit positions to value mask
-    public static int getBitMask(int[] x) {
-        int rc = 0;
-        for (int xVal : x) {
-            rc |= getBitMask(xVal);
-        }
-
-        return rc;
-    }
-
-    public int setBit(int v, int x) {
-        v |= getBitMask(x);
-        return v;
-    }
-
-    public int setBits(int v, int[] x) {
-        v |= getBitMask(x);
-        return v;
-    }
-
-    public static int clearBit(int v, int x) {
-        v &= ~getBitMask(x);
-        return v;
-    }
-
-    public static int clearBits(int v, int[] x) {
-        v &= ~getBitMask(x);
-        return v;
-    }
-
-    public static int maskBit(int v, int x) {
-        v &= getBitMask(x);
-        return v;
-    }
-
-    public static int maskBits(int v, int[] x) {
-        v &= getBitMask(x);
-        return v;
-    }*/
 }

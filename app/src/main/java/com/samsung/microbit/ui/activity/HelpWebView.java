@@ -9,6 +9,9 @@ import android.webkit.WebViewClient;
 
 import com.samsung.microbit.R;
 
+/**
+ * Displays a help screen to provide some instructions and Q&A for using the app.
+ */
 public class HelpWebView extends Activity {
 
     private WebView webView;
@@ -28,14 +31,13 @@ public class HelpWebView extends Activity {
         webView.getSettings().setBuiltInZoomControls(true);
         webView.getSettings().setDisplayZoomControls(false);
 
-
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 return false;
-
             }
         });
+
         //Check parameters Before load
         Intent intent = getIntent();
         String url = intent.getStringExtra("url");
@@ -52,7 +54,7 @@ public class HelpWebView extends Activity {
     }
 
     public void onClick(final View v) {
-        if(v.getId() == R.id.backBtn){
+        if (v.getId() == R.id.backBtn) {
             finish();
         }
     }

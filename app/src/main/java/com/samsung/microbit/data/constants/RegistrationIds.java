@@ -1,5 +1,10 @@
 package com.samsung.microbit.data.constants;
 
+/**
+ * Contains registration id constants.
+ * Basically, they use in BLEService and some plugins to identify
+ * which registration should be used.
+ */
 public class RegistrationIds {
     private RegistrationIds() {
     }
@@ -14,6 +19,6 @@ public class RegistrationIds {
     public static final int REG_BATTERYSTRENGTH = 0x040;    // 0x00000040;
     public static final int REG_TEMPERATURE = 0x080;    // 0x00000080;
 
-    public static final byte[] REGISTRATION_ON = {REG_TELEPHONY, REG_MESSAGING, REG_DEVICEORIENTATION,REG_DEVICEGESTURE,REG_DISPLAY,REG_SIGNALSTRENGTH,REG_BATTERYSTRENGTH  };
-    public static final byte[] REGISTRATION_OFF = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00 ,0x00};
+    public static final byte[] REGISTRATION_ON = {REG_TELEPHONY, REG_MESSAGING, REG_DEVICEORIENTATION, REG_DEVICEGESTURE, REG_DISPLAY, REG_SIGNALSTRENGTH, REG_BATTERYSTRENGTH};
+    public static final byte[] REGISTRATION_OFF = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 }

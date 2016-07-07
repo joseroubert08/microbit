@@ -1,5 +1,6 @@
 package com.samsung.microbit.data.constants;
 
+//TODO: consider to use somewhere or remove
 public class MicrobitButtons {
     private MicrobitButtons() {
     }

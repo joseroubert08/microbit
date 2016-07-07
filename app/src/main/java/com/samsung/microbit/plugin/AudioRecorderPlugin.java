@@ -8,7 +8,10 @@ import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.data.constants.EventSubCodes;
 import com.samsung.microbit.ui.activity.AudioRecorderActivity;
 
-public class AudioPlugin {
+/**
+ * Provides actions to record audio sounds.
+ */
+public class AudioRecorderPlugin {
 
     public static final String INTENT_ACTION_LAUNCH = "com.samsung.microbit.ui.activity.AudioRecorderActivity.action" +
             ".LAUNCH";
@@ -19,6 +22,13 @@ public class AudioPlugin {
     public static final String INTENT_ACTION_STOP = "com.samsung.microbit.ui.activity.AudioRecorderActivity.action" +
             ".STOP";//close
 
+    /**
+     * Starts audio recorder plugin with a command argument which defines
+     * which command should be processed.
+     *
+     * @param ctx Context. TODO: Consider to use somewhere or remove
+     * @param cmd Command argument to define which command should be processed.
+     */
     public static void pluginEntry(Context ctx, CmdArg cmd) {
         switch (cmd.getCMD()) {
             case EventSubCodes.SAMSUNG_AUDIO_RECORDER_EVT_START_CAPTURE: {
@@ -40,6 +50,11 @@ public class AudioPlugin {
         }
     }
 
+    /**
+     * Starts audio recorder activity to proceed audio recording.
+     *
+     * @param action Action that should be done along with starting the activity.
+     */
     static private void launchActivity(String action) {
         Context context = MBApp.getApp();
 

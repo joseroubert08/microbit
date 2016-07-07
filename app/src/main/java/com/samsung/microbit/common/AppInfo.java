@@ -22,7 +22,15 @@ import static com.samsung.microbit.ConfigPreferenceNames.RC_EXCEPTIONTITLE_KEY;
 import static com.samsung.microbit.ConfigPreferenceNames.RC_LAST_QUERY;
 import static com.samsung.microbit.ConfigPreferenceNames.REMOTE_CONFIG_PREFERENCE_KEY;
 
+/**
+ * Contains common information about the app such as externals references
+ * and some app parameters.
+ */
 public class AppInfo {
+
+    /**
+     * Represents app status about sharing information.
+     */
     public enum AppStatus {
         ON("On"), OFF("Off");
 
@@ -37,9 +45,15 @@ public class AppInfo {
             return value;
         }
 
+        /**
+         * Gets appropriate status by given string name.
+         *
+         * @param name String that represents status name.
+         * @return Appropriate app status.
+         */
         public static AppStatus byName(String name) {
             for (AppStatus appStatus : values()) {
-                if(appStatus.toString().equals(name)) {
+                if (appStatus.toString().equals(name)) {
                     return appStatus;
                 }
             }
@@ -61,7 +75,7 @@ public class AppInfo {
     private String discoverURL;
     private String myScriptsURL;
     private String TOUURL;
-    private String PPURL ;
+    private String PPURL;
     private String sendToEmail;
 
     private String Etag;
@@ -76,6 +90,9 @@ public class AppInfo {
         searchStoredValues();
     }
 
+    /**
+     * Reads common app information from external storage and stores it to the class' members.
+     */
     public void searchStoredValues() {
         appStatus = AppStatus.byName(preferences.getString(RC_APPSTATUS_KEY, AppStatus.OFF.toString()));
         aboutURL = preferences.getString(RC_ENDPOINT_ABOUT, "");
@@ -93,7 +110,6 @@ public class AppInfo {
         myScriptsURL = preferences.getString(RC_APPSTATUS_MYSCRIPTS, "");
     }
 
-    ///Getters
     public AppStatus getAppStatus() {
         return appStatus;
     }

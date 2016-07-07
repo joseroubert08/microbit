@@ -14,11 +14,13 @@ import com.samsung.microbit.utils.ServiceUtils;
 
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
-//This broadcastreceiver intercepts "PopUp.showFromService" requests from background Service
-//like PluginService.
-//Note that custom OnClickListener are not supported because Service and App run in different process.
-//Support for custom OnClickListener may require RPC implementation.
-//PopUp requested from PluginService do not currently need custom OnClickListener.
+/**
+ * This broadcastreceiver intercepts "PopUp.showFromService" requests from background Service
+ * like PluginService. Note that custom OnClickListener are not supported because
+ * Service and App run in different process.
+ * Support for custom OnClickListener may require RPC implementation.
+ * PopUp requested from PluginService do not currently need custom OnClickListener.
+ */
 public class PopUpServiceReceiver extends BroadcastReceiver {
     private static final String TAG = PopUpServiceReceiver.class.getSimpleName();
 
@@ -35,7 +37,7 @@ public class PopUpServiceReceiver extends BroadcastReceiver {
 
         final View.OnClickListener okListener;
 
-        if(popupExtraOkType == PopUp.OK_ACTION_STOP_SERVICE_PLAYING) {
+        if (popupExtraOkType == PopUp.OK_ACTION_STOP_SERVICE_PLAYING) {
             okListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
