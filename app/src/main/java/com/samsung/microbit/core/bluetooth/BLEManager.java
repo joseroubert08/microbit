@@ -50,7 +50,12 @@ public class BLEManager {
     public static final int OP_READ_REMOTE_RSSI = 9;
     public static final int OP_MTU_CHANGED = 10;
 
-    private volatile int bleState = 0;
+    /**
+     * It represents ble device state.
+     * Can be one of possible values:
+     * {@link BLEManager#BLE_DISCONNECTED}, {@link BLEManager#BLE_CONNECTED}, {@link BLEManager#BLE_SERVICES_DISCOVERED}
+     */
+    private volatile int bleState = BLE_DISCONNECTED;
     private volatile int error = 0;
 
     private volatile int inBleOp = 0;
@@ -184,6 +189,15 @@ public class BLEManager {
 
     /**
      * Allows to establish connection with ability to auto reconnect.
+     * <p/>
+     * Simulating of synchronous request from asynchronous is making in following way:
+     * <p/>
+     * 1. Trigger asynchronous request
+     * 2. Wait for defined delay ({@value BLE_WAIT_TIMEOUT}) for asynchronous callback is invoked.
+     * 3. If callback is invoked in that time, then just return {@link BLEManager#bleState}.
+     * 4. Else mask error using
+     * {@link BLEManager#BLE_ERROR_FAIL} and {@link BLEManager#BLE_ERROR_TIMEOUT} and {@link BLEManager#bleState} and
+     * return it.
      *
      * @param autoReconnect Defines if connection  should provide auto reconnect.
      * @return Connection result with an appropriate error code if connection is failed.
@@ -244,9 +258,13 @@ public class BLEManager {
     }
 
     /**
-     * Provides wrapper to start GATT connection.
+     * Trigger connection to remote GATT device.
+     * <p/>
+     * Simulating of synchronous request from asynchronous. For description of that process,
+     * and result encoding see {@link BLEManager#connect(boolean)}
      *
-     * @return Connection results.
+     * @return Connection result.
+     * @see BLEManager#connect(boolean)
      */
     private int gattConnect() {
         if (DEBUG) {
@@ -301,9 +319,13 @@ public class BLEManager {
     }
 
     /**
-     * Allows to close bluetooth connection.
+     * Trigger closing active connection with remote GATT.
+     * <p/>
+     * Simulating of synchronous request from asynchronous. For description of that process,
+     * and result encoding see {@link BLEManager#connect(boolean)}
      *
-     * @return Disconnection results.
+     * @return Disconnection result.
+     * @see BLEManager#connect(boolean)
      */
     public int disconnect() {
         if (DEBUG) {
@@ -344,9 +366,9 @@ public class BLEManager {
     }
 
     /**
-     * Checks if connection is disabled and returns error code if some error occurred.
+     * Wait {@value BLE_WAIT_TIMEOUT} millis for disconnection if it's not finished yet.
      *
-     * @return Disconnection results.
+     * @return Wait result.
      */
     public int waitDisconnect() {
         if (DEBUG) {
@@ -389,10 +411,15 @@ public class BLEManager {
     }
 
     /**
-     * Provides asynchronous operation to discover for services. If the discovery was
-     * successful, the remote services can be accessed through {@link #getServices()} method.
+     * Trigger service discovering.
+     * <p/>
+     * Simulating of synchronous request from asynchronous. For description of that process,
+     * and result encoding see {@link BLEManager#connect(boolean)}
+     * <p/>
+     * After successful discovering, you can search of device services via {@link #getServices()} method.
      *
-     * @return Discovery results.
+     * @return Result of discovering.
+     * @see BLEManager#connect(boolean)
      */
     public int discoverServices() {
         if (DEBUG) {
@@ -436,10 +463,14 @@ public class BLEManager {
     }
 
     /**
-     * Write the value of a given descriptor to the associated remote device.
+     * Write descriptor to connected GATT device.
+     * <p/>
+     * Simulating of synchronous request from asynchronous. For description of that process,
+     * and result encoding see {@link BLEManager#connect(boolean)}
      *
-     * @param descriptor Descriptor to write to the associated remote device.
-     * @return Operation result code.
+     * @param descriptor Descriptor for writing to remote GATT.
+     * @return Result of descriptor writing.
+     * @see BLEManager#connect(boolean)
      */
     public int writeDescriptor(BluetoothGattDescriptor descriptor) {
         if (DEBUG) {
@@ -481,10 +512,14 @@ public class BLEManager {
     }
 
     /**
-     * Reads the value for a given descriptor from the associated remote device.
+     * Reads descriptor from connected GATT device.
+     * <p/>
+     * Simulating of synchronous request from asynchronous. For description of that process,
+     * and result encoding see {@link BLEManager#connect(boolean)}
      *
-     * @param descriptor Descriptor value to read from the remote device.
-     * @return Operation result code.
+     * @param descriptor Descriptor for read to from remote GATT.
+     * @return Result of descriptor reading.
+     * @see BLEManager#connect(boolean)
      */
     public int readDescriptor(BluetoothGattDescriptor descriptor) {
         if (DEBUG) {
@@ -525,10 +560,14 @@ public class BLEManager {
     }
 
     /**
-     * Writes a given characteristic and its values to the associated remote device.
+     * Write characteristic to connected GATT device.
+     * <p/>
+     * Simulating of synchronous request from asynchronous. For description of that process,
+     * and result encoding see {@link BLEManager#connect(boolean)}
      *
-     * @param characteristic Characteristic to write on the remote device.
-     * @return Operation result code.
+     * @param characteristic Characteristic for writing to remote GATT.
+     * @return Result of characteristic writing.
+     * @see BLEManager#connect(boolean)
      */
     public int writeCharacteristic(BluetoothGattCharacteristic characteristic) {
         if (DEBUG) {
@@ -577,10 +616,14 @@ public class BLEManager {
     }
 
     /**
-     * Reads the requested characteristic from the associated remote device.
+     * Read characteristic from connected GATT device.
+     * <p/>
+     * Simulating of synchronous request from asynchronous. For description of that process,
+     * and result encoding see {@link BLEManager#connect(boolean)}
      *
-     * @param characteristic Characteristic to read from the remote device.
-     * @return Operation result code.
+     * @param characteristic Characteristic for reading from remote GATT.
+     * @return Result of characteristic reading.
+     * @see BLEManager#connect(boolean)
      */
     public int readCharacteristic(BluetoothGattCharacteristic characteristic) {
         if (DEBUG) {
@@ -637,49 +680,30 @@ public class BLEManager {
      * @param characteristic The characteristic for which to enable notifications.
      * @param descriptor     Bluetooth GATT descriptor.
      * @param enable         Enable or disable notification.
-     * @return Result code number.
+     * @return Result of enabling notifications.
      */
     public int enableCharacteristicNotification(BluetoothGattCharacteristic characteristic, BluetoothGattDescriptor
             descriptor, boolean enable) {
-
         int rc = BLE_ERROR_NOOP;
 
         synchronized (locker) {
-            try {
-                error = 0;
-                int bleState = this.bleState;
-                callbackCompleted = false;
+            error = 0;
 
-                if (gatt.setCharacteristicNotification(characteristic, enable)) {
-                    //TODO why thread not waiting
-                    //locker.wait(BLE_WAIT_TIMEOUT);
+            if (gatt.setCharacteristicNotification(characteristic, enable)) {
+                rc = error | bleState;
 
-                    if (false) {
-                        throw new InterruptedException();
-                    } else {
-                        callbackCompleted = true;
-                    }
-
-                    if (!callbackCompleted) {
-                        error = (BLE_ERROR_FAIL | BLE_ERROR_TIMEOUT);
-                    } else {
-                        bleState = this.bleState;
-                    }
-
-                    rc = error | bleState;
-
-                    descriptor.setValue(enable ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : BluetoothGattDescriptor
-                            .DISABLE_NOTIFICATION_VALUE);
-                }
-            } catch (InterruptedException e) {
-                Log.e(TAG, e.toString());
+                descriptor.setValue(enable ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE :
+                         BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
             }
         }
 
         return writeDescriptor(descriptor) | rc;
     }
 
-    final protected BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
+    /**
+     * Callback for handling bluetooth GATT interaction.
+     */
+    private final BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
 
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {

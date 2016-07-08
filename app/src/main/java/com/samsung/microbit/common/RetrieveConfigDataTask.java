@@ -27,10 +27,9 @@ import javax.xml.transform.Result;
 import static com.samsung.microbit.ConfigPreferenceNames.*;
 
 /**
- * Base class that extends asynchronous task and implements methods to load configuration data.
+ * Base class for loading config data.
  */
 public abstract class RetrieveConfigDataTask extends AsyncTask<String, Void, Result> {
-
     private static final String TAG = RetrieveConfigDataTask.class.getSimpleName();
 
     private final SharedPreferences preferences;
@@ -129,14 +128,36 @@ public abstract class RetrieveConfigDataTask extends AsyncTask<String, Void, Res
         return null;
     }
 
-    private void readAppStatus(JSONObject reader, SharedPreferences.Editor editor) {
-        JSONObject status = null;
+    private void readFromJsonAndStore(String jsonFile) {
         try {
-            status = reader.getJSONObject("status");
+            SharedPreferences.Editor editor = preferences.edit();
+            JSONObject reader = new JSONObject(jsonFile);
+            //Read the application status
+            readAppStatus(reader, editor);
+            //Read end points
+            readEndPoints(reader, editor);
+            //Read end points
+            readFeedbackInfo(reader, editor);
+
+            editor.apply();
+        } catch (JSONException e) {
+            Log.e(TAG, "readFromJsonAndStore: failed - " + e.toString());
+        }
+    }
+
+    /**
+     * Read and store application status. If it's allowed to running or no.
+     *
+     * @param reader Container of the data to read from.
+     * @param editor Container of the data to read to.
+     */
+    private void readAppStatus(JSONObject reader, SharedPreferences.Editor editor) {
+        try {
+            JSONObject status = reader.getJSONObject("status");
             String appStatus = status.getString("appStatus");
             editor.putString(RC_APPSTATUS_KEY, appStatus).commit();
             //Get extended message if needed
-            if (appStatus.equalsIgnoreCase("OFF")) {
+            if (appStatus.equalsIgnoreCase(AppInfo.AppStatus.OFF.toString())) {
                 String title = status.getString("title");
                 String message = status.getString("message");
                 editor.putString(RC_EXCEPTIONTITLE_KEY, title);
@@ -147,6 +168,12 @@ public abstract class RetrieveConfigDataTask extends AsyncTask<String, Void, Res
         }
     }
 
+    /**
+     * Read and store end points for communication with server to share statistic, etc...
+     *
+     * @param reader Container of the data to read from.
+     * @param editor Container of the data to read to.
+     */
     private void readEndPoints(JSONObject reader, SharedPreferences.Editor editor) {
         try {
             JSONObject endpoints = reader.getJSONObject("endpoints");
@@ -169,30 +196,19 @@ public abstract class RetrieveConfigDataTask extends AsyncTask<String, Void, Res
         }
     }
 
-    private void readConfig(JSONObject reader, SharedPreferences.Editor editor) {
+    /**
+     * Read and store information for user feedback.
+     *
+     * @param reader Container of the data to read from.
+     * @param editor Container of the data to read to.
+     */
+    private void readFeedbackInfo(JSONObject reader, SharedPreferences.Editor editor) {
         try {
             JSONObject config = reader.getJSONObject("config");
             String email = config.getString("feedbackEmailAddress");
             editor.putString(RC_CONFIG_EMAIL, email);
         } catch (JSONException e) {
-            Log.e(TAG, "readConfig: failed - " + e.toString());
-        }
-    }
-
-    private void readFromJsonAndStore(String jsonFile) {
-        try {
-            SharedPreferences.Editor editor = preferences.edit();
-            JSONObject reader = new JSONObject(jsonFile);
-            //Read the application status
-            readAppStatus(reader, editor);
-            //Read end points
-            readEndPoints(reader, editor);
-            //Read end points
-            readConfig(reader, editor);
-
-            editor.apply();
-        } catch (JSONException e) {
-            Log.e(TAG, "readFromJsonAndStore: failed - " + e.toString());
+            Log.e(TAG, "readFeedbackInfo: failed - " + e.toString());
         }
     }
 
