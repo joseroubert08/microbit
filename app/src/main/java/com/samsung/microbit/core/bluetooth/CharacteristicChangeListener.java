@@ -5,11 +5,10 @@ import android.bluetooth.BluetoothGattCharacteristic;
 
 public interface CharacteristicChangeListener {
     /**
-     * Callback triggered as a result of a remote characteristic notification.
+     * Callback triggered as a result of characteristic changed.
      *
      * @param gatt           GATT client the characteristic is associated with
-     * @param characteristic Characteristic that has been updated as a result
-     *                       of a remote notification event.
+     * @param characteristic Updated characteristic
      */
     void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic);
 }
