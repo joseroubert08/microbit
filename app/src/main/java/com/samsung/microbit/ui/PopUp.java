@@ -16,8 +16,11 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 /**
- * To show a popup from an application/activity context, use the @Show call below.
- * To show a popup from a Plugin class or service context, use @showFromService function.
+ * To show a popup from ui thread use
+ * {@link PopUp#show(String, String, int, int, int, int, View.OnClickListener, View.OnClickListener)} method.
+ *
+ * To show a popup from service use
+ * {@link PopUp#showFromService(Context, String, String, int, int, int, int)} method.
  */
 public class PopUp {
 
