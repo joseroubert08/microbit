@@ -189,15 +189,18 @@ public class BLEManager {
 
     /**
      * Allows to establish connection with ability to auto reconnect.
+     *
      * <p/>
-     * Simulating of synchronous request from asynchronous is making in following way:
-     * <p/>
-     * 1. Trigger asynchronous request
-     * 2. Wait for defined delay ({@value BLE_WAIT_TIMEOUT}) for asynchronous callback is invoked.
-     * 3. If callback is invoked in that time, then just return {@link BLEManager#bleState}.
-     * 4. Else mask error using
+     * <strong>Simulating of synchronous request from asynchronous is making in following way:</strong><br/>
+     * <ol>
+     *
+     * <li>Trigger asynchronous request</li>
+     * <li>Wait for defined delay ({@link BLEManager#BLE_WAIT_TIMEOUT}) for asynchronous callback is invoked.</li>
+     * <li>If callback is invoked in that time, then just return {@link BLEManager#bleState}.</li>
+     * <li>Else mask error using
      * {@link BLEManager#BLE_ERROR_FAIL} and {@link BLEManager#BLE_ERROR_TIMEOUT} and {@link BLEManager#bleState} and
-     * return it.
+     * return it.</li>
+     * </ol>
      *
      * @param autoReconnect Defines if connection  should provide auto reconnect.
      * @return Connection result with an appropriate error code if connection is failed.
@@ -326,6 +329,8 @@ public class BLEManager {
      *
      * @return Disconnection result.
      * @see BLEManager#connect(boolean)
+     * @see BLEManager#discoverServices()
+     * @see BLEManager#waitDisconnect()
      */
     public int disconnect() {
         if (DEBUG) {
@@ -369,6 +374,7 @@ public class BLEManager {
      * Wait {@value BLE_WAIT_TIMEOUT} millis for disconnection if it's not finished yet.
      *
      * @return Wait result.
+     * @see BLEManager#disconnect()
      */
     public int waitDisconnect() {
         if (DEBUG) {
