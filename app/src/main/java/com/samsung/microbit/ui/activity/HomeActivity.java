@@ -3,7 +3,6 @@ package com.samsung.microbit.ui.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
@@ -32,9 +31,9 @@ import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.common.AppInfo;
+import com.samsung.microbit.common.ConfigInfo;
 import com.samsung.microbit.data.constants.PermissionCodes;
-import com.samsung.microbit.presentation.AppInfoPresenter;
+import com.samsung.microbit.presentation.ConfigInfoPresenter;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.service.PluginService;
@@ -69,7 +68,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private String emailBodyString;
 
-    private AppInfoPresenter appInfoPresenter;
+    private ConfigInfoPresenter configInfoPresenter;
 
     /**
      * Provides simplified way to log informational messages.
@@ -99,9 +98,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         setContentView(R.layout.activity_home);
 
-        appInfoPresenter = new AppInfoPresenter();
+        configInfoPresenter = new ConfigInfoPresenter();
 
-        appInfoPresenter.start();
+        configInfoPresenter.start();
 
         setupDrawer();
         setupButtonsFontStyle();
@@ -117,13 +116,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             item.setChecked(true);
         }
 
-        AppInfo appInfo = MBApp.getApp().getAppInfo();
+        ConfigInfo configInfo = MBApp.getApp().getConfigInfo();
 
-        if (!appInfo.isAppStatusOn()) {
+        if (!configInfo.isAppStatusOn()) {
             finish();
             //Cannot proceed with the application. Shutdown NOW
-            PopUp.show(appInfo.getExceptionMsg(),
-                    appInfo.getExceptionTitle(),
+            PopUp.show(configInfo.getExceptionMsg(),
+                    configInfo.getExceptionTitle(),
                     R.drawable.error_face,//image icon res id
                     R.drawable.red_btn,
                     PopUp.GIFF_ANIMATION_ERROR,
@@ -253,7 +252,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 version,
                 Build.MODEL,
                 Build.VERSION.RELEASE,
-                MBApp.getApp().getAppInfo().getPrivacyURL());
+                MBApp.getApp().getConfigInfo().getPrivacyURL());
         return emailBodyString;
     }
 
@@ -271,7 +270,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        appInfoPresenter.destroy();
+        configInfoPresenter.destroy();
 
         unbindDrawables(gifAnimationHelloEmoji);
         unbindDrawables(findViewById(R.id.connect_device_btn));
@@ -323,7 +322,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        urlToOpen = MBApp.getApp().getAppInfo().getCreateCodeURL();
+        urlToOpen = MBApp.getApp().getConfigInfo().getCreateCodeURL();
         switch (id) {
             case R.id.live:
                 item.setChecked(true);
@@ -384,7 +383,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 //Update Stats
                 MBApp.getApp().getEchoClientManager().sendNavigationStats("home", "create-code");
                 if (urlToOpen == null) {
-                    urlToOpen = MBApp.getApp().getAppInfo().getCreateCodeURL();
+                    urlToOpen = MBApp.getApp().getConfigInfo().getCreateCodeURL();
                 }
 
                 //TODO create code open in same app
@@ -405,7 +404,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.discover_btn:
                 MBApp.getApp().getEchoClientManager().sendNavigationStats("home", "discover");
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(MBApp.getApp().getAppInfo().getDiscoverURL()));
+                intent.setData(Uri.parse(MBApp.getApp().getConfigInfo().getDiscoverURL()));
                 startActivity(intent);
                 break;
 
@@ -417,7 +416,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.btn_about: {
-                String url = MBApp.getApp().getAppInfo().getAboutURL();
+                String url = MBApp.getApp().getConfigInfo().getAboutURL();
                 Intent aboutIntent = new Intent(Intent.ACTION_VIEW);
                 aboutIntent.setData(Uri.parse(url));
                 startActivity(aboutIntent);
@@ -435,7 +434,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.btn_privacy_cookies: {
-                String url = MBApp.getApp().getAppInfo().getPrivacyURL();
+                String url = MBApp.getApp().getConfigInfo().getPrivacyURL();
                 Intent privacyIntent = new Intent(Intent.ACTION_VIEW);
                 privacyIntent.setData(Uri.parse(url));
                 startActivity(privacyIntent);
@@ -445,7 +444,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.btn_terms_conditions: {
-                String url = MBApp.getApp().getAppInfo().getTermsOfUseURL();
+                String url = MBApp.getApp().getConfigInfo().getTermsOfUseURL();
                 Intent termsIntent = new Intent(Intent.ACTION_VIEW);
                 termsIntent.setData(Uri.parse(url));
                 startActivity(termsIntent);
@@ -457,7 +456,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             break;
 
             case R.id.btn_send_feedback: {
-                String emailAddress = MBApp.getApp().getAppInfo().getSendEmailAddress();
+                String emailAddress = MBApp.getApp().getConfigInfo().getSendEmailAddress();
                 Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
                 feedbackIntent.setType("message/rfc822");
                 feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{emailAddress});

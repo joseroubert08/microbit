@@ -16,6 +16,12 @@ public class PluginsCreator {
 
     private SparseArray<AbstractPlugin> cachedPlugins = new SparseArray<>();
 
+    /**
+     * Creates plugin for managing concrete category of events.
+     *
+     * @param eventCategory Category, plugin must be managing
+     * @return Concrete plugin for managing selected {@code eventCategory}
+     */
     public AbstractPlugin createPlugin(int eventCategory) {
         if (DEBUG) {
             logi("handleMessage() ##  " + eventCategory);
@@ -69,6 +75,9 @@ public class PluginsCreator {
         return abstractPlugin;
     }
 
+    /**
+     * Free plugin resources.
+     */
     public void destroy() {
         for (int i = 0; i < cachedPlugins.size(); i++) {
             cachedPlugins.valueAt(i).destroy();

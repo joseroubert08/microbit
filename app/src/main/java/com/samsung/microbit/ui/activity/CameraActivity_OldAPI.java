@@ -57,6 +57,7 @@ import com.samsung.microbit.utils.ServiceUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -845,7 +846,7 @@ public class CameraActivity_OldAPI extends Activity {
      */
     PictureCallback jpegCallback = new PictureCallback() {
         public void onPictureTaken(byte[] data, Camera camera) {
-            new SaveImageTask().execute(data);
+            new SaveImageTask(CameraActivity_OldAPI.this).execute(data);
             DrawBlink();
             resetCam();
         }
@@ -884,11 +885,26 @@ public class CameraActivity_OldAPI extends Activity {
     /**
      * Provides an asynchronous task to save a picture on a device.
      */
-    //TODO: it's recommended to make inner classes static to avoid potential memory leaks
-    private class SaveImageTask extends AsyncTask<byte[], Void, Void> {
+    private static class SaveImageTask extends AsyncTask<byte[], Void, File> {
+
+        private final WeakReference<CameraActivity_OldAPI> cameraActivity_oldAPIWeakReference;
+
+        public SaveImageTask(CameraActivity_OldAPI cameraActivity_oldAPI) {
+            this.cameraActivity_oldAPIWeakReference = new WeakReference<>(cameraActivity_oldAPI);
+        }
 
         @Override
-        protected Void doInBackground(byte[]... data) {
+        protected void onPostExecute(File savedFile) {
+            super.onPostExecute(savedFile);
+            if(cameraActivity_oldAPIWeakReference.get() != null && savedFile != null) {
+                cameraActivity_oldAPIWeakReference.get().refreshGallery(savedFile);
+                CmdArg cmd = new CmdArg(0, "Camera picture saved");
+                ServiceUtils.sendReplyCommand(PluginService.CAMERA, cmd);
+            }
+        }
+
+        @Override
+        protected File doInBackground(byte[]... data) {
 
             // Write to SD Card
             try {
@@ -908,10 +924,7 @@ public class CameraActivity_OldAPI extends Activity {
                 outStream.flush();
                 outStream.close();
 
-                refreshGallery(outFile);
-
-                CmdArg cmd = new CmdArg(0, "Camera picture saved");
-                ServiceUtils.sendReplyCommand(PluginService.CAMERA, cmd);
+                return outFile;
             } catch (IOException e) {
                 Log.e(TAG, e.toString());
             }
@@ -928,7 +941,6 @@ public class CameraActivity_OldAPI extends Activity {
             mCamera.lock(); // lock camera for later use
         }
     }
-
 
     private boolean prepareMediaRecorder() {
 

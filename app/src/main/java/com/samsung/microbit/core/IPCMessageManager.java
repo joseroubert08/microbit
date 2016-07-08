@@ -101,12 +101,15 @@ public final class IPCMessageManager {
     }
 
     /**
-     * Sends IPC message to destination class providing message type, event category,
-     * special command and an array of data.
+     * Sends message to some service
+     * ({@link com.samsung.microbit.service.PluginService PluginService},
+     * {@link com.samsung.microbit.service.BLEService BLEService},
+     * {@link com.samsung.microbit.service.IPCService IPCService})
      *
-     * @param destService   Destination class to send to.
-     * @param messageType   Android or microbit message.
-     * @param eventCategory Event category listed in EventCategories.
+     * @param destService   Class of service, message need sent to.
+     * @param messageType   Android or microbit message. One of the {@link IPCMessageManager#MESSAGE_ANDROID},
+     *                      {@link IPCMessageManager#MESSAGE_MICROBIT}
+     * @param eventCategory Event category listed in {@link EventCategories}
      * @param cmd           Command argument.
      * @param args          Array of data.
      */

@@ -10,7 +10,7 @@ import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.ui.activity.AudioRecorderActivity;
 
 /**
- * Provides actions to record audio sounds.
+ * Provides actions for record audio sounds.
  */
 public class AudioRecordPlugin implements AbstractPlugin {
     private static final String TAG = AudioRecordPlugin.class.getSimpleName();
@@ -24,12 +24,6 @@ public class AudioRecordPlugin implements AbstractPlugin {
     public static final String INTENT_ACTION_STOP = "com.samsung.microbit.ui.activity.AudioRecorderActivity.action" +
             ".STOP";//close
 
-    /**
-     * Starts audio recorder plugin with a command argument which defines
-     * which command should be processed.
-     *
-     * @param cmd Command argument to define which command should be processed.
-     */
     @Override
     public void handleEntry(CmdArg cmd) {
         final String audioRecordAction;

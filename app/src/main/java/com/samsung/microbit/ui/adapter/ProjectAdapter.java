@@ -239,13 +239,11 @@ public class ProjectAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-
         return mProjects.size();
     }
 
     @Override
     public Object getItem(int position) {
-
         return mProjects.get(position);
     }
 

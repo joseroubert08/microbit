@@ -1,7 +1,7 @@
 package com.samsung.microbit.data.constants;
 
 /**
- * Contains constant values of common permission codes.
+ * Contains common permission codes.
  * It uses to identify which permission need to grand.
  */
 public class PermissionCodes {

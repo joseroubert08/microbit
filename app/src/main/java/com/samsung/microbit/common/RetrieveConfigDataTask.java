@@ -157,7 +157,7 @@ public abstract class RetrieveConfigDataTask extends AsyncTask<String, Void, Res
             String appStatus = status.getString("appStatus");
             editor.putString(RC_APPSTATUS_KEY, appStatus).commit();
             //Get extended message if needed
-            if (appStatus.equalsIgnoreCase(AppInfo.AppStatus.OFF.toString())) {
+            if (appStatus.equalsIgnoreCase(ConfigInfo.AppStatus.OFF.toString())) {
                 String title = status.getString("title");
                 String message = status.getString("message");
                 editor.putString(RC_EXCEPTIONTITLE_KEY, title);

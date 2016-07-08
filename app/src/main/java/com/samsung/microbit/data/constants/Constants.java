@@ -5,7 +5,7 @@ import com.samsung.microbit.utils.MemoryUnits;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Contains common constants that use different part of the app.
+ * Contains common constants.
  */
 public class Constants {
     public static final int MAX_VIDEO_RECORDING_TIME_MILLIS = (int) TimeUnit.SECONDS.toMillis(30);
@@ -21,8 +21,8 @@ public class Constants {
     public static final long DELAY_BETWEEN_PAUSE_AND_RESUME = TimeUnit.SECONDS.toMillis(1);
 
     /**
-     * Represents common states of connection operations.
-     * It uses to identify connection state and send appropriate statistics.
+     * Represents common states of connection.
+     * It uses for sending appropriate statistics.
      */
     public enum ConnectionState {
         SUCCESS,
