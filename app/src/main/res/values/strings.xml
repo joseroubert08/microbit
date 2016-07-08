@@ -195,7 +195,7 @@
     <string name="pairingErrorTitle">Error</string>
     <string name="timeOut">Timeout</string>
     <string name="pairingErrorMessage">We cannot find that micro:bit\nRetry?</string>
-    <string name="pairing_successful_tip_message">Please reset your micro:bit and your are done.</string>
+    <string name="pairing_successful_tip_message">Please press RESET button and you\'re done!</string>
     <string name="deleteMicrobitTitle">Delete micro:bit?</string>
     <string name="deleteMicrobitMessage">Are you sure you want to remove this device?</string>
 
@@ -372,5 +372,8 @@
     <string name="bluetooth_pairing_internal_error">Bluetooth pairing error happened. Disconnecting now &#8230;</string>
 
     <string name="samples_are_about_to_be_copied">Samples will now be copied to your device. You can check them out in the Flash section.</string>
+    <string name="reconnect_title">Reconnect</string>
+    <string name="reconnect_text">You\'ve been disconnected from a micro:bit. Do you want to reconnect?</string>
+    <string name="reconnect_ok_button">Reconnect</string>
 </resources>
 
