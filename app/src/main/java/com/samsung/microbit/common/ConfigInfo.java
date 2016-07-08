@@ -23,10 +23,9 @@ import static com.samsung.microbit.ConfigPreferenceNames.RC_LAST_QUERY;
 import static com.samsung.microbit.ConfigPreferenceNames.REMOTE_CONFIG_PREFERENCE_KEY;
 
 /**
- * Contains common information about the app such as externals references
- * and some app parameters.
+ * Contains common config information.
  */
-public class AppInfo {
+public class ConfigInfo {
 
     /**
      * Represents app status about sharing information.
@@ -83,7 +82,7 @@ public class AppInfo {
     private long LastQueryTime;
     private long maxAge;
 
-    public AppInfo(Context appContext) {
+    public ConfigInfo(Context appContext) {
         this.appContext = appContext;
         this.preferences = appContext.getSharedPreferences(REMOTE_CONFIG_PREFERENCE_KEY, Context.MODE_PRIVATE);
 

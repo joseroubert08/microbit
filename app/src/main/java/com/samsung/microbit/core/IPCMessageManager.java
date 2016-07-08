@@ -57,6 +57,9 @@ public final class IPCMessageManager {
 
     private HashMap<String, Messenger> remoteServices = new HashMap<>();
 
+    /**
+     * Listener to handle service connection states.
+     */
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -97,6 +100,19 @@ public final class IPCMessageManager {
         }
     }
 
+    /**
+     * Sends message to some service
+     * ({@link com.samsung.microbit.service.PluginService PluginService},
+     * {@link com.samsung.microbit.service.BLEService BLEService},
+     * {@link com.samsung.microbit.service.IPCService IPCService})
+     *
+     * @param destService   Class of service, message need sent to.
+     * @param messageType   Android or microbit message. One of the {@link IPCMessageManager#MESSAGE_ANDROID},
+     *                      {@link IPCMessageManager#MESSAGE_MICROBIT}
+     * @param eventCategory Event category listed in {@link EventCategories}
+     * @param cmd           Command argument.
+     * @param args          Array of data.
+     */
     public void sendIPCMessage(Class destService, int messageType, int eventCategory, CmdArg cmd,
                                       NameValuePair[] args) {
         if (!isConnected(destService)) {
@@ -136,7 +152,7 @@ public final class IPCMessageManager {
     private void configureClientHandler(String serviceName, Handler clientHandler) {
         if(DEBUG) {
             logi("configureClientHandler()");
-            logi("Init handler ::" +  clientHandler.getLooper().getThread().getName());
+            logi("Init handler ::" + clientHandler.getLooper().getThread().getName());
         }
 
         synchronized (lock) {
@@ -207,7 +223,9 @@ public final class IPCMessageManager {
         return explicitIntent;
     }
 
-    // ################################################
+    /**
+     * Provides custom implementation to handle incoming messages.
+     */
     private static class IncomingHandler extends Handler {
 
         private volatile Handler clientHandler;

@@ -11,6 +11,9 @@ import com.samsung.microbit.MBApp;
 
 import java.io.IOException;
 
+/**
+ * Provides methods to manage a media player and play raw audio files.
+ */
 public class PlayRawPresenter implements Presenter {
     private static final String TAG = PlayRawPresenter.class.getSimpleName();
 
@@ -97,9 +100,9 @@ public class PlayRawPresenter implements Presenter {
 
     @Override
     public void stop() {
-        if(mediaplayer != null) {
+        if (mediaplayer != null) {
             try {
-                if(mediaplayer.isPlaying()) {
+                if (mediaplayer.isPlaying()) {
                     mediaplayer.stop();
                     restoreAudioMode();
                 }

@@ -7,13 +7,16 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.samsung.microbit.MBApp;
-import com.samsung.microbit.common.AppInfo;
+import com.samsung.microbit.common.ConfigInfo;
 import com.samsung.microbit.common.RetrieveConfigDataTask;
 
 import java.io.File;
 import java.io.IOException;
 
-public class AppInfoPresenter implements Presenter {
+/**
+ * Provides abilities to present config information.
+ */
+public class ConfigInfoPresenter implements Presenter {
     /* Sample config file
   Normal case
   {
@@ -42,13 +45,13 @@ public class AppInfoPresenter implements Presenter {
   } */
 
     private Context appContext;
-    private AppInfo appInfo;
+    private ConfigInfo configInfo;
 
     private AsyncTask<String, Void, ?> retrieveAppInfoTask;
 
-    public AppInfoPresenter() {
+    public ConfigInfoPresenter() {
         appContext = MBApp.getApp();
-        appInfo = MBApp.getApp().getAppInfo();
+        configInfo = MBApp.getApp().getConfigInfo();
     }
 
     @Override
@@ -74,18 +77,18 @@ public class AppInfoPresenter implements Presenter {
 
         //Check if we should get new config file
         if (shouldRefreshValue()) {
-            if(retrieveAppInfoTask != null) {
+            if (retrieveAppInfoTask != null) {
                 retrieveAppInfoTask.cancel(true);
             }
 
-            retrieveAppInfoTask = new RetrieveAppInfoTask(appInfo.getPreferences(), appInfo);
+            retrieveAppInfoTask = new RetrieveAppInfoTask(configInfo.getPreferences(), configInfo);
 
             retrieveAppInfoTask.execute();
         }
     }
 
     private boolean shouldRefreshValue() {
-        if (appInfo.getLastQueryTime() + appInfo.getMaxAge() * 1000 < System.currentTimeMillis()) {
+        if (configInfo.getLastQueryTime() + configInfo.getMaxAge() * 1000 < System.currentTimeMillis()) {
             return true;
         }
         return true;
@@ -93,7 +96,7 @@ public class AppInfoPresenter implements Presenter {
 
     @Override
     public void stop() {
-        if(retrieveAppInfoTask != null && retrieveAppInfoTask.getStatus() == AsyncTask.Status.RUNNING) {
+        if (retrieveAppInfoTask != null && retrieveAppInfoTask.getStatus() == AsyncTask.Status.RUNNING) {
             retrieveAppInfoTask.cancel(true);
             retrieveAppInfoTask = null;
         }
@@ -113,20 +116,23 @@ public class AppInfoPresenter implements Presenter {
         }
     }
 
+    /**
+     * An asynchronous task that retrieves app information in background.
+     */
     private static class RetrieveAppInfoTask extends RetrieveConfigDataTask {
-        private AppInfo appInfo;
+        private ConfigInfo configInfo;
 
-        RetrieveAppInfoTask(SharedPreferences preferences, AppInfo appInfo) {
+        RetrieveAppInfoTask(SharedPreferences preferences, ConfigInfo configInfo) {
             super(preferences);
-            this.appInfo = appInfo;
-            setEtag(appInfo.getEtag());
-            setLastQueryTime(appInfo.getLastQueryTime());
+            this.configInfo = configInfo;
+            setEtag(configInfo.getEtag());
+            setLastQueryTime(configInfo.getLastQueryTime());
 
         }
 
         @Override
         protected void onPostExecute() {
-            appInfo.searchStoredValues();
+            configInfo.searchStoredValues();
         }
     }
 }

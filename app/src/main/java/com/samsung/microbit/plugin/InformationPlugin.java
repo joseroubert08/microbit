@@ -25,7 +25,9 @@ import static com.samsung.microbit.plugin.InformationPlugin.AlertType.TYPE_SHAKE
 import static com.samsung.microbit.plugin.InformationPlugin.AlertType.TYPE_SIGNAL_STRENGTH;
 import static com.samsung.microbit.plugin.InformationPlugin.AlertType.TYPE_TEMPERATURE;
 
-
+/**
+ * Provide ability to collect and share device information.
+ */
 public class InformationPlugin implements AbstractPlugin {
     private static final String TAG = InformationPlugin.class.getSimpleName();
 

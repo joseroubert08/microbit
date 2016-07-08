@@ -22,8 +22,8 @@ import java.util.UUID;
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
 /**
- * Inter process communication service that uses to manage BLE connection,
- * handle and send messages from/to IPCMessageManager.
+ * Inter process communication service that used to handle interaction between
+ * {@link BLEService} and {@link PluginService}.
  */
 public class IPCService extends Service {
     private static final String TAG = IPCService.class.getSimpleName();

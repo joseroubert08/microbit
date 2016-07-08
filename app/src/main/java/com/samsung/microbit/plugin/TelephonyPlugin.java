@@ -11,6 +11,9 @@ import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.presentation.IncomingCallPresenter;
 import com.samsung.microbit.presentation.IncomingSMSPresenter;
 
+/**
+ * Allows to share statistic about incoming telephone calls and sms on a mobile device.
+ */
 public class TelephonyPlugin implements AbstractPlugin {
     private static final String TAG = TelephonyPlugin.class.getSimpleName();
 

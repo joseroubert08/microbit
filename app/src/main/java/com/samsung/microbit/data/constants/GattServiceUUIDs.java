@@ -5,8 +5,9 @@ import com.samsung.microbit.utils.UUIDsUtils;
 import java.util.UUID;
 
 /**
- * Contains universally unique identifier constants.
- * Basically, it uses to write characteristic in BLEService.
+ * Contains universally unique identifiers for identifying services.
+ * You can search GATT device services, and discover it
+ * {@link android.bluetooth.BluetoothGattCharacteristic BluetoothGattCharacteristic}s
  */
 public class GattServiceUUIDs {
     private GattServiceUUIDs() {

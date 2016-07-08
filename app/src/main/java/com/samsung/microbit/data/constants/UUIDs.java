@@ -5,7 +5,7 @@ import com.samsung.microbit.utils.UUIDsUtils;
 import java.util.UUID;
 
 /**
- * Contains common universally unique identifiers that uses all around the app.
+ * Contains common universally unique identifiers.
  */
 public class UUIDs {
     private UUIDs() {

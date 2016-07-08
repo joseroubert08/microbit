@@ -38,7 +38,7 @@ import com.samsung.microbit.data.constants.RequestCodes;
 import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.data.model.Project;
 import com.samsung.microbit.data.model.ui.FlashActivityState;
-import com.samsung.microbit.presentation.AppInfoPresenter;
+import com.samsung.microbit.presentation.ConfigInfoPresenter;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.DfuService;
 import com.samsung.microbit.service.IPCService;
@@ -195,7 +195,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         return mRequestPermissions.isEmpty();
     }
 
-    private AppInfoPresenter appInfoPresenter;
+    private ConfigInfoPresenter configInfoPresenter;
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -243,9 +243,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
         logi("onCreate() :: ");
 
-        appInfoPresenter = new AppInfoPresenter();
+        configInfoPresenter = new ConfigInfoPresenter();
 
-        appInfoPresenter.start();
+        configInfoPresenter.start();
 
         MBApp application = MBApp.getApp();
 
@@ -288,7 +288,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
     @Override
     protected void onDestroy() {
-        appInfoPresenter.destroy();
+        configInfoPresenter.destroy();
 
         MBApp application = MBApp.getApp();
 
@@ -608,7 +608,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         switch (v.getId()) {
             case R.id.createProject: {
                 MBApp.getApp().getEchoClientManager().sendNavigationStats("home", "my-scripts");
-                String url = MBApp.getApp().getAppInfo().getMyScriptsURL();
+                String url = MBApp.getApp().getConfigInfo().getMyScriptsURL();
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(url));
                 startActivity(intent);
