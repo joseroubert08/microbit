@@ -14,29 +14,27 @@
         android:gravity="bottom|center"
         android:text="@string/searchingTitle" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="3">
+    <LinearLayout
+        style="@style/pairing_step_central_image_layout_style"
+        android:orientation="vertical">
 
         <!--pairing animation-->
         <pl.droidsonroids.gif.GifImageView
             android:id="@+id/searching_microbit_found_giffview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:layout_margin="@dimen/pairing_step_gif_view_margin"
-            android:src="@drawable/pairing_pin_screen_two" />
+            android:src="@drawable/emoji_microbit_found"
+            android:visibility="gone" />
 
         <ProgressBar
             android:id="@+id/searching_progress_spinner"
-            android:layout_width="@dimen/pairing_searching_step_cycle_progress_bar_size"
-            android:layout_height="@dimen/pairing_searching_step_cycle_progress_bar_size"
+            android:layout_width="@dimen/pairing_step_cycle_progress_bar_size"
+            android:layout_height="@dimen/pairing_step_cycle_progress_bar_size"
             android:indeterminateDrawable="@drawable/white_progress_bar"
-            android:layout_margin="@dimen/pairing_step_gif_view_margin"
-            android:layout_alignParentEnd="true"
-            android:indeterminateDuration="@integer/pairing_step_cycle_progress_bar_duration" />
-    </RelativeLayout>
+            android:indeterminateDuration="@integer/pairing_step_cycle_progress_bar_duration"
+            android:visibility="gone" />
+    </LinearLayout>
 
     <include layout="@layout/view_pairing_searching_step" />
 

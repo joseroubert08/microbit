@@ -66,7 +66,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import pl.droidsonroids.gif.GifImageView;
 
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
@@ -404,6 +403,15 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         TextView stepTwoTitle = (TextView) findViewById(R.id.pair_enter_pattern_step_2);
         stepTwoTitle.setTypeface(boldTypeface);
 
+        TextView stepTwoInstructions = (TextView) findViewById(R.id.pair_enter_pattern_step_2_instructions);
+        stepTwoInstructions.setTypeface(MBApp.getApp().getRobotoTypeface());
+
+
+        Button cancelEnterPattern = (Button) findViewById(R.id.cancel_enter_pattern_step_2_btn);
+        cancelEnterPattern.setTypeface(MBApp.getApp().getRobotoTypeface());
+
+        Button okEnterPatternButton = (Button) findViewById(R.id.ok_enter_pattern_step_2_btn);
+        okEnterPatternButton.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         // Step 3 - Searching for micro:bit
         TextView searchMicrobitTitle = (TextView) findViewById(R.id.search_microbit_step_3_title);
@@ -429,14 +437,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         Button nextPairButton = (Button) findViewById(R.id.ok_tip_step_1_btn);
         nextPairButton.setTypeface(robotoTypeface);
 
-        TextView stepTwoInstructions = (TextView) findViewById(R.id.pair_enter_pattern_step_2_instructions);
-        stepTwoInstructions.setTypeface(robotoTypeface);
 
-        Button cancelEnterPattern = (Button) findViewById(R.id.cancel_enter_pattern_step_2_btn);
-        cancelEnterPattern.setTypeface(robotoTypeface);
-
-        Button okEnterPatternButton = (Button) findViewById(R.id.ok_enter_pattern_step_2_btn);
-        okEnterPatternButton.setTypeface(robotoTypeface);
 
         TextView stepThreeInstructions = (TextView) findViewById(R.id.searching_microbit_step_instructions);
         stepThreeInstructions.setTypeface(robotoTypeface);
@@ -839,17 +840,17 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 TextView tvSearchingStep = (TextView) findViewById(R.id.searching_microbit_step);
                 tvSearchingStep.setContentDescription(tvSearchingStep.getText());
                 TextView tvSearchingInstructions = (TextView) findViewById(R.id.searching_microbit_step_instructions);
-
-                tvTitle.setText(R.string.searchingTitle);
-                findViewById(R.id.searching_progress_spinner).setVisibility(View.VISIBLE);
-                ((GifImageView) findViewById(R.id.searching_microbit_found_giffview))
-                        .setImageResource(R.drawable.pairing_pin_screen_two);
-                if (mCurrentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    tvSearchingStep.setText(R.string.searching_tip_step_text_one_line);
-                } else {
-                    tvSearchingStep.setText(R.string.searching_tip_step_text);
+                if (tvTitle != null) {
+                    tvTitle.setText(R.string.searchingTitle);
+                    findViewById(R.id.searching_progress_spinner).setVisibility(View.VISIBLE);
+                    findViewById(R.id.searching_microbit_found_giffview).setVisibility(View.GONE);
+                    if(mCurrentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        tvSearchingStep.setText(R.string.searching_tip_step_text_one_line);
+                    } else {
+                        tvSearchingStep.setText(R.string.searching_tip_step_text);
+                    }
+                    tvSearchingInstructions.setText(R.string.searching_tip_text_instructions);
                 }
-                tvSearchingInstructions.setText(R.string.searching_tip_text_instructions);
                 break;
         }
     }
@@ -1332,8 +1333,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                         if (textView != null) {
                             textView.setText(getString(R.string.searchingTitle));
                             findViewById(R.id.searching_progress_spinner).setVisibility(View.GONE);
-                            ((GifImageView) findViewById(R.id.searching_microbit_found_giffview))
-                                    .setImageResource(R.drawable.emoji_microbit_found);
+                            findViewById(R.id.searching_microbit_found_giffview).setVisibility(View.VISIBLE);
                             if (mCurrentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
                                 tvSearchingStep.setText(R.string.searching_microbit_found_message_one_line);
                             } else {
