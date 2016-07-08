@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -86,9 +87,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         //handle orientation change to prevent re-creation of activity.
         super.onConfigurationChanged(newConfig);
 
+        unbindDrawables();
+
         setContentView(R.layout.activity_home);
         setupDrawer();
         setupButtonsFontStyle();
+        initViews();
     }
 
     @Override
@@ -104,9 +108,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         setupDrawer();
         setupButtonsFontStyle();
+        initViews();
 
         checkMinimumPermissionsForThisScreen();
-        startOtherServices();
+        if(savedInstanceState == null) {
+            startOtherServices();
+        }
 
         MBApp.getApp().getEchoClientManager().sendViewEventStats("homeactivity");
 
@@ -131,22 +138,27 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     null);
 
         }
-        // animation for loading hello .giff
-        gifAnimationHelloEmoji = (GifImageView) findViewById(R.id.homeHelloAnimationGifView);
     }
 
     /**
      * Sets buttons font style by setting an appropriate typeface.
      */
     private void setupButtonsFontStyle() {
+        Typeface typeface = MBApp.getApp().getTypeface();
+
         Button connectButton = (Button) findViewById(R.id.connect_device_btn);
-        connectButton.setTypeface(MBApp.getApp().getTypeface());
+        connectButton.setTypeface(typeface);
         Button flashButton = (Button) findViewById(R.id.flash_microbit_btn);
-        flashButton.setTypeface(MBApp.getApp().getTypeface());
+        flashButton.setTypeface(typeface);
         Button createCodeButton = (Button) findViewById(R.id.create_code_btn);
-        createCodeButton.setTypeface(MBApp.getApp().getTypeface());
+        createCodeButton.setTypeface(typeface);
         Button discoverButton = (Button) findViewById(R.id.discover_btn);
-        discoverButton.setTypeface(MBApp.getApp().getTypeface());
+        discoverButton.setTypeface(typeface);
+    }
+
+    private void initViews() {
+        // animation for loading hello .giff
+        gifAnimationHelloEmoji = (GifImageView) findViewById(R.id.homeHelloAnimationGifView);
     }
 
     /**
@@ -156,14 +168,19 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private void startOtherServices() {
         // IPC service to communicate between the services
         Intent ipcIntent = new Intent(this, IPCService.class);
-        startService(ipcIntent);
 
         // BLE service to Handle all BLE communications
         Intent bleIntent = new Intent(this, BLEService.class);
-        startService(bleIntent);
 
         // Plugin service to handle incoming requests
         final Intent intent = new Intent(this, PluginService.class);
+
+        stopService(ipcIntent);
+        stopService(bleIntent);
+        stopService(intent);
+
+        startService(ipcIntent);
+        startService(bleIntent);
         startService(intent);
     }
 
@@ -272,6 +289,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
         configInfoPresenter.destroy();
 
+        unbindDrawables();
+    }
+
+    private void unbindDrawables() {
         unbindDrawables(gifAnimationHelloEmoji);
         unbindDrawables(findViewById(R.id.connect_device_btn));
         unbindDrawables(findViewById(R.id.flash_microbit_btn));
@@ -307,6 +328,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 ((GifDrawable) backgroundDrawable).recycle();
             }
         }
+
+        if(view instanceof ImageView && ((ImageView) view).getDrawable() != null) {
+            Drawable backgroundDrawable = ((ImageView) view).getDrawable();
+            backgroundDrawable.setCallback(null);
+            view.unscheduleDrawable(backgroundDrawable);
+
+            if (backgroundDrawable instanceof GifDrawable) {
+                ((GifDrawable) backgroundDrawable).recycle();
+            }
+        }
+
         if (view instanceof ViewGroup) {
             ViewGroup viewGroup = (ViewGroup) view;
 
@@ -341,16 +373,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     public boolean onCreateOptionsMenu(Menu menu) {
         return true;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
     }
 
     @Override
@@ -616,6 +638,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void onResume() {
         if (DEBUG) logi("onResume() :: ");
         super.onResume();
-        findViewById(R.id.homeHelloAnimationGifView).animate();
+        if(gifAnimationHelloEmoji != null) {
+            gifAnimationHelloEmoji.animate();
+        }
     }
 }
