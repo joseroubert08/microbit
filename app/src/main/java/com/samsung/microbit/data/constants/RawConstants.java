@@ -1,5 +1,8 @@
 package com.samsung.microbit.data.constants;
 
+/**
+ * Contains raw constants that contains in raw directory.
+ */
 public class RawConstants {
     private RawConstants() {
     }

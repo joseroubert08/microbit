@@ -13,6 +13,9 @@ import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.presentation.PlayRawPresenter;
 import com.samsung.microbit.ui.activity.CameraActivityPermissionChecker;
 
+/**
+ * Allows to start and interact with a device camera to proceed with wished actions.
+ */
 public class CameraPlugin implements AbstractPlugin {
     private static final String TAG = CameraPlugin.class.getSimpleName();
 
@@ -39,6 +42,11 @@ public class CameraPlugin implements AbstractPlugin {
         }
     };
 
+    /**
+     * Starts camera plugin and performs action provided by a command argument.
+     *
+     * @param cmd Command argument that defines which action should be processed.
+     */
     @Override
     public void handleEntry(CmdArg cmd) {
         Context ctx = MBApp.getApp();
@@ -122,6 +130,9 @@ public class CameraPlugin implements AbstractPlugin {
         }
     }
 
+    /**
+     * Provides some actions needed to perform at the end.
+     */
     private void performOnEnd() {
         Log.d(TAG, "Next state - " + m_NextState);
         switch (m_NextState) {
@@ -140,27 +151,41 @@ public class CameraPlugin implements AbstractPlugin {
         }
     }
 
+    /**
+     * Sends a broadcast intent to take a picture.
+     */
     private static void takePic() {
         Intent intent = new Intent(ACTION_TAKE_PICTURE);
         MBApp.getApp().sendBroadcast(intent);
     }
 
+    /**
+     * Sends a broadcast intent to start video recording.
+     */
     private static void recVideoStart() {
         Intent intent = new Intent(ACTION_TAKE_VIDEO);
         MBApp.getApp().sendBroadcast(intent);
     }
 
+    /**
+     * Sends a broadcast intent to stop video recording.
+     */
     private static void recVideoStop() {
         Intent intent = new Intent(ACTION_STOP_VIDEO);
         MBApp.getApp().sendBroadcast(intent);
     }
 
-
+    /**
+     * Sends a broadcast intent to turn on/off a camera.
+     */
     private static void toggleCamera() {
         Intent intent = new Intent(ACTION_TOGGLE_CAMERA);
         MBApp.getApp().sendBroadcast(intent);
     }
 
+    /**
+     * Starts activity to take a picture or to record a video.
+     */
     private void launchCamera(boolean launchForPic) {
         Context context = MBApp.getApp();
 

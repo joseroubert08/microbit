@@ -2,6 +2,10 @@ package com.samsung.microbit.data.constants;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 
+/**
+ * Contains constants that use to set characteristic format. For example,
+ * set type of the characteristic that going to be written.
+ */
 public class GattFormats {
     private GattFormats() {
     }

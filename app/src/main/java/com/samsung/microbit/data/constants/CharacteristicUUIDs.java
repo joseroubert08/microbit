@@ -4,6 +4,10 @@ import com.samsung.microbit.utils.UUIDsUtils;
 
 import java.util.UUID;
 
+/**
+ * Contains characteristic universally unique identifier constants
+ * that use PluginService and BLEManager.
+ */
 public class CharacteristicUUIDs {
     private CharacteristicUUIDs() {
     }

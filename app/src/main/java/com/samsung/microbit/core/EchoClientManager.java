@@ -17,7 +17,8 @@ import uk.co.bbc.echo.EchoConfigKeys;
 import uk.co.bbc.echo.enumerations.ApplicationType;
 
 /**
- * Created by kkulendiran on 12/02/16.
+ * Allows to send statistics about app work, such as navigation, pairing,
+ * connection and flashing statistics.
  */
 public class EchoClientManager {
 
@@ -40,7 +41,7 @@ public class EchoClientManager {
         this.context = app;
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("com.samsung.microbit", Context
-                 .MODE_PRIVATE);
+                .MODE_PRIVATE);
         if (sharedPreferences != null) {
             shareStatistic = sharedPreferences.getBoolean(context.getString(R.string.prefs_share_stats_status), true);
         }
@@ -48,9 +49,8 @@ public class EchoClientManager {
         initialiseEcho();
     }
 
-    // Using release 9.2.1 from https://github.com/bbc/echo-client-android/releases/tag/9.2.1
     public void initialiseEcho() {
-        HashMap<String, String> config = new HashMap<String, String>();
+        HashMap<String, String> config = new HashMap<>();
         //Use ECHO_TRACE value for searching in echo chamber
         config.put(EchoConfigKeys.ECHO_TRACE, "microbit_android_app");
         //Use CS debug mode
@@ -113,7 +113,7 @@ public class EchoClientManager {
         try {
             if (shareStatistic && echo != null) {
                 Log.d(TAG, "sendFlashStats fileName=" + fileName + " hexsize=" + hexsize + "  " +
-                         "binsize=" + binsize + " microbit_firmwwareversion= " + firmware);
+                        "binsize=" + binsize + " microbit_firmwwareversion= " + firmware);
                 HashMap<String, String> eventLabels = new HashMap<>();
                 eventLabels.put("action_location", "app");
                 eventLabels.put("bbc_site", "bitesize");

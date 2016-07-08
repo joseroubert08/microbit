@@ -23,8 +23,12 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.xml.transform.Result;
+
 import static com.samsung.microbit.ConfigPreferenceNames.*;
 
+/**
+ * Base class that extends asynchronous task and implements methods to load configuration data.
+ */
 public abstract class RetrieveConfigDataTask extends AsyncTask<String, Void, Result> {
 
     private static final String TAG = RetrieveConfigDataTask.class.getSimpleName();
@@ -40,7 +44,7 @@ public abstract class RetrieveConfigDataTask extends AsyncTask<String, Void, Res
     }
 
     public void setEtag(String etag) {
-        if(etag != null) {
+        if (etag != null) {
             Etag = etag;
         } else {
             Etag = "";

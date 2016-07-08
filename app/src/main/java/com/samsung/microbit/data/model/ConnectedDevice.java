@@ -1,5 +1,10 @@
 package com.samsung.microbit.data.model;
 
+/**
+ * Represents a connected device (a micro:bit board).
+ * It contains common information about a micro:bit board such as
+ * name, pattern, status, address and etc.
+ */
 public class ConnectedDevice {
 
     public String mName;
@@ -13,7 +18,10 @@ public class ConnectedDevice {
     public ConnectedDevice() {
     }
 
-    public ConnectedDevice(String name, String pattern, boolean status, String address, int pairingCode, String firmware, long connectionTime) {
+    public ConnectedDevice(String name, String pattern,
+                           boolean status, String address,
+                           int pairingCode, String firmware,
+                           long connectionTime) {
         this.mName = name;
         this.mPattern = pattern;
         this.mStatus = status;

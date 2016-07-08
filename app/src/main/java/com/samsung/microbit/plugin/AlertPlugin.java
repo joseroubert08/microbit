@@ -30,6 +30,11 @@ import java.util.concurrent.TimeUnit;
 
 import static com.samsung.microbit.plugin.AlertPlugin.AlertType.*;
 
+/**
+ * Represents a module that can provide actions to raise a big smoke.
+ * It can make your mobile device ring and vibrate so you can figure out
+ * where it is if you can't find it.
+ */
 public class AlertPlugin implements AbstractPlugin {
     private static final String TAG = AlertPlugin.class.getSimpleName();
 
@@ -122,6 +127,9 @@ public class AlertPlugin implements AbstractPlugin {
         }
     }
 
+    /**
+     * Makes your device to stop ringing.
+     */
     private void stopPlaying() {
         for (Presenter presenter : activePresenters) {
             presenter.stop();
@@ -274,6 +282,12 @@ public class AlertPlugin implements AbstractPlugin {
         return alarm;
     }
 
+    /**
+     * Allows to show additional dialog window while alarm is on.
+     *
+     * @param textMsg     Text message to show.
+     * @param popupAction Popup code action.
+     */
     private static void showDialogWithAction(String textMsg, int popupAction) {
         PopUp.showFromService(MBApp.getApp(), "",
                 textMsg,

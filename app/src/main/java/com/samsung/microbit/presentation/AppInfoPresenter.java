@@ -13,6 +13,9 @@ import com.samsung.microbit.common.RetrieveConfigDataTask;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Provides abilities to present app information.
+ */
 public class AppInfoPresenter implements Presenter {
     /* Sample config file
   Normal case
@@ -74,7 +77,7 @@ public class AppInfoPresenter implements Presenter {
 
         //Check if we should get new config file
         if (shouldRefreshValue()) {
-            if(retrieveAppInfoTask != null) {
+            if (retrieveAppInfoTask != null) {
                 retrieveAppInfoTask.cancel(true);
             }
 
@@ -93,7 +96,7 @@ public class AppInfoPresenter implements Presenter {
 
     @Override
     public void stop() {
-        if(retrieveAppInfoTask != null && retrieveAppInfoTask.getStatus() == AsyncTask.Status.RUNNING) {
+        if (retrieveAppInfoTask != null && retrieveAppInfoTask.getStatus() == AsyncTask.Status.RUNNING) {
             retrieveAppInfoTask.cancel(true);
             retrieveAppInfoTask = null;
         }
@@ -113,6 +116,9 @@ public class AppInfoPresenter implements Presenter {
         }
     }
 
+    /**
+     * An asynchronous task that retrieves app information in background.
+     */
     private static class RetrieveAppInfoTask extends RetrieveConfigDataTask {
         private AppInfo appInfo;
 

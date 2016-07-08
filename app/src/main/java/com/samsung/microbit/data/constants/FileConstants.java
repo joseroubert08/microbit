@@ -4,6 +4,9 @@ import android.os.Environment;
 
 import java.io.File;
 
+/**
+ * Contains common constants that intended to use in work with files.
+ */
 public class FileConstants {
     private FileConstants() {
     }

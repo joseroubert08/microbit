@@ -32,6 +32,9 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
 
+/**
+ * Allows to perform recording an audio.
+ */
 public class AudioRecorderActivity extends Activity {
 
     private static final int NOTIFICATION_ID = 1;
@@ -163,6 +166,11 @@ public class AudioRecorderActivity extends Activity {
         }
     }
 
+    /**
+     * Processes action passed through parameter.
+     *
+     * @param action Action to process.
+     */
     private void processIntent(String action) {
         if (action == null)
             return;
@@ -264,7 +272,7 @@ public class AudioRecorderActivity extends Activity {
 
     private void releaseRecorder() {
         if (mRecorder != null) {
-            if(mIsRecording) {
+            if (mIsRecording) {
                 mRecorder.stop();
             } else {
                 mRecorder.reset();

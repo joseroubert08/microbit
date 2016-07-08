@@ -47,6 +47,7 @@ public class BLEService extends BLEBaseService {
 
     private boolean firstRun = true;
 
+    //TODO: consider to use or remove
     private NotificationManager notifyMgr = null;
     private int notificationId = 1010;
 
@@ -178,7 +179,7 @@ public class BLEService extends BLEBaseService {
         if (integerValue == null) {
             return;
         }
-        int value = integerValue.intValue();
+        int value = integerValue;
         int eventSrc = value & 0x0ffff;
         if (eventSrc < 1001) {
             return;
@@ -235,11 +236,6 @@ public class BLEService extends BLEBaseService {
         logi("setNotification() :: errorCode = " + errorCode);
         logi("setNotification() :: actual_Error = " + actual_Error);
 
-
-        NotificationManager notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        String notificationString = null;
-        boolean onGoingNotification = false;
-
         NameValuePair[] args = new NameValuePair[3];
 
         args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
@@ -259,16 +255,12 @@ public class BLEService extends BLEBaseService {
                     setBluetoothDevice(null);
                 }
             }
-            notificationString = getString(R.string.tray_notification_failure);
-            onGoingNotification = false;
 
             ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
                     .IPC_BLE_NOTIFICATION_GATT_DISCONNECTED, null, args);
             ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
                     .IPC_BLE_NOTIFICATION_GATT_DISCONNECTED, null, args);
         } else {
-            notificationString = getString(R.string.tray_notification_sucsess);
-            onGoingNotification = true;
 
             ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
                     .IPC_BLE_NOTIFICATION_GATT_CONNECTED, null, args);
@@ -277,7 +269,7 @@ public class BLEService extends BLEBaseService {
         }
     }
 
-    /*
+    /**
      * IPC Messenger handling
      */
     @Override
@@ -288,7 +280,7 @@ public class BLEService extends BLEBaseService {
     private boolean registerNotifications(boolean enable) {
         logi("registerNotifications() : " + enable);
 
-        //Read microbit firmware version
+        //Read micro:bit firmware version
         BluetoothGattService deviceInfoService = getService(GattServiceUUIDs.DEVICE_INFORMATION_SERVICE);
         if (deviceInfoService != null) {
             BluetoothGattCharacteristic firmwareCharacteristic = deviceInfoService.getCharacteristic
@@ -337,14 +329,20 @@ public class BLEService extends BLEBaseService {
         return true;
     }
 
+    /**
+     * Register to know about the micro:bit requirements. What events does the micro:bit need from us
+     * read repeatedly from (3) to find out the events that the micro:bit is interested in receiving.
+     * e.g. if a kids app registers to receive events <10,3><15,2> then the first read will
+     * give you <10,3> the second <15,2>, the third will give you a zero length value.
+     * You can send events to the micro:bit that haven't been asked for, but as no-one will
+     * be listening, they will be silently dropped.
+     *
+     * @param eventService Bluetooth GATT service.
+     * @param enable       Enable or disable.
+     * @return True, if successful.
+     */
     private boolean registerMicrobitRequirements(BluetoothGattService eventService, boolean enable) {
-        /*
-        Register to know about the micro:bit requirements. What events does the micro:bit need from us
-        read repeatedly from (3) to find out the events that the micro:bit is interested in receiving.
-        e.g. if a kids app registers to receive events <10,3><15,2> then the first read will give you <10,3> the second <15,2>,
-        the third will give you a zero length value.
-        You can send events to the micro:bit that haven't been asked for, but as no-one will be listening, they will be silently dropped.
-        */
+
         BluetoothGattCharacteristic microbit_requirements = eventService.getCharacteristic(CharacteristicUUIDs
                 .ES_MICROBIT_REQUIREMENTS);
         if (microbit_requirements == null) {
@@ -382,12 +380,15 @@ public class BLEService extends BLEBaseService {
         return true;
     }
 
+    /**
+     * write repeatedly to (4) to register for the events your app wants to see from the micro:bit.
+     * e.g. write <1,1> to register for a 'DOWN' event on ButtonA.
+     * Any events matching this will then start to be delivered via the MicroBit Event characteristic.
+     *
+     * @param eventService Bluetooth GATT service.
+     * @param enable       Enable or disable.
+     */
     private void register_AppRequirement(BluetoothGattService eventService, boolean enable) {
-        /*
-        write repeatedly to (4) to register for the events your app wants to see from the micro:bit.
-        e.g. write <1,1> to register for a 'DOWN' event on ButtonA.
-        Any events matching this will then start to be delivered via the MicroBit Event characteristic.
-        */
         if (!enable) {
             return;
         }
@@ -418,6 +419,13 @@ public class BLEService extends BLEBaseService {
         }
     }
 
+    /**
+     * Enables or disables micro:bit event by given event and enable/disable flag.
+     *
+     * @param eventService Bluetooth GATT service to be registered.
+     * @param enable       Enable or disable.
+     * @return True, if successful.
+     */
     private boolean registerMicroBitEvents(BluetoothGattService eventService, boolean enable) {
         // Read (or register for notify) on (1) to receive events generated by the micro:bit.
         BluetoothGattCharacteristic microbit_requirements = eventService.getCharacteristic(CharacteristicUUIDs
@@ -437,6 +445,7 @@ public class BLEService extends BLEBaseService {
         return true;
     }
 
+    //TODO: consider to use somewhere or remove
     private void removeBond(BluetoothDevice bluetoothDevice) {
         try {
             Class<BluetoothDevice> bluetoothDeviceClass = BluetoothDevice.class;
@@ -477,15 +486,11 @@ public class BLEService extends BLEBaseService {
                 .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
     }
 
-    // ######################################################################
-
-    int lastEvent = EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE;
-
     private void sendMessage(int eventSrc, int event) {
 
         logi("Sending eventSrc " + eventSrc + "  event=" + event);
-        int msgService = 0;
-        CmdArg cmd = null;
+        int msgService;
+        CmdArg cmd;
         switch (eventSrc) {
             case EventCategories.SAMSUNG_REMOTE_CONTROL_ID:
             case EventCategories.SAMSUNG_ALERTS_ID:
@@ -499,12 +504,15 @@ public class BLEService extends BLEBaseService {
             default:
                 return;
         }
-        if (cmd != null) {
-            ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, msgService, cmd,
-                    null);
-        }
+        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT,
+                msgService, cmd, null);
     }
 
+    /**
+     * Registers or unregisters listener for signal strength.
+     *
+     * @param register Register or unregister.
+     */
     private void registerForSignalStrength(boolean register) {
         logi("registerForSignalStrength() -- " + register);
         CmdArg cmd = register ? new CmdArg(RegistrationIds.REG_SIGNALSTRENGTH, "On") : new CmdArg(RegistrationIds
@@ -513,6 +521,12 @@ public class BLEService extends BLEBaseService {
                 .SAMSUNG_SIGNAL_STRENGTH_ID, cmd, null);
     }
 
+    /**
+     * Registers or unregisters listeners for a device information, such as device orientation,
+     * device gesture, device battery strength and etc.
+     *
+     * @param register Register or unregister.
+     */
     private void registerForDeviceInfo(boolean register) {
         logi("registerForDeviceInfo() -- " + register);
         //Device Orientation
@@ -556,6 +570,7 @@ public class BLEService extends BLEBaseService {
                 .SAMSUNG_DEVICE_INFO_ID, cmd6, null);
     }
 
+    //TODO: consider to use somewhere or remove
     private void writeCharacteristicByte(String serviceGuid, String characteristic, byte[] value) {
         if (!isConnected()) {
             logi("writeCharacteristic() :: Not connected. Returning");

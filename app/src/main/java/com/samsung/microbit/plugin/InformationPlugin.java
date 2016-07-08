@@ -25,13 +25,21 @@ import static com.samsung.microbit.plugin.InformationPlugin.AlertType.TYPE_SHAKE
 import static com.samsung.microbit.plugin.InformationPlugin.AlertType.TYPE_SIGNAL_STRENGTH;
 import static com.samsung.microbit.plugin.InformationPlugin.AlertType.TYPE_TEMPERATURE;
 
-
+/**
+ * Provides ability to get information about some part of
+ * micro:bit board such as orientation, shake events, temperature and etc.
+ */
 public class InformationPlugin implements AbstractPlugin {
     private static final String TAG = InformationPlugin.class.getSimpleName();
 
     private List<Presenter> activePresenters = new ArrayList<>();
     private List<Integer> alertTypes = new ArrayList<>();
 
+    /**
+     * Starts plugin and run action defined in a command argument.
+     *
+     * @param cmd Command argument to define which command should be performed.
+     */
     @Override
     public void handleEntry(CmdArg cmd) {
         boolean register = false;

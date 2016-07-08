@@ -61,6 +61,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Provides actions to interact with a camera.
+ */
 public class CameraActivity_OldAPI extends Activity {
     private static final String TAG = CameraActivity_OldAPI.class.getSimpleName();
 
@@ -94,8 +97,10 @@ public class CameraActivity_OldAPI extends Activity {
 
     private boolean debug = BuildConfig.DEBUG;
 
-    private MediaRecorder.OnInfoListener m_MediaInfoListner = new MediaRecorder.OnInfoListener() {
-
+    /**
+     * Media information listener to handle the media recorder events.
+     */
+    private MediaRecorder.OnInfoListener m_MediaInfoListener = new MediaRecorder.OnInfoListener() {
         @Override
         public void onInfo(MediaRecorder mr, int what, int extra) {
             switch (what) {
@@ -113,12 +118,22 @@ public class CameraActivity_OldAPI extends Activity {
         }
     };
 
+    /**
+     * Simplified method to log informational messages.
+     *
+     * @param message Message to log.
+     */
     void logi(String message) {
         if (debug) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
 
+    /**
+     * Returns current camera identifier.
+     *
+     * @return Camera id.
+     */
     private int getCurrentCamera() {
         Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
         int cameraCount = Camera.getNumberOfCameras();
@@ -136,6 +151,13 @@ public class CameraActivity_OldAPI extends Activity {
         return -1;
     }
 
+    /**
+     * Rotates icon for a given rotation angle.
+     *
+     * @param icon     Icon to rotate.
+     * @param rotation Rotation angle.
+     * @return Rotated icon.
+     */
     private Drawable rotateIcon(Drawable icon, int rotation) {
         Bitmap existingBitmap = ((BitmapDrawable) icon).getBitmap();
         Matrix matrix = new Matrix();
@@ -144,27 +166,35 @@ public class CameraActivity_OldAPI extends Activity {
         return new BitmapDrawable(rotated);
     }
 
+    /**
+     * Create presets of rotated action icons.
+     */
     private void createRotatedIcons() {
         Drawable icon = getResources().getDrawable(R.drawable.take_photo);
         mTakePhoto = new ArrayList<>();
-        mStartRecord = new ArrayList<>();
-        mStopRecord = new ArrayList<>();
         mTakePhoto.add(rotateIcon(icon, 0));
         mTakePhoto.add(rotateIcon(icon, -90));
         mTakePhoto.add(rotateIcon(icon, 180));
         mTakePhoto.add(rotateIcon(icon, -270));
+
         icon = getResources().getDrawable(R.drawable.start_record_icon);
+        mStartRecord = new ArrayList<>();
         mStartRecord.add(rotateIcon(icon, 0));
         mStartRecord.add(rotateIcon(icon, -90));
         mStartRecord.add(rotateIcon(icon, 180));
         mStartRecord.add(rotateIcon(icon, -270));
+
         icon = getResources().getDrawable(R.drawable.stop_record_icon);
+        mStopRecord = new ArrayList<>();
         mStopRecord.add(rotateIcon(icon, 0));
         mStopRecord.add(rotateIcon(icon, -90));
         mStopRecord.add(rotateIcon(icon, 180));
         mStopRecord.add(rotateIcon(icon, -270));
     }
 
+    /**
+     * Sets back buttons (portrait and landscape) on click listener.
+     */
     private void setButtonForBackAction() {
         mButtonBack_portrait.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
@@ -179,6 +209,9 @@ public class CameraActivity_OldAPI extends Activity {
         });
     }
 
+    /**
+     * Action that occurs when a back button is pressed.
+     */
     private void goBackAction() {
         Intent intent = new Intent(this, HomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -186,11 +219,17 @@ public class CameraActivity_OldAPI extends Activity {
         finish();
     }
 
+    /**
+     * Changes button's background to current icon index.
+     */
     private void updateButtonClickIcon() {
         mButtonClick.setBackground(mCurrentIconList.get(mCurrentIconIndex));
         mButtonClick.invalidate();
     }
 
+    /**
+     * Changes camera rotation to a current rotation.
+     */
     private void updateCameraRotation() {
         if (mCamera != null) {
             Camera.Parameters parameters = mCamera.getParameters();
@@ -199,6 +238,12 @@ public class CameraActivity_OldAPI extends Activity {
         }
     }
 
+    /**
+     * Changes button orientation and updates button icon according to
+     * passed orientation value.
+     *
+     * @param rotation New button rotation.
+     */
     private void updateButtonOrientation(int rotation) {
         rotation = (rotation + mOrientationOffset) % 360;
         int quant_rotation = 0;
@@ -244,6 +289,9 @@ public class CameraActivity_OldAPI extends Activity {
         }
     }
 
+    /**
+     * Setups the button to take a picture.
+     */
     private void setButtonForPicture() {
         mCurrentIconList = mTakePhoto;
 
@@ -274,6 +322,9 @@ public class CameraActivity_OldAPI extends Activity {
 
     }
 
+    /**
+     * Setups preview button to take a picture state.
+     */
     private void setPreviewForPicture() {
         mPreview.setSoundEffectsEnabled(false);
         mPreview.setOnClickListener(new OnClickListener() {
@@ -290,6 +341,9 @@ public class CameraActivity_OldAPI extends Activity {
         });
     }
 
+    /**
+     * Stops the media recorder and releases it.
+     */
     private void stopRecording() {
         logi("Stop recording");
         mMediaRecorder.stop(); // stop the recording
@@ -302,6 +356,9 @@ public class CameraActivity_OldAPI extends Activity {
         resetCam();
     }
 
+    /**
+     * Setups the button to record a video.
+     */
     private void setButtonForVideo() {
 
         mCurrentIconList = mStartRecord;
@@ -320,7 +377,7 @@ public class CameraActivity_OldAPI extends Activity {
 
                     mCurrentIconList = mStopRecord;
                     updateButtonClickIcon();
-                    //TODO Video recodring crashing. Check #112 for details. Temporary fix for the BETT
+                    //TODO Video recording crashing. Check #112 for details. Temporary fix for the BETT
                     //indicateVideoRecording();
                     //TODO Check that is true
                     // work on UiThread for better performance
@@ -375,6 +432,10 @@ public class CameraActivity_OldAPI extends Activity {
         }.start();
     }
 
+    /**
+     * Logs supported flash modes, resets parameters and
+     * enables shutter sound.
+     */
     private void setParameters() {
         mParameters = mCamera.getParameters();
 
@@ -387,16 +448,16 @@ public class CameraActivity_OldAPI extends Activity {
     }
 
     private void setPreviewForVideo() {
-
+        //TODO: add implementation
     }
 
     private int getRotationCameraCorrection(int current_rotation) {
         int degree = (current_rotation + 270) % 360;
 
         int result;
-        String model =  Build.MODEL;
+        String model = Build.MODEL;
 
-        if(model.contains("Nexus 5X")) {
+        if (model.contains("Nexus 5X")) {
             //Workaround for Nexus 5X camera issue
             //TODO: Use Camera API 2 to fix this correctly
             result = (mOrientationOffset + degree) % 360;
@@ -419,6 +480,9 @@ public class CameraActivity_OldAPI extends Activity {
         return result;
     }
 
+    /**
+     * Sends camera error message using IPC message manager.
+     */
     private void sendCameraError() {
         CmdArg cmd = new CmdArg(0, "Camera Error");
         ServiceUtils.sendReplyCommand(PluginService.CAMERA, cmd);
@@ -464,7 +528,7 @@ public class CameraActivity_OldAPI extends Activity {
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             mFrontCamera = true;
         }
 
@@ -532,7 +596,7 @@ public class CameraActivity_OldAPI extends Activity {
                     toggleCamera();
                 } else if (mVideo && !mIsRecording && intent.getAction().equals("START_VIDEO")) {
                     mFrontCamera = true;
-                    if(isActivityInBackground) {
+                    if (isActivityInBackground) {
                         bringActivityToFront();
                         isRecordingVideoOnResume = true;
                     } else {
@@ -569,17 +633,24 @@ public class CameraActivity_OldAPI extends Activity {
         startActivity(intent);
     }
 
+    /**
+     * Brings camera activity to the front or recreates it.
+     */
     private void toggleCamera() {
         mFrontCamera = !mFrontCamera;
-        if(isActivityInBackground) {
+        if (isActivityInBackground) {
             bringActivityToFront();
         } else {
             recreate();
         }
     }
 
+    /**
+     * If the activity is in background then bring it to the front,
+     * else start taking a picture.
+     */
     private void takePic() {
-        if(isActivityInBackground) {
+        if (isActivityInBackground) {
             bringActivityToFront();
             isMakingPicOnResume = true;
         } else {
@@ -587,12 +658,16 @@ public class CameraActivity_OldAPI extends Activity {
         }
     }
 
-    private void startTakePicCounter () {
+    /**
+     * Starts taking a picture countdown with playing an audio
+     * and showing a text countdown for defined interval, and then takes a picture.
+     */
+    private void startTakePicCounter() {
 
         playRawPresenter.setRawNameForPlay(RawConstants.TAKING_PHOTO_AUDIO);
         playRawPresenter.start();
 
-        @SuppressLint("ShowToast") final Toast toast = Toast.makeText(MBApp.getApp().getApplicationContext(),"bbb", Toast.LENGTH_SHORT);
+        @SuppressLint("ShowToast") final Toast toast = Toast.makeText(MBApp.getApp().getApplicationContext(), "bbb", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
 
         //Toast.LENGTH_SHORT will keep the toast for 2s, our interval is 1s and calling toast.show()
@@ -603,7 +678,7 @@ public class CameraActivity_OldAPI extends Activity {
             public void onTick(long millisUntilFinished) {
                 int count = (int) millisUntilFinished / Constants.PIC_COUNTER_INTERVAL_MILLIS;
                 toast.setText("Ready in... " + count);
-                if(count%2 != 0)
+                if (count % 2 != 0)
                     toast.show();
             }
 
@@ -654,10 +729,10 @@ public class CameraActivity_OldAPI extends Activity {
             updateCameraRotation();
             logi("onCreate() :: onResume # ");
 
-            if(isMakingPicOnResume) {
+            if (isMakingPicOnResume) {
                 isMakingPicOnResume = false;
                 startTakePicCounter();
-            } else if(isRecordingVideoOnResume) {
+            } else if (isRecordingVideoOnResume) {
                 isRecordingVideoOnResume = false;
                 recordVideo();
             }
@@ -670,6 +745,9 @@ public class CameraActivity_OldAPI extends Activity {
         }
     }
 
+    /**
+     * Plays notification sound and starts recording a video.
+     */
     private void recordVideo() {
         playRawPresenter.setRawNameForPlay(RawConstants.RECORDING_VIDEO_AUDIO);
         playRawPresenter.start();
@@ -707,6 +785,9 @@ public class CameraActivity_OldAPI extends Activity {
         isActivityInBackground = true;
     }
 
+    /**
+     * Resets camera parameters and starts camera preview.
+     */
     private void resetCam() {
         try {
             Camera.Parameters parameters = mCamera.getParameters();
@@ -716,6 +797,7 @@ public class CameraActivity_OldAPI extends Activity {
             mCamera.startPreview();
             mCamera.autoFocus(new AutoFocusCallback() {
                 public void onAutoFocus(boolean success, Camera camera) {
+                    //TODO: add implementation or leave a comment if it's nothing to do here
                 }
             });
             parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
@@ -742,6 +824,9 @@ public class CameraActivity_OldAPI extends Activity {
         }
     };
 
+    /**
+     * Shows message and plays notification sound that indicate that a photo has been taken.
+     */
     PictureCallback rawCallback = new PictureCallback() {
         public void onPictureTaken(byte[] data, Camera camera) {
             // Display toast here and play audio
@@ -754,6 +839,10 @@ public class CameraActivity_OldAPI extends Activity {
 
         }
     };
+
+    /**
+     * Saves a picture and resets a camera.
+     */
     PictureCallback jpegCallback = new PictureCallback() {
         public void onPictureTaken(byte[] data, Camera camera) {
             new SaveImageTask().execute(data);
@@ -792,6 +881,10 @@ public class CameraActivity_OldAPI extends Activity {
         super.onDestroy();
     }
 
+    /**
+     * Provides an asynchronous task to save a picture on a device.
+     */
+    //TODO: it's recommended to make inner classes static to avoid potential memory leaks
     private class SaveImageTask extends AsyncTask<byte[], Void, Void> {
 
         @Override
@@ -844,7 +937,7 @@ public class CameraActivity_OldAPI extends Activity {
 
         mMediaRecorder = new MediaRecorder();
 
-        mMediaRecorder.setOnInfoListener(m_MediaInfoListner);
+        mMediaRecorder.setOnInfoListener(m_MediaInfoListener);
 
         mCamera.unlock();
         mMediaRecorder.setCamera(mCamera);

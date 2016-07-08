@@ -25,6 +25,10 @@ import java.util.List;
 
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
+/**
+ * Provides ability to send messages between processes.
+ * The messages can be either a simple string message or a special command with an array of data.
+ */
 public final class IPCMessageManager {
     private static final String TAG = IPCMessageManager.class.getSimpleName();
 
@@ -53,6 +57,9 @@ public final class IPCMessageManager {
 
     private HashMap<String, Messenger> remoteServices = new HashMap<>();
 
+    /**
+     * Listener to handle service connection states.
+     */
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -77,7 +84,6 @@ public final class IPCMessageManager {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
     }
 
-    // #######################################
     private IPCMessageManager() {
     }
 
@@ -94,6 +100,16 @@ public final class IPCMessageManager {
         }
     }
 
+    /**
+     * Sends IPC message to destination class providing message type, event category,
+     * special command and an array of data.
+     *
+     * @param destService   Destination class to send to.
+     * @param messageType   Android or microbit message.
+     * @param eventCategory Event category listed in EventCategories.
+     * @param cmd           Command argument.
+     * @param args          Array of data.
+     */
     public void sendIPCMessage(Class destService, int messageType, int eventCategory, CmdArg cmd,
                                       NameValuePair[] args) {
         if (!isConnected(destService)) {
@@ -133,7 +149,7 @@ public final class IPCMessageManager {
     private void configureClientHandler(String serviceName, Handler clientHandler) {
         if(DEBUG) {
             logi("configureClientHandler()");
-            logi("Init handler ::" +  clientHandler.getLooper().getThread().getName());
+            logi("Init handler ::" + clientHandler.getLooper().getThread().getName());
         }
 
         synchronized (lock) {
@@ -204,7 +220,9 @@ public final class IPCMessageManager {
         return explicitIntent;
     }
 
-    // ################################################
+    /**
+     * Provides custom implementation to handle incoming messages.
+     */
     private static class IncomingHandler extends Handler {
 
         private volatile Handler clientHandler;

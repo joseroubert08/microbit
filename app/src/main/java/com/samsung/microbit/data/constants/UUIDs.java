@@ -4,12 +4,15 @@ import com.samsung.microbit.utils.UUIDsUtils;
 
 import java.util.UUID;
 
+/**
+ * Contains common universally unique identifiers that uses all around the app.
+ */
 public class UUIDs {
     private UUIDs() {
     }
 
     /*
-	 * Base Low energy UUID's for services and characteristics
+     * Base Low energy UUID's for services and characteristics
 	 */
     public static final String BASE_UUID_STR = "00000000-0000-1000-8000-00805f9b34fb";
     public static final String MICROBIT_BASE_UUID_STR = "e95d5be9-251d-470a-a062-fa1922dfa9a8";
