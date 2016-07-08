@@ -2,7 +2,7 @@
     android:id="@+id/ll_pairing_activity_screen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    style="@style/connect_activity_layout_style">
+    android:background="@drawable/bg">
 
     <!-- Connecting micro:bit screen -->
     <include layout="@layout/view_connect_microbit" />

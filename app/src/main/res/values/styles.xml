@@ -165,10 +165,6 @@
         <item name="android:background">@color/main_gray_transparent_60_opacity_color</item>
     </style>
 
-    <style name="connect_activity_layout_style">
-        <item name="android:background">@drawable/bg</item>
-    </style>
-
     <!-- Main activity styles -->
     <style name="main_activity_button_style" parent="match_width_parent_wrap_height_content">
         <item name="android:layout_marginBottom">@dimen/main_activity_button_margin_bottom</item>
