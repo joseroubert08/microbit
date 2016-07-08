@@ -5,6 +5,7 @@
     style="@style/pairing_step_tip_layout_style"
     android:layout_weight="2"
     android:orientation="vertical"
+    android:gravity="center_horizontal"
     tools:showIn="@layout/view_pairing_searching">
 
     <TextView
