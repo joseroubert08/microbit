@@ -284,8 +284,4 @@
 
     <style name="popup_buttons_layout_style">
     </style>
-
-    <style name="pairing_searching_horizontal_progress_bar_style" parent="Theme.AppCompat.Light">
-        <item name="colorAccent">@android:color/white</item>
-    </style>
 </resources>
