@@ -95,14 +95,14 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
     private final Runnable tryToConnectAgain = new Runnable() {
 
-        private final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(ProjectActivity
-                .this);
-
         @Override
         public void run() {
             if(sentPause) {
                 countOfReconnecting++;
             }
+
+            final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager
+                    .getInstance(ProjectActivity.this);
 
             if(countOfReconnecting == Constants.MAX_COUNT_OF_RE_CONNECTIONS_FOR_DFU) {
                 countOfReconnecting = 0;
