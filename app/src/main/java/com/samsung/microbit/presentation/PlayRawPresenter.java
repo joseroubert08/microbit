@@ -12,7 +12,7 @@ import com.samsung.microbit.MBApp;
 import java.io.IOException;
 
 /**
- * Provides methods to manage a media player and play audio files.
+ * Provides methods to manage a media player and play raw audio files.
  */
 public class PlayRawPresenter implements Presenter {
     private static final String TAG = PlayRawPresenter.class.getSimpleName();

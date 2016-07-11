@@ -3,7 +3,7 @@ package com.samsung.microbit.data.model;
 import java.io.Serializable;
 
 /**
- * Represents custom data type that consists of two items: name and value.
+ * Type for storing and identifying some data {@link NameValuePair#value} by a key {@link NameValuePair#name}.
  */
 public class NameValuePair {
     private String name;

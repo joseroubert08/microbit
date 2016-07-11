@@ -12,8 +12,7 @@ import com.samsung.microbit.presentation.IncomingCallPresenter;
 import com.samsung.microbit.presentation.IncomingSMSPresenter;
 
 /**
- * Allows to handle incoming telephone calls and sms on a mobile device
- * using a micro:bit board.
+ * Allows to share statistic about incoming telephone calls and sms on a mobile device.
  */
 public class TelephonyPlugin implements AbstractPlugin {
     private static final String TAG = TelephonyPlugin.class.getSimpleName();
@@ -24,12 +23,6 @@ public class TelephonyPlugin implements AbstractPlugin {
     private boolean callPresenterInited;
     private boolean smsPresenterInited;
 
-    /**
-     * Provides general method to perform all available plugin action
-     * using a command argument to identify which action should be performed.
-     *
-     * @param cmd Command argument that defines action that should be pro
-     */
     @Override
     public void handleEntry(CmdArg cmd) {
         boolean register = false;

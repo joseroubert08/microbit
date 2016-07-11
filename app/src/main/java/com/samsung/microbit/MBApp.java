@@ -4,7 +4,7 @@ import android.app.Application;
 import android.graphics.Typeface;
 import android.util.Log;
 
-import com.samsung.microbit.common.AppInfo;
+import com.samsung.microbit.common.ConfigInfo;
 import com.samsung.microbit.core.EchoClientManager;
 
 public class MBApp extends Application {
@@ -17,7 +17,7 @@ public class MBApp extends Application {
 
     private EchoClientManager echoClientManager;
 
-    private AppInfo appInfo;
+    private ConfigInfo configInfo;
 
     @Override
     public void onCreate() {
@@ -26,7 +26,7 @@ public class MBApp extends Application {
         initTypefaces();
         echoClientManager = EchoClientManager.getInstance(this);
 
-        appInfo = new AppInfo(this);
+        configInfo = new ConfigInfo(this);
         Log.d("MBApp", "App Created");
     }
 
@@ -58,7 +58,7 @@ public class MBApp extends Application {
     public EchoClientManager getEchoClientManager() {
         return echoClientManager;
     }
-    public AppInfo getAppInfo() {
-        return appInfo;
+    public ConfigInfo getConfigInfo() {
+        return configInfo;
     }
 }

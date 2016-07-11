@@ -18,18 +18,22 @@ public class LEDAdapter extends BaseAdapter {
         mDeviceCodeArray = deviceCodeArray;
     }
 
+    @Override
     public int getCount() {
         return 25;
     }
 
+    @Override
     public Object getItem(int position) {
         return null;
     }
 
+    @Override
     public long getItemId(int position) {
         return position;
     }
 
+    @Override
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView;

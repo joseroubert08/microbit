@@ -1,16 +1,16 @@
 package com.samsung.microbit.presentation;
 
 /**
- * Provides common methods for presenter classes.
+ * Provides common methods for presenters.
  */
 public interface Presenter {
     /**
-     * Starts some progress.
+     * Start some process.
      */
     void start();
 
     /**
-     * Stops some progress.
+     * Stop some process.
      */
     void stop();
 

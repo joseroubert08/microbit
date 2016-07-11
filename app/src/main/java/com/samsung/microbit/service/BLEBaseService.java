@@ -23,7 +23,7 @@ import java.util.UUID;
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
 /**
- * Base class that contains common functionality for bluetooth low energy services.
+ * Base class for managing bluetooth low energy connections.
  */
 public abstract class BLEBaseService extends Service {
     private static final String TAG = BLEBaseService.class.getSimpleName();
@@ -352,7 +352,7 @@ public abstract class BLEBaseService extends Service {
      * Provides asynchronous operation to discover for services. If the discovery was
      * successful, the remote services can be accessed through {@link #getServices()} method.
      *
-     * @return
+     * @return Result of discovering.
      */
     protected int discoverServices() {
         int rc = 99;

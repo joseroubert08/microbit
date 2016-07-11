@@ -34,11 +34,6 @@ public class RemoteControlPlugin implements AbstractPlugin {
 
     private Timer timer;
 
-    /**
-     * Starts plugin and provides some action passed by a command argument.
-     *
-     * @param cmd Command argument that defines which action should be performed.
-     */
     @Override
     public void handleEntry(CmdArg cmd) {
         if (DEBUG) {

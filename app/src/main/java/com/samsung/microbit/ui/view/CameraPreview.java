@@ -48,6 +48,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
                 mCamera.setParameters(parameters);
                 mCamera.startPreview();
                 mCamera.autoFocus(new Camera.AutoFocusCallback() {
+                    @Override
                     public void onAutoFocus(boolean success, Camera camera) {
                     }
                 });
@@ -199,10 +200,12 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
         }
     }
 
+    @Override
     public void surfaceCreated(SurfaceHolder holder) {
         logi("surfaceCreated()");
     }
 
+    @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         // Surface will be destroyed when we return, so stop the preview.
         if (mCamera != null) {
@@ -210,6 +213,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
         }
     }
 
+    @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
         logi("surfaceChanged()");
         if (mHolder.getSurface() == null) {

@@ -1,7 +1,7 @@
 package com.samsung.microbit.data.constants;
 
 /**
- * Contains raw constants that contains in raw directory.
+ * Contains raw paths for playing audio sounds.
  */
 public class RawConstants {
     private RawConstants() {

@@ -124,4 +124,5 @@
     <dimen name="splash_screen_logo_width">200dp</dimen>
     <dimen name="splash_screen_logo_height">32dp</dimen>
 
+
 </resources>

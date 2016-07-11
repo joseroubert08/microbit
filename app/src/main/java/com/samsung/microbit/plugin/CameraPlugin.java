@@ -14,7 +14,7 @@ import com.samsung.microbit.presentation.PlayRawPresenter;
 import com.samsung.microbit.ui.activity.CameraActivityPermissionChecker;
 
 /**
- * Allows to start and interact with a device camera to proceed with wished actions.
+ * Allows to start and interact with a device camera.
  */
 public class CameraPlugin implements AbstractPlugin {
     private static final String TAG = CameraPlugin.class.getSimpleName();
@@ -42,11 +42,6 @@ public class CameraPlugin implements AbstractPlugin {
         }
     };
 
-    /**
-     * Starts camera plugin and performs action provided by a command argument.
-     *
-     * @param cmd Command argument that defines which action should be processed.
-     */
     @Override
     public void handleEntry(CmdArg cmd) {
         Context ctx = MBApp.getApp();

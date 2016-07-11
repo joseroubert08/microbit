@@ -3,7 +3,7 @@ package com.samsung.microbit.data.model;
 /**
  * Represents a connected device (a micro:bit board).
  * It contains common information about a micro:bit board such as
- * name, pattern, status, address and etc.
+ * name, pattern, status, address, etc.
  */
 public class ConnectedDevice {
 

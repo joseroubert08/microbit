@@ -23,13 +23,12 @@ import static com.samsung.microbit.ConfigPreferenceNames.RC_LAST_QUERY;
 import static com.samsung.microbit.ConfigPreferenceNames.REMOTE_CONFIG_PREFERENCE_KEY;
 
 /**
- * Contains common information about the app such as externals references
- * and some app parameters.
+ * Contains common config information.
  */
-public class AppInfo {
+public class ConfigInfo {
 
     /**
-     * Represents app status about sharing information.
+     * Represents app status. It got from server, and if status is false, just finish application and display error.
      */
     public enum AppStatus {
         ON("On"), OFF("Off");
@@ -83,7 +82,7 @@ public class AppInfo {
     private long LastQueryTime;
     private long maxAge;
 
-    public AppInfo(Context appContext) {
+    public ConfigInfo(Context appContext) {
         this.appContext = appContext;
         this.preferences = appContext.getSharedPreferences(REMOTE_CONFIG_PREFERENCE_KEY, Context.MODE_PRIVATE);
 
@@ -91,7 +90,7 @@ public class AppInfo {
     }
 
     /**
-     * Reads common app information from external storage and stores it to the class' members.
+     * Reads common app information from external storage and store it.
      */
     public void searchStoredValues() {
         appStatus = AppStatus.byName(preferences.getString(RC_APPSTATUS_KEY, AppStatus.OFF.toString()));

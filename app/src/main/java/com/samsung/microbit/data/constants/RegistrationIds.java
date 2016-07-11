@@ -1,9 +1,11 @@
 package com.samsung.microbit.data.constants;
 
 /**
- * Contains registration id constants.
- * Basically, they use in BLEService and some plugins to identify
- * which registration should be used.
+ * Contains registration ids.
+ * Used for registering/unregistering device sensors for send statistic.
+ * <p/>
+ * Used for handling changes inside {@link com.samsung.microbit.service.PluginService PluginService}.<br/>
+ * Registering for changes inside {@link com.samsung.microbit.service.BLEService BLEService}
  */
 public class RegistrationIds {
     private RegistrationIds() {
