@@ -17,6 +17,10 @@ import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 import pl.droidsonroids.gif.AnimationListener;
 
+/**
+ * Represents a loading screen activity.
+ * Provides methods to create and manage splash screen animation.
+ */
 public class SplashScreenActivity extends Activity {
     private static final int ANIM_STEP_ONE_DURATION = 1000;
     private static final int ANIM_STEP_TWO_DURATION = 800;
@@ -45,7 +49,6 @@ public class SplashScreenActivity extends Activity {
 
         MBApp.getApp().getEchoClientManager().sendAppStats();
     }
-    //Track fresh app launch
 
     private void initViews() {
         mLogoLayout = (RelativeLayout) findViewById(R.id.splash_screen_logo_layout);
@@ -266,6 +269,9 @@ public class SplashScreenActivity extends Activity {
 
     }
 
+    /**
+     * Ends a splash screen and starts Home activity.
+     */
     private void startHomeActivity() {
         startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
         finish();

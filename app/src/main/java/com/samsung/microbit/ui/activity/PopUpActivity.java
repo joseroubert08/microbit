@@ -23,6 +23,11 @@ import com.samsung.microbit.ui.PopUp;
 
 import pl.droidsonroids.gif.GifImageView;
 
+/**
+ * Represents a custom dialog window. Allows to display and manage a fullscreen window
+ * that contains a title, a message, a gif image or a simple image, a progress bar and
+ * confirmation buttons.
+ */
 public class PopUpActivity extends Activity implements View.OnClickListener {
 
     //intent from PopUpActivity to PopUp
@@ -61,11 +66,15 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     private boolean isCancelable;
 
     private Intent mReceiverIntent;
+
+    /**
+     * A broadcast receiver that handles amount of actions such as
+     * intent to close a popup, update a progress bar or update a layout.
+     */
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, final Intent intent) {
-
             if (intent.getAction().equals(INTENT_ACTION_CLOSE)) {
                 Log.d("PopUpActivity", "BroadcastReceiver.INTENT_ACTION_CLOSE");
                 finish();
@@ -101,6 +110,9 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         }
     }
 
+    /**
+     * Setups font style by setting an appropriate typeface.
+     */
     private void setupFontStyle() {
         affirmationOKButton.setTypeface(MBApp.getApp().getRobotoTypeface());
         cancelButton.setTypeface(MBApp.getApp().getRobotoTypeface());
@@ -182,6 +194,10 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         gifImageView.clearAnimation();
     }
 
+    /**
+     * Clears layout by setting all its elements visibility to
+     * INVISIBLE or GONE.
+     */
     private void clearLayout() {
         imageIcon.setImageResource(R.drawable.overwrite_face);
         imageIcon.setBackgroundResource(0);
@@ -195,6 +211,11 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         spinnerBar.setVisibility(View.GONE);
     }
 
+    /**
+     * Sets a popup layout which allows to dynamically create different popup views.
+     *
+     * @param intent Contains information about how should a popup look like.
+     */
     private void setLayout(Intent intent) {
         String title = intent.getStringExtra(INTENT_EXTRA_TITLE);
 
