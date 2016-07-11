@@ -92,7 +92,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_home);
         setupDrawer();
         setupButtonsFontStyle();
-        initViews();
+        initGifImage();
+    }
+
+    /**
+     * Initializes the gif image and sets a resource.
+     */
+    private void initGifImage() {
+        gifAnimationHelloEmoji = (GifImageView) findViewById(R.id.homeHelloAnimationGifView);
+        gifAnimationHelloEmoji.setImageResource(R.drawable.hello_emoji_animation);
     }
 
     @Override
@@ -138,6 +146,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     null);
 
         }
+
+        initGifImage();
     }
 
     /**
