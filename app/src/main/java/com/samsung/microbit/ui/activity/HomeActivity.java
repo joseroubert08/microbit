@@ -3,7 +3,6 @@ package com.samsung.microbit.ui.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
@@ -91,6 +90,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_home);
         setupDrawer();
         setupButtonsFontStyle();
+        initGifImage();
+    }
+
+    /**
+     * Initializes the gif image and sets a resource.
+     */
+    private void initGifImage() {
+        gifAnimationHelloEmoji = (GifImageView) findViewById(R.id.homeHelloAnimationGifView);
+        gifAnimationHelloEmoji.setImageResource(R.drawable.hello_emoji_animation);
     }
 
     @Override
@@ -133,8 +141,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     null);
 
         }
-        // animation for loading hello .giff
-        gifAnimationHelloEmoji = (GifImageView) findViewById(R.id.homeHelloAnimationGifView);
+
+        initGifImage();
     }
 
     /**
@@ -613,6 +621,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void onResume() {
         if (debug) logi("onResume() :: ");
         super.onResume();
-        findViewById(R.id.homeHelloAnimationGifView).animate();
+        gifAnimationHelloEmoji.animate();
     }
 }
