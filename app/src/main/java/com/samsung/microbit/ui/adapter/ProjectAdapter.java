@@ -17,7 +17,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.data.model.Project;
@@ -26,8 +25,14 @@ import com.samsung.microbit.ui.activity.ProjectActivity;
 import com.samsung.microbit.ui.control.ExtendedEditText;
 import com.samsung.microbit.utils.FileUtils;
 
+import static com.samsung.microbit.BuildConfig.DEBUG;
+
 import java.util.List;
 
+/**
+ * Represents a project adapter that allows to custom view for
+ * a single project item.
+ */
 public class ProjectAdapter extends BaseAdapter {
     private static final String TAG = ProjectAdapter.class.getSimpleName();
 
@@ -35,12 +40,23 @@ public class ProjectAdapter extends BaseAdapter {
     private ProjectActivity mProjectActivity;
     int currentEditableRow = -1;
 
-    private boolean isDebug = BuildConfig.DEBUG;
-
+    /**
+     * Simplified method to log informational messages.
+     * Uses in Debug mode only.
+     *
+     * @param message Message to log.
+     */
     protected void logi(String message) {
-        Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+        if (DEBUG) {
+            Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+        }
     }
 
+    /**
+     * Listener for some editor's actions. If editing is done then
+     * hide the keyboard and rename the project. If canceled then just
+     * hide the keyboard.
+     */
     private TextView.OnEditorActionListener editorOnActionListener = new TextView.OnEditorActionListener() {
 
         @Override
@@ -62,6 +78,11 @@ public class ProjectAdapter extends BaseAdapter {
         }
     };
 
+    /**
+     * On click listener for a project item. Allows to expand or shrink
+     * project item view if it's in expand mode. If not, click provides
+     * confirmation to rename the project.
+     */
     private View.OnClickListener appNameClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -86,6 +107,9 @@ public class ProjectAdapter extends BaseAdapter {
         }
     };
 
+    /**
+     * On long click listener that provides rename action.
+     */
     private View.OnLongClickListener appNameLongClickListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
@@ -96,18 +120,36 @@ public class ProjectAdapter extends BaseAdapter {
         }
     };
 
-    private void HideEditTextView(View v) {
+    /**
+     * Sets editTextView invisible and project button visible.
+     *
+     * @param v Edit text view.
+     */
+    private void hideEditTextView(View v) {
         Button bt = (Button) v.getTag(R.id.editbutton);
         bt.setVisibility(View.VISIBLE);
         v.setVisibility(View.INVISIBLE);
     }
 
-    private void ShowEditTextView(View v) {
+    /**
+     * Sets editTextView visible and project button invisible.
+     *
+     * @param v Edit text view.
+     */
+    private void showEditTextView(View v) {
         Button bt = (Button) v.getTag(R.id.editbutton);
         bt.setVisibility(View.INVISIBLE);
         v.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Allows to hide keyboard and rename a project file by given view
+     * from the list of projects.
+     *
+     * @param v    View that represents a project from the list.
+     * @param hide If true - hides the keyboard.
+     * @param done If true - renames given project file.
+     */
     private void dismissKeyBoard(View v, boolean hide, boolean done) {
         logi("dismissKeyBoard() :: ");
 
@@ -119,7 +161,7 @@ public class ProjectAdapter extends BaseAdapter {
         imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
 
         if (hide) {
-            HideEditTextView(v);
+            hideEditTextView(v);
         }
 
         if (done) {
@@ -135,6 +177,11 @@ public class ProjectAdapter extends BaseAdapter {
         }
     }
 
+    /**
+     * Sets project item in edit mode and shows keyboard to edit project name.
+     *
+     * @param v Edit text view.
+     */
     private void showKeyBoard(final View v) {
         logi("showKeyBoard() :: " + v.getClass().getName());
 
@@ -142,8 +189,7 @@ public class ProjectAdapter extends BaseAdapter {
 
         logi("showKeyBoard() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
 
-        //v.setVisibility(View.VISIBLE);
-        ShowEditTextView(v);
+        showEditTextView(v);
 
         final InputMethodManager imm = (InputMethodManager) mProjectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
         v.postDelayed(new Runnable() {
@@ -155,6 +201,12 @@ public class ProjectAdapter extends BaseAdapter {
         }, 100);
     }
 
+    /**
+     * Changes project item state from expanded to not expanded and visa versa.
+     * If it is in edit mode then it additionally closes edit mode and hides keyboard.
+     *
+     * @param v Project item view.
+     */
     private void changeActionBar(View v) {
         logi("changeActionBar() :: ");
 
@@ -173,6 +225,12 @@ public class ProjectAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    /**
+     * Renames a project item by given view. View contains reference to editTextView
+     * from where it gets a new project name.
+     *
+     * @param v Edit text view.
+     */
     private void renameProject(View v) {
         logi("renameProject() :: ");
 
@@ -194,6 +252,10 @@ public class ProjectAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    /**
+     * Occurs when a user clicks on the Flash button on some project item.
+     * Sends clicked project to flash to a micro:bit board.
+     */
     private View.OnClickListener sendBtnClickListener = new View.OnClickListener() {
 
         @Override
@@ -203,6 +265,10 @@ public class ProjectAdapter extends BaseAdapter {
         }
     };
 
+    /**
+     * Occurs when a user clicks on the Delete button on some project item.
+     * Shows a dialog window to confirm deletion.
+     */
     private View.OnClickListener deleteBtnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {

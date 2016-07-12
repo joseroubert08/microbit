@@ -18,7 +18,7 @@ import java.util.Deque;
 /**
  * To show a popup from ui thread use
  * {@link PopUp#show(String, String, int, int, int, int, View.OnClickListener, View.OnClickListener)} method.
- *
+ * <p/>
  * To show a popup from service use
  * {@link PopUp#showFromService(Context, String, String, int, int, int, int)} method.
  */
@@ -33,7 +33,6 @@ public class PopUp {
     // (backpress disabled)
     public static final int TYPE_SPINNER_NOT_CANCELABLE = 7;//0 button type spinner not cancelable (backpress disabled)
     public static final int TYPE_MAX = 8;
-
 
 
     // Constants for giff animation options
@@ -53,7 +52,6 @@ public class PopUp {
     private static final short REQUEST_TYPE_HIDE = 1;
     private static final short REQUEST_TYPE_UPDATE_PROGRESS = 2;
     private static final short REQUEST_TYPE_MAX = 3;
-
 
 
     private static int sCurrentType = TYPE_MAX; //current type of displayed popup  (TYPE_CHOICE, ...)
@@ -83,6 +81,9 @@ public class PopUp {
     // of Activity startActivity/onCreate
     private static Deque<PendingRequest> pendingQueue = new ArrayDeque<>();
 
+    /**
+     * Broadcast receiver that handles common popup states.
+     */
     private static BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

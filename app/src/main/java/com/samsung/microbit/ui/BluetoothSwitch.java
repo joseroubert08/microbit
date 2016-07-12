@@ -9,8 +9,11 @@ import android.view.View;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 
+/**
+ * Represents a bluetooth switcher that allows to turn on/off
+ * a bluetooth adapter and check current bluetooth state.
+ */
 public class BluetoothSwitch {
-    private static final String TAG = BluetoothSwitch.class.getSimpleName();
 
     private static BluetoothSwitch instance = null;
 
@@ -35,6 +38,12 @@ public class BluetoothSwitch {
         return mBluetoothAdapter.isEnabled();
     }
 
+    /**
+     * Checks if bluetooth adapter is enabled and provides
+     * a dialog window to allow a user to enable it.
+     *
+     * @return True - if bluetooth is already on.
+     */
     public boolean checkBluetoothAndStart() {
         if (!mBluetoothAdapter.isEnabled()) {
             MBApp application = MBApp.getApp();
@@ -42,7 +51,7 @@ public class BluetoothSwitch {
             PopUp.show(application.getString(R.string.bluetooth_turn_on_guide),
                     application.getString(R.string.turn_on_bluetooth),
                     R.drawable.bluetooth, R.drawable.blue_btn,
-                    0, /* TODO - nothing needs to be done */
+                    0,
                     PopUp.TYPE_CHOICE,
                     new View.OnClickListener() {
                         @Override

@@ -9,6 +9,10 @@ import android.widget.ImageView;
 
 import com.samsung.microbit.R;
 
+/**
+ * Represents an adapter for a pattern grid.
+ * Provides methods to create and manage grid cells.
+ */
 public class LEDAdapter extends BaseAdapter {
     private Context mContext;
     private String mDeviceCodeArray[];
@@ -30,7 +34,9 @@ public class LEDAdapter extends BaseAdapter {
         return position;
     }
 
-    // create a new ImageView for each item referenced by the Adapter
+    /**
+     * Creates a new ImageView for each item referenced by the Adapter.
+     */
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView;
         if (convertView == null) {
@@ -67,20 +73,23 @@ public class LEDAdapter extends BaseAdapter {
         return imageView;
     }
 
-    // Function to add 1 to the position in the array to correctly read out the LED position
+    /**
+     * Increments by 1 position in the array to correctly read out the LED position.
+     *
+     * @param position Position of the cell to increment.
+     * @return New incremented position.
+     */
     private int calculateLEDPosition(int position) {
         return ++position;
     }
 
-    // To read out the status of the currently selected LED at a given position
+    /**
+     * To read out the status of the currently selected LED at a given position.
+     *
+     * @param position Position of the led.
+     * @return Status of the led at given position.
+     */
     private String getLEDStatus(int position) {
-        String statusRead;
-
-        if (mDeviceCodeArray[position].equals("1")) {
-            statusRead = "on";
-        } else {
-            statusRead = "off";
-        }
-        return statusRead;
+        return mDeviceCodeArray[position].equals("1") ? "on" : "off";
     }
 }
