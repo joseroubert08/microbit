@@ -355,6 +355,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     protected void onDestroy() {
         configInfoPresenter.destroy();
 
+        handler.removeCallbacks(tryToConnectAgain);
+
         MBApp application = MBApp.getApp();
 
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(application);
