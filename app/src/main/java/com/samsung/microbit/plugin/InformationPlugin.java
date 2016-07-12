@@ -1,573 +1,205 @@
 package com.samsung.microbit.plugin;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.os.BatteryManager;
-import android.os.PowerManager;
-import android.telephony.PhoneStateListener;
-import android.telephony.SignalStrength;
-import android.telephony.TelephonyManager;
+import android.support.annotation.IntDef;
 import android.util.Log;
 
-import com.samsung.microbit.MBApp;
-import com.samsung.microbit.data.model.CmdArg;
-import com.samsung.microbit.data.constants.EventCategories;
-import com.samsung.microbit.data.constants.EventSubCodes;
 import com.samsung.microbit.data.constants.RegistrationIds;
-import com.samsung.microbit.service.PluginService;
-import com.samsung.microbit.utils.Utils;
+import com.samsung.microbit.data.model.CmdArg;
+import com.samsung.microbit.presentation.BatteryPresenter;
+import com.samsung.microbit.presentation.OrientationChangedPresenter;
+import com.samsung.microbit.presentation.Presenter;
+import com.samsung.microbit.presentation.ScreenOnOffPresenter;
+import com.samsung.microbit.presentation.ShakePresenter;
+import com.samsung.microbit.presentation.SignalStrengthPresenter;
+import com.samsung.microbit.presentation.TemperaturePresenter;
 
-/**
- * Provides ability to get information about some part of
- * micro:bit board such as orientation, shake events, temperature and etc.
- */
-public class InformationPlugin {
-    //Information plugin action
-    public static final int ORIENTATION = 0;
-    public static final int SHAKE = 1;
-    public static final int BATTERY = 2;
-    public static final int TEMPERATURE = 3;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.List;
 
-    /**
-     * Starts plugin and run action defined in a command argument.
-     *
-     * @param ctx Context. TODO: consider to use somewhere or remove
-     * @param cmd Command argument to define which command should be performed.
-     */
-    public static void pluginEntry(Context ctx, CmdArg cmd) {
+import static com.samsung.microbit.plugin.InformationPlugin.AlertType.TYPE_BATTERY;
+import static com.samsung.microbit.plugin.InformationPlugin.AlertType.TYPE_ORIENTATION;
+import static com.samsung.microbit.plugin.InformationPlugin.AlertType.TYPE_SCREEN_ON_OFF;
+import static com.samsung.microbit.plugin.InformationPlugin.AlertType.TYPE_SHAKE;
+import static com.samsung.microbit.plugin.InformationPlugin.AlertType.TYPE_SIGNAL_STRENGTH;
+import static com.samsung.microbit.plugin.InformationPlugin.AlertType.TYPE_TEMPERATURE;
+
+
+public class InformationPlugin implements AbstractPlugin {
+    private static final String TAG = InformationPlugin.class.getSimpleName();
+
+    private List<Presenter> activePresenters = new ArrayList<>();
+    private List<Integer> alertTypes = new ArrayList<>();
+
+    @Override
+    public void handleEntry(CmdArg cmd) {
         boolean register = false;
         if (cmd.getValue() != null) {
             register = cmd.getValue().toLowerCase().equals("on");
         }
 
         switch (cmd.getCMD()) {
-            case RegistrationIds.REG_SIGNALSTRENGTH: {
-                if (register) {
-                    registerSignalStrength();
-                } else {
-                    unregisterSignalStrength();
-                }
-                break;
-            }
+            case RegistrationIds.REG_SIGNALSTRENGTH:
+                if(register) {
+                    Presenter presenter = findPresenterByType(AlertType.TYPE_SIGNAL_STRENGTH);
+                    if(presenter == null) {
+                        SignalStrengthPresenter signalStrengthPresenter = new SignalStrengthPresenter();
+                        signalStrengthPresenter.setInformationPlugin(this);
+                        activePresenters.add(signalStrengthPresenter);
+                        alertTypes.add(AlertType.TYPE_SIGNAL_STRENGTH);
 
-            case RegistrationIds.REG_DEVICEORIENTATION: {
-                if (register) {
-                    registerOrientation();
-                } else {
-                    unregisterOrientation();
-                }
-                break;
-            }
+                        presenter = signalStrengthPresenter;
+                    }
 
-            case RegistrationIds.REG_DEVICEGESTURE: {
-                if (register) {
-                    registerShake();
+                    presenter.start();
                 } else {
-                    unregisterShake();
-                }
-                break;
-            }
-
-            case RegistrationIds.REG_BATTERYSTRENGTH: {
-                if (register) {
-                    registerBattery();
-                } else {
-                    unregisterBattery();
-                }
-                break;
-            }
-
-            case RegistrationIds.REG_TEMPERATURE: {
-                if (register) {
-                    registerTemperature();
-                } else {
-                    unregisterTemperature();
-                }
-                break;
-            }
-
-            case RegistrationIds.REG_DISPLAY: {
-                if (register) {
-                    registerDisplay();
-                } else {
-                    unregisterDisplay();
+                    Presenter presenter = findPresenterByType(AlertType.TYPE_SIGNAL_STRENGTH);
+                    if(presenter != null) {
+                        presenter.stop();
+                    }
                 }
                 break;
 
-            }
+            case RegistrationIds.REG_DEVICEORIENTATION:
+                if(register) {
+                    Presenter presenter = findPresenterByType(AlertType.TYPE_ORIENTATION);
+                    if(presenter == null) {
+                        OrientationChangedPresenter orientationChangedPresenter = new OrientationChangedPresenter();
+                        activePresenters.add(orientationChangedPresenter);
+                        alertTypes.add(AlertType.TYPE_ORIENTATION);
+
+                        presenter = orientationChangedPresenter;
+                    }
+
+                    presenter.start();
+                } else {
+                    Presenter presenter = findPresenterByType(AlertType.TYPE_ORIENTATION);
+                    if(presenter != null) {
+                        presenter.stop();
+                    }
+                }
+                break;
+
+            case RegistrationIds.REG_DEVICEGESTURE:
+                if(register) {
+                    Presenter presenter = findPresenterByType(AlertType.TYPE_SHAKE);
+                    if(presenter == null) {
+                        ShakePresenter shakePresenter = new ShakePresenter();
+                        shakePresenter.setInformationPlugin(this);
+                        activePresenters.add(shakePresenter);
+                        alertTypes.add(AlertType.TYPE_SHAKE);
+
+                        presenter = shakePresenter;
+                    }
+
+                    presenter.start();
+                } else {
+                    Presenter presenter = findPresenterByType(AlertType.TYPE_SHAKE);
+                    if(presenter != null) {
+                        presenter.stop();
+                    }
+                }
+                break;
+
+            case RegistrationIds.REG_BATTERYSTRENGTH:
+                if(register) {
+                    Presenter presenter = findPresenterByType(AlertType.TYPE_BATTERY);
+                    if(presenter == null) {
+                        BatteryPresenter batteryPresenter = new BatteryPresenter();
+                        batteryPresenter.setInformationPlugin(this);
+                        activePresenters.add(batteryPresenter);
+                        alertTypes.add(AlertType.TYPE_BATTERY);
+
+                        presenter = batteryPresenter;
+                    }
+
+                    presenter.start();
+                } else {
+                    Presenter presenter = findPresenterByType(AlertType.TYPE_BATTERY);
+                    if(presenter != null) {
+                        presenter.stop();
+                    }
+                }
+                break;
+
+            case RegistrationIds.REG_TEMPERATURE:
+                if(register) {
+                    Presenter presenter = findPresenterByType(AlertType.TYPE_TEMPERATURE);
+                    if(presenter == null) {
+                        TemperaturePresenter temperaturePresenter = new TemperaturePresenter();
+                        temperaturePresenter.setInformationPlugin(this);
+                        activePresenters.add(temperaturePresenter);
+                        alertTypes.add(AlertType.TYPE_TEMPERATURE);
+
+                        presenter = temperaturePresenter;
+                    }
+
+                    presenter.start();
+                } else {
+                    Presenter presenter = findPresenterByType(AlertType.TYPE_TEMPERATURE);
+                    if(presenter != null) {
+                        presenter.stop();
+                    }
+                }
+                break;
+            case RegistrationIds.REG_DISPLAY:
+                if(register) {
+                    Presenter presenter = findPresenterByType(AlertType.TYPE_SCREEN_ON_OFF);
+                    if(presenter == null) {
+                        ScreenOnOffPresenter screenOnOffPresenter = new ScreenOnOffPresenter();
+                        activePresenters.add(screenOnOffPresenter);
+                        alertTypes.add(AlertType.TYPE_SCREEN_ON_OFF);
+
+                        presenter = screenOnOffPresenter;
+                    }
+
+                    presenter.start();
+                } else {
+                    Presenter presenter = findPresenterByType(AlertType.TYPE_SCREEN_ON_OFF);
+                    if(presenter != null) {
+                        presenter.stop();
+                    }
+                }
+                break;
+            default:
+                Log.e(TAG, "Unknown category");
         }
     }
 
-    public static void sendReplyCommand(int mbsService, CmdArg cmd) {
-
+    public void sendReplyCommand(int mbsService, CmdArg cmd) {
         // TODO not needed ??? remove
-/*		if (PluginService.mClientMessenger != null) {
-            Message msg = Message.obtain(null, mbsService);
-			Bundle bundle = new Bundle();
-			bundle.putInt("cmd", cmd.getCMD());
-			bundle.putString("value", cmd.getValue());
-			msg.setData(bundle);
-
-			try {
-				PluginService.mClientMessenger.send(msg);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		}
-*/
+        //ServiceUtils.sendReplyCommand(mbsService, cmd);
     }
 
+    private Presenter findPresenterByType(@AlertType int alertType) {
+        int index = alertTypes.indexOf(alertType);
 
-    static SensorManager sSensorManager;
-    static SensorEventListener sOrientationListener;
-    static int sPreviousOrientation;
-
-    //Signal strength code
-    static TelephonyManager sTelephonyManager;
-    static PowerManager mPowerManager;
-
-    static int sCurrentSignalStrength = 0;
-
-    /**
-     * Listener to update signal strength when signal strengths changed.
-     */
-    static PhoneStateListener sPhoneListener = new PhoneStateListener() {
-        @Override
-        public void onSignalStrengthsChanged(SignalStrength signalStrength) {
-            Log.i("InformationPlugin", "onSignalStrengthsChanged: ");
-
-            updateSignalStrength(signalStrength);
-        }
-    };
-
-    /**
-     * Updates given signal strength to a new one.
-     *
-     * @param signalStrength Signal strength needed to be updated.
-     */
-    private static void updateSignalStrength(SignalStrength signalStrength) {
-        final int level;
-        Log.i("InformationPlugin", "updateSignalStrength: ");
-        if (!isCdma(signalStrength)) {
-            int asu = signalStrength.getGsmSignalStrength();
-            // ASU ranges from 0 to 31 - TS 27.007 Sec 8.5
-            // asu = 0 (-113dB or less) is very weak
-            // signal, its better to show 0 bars to the user in such cases.
-            // asu = 99 is a special case, where the signal strength is unknown.
-            if (asu <= 2 || asu == 99) level = EventSubCodes.SAMSUNG_SIGNAL_STRENGTH_EVT_NO_BAR;
-            else if (asu >= 12) level = EventSubCodes.SAMSUNG_SIGNAL_STRENGTH_EVT_FOUR_BAR;
-            else if (asu >= 8) level = EventSubCodes.SAMSUNG_SIGNAL_STRENGTH_EVT_THREE_BAR;
-            else if (asu >= 5) level = EventSubCodes.SAMSUNG_SIGNAL_STRENGTH_EVT_TWO_BAR;
-            else level = EventSubCodes.SAMSUNG_SIGNAL_STRENGTH_EVT_ONE_BAR;
+        if(index != -1) {
+            return activePresenters.get(index);
         } else {
-            level = getCdmaLevel(signalStrength);
-        }
-
-        if (level != sCurrentSignalStrength) {
-            sCurrentSignalStrength = level;
-            PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_SIGNAL_STRENGTH_ID, level));
+            return null;
         }
     }
 
-    private static int getCdmaLevel(SignalStrength signalStrength) {
-        final int cdmaDbm = signalStrength.getCdmaDbm();
-        final int cdmaEcio = signalStrength.getCdmaEcio();
-
-        final int levelDbm;
-        if (cdmaDbm >= -75) levelDbm = 4;
-        else if (cdmaDbm >= -85) levelDbm = 3;
-        else if (cdmaDbm >= -95) levelDbm = 2;
-        else if (cdmaDbm >= -100) levelDbm = 1;
-        else levelDbm = 0;
-
-        final int levelEcio;
-        // Ec/Io are in dB*10
-        if (cdmaEcio >= -90) levelEcio = 4;
-        else if (cdmaEcio >= -110) levelEcio = 3;
-        else if (cdmaEcio >= -130) levelEcio = 2;
-        else if (cdmaEcio >= -150) levelEcio = 1;
-        else levelEcio = 0;
-
-        return (levelDbm < levelEcio) ? levelDbm : levelEcio;
-    }
-
-    private static boolean isCdma(SignalStrength signalStrength) {
-        return (signalStrength != null) && !signalStrength.isGsm();
-    }
-
-    /**
-     * Listener to handle temperature changing.
-     */
-    static class TemperatureListener implements SensorEventListener {
-        @Override
-        public void onSensorChanged(SensorEvent event) {
-            float temperature = event.values[0];
-
-            //notify BLE
-            CmdArg cmd = new CmdArg(InformationPlugin.TEMPERATURE, "Temperature " + temperature);
-            InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
+    @Override
+    public void destroy() {
+        for (Presenter presenter : activePresenters) {
+            presenter.stop();
+            presenter.destroy();
         }
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        }
+        activePresenters.clear();
     }
 
-    static TemperatureListener sTemperatureListener;
-
-    /**
-     * Listener to handle board shaking.
-     */
-    static class ShakeEventListener implements SensorEventListener {
-        static final int THRESHOLD_SWING_COUNT = 3;//nb of times swing must be detected before we call it a shake event
-        static final int SWING_EVENT_INTERVAL = 100;
-        static final int SPEED_THRESHOLD = 500;
-        int mSwingCount;
-        long lastTime;
-        float speed;
-        float x, y, z;
-        float lastX;
-        float lastY;
-        float lastZ;
-
-        public ShakeEventListener() {
-            mSwingCount = 0;
-            lastX = 0;
-            lastY = 0;
-            lastZ = 0;
-        }
-
-        @Override
-        public void onSensorChanged(SensorEvent event) {
-            long currentTime = System.currentTimeMillis();
-            long deltaTime = currentTime - lastTime;
-
-            if (deltaTime > SWING_EVENT_INTERVAL) {
-                lastTime = currentTime;
-
-                x = event.values[0];
-                y = event.values[1];
-                z = event.values[2];
-
-                speed = Math.abs(x + y + z - lastX - lastY - lastZ) / deltaTime * 10000;
-
-                if (speed > SPEED_THRESHOLD) {
-                    mSwingCount++;
-                    if (mSwingCount >= THRESHOLD_SWING_COUNT) {
-
-                        //notify BLE client
-                        CmdArg cmd = new CmdArg(InformationPlugin.SHAKE, "Device Shaked");
-                        InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
-                        PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_DEVICE_INFO_ID,
-                                EventSubCodes.SAMSUNG_DEVICE_GESTURE_DEVICE_SHAKEN));
-                        mSwingCount = 0;
-                    }
-                } else {
-                    mSwingCount = 0;
-                    //PluginService.sendMessageToBle(Constants.makeMicroBitValue(Constants.SAMSUNG_DEVICE_INFO_ID, Constants.SAMSUNG_DEVICE_GESTURE_NONE));
-                }
-
-                lastX = x;
-                lastY = y;
-                lastZ = z;
-            }
-        }
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        }
-    }
-
-    static ShakeEventListener sShakeListener;
-    static BroadcastReceiver sBatteryReceiver;
-    static BroadcastReceiver sScreenReceiver;
-    static int sPreviousBatteryPct;
-
-    static {
-        sOrientationListener = null;
-        sTemperatureListener = null;
-        sShakeListener = null;
-        sBatteryReceiver = null;
-        sTelephonyManager = null;
-        sPreviousBatteryPct = 0;
-        sPreviousOrientation = -1;
-    }
-
-    /**
-     * Registers orientation changes listener.
-     */
-    public static void registerOrientation() {
-        if (sOrientationListener != null) {
-            return;
-        }
-
-        if (sSensorManager == null) {
-            sSensorManager = (SensorManager) MBApp.getApp().getSystemService(Context.SENSOR_SERVICE);
-        }
-
-        /**
-         * Listener to handle orientation changes.
-         */
-        sOrientationListener = new SensorEventListener() {
-            int orientation = -1;
-
-            @Override
-            public void onSensorChanged(SensorEvent event) {
-                if (event.values[1] < 6.5 && event.values[1] > -6.5) {
-                    if (orientation != 1) {
-                        Log.d("Sensor", "Landscape");
-                    }
-                    orientation = EventSubCodes.SAMSUNG_DEVICE_ORIENTATION_LANDSCAPE;
-                } else {
-                    if (orientation != 0) {
-                        Log.d("Sensor", "Portrait");
-                    }
-                    orientation = EventSubCodes.SAMSUNG_DEVICE_ORIENTATION_PORTRAIT;
-                }
-                if (sPreviousOrientation != orientation) {
-
-                    PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_DEVICE_INFO_ID,
-                            orientation));
-                    sPreviousOrientation = orientation;
-                }
-            }
-
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-            }
-        };
-
-        sSensorManager.registerListener(sOrientationListener, sSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
-    /**
-     * Unregisters orientation changes listener.
-     */
-    public static void unregisterOrientation() {
-        if (sOrientationListener == null) {
-            return;
-        }
-
-        sSensorManager.unregisterListener(sOrientationListener);
-        sOrientationListener = null;
-    }
-
-    //TODO: consider to use or remove
-    public static boolean isOrientationRegistered() {
-        return sOrientationListener != null;
-    }
-
-    /*
-     * Registers signal strength listener.
-     */
-    public static void registerSignalStrength() {
-        Log.i("Information Plugin", "registerSignalStrength 1 ");
-        if (sTelephonyManager != null) {
-            return;
-        }
-        Log.i("Information Plugin", "registerSignalStrength 2 ");
-        sTelephonyManager = (TelephonyManager) MBApp.getApp().getSystemService(Context.TELEPHONY_SERVICE);
-        sTelephonyManager.listen(sPhoneListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
-        CmdArg cmd = new CmdArg(0, "Registered Signal Strength.");
-        InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
-    }
-
-    /**
-     * Unregisters signal strength listener.
-     */
-    public static void unregisterSignalStrength() {
-        if (sTelephonyManager == null) {
-            return;
-        }
-
-        sTelephonyManager.listen(sPhoneListener, PhoneStateListener.LISTEN_NONE);
-        sTelephonyManager = null;
-        CmdArg cmd = new CmdArg(0, "Unregistered Signal Strength.");
-        InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
-    }
-
-    //TODO: consider to use or remove
-    public static boolean isSignalStrengthRegistered() {
-        return sTelephonyManager != null;
-    }
-
-    /**
-     * Registers temperature changes listener.
-     */
-    public static void registerTemperature() {
-        if (sTemperatureListener != null) {
-            return;
-        }
-
-        sSensorManager = (SensorManager) MBApp.getApp().getSystemService(Context.SENSOR_SERVICE);
-
-        Sensor temperatureSensor = sSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
-        if (temperatureSensor == null)//no temperature sensor
-            return;
-
-        sTemperatureListener = new TemperatureListener();
-        sSensorManager.registerListener(sTemperatureListener, temperatureSensor,
-                SensorManager.SENSOR_DELAY_NORMAL);
-
-        CmdArg cmd = new CmdArg(0, "Registered Temperature.");
-        InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
-    }
-
-    /**
-     * Unregisters temperature changes listener.
-     */
-    public static void unregisterTemperature() {
-        if (sTemperatureListener == null) {
-            return;
-        }
-
-        sSensorManager.unregisterListener(sTemperatureListener);
-        sTemperatureListener = null;
-
-        CmdArg cmd = new CmdArg(0, "Unregistered Temperature.");
-        InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
-    }
-
-    /**
-     * Registers display broadcast receiver.
-     */
-    public static void registerDisplay() {
-        if (sScreenReceiver != null) {
-            return;
-        }
-
-        Log.i("Information Plugin", "registerDisplay() ");
-        sScreenReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
-                    PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_DEVICE_INFO_ID,
-                            EventSubCodes.SAMSUNG_DEVICE_DISPLAY_OFF));
-                } else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
-                    PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_DEVICE_INFO_ID,
-                            EventSubCodes.SAMSUNG_DEVICE_DISPLAY_ON));
-                }
-            }
-        };
-
-        IntentFilter screenStateFilter = new IntentFilter();
-        screenStateFilter.addAction(Intent.ACTION_SCREEN_ON);
-        screenStateFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        MBApp.getApp().registerReceiver(sScreenReceiver, screenStateFilter);
-    }
-
-    /**
-     * Unregisters display display broadcast receiver.
-     */
-    public static void unregisterDisplay() {
-        Log.i("Information Plugin", "unregisterDisplay() ");
-        if (sScreenReceiver == null) {
-            return;
-        }
-
-        MBApp.getApp().unregisterReceiver(sScreenReceiver);
-        sScreenReceiver = null;
-    }
-
-    //TODO: consider to use somewhere
-    public static boolean isTemperatureRegistered() {
-        return sTemperatureListener != null;
-    }
-
-    /**
-     * Registers shake listener.
-     */
-    public static void registerShake() {
-        if (sShakeListener != null) {
-            return;
-        }
-
-        sSensorManager = (SensorManager) MBApp.getApp().getSystemService(Context.SENSOR_SERVICE);
-
-        sShakeListener = new ShakeEventListener();
-        sSensorManager.registerListener(sShakeListener, sSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                SensorManager.SENSOR_DELAY_NORMAL);
-
-        CmdArg cmd = new CmdArg(0, "Registered Shake.");
-        InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
-    }
-
-    /**
-     * Unregisters shake listener.
-     */
-    public static void unregisterShake() {
-        if (sShakeListener == null) {
-            return;
-        }
-
-        sSensorManager.unregisterListener(sShakeListener);
-        sShakeListener = null;
-
-        CmdArg cmd = new CmdArg(0, "Unregistered Shake.");
-        InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
-    }
-
-    //TODO: consider to use or remove
-    public static boolean isShakeRegistered() {
-        return sShakeListener != null;
-    }
-
-    /**
-     * Registers battery changes broadcast receiver.
-     */
-    public static void registerBattery() {
-        if (sBatteryReceiver != null) {
-            return;
-        }
-
-        //Buttery changes broadcast receiver.
-        sBatteryReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-                int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-                int batteryPct = (int) (level / (float) scale * 100);
-
-                if (batteryPct != sPreviousBatteryPct) {
-                    CmdArg cmd = new CmdArg(InformationPlugin.BATTERY, "Battery level " + batteryPct);
-                    InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
-
-                    sPreviousBatteryPct = batteryPct;
-                }
-            }
-        };
-
-        IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        MBApp.getApp().registerReceiver(sBatteryReceiver, filter);
-
-        CmdArg cmd = new CmdArg(0, "Registered Battery.");
-        InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
-    }
-
-    /**
-     * Unregisters buttery changes broadcast receiver.
-     */
-    public static void unregisterBattery() {
-        if (sBatteryReceiver == null) {
-            return;
-        }
-
-        MBApp.getApp().unregisterReceiver(sBatteryReceiver);
-        sBatteryReceiver = null;
-
-        CmdArg cmd = new CmdArg(0, "Unregistered Battery.");
-        InformationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
-    }
-
-    //TODO: consider to use or remove
-    public static boolean isBatteryRegistered() {
-        return sBatteryReceiver != null;
+    @Retention(RetentionPolicy.RUNTIME)
+    @IntDef(value = {TYPE_ORIENTATION, TYPE_SHAKE, TYPE_BATTERY, TYPE_SIGNAL_STRENGTH, TYPE_TEMPERATURE,
+             TYPE_SCREEN_ON_OFF})
+    public @interface AlertType {
+        int TYPE_ORIENTATION = 0;
+        int TYPE_SHAKE = 1;
+        int TYPE_BATTERY = 2;
+        int TYPE_SIGNAL_STRENGTH = 3;
+        int TYPE_TEMPERATURE = 4;
+        int TYPE_SCREEN_ON_OFF = 5;
     }
 }

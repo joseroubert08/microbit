@@ -11,26 +11,23 @@ import com.samsung.microbit.MBApp;
 
 import java.io.IOException;
 
-/**
- * Provides methods to manage a media player and play audio files.
- */
-public class PlayAudioPresenter implements Presenter {
-    private static final String TAG = PlayAudioPresenter.class.getSimpleName();
+public class PlayRawPresenter implements Presenter {
+    private static final String TAG = PlayRawPresenter.class.getSimpleName();
 
     private AudioManager audioManager;
 
     private int originalRingerMode;
     private int originalRingerVolume;
 
-    private String notificationForPlay;
+    private String rawNameForPlay;
     private MediaPlayer mediaplayer;
     private MediaPlayer.OnCompletionListener callBack;
 
-    public PlayAudioPresenter() {
+    public PlayRawPresenter() {
     }
 
-    public void setNotificationForPlay(String notificationForPlay) {
-        this.notificationForPlay = notificationForPlay;
+    public void setRawNameForPlay(String rawNameForPlay) {
+        this.rawNameForPlay = rawNameForPlay;
     }
 
     public void setCallBack(MediaPlayer.OnCompletionListener callBack) {
@@ -42,17 +39,20 @@ public class PlayAudioPresenter implements Presenter {
         MBApp app = MBApp.getApp();
 
         Resources resources = app.getResources();
-        int resID = resources.getIdentifier(notificationForPlay, "raw", app.getPackageName());
+        int resID = resources.getIdentifier(rawNameForPlay, "raw", app.getPackageName());
         AssetFileDescriptor afd = resources.openRawResourceFd(resID);
 
         preparePhoneToPlayAudio(app);
 
-        mediaplayer = new MediaPlayer();
+        if(mediaplayer == null) {
+            mediaplayer = new MediaPlayer();
+        }
 
         mediaplayer.reset();
         mediaplayer.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
         try {
             mediaplayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            afd.close();
             mediaplayer.prepare();
         } catch (IOException e) {
             e.printStackTrace();
@@ -97,9 +97,9 @@ public class PlayAudioPresenter implements Presenter {
 
     @Override
     public void stop() {
-        if (mediaplayer != null) {
+        if(mediaplayer != null) {
             try {
-                if (mediaplayer.isPlaying()) {
+                if(mediaplayer.isPlaying()) {
                     mediaplayer.stop();
                     restoreAudioMode();
                 }
@@ -111,7 +111,8 @@ public class PlayAudioPresenter implements Presenter {
 
     @Override
     public void destroy() {
-        if (mediaplayer != null) {
+        if(mediaplayer != null) {
+            stop();
             mediaplayer.release();
             mediaplayer = null;
         }

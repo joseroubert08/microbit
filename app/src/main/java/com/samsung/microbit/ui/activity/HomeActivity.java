@@ -114,7 +114,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (!appInfo.isAppStatusOn()) {
             finish();
             //Cannot proceed with the application. Shutdown NOW
-            PopUp.show(MBApp.getApp(),
+            PopUp.show(
                     appInfo.getExceptionMsg(),
                     appInfo.getExceptionTitle(),
                     R.drawable.error_face,//image icon res id
@@ -484,7 +484,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    PopUp.show(MBApp.getApp(),
+                    PopUp.show(
                             "Samples will now be copied to your device. You can check them out in the Flash section.",
                             "Thank you",
                             R.drawable.message_face, R.drawable.blue_btn,
@@ -508,7 +508,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     installSamples();
                 } else {
                     if (mPrefs != null) mPrefs.edit().putBoolean(FIRST_RUN, false).apply();
-                    PopUp.show(MBApp.getApp(),
+                    PopUp.show(
                             getString(R.string.storage_permission_for_samples_error),
                             "",
                             R.drawable.error_face, R.drawable.red_btn,
@@ -544,7 +544,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         public void onClick(View v) {
             logi("diskStoragePermissionCancelHandler");
             PopUp.hide();
-            PopUp.show(MBApp.getApp(),
+            PopUp.show(
                     getString(R.string.storage_permission_for_samples_error),
                     "",
                     R.drawable.error_face, R.drawable.red_btn,
@@ -563,7 +563,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     != PermissionChecker.PERMISSION_GRANTED ||
                     (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                             != PermissionChecker.PERMISSION_GRANTED)) {
-                PopUp.show(MBApp.getApp(),
+                PopUp.show(
                         getString(R.string.storage_permission_for_samples),
                         getString(R.string.permissions_needed_title),
                         R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,

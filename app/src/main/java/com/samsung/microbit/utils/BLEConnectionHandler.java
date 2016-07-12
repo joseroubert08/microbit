@@ -74,8 +74,7 @@ public class BLEConnectionHandler {
                         bleConnectionManager.logi("localBroadcastReceiver Error message = " + message);
                         MBApp application = MBApp.getApp();
 
-                        PopUp.show(application,
-                                application.getString(R.string.micro_bit_reset_msg),
+                        PopUp.show(application.getString(R.string.micro_bit_reset_msg),
                                 application.getString(R.string.general_error_title),
                                 R.drawable.error_face, R.drawable.red_btn,
                                 PopUp.GIFF_ANIMATION_ERROR,

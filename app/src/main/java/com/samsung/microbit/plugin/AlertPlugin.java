@@ -1,133 +1,92 @@
 package com.samsung.microbit.plugin;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.Resources;
 import android.database.Cursor;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Vibrator;
+import android.support.annotation.IntDef;
 import android.util.Log;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.data.constants.EventSubCodes;
 import com.samsung.microbit.data.constants.RawConstants;
-import com.samsung.microbit.presentation.PlayAudioPresenter;
+import com.samsung.microbit.data.model.CmdArg;
+import com.samsung.microbit.presentation.PlayRawPresenter;
+import com.samsung.microbit.presentation.PlayRingtonePresenter;
+import com.samsung.microbit.presentation.Presenter;
+import com.samsung.microbit.presentation.VibratePresenter;
 import com.samsung.microbit.ui.PopUp;
 
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-/**
- * Represents a module that can provide actions to raise a big smoke.
- * It can make your mobile device ring and vibrate so you can figure out
- * where it is if you can't find it.
- */
-public class AlertPlugin {
+import static com.samsung.microbit.plugin.AlertPlugin.AlertType.*;
 
+public class AlertPlugin implements AbstractPlugin {
     private static final String TAG = AlertPlugin.class.getSimpleName();
-    private static PlayAudioPresenter playAudioPresenter;
 
-    private static Ringtone mRingtone = null;
-    private static Vibrator mVibrator = null;
-    private static Timer mTimer = null;
+    private static final int MAX_RINGTONE_DURATION = (int) TimeUnit.SECONDS.toMillis(10);
 
-    /**
-     * Makes your device to stop ringing.
-     */
-    private static void stopPlaying() {
-        if (mRingtone != null && mRingtone.isPlaying()) {
-            mRingtone.stop();
-        }
-    }
+    private List<Presenter> activePresenters = new ArrayList<>();
+    private List<Integer> alertTypes = new ArrayList<>();
 
-    /**
-     * Makes your phone to play given sound.
-     *
-     * @param alarm       Sound to play.
-     * @param maxDuration Playback max duration.
-     * @param vibrate     If true, then phone will also vibrate.
-     * @param isAlarm     Defines if it is an alarm sound.
-     */
-    private static void playSound(Uri alarm, int maxDuration, boolean vibrate, boolean isAlarm) {
+    private MediaPlayer mediaPlayer;
+
+    @Override
+    public void handleEntry(CmdArg cmd) {
         Context context = MBApp.getApp();
 
-        int duration = getDuration(alarm);
-        if (maxDuration > 0 && duration > maxDuration)
-            duration = maxDuration;
+        String message = "";
 
-        if (mRingtone != null && mRingtone.isPlaying()) {
-            mRingtone.stop();
-        }
+        final String title;
 
-        if (mTimer != null)
-            //After this operation the timer cannot be used anymore
-            mTimer.cancel();
+        int popupAction = PopUp.OK_ACTION_NONE;
 
-        mTimer = new Timer();
-
-        mRingtone = RingtoneManager.getRingtone(context, alarm);
-
-        if (isAlarm)
-            mRingtone.setStreamType(AudioManager.STREAM_ALARM);
-        mRingtone.play();
-
-        TimerTask stopTask = new TimerTask() {
-            @Override
-            public void run() {
-                stopPlaying();
-            }
-        };
-
-        mTimer.schedule(stopTask, duration);
-
-        if (vibrate) {
-            if (mVibrator == null)
-                mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-
-            if (mVibrator != null && mVibrator.hasVibrator()) {
-                mVibrator.cancel();
-                mVibrator.vibrate(duration);
-            }
-        }
-    }
-
-    /**
-     * Makes plugin start. Allows to define type of the alarm using command argument.
-     *
-     * @param ctx Context.
-     * @param cmd Command that defines some parameters of the alarm.
-     */
-    //TODO: consider to use ctx somewhere or remove
-    public static void pluginEntry(Context ctx, CmdArg cmd) {
-        Context context = MBApp.getApp();
         switch (cmd.getCMD()) {
             case EventSubCodes.SAMSUNG_ALERT_EVT_DISPLAY_TOAST:
-                PopUp.showFromService(context, cmd.getValue(),
-                        "Message from Micro:Bit",
-                        R.drawable.message_face, R.drawable.blue_btn,
-                        0, /* TODO - nothing needs to be done */
-                        PopUp.TYPE_ALERT);
+                message = cmd.getValue();
+                title = "Message from Micro:Bit";
                 break;
 
             case EventSubCodes.SAMSUNG_ALERT_EVT_VIBRATE:
-                vibrate(Integer.parseInt(cmd.getValue()));
+                title = context.getString(R.string.vibrating_via_microbit);
+                addVibrationForPlaying(Integer.parseInt(cmd.getValue()));
                 break;
 
             case EventSubCodes.SAMSUNG_ALERT_EVT_PLAY_SOUND:
-                playNotification();
+                title = context.getString(R.string.sound_via_microbit);
+                Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+                int durationNotExceed = getMaxRingtoneDuration(ringtone);
+
+                addRingtoneForPlaying(ringtone, durationNotExceed, false);
                 break;
 
             case EventSubCodes.SAMSUNG_ALERT_EVT_PLAY_RINGTONE:
-                playRingTone();
+                title = context.getString(R.string.ringtone_via_microbit);
+                ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+
+                durationNotExceed = getMaxRingtoneDuration(ringtone);
+
+                addRingtoneForPlaying(ringtone, durationNotExceed, false);
                 break;
 
             case EventSubCodes.SAMSUNG_ALERT_EVT_FIND_MY_PHONE:
-                findPhone();
+                title = context.getString(R.string.findphone_via_microbit);
+                popupAction = PopUp.OK_ACTION_STOP_SERVICE_PLAYING;
+
+                durationNotExceed = getMaxRawDuration(RawConstants.FIND_MY_PHONE_AUDIO);
+
+                addRawForPlaying(RawConstants.FIND_MY_PHONE_AUDIO, null);
+                addVibrationForPlaying(durationNotExceed);
                 break;
             case EventSubCodes.SAMSUNG_ALERT_EVT_ALARM1:
             case EventSubCodes.SAMSUNG_ALERT_EVT_ALARM2:
@@ -135,28 +94,170 @@ public class AlertPlugin {
             case EventSubCodes.SAMSUNG_ALERT_EVT_ALARM4:
             case EventSubCodes.SAMSUNG_ALERT_EVT_ALARM5:
             case EventSubCodes.SAMSUNG_ALERT_EVT_ALARM6:
-                playAlarm(cmd.getCMD());
+                title = context.getString(R.string.sound_via_microbit);
+                ringtone = searchAlarmUri(cmd.getCMD());
+
+                durationNotExceed = getMaxRingtoneDuration(ringtone);
+
+                addRingtoneForPlaying(ringtone, durationNotExceed, false);
                 break;
             case EventSubCodes.SAMSUNG_ALERT_STOP_PLAYING:
-                if (playAudioPresenter != null) {
-                    playAudioPresenter.stop();
-                    playAudioPresenter = null;
-                }
-                break;
+                stopPlaying();
+                return;
             default:
-                break;
+                Log.e(TAG, "Unknown category");
+                return;
+        }
+
+        stopPlaying();
+
+        if(popupAction == PopUp.OK_ACTION_NONE) {
+            showDialog(message, title);
+        } else {
+            showDialogWithAction(title, popupAction);
+        }
+
+        for (Presenter presenter : activePresenters) {
+            presenter.start();
         }
     }
 
-    /**
-     * Finds which sound should be played and starts playback.
-     *
-     * @param alarmId Defines an id of a sound for the alarm.
-     */
-    private static void playAlarm(int alarmId) {
+    private void stopPlaying() {
+        for (Presenter presenter : activePresenters) {
+            presenter.stop();
+        }
+    }
+
+    public static int getDuration(MediaPlayer mediaPlayer, AssetFileDescriptor afd) {
+        int duration = 500;
+
+        try {
+            mediaPlayer.reset();
+            mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            afd.close();
+            mediaPlayer.prepare();
+            duration = mediaPlayer.getDuration();
+        } catch (IOException e) {
+            Log.e(TAG, e.toString());
+        }
+
+        mediaPlayer.reset();
+
+        return duration;
+    }
+
+    public static int getDuration(MediaPlayer mediaPlayer, Uri fileUri) {
+        int duration = 500;
+
+        try {
+            mediaPlayer.reset();
+            mediaPlayer.setDataSource(MBApp.getApp(), fileUri);
+            mediaPlayer.prepare();
+            duration = mediaPlayer.getDuration();
+        } catch (IOException e) {
+            Log.e(TAG, e.toString());
+        }
+
+        mediaPlayer.reset();
+
+        return duration;
+    }
+
+    private int getMaxRingtoneDuration(Uri ringtoneUri) {
+        if(mediaPlayer == null) {
+            mediaPlayer = new MediaPlayer();
+        }
+
+        int duration = getDuration(mediaPlayer, ringtoneUri);
+
+        if (MAX_RINGTONE_DURATION > 0 && duration > MAX_RINGTONE_DURATION) {
+            duration = MAX_RINGTONE_DURATION;
+        }
+
+        return duration;
+    }
+
+    private int getMaxRawDuration(String rawNameForPlay) {
+        MBApp app = MBApp.getApp();
+
+        Resources resources = app.getResources();
+        int resID = resources.getIdentifier(rawNameForPlay, "raw", app.getPackageName());
+        AssetFileDescriptor afd = resources.openRawResourceFd(resID);
+
+        if(mediaPlayer == null) {
+            mediaPlayer = new MediaPlayer();
+        }
+
+        int duration = getDuration(mediaPlayer, afd);
+
+        if (MAX_RINGTONE_DURATION > 0 && duration > MAX_RINGTONE_DURATION) {
+            duration = MAX_RINGTONE_DURATION;
+        }
+
+        return duration;
+    }
+
+    private void addRingtoneForPlaying(Uri ringtoneUri, int maxDuration, boolean isAlarm) {
+        int playRingtoneIndex = alertTypes.indexOf(AlertType.TYPE_RINGTONE);
+
+        final PlayRingtonePresenter playRingtonePresenter;
+
+        if(playRingtoneIndex == -1) {
+            playRingtonePresenter = new PlayRingtonePresenter();
+        } else {
+            playRingtonePresenter = (PlayRingtonePresenter) activePresenters.get(playRingtoneIndex);
+        }
+
+        playRingtonePresenter.reInit(mediaPlayer, ringtoneUri, maxDuration, isAlarm);
+
+        if(playRingtoneIndex == -1) {
+            activePresenters.add(playRingtonePresenter);
+            alertTypes.add(AlertType.TYPE_RINGTONE);
+        }
+    }
+
+    private void addVibrationForPlaying(int maxDuration) {
+        int vibrateIndex = alertTypes.indexOf(AlertType.TYPE_VIBRATION);
+
+        final VibratePresenter vibratePresenter;
+
+        if(vibrateIndex == -1) {
+            vibratePresenter = new VibratePresenter();
+        } else {
+            vibratePresenter = (VibratePresenter) activePresenters.get(vibrateIndex);
+        }
+
+        vibratePresenter.reInit(maxDuration);
+
+        if(vibrateIndex == -1) {
+            activePresenters.add(vibratePresenter);
+            alertTypes.add(AlertType.TYPE_VIBRATION);
+        }
+    }
+
+    private void addRawForPlaying(String rawNameForPlay, MediaPlayer.OnCompletionListener onCompletionListener) {
+        int playRawIndex = alertTypes.indexOf(AlertType.TYPE_RAW);
+
+        final PlayRawPresenter playRawPresenter;
+
+        if(playRawIndex == -1) {
+            playRawPresenter = new PlayRawPresenter();
+        } else {
+            playRawPresenter = (PlayRawPresenter) activePresenters.get(playRawIndex);
+        }
+
+        playRawPresenter.setRawNameForPlay(rawNameForPlay);
+        playRawPresenter.setCallBack(onCompletionListener);
+
+        if(playRawIndex == -1) {
+            activePresenters.add(playRawPresenter);
+            alertTypes.add(AlertType.TYPE_RAW);
+        }
+    }
+
+    private Uri searchAlarmUri(int alarmId) {
         Context context = MBApp.getApp();
 
-        showDialog(context.getString(R.string.sound_via_microbit));
         RingtoneManager ringtoneMgr = new RingtoneManager(context);
         ringtoneMgr.setType(RingtoneManager.TYPE_ALARM);
         Cursor alarms = ringtoneMgr.getCursor();
@@ -164,90 +265,15 @@ public class AlertPlugin {
 
         alarms.moveToPosition(alarmId - 4);
         Uri alarm = ringtoneMgr.getRingtoneUri(alarms.getPosition());
+
         if (alarm == null) {
-            Log.i("Alerts Plugin", "Cannot play nth Alarm. Playing default");
+            Log.i(TAG, "Cannot play nth Alarm. Playing default");
             alarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         }
 
-        playSound(alarm, 10000, false, false);
+        return alarm;
     }
 
-    /**
-     * Finds available ringtone and starts playback.
-     */
-    private static void playRingTone() {
-        showDialog(MBApp.getApp().getString(R.string.ringtone_via_microbit));
-        Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-        playSound(ringtone, 10000, false, false);
-    }
-
-    /**
-     * Finds available notification and starts playback.
-     */
-    private static void playNotification() {
-        showDialog(MBApp.getApp().getString(R.string.sound_via_microbit));
-        Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        playSound(ringtone, 10000, false, false);
-    }
-
-    /**
-     * Makes your device play sound and vibrate to find out where it is.
-     */
-    private static void findPhone() {
-        Context context = MBApp.getApp();
-
-        showDialogWithAction(context.getString(R.string.findphone_via_microbit), PopUp.OK_ACTION_STOP_SERVICE_PLAYING);
-
-        if (mVibrator == null) {
-            mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-        }
-
-        if (mVibrator != null && mVibrator.hasVibrator()) {
-            mVibrator.cancel();
-            mVibrator.vibrate(5 * 1000);
-        }
-
-        playAudioPresenter = new PlayAudioPresenter();
-        playAudioPresenter.setNotificationForPlay(RawConstants.FIND_MY_PHONE_AUDIO);
-        playAudioPresenter.start();
-    }
-
-    /**
-     * Makes your device vibrate. You can set the time for which a device will vibrate.
-     *
-     * @param duration The time for which a device will vibrate.
-     */
-    private static void vibrate(int duration) {
-        Context context = MBApp.getApp();
-
-        showDialog(context.getString(R.string.vibrating_via_microbit));
-        Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-        v.vibrate(duration);
-    }
-
-    private static int getDuration(Uri file) {
-        int duration = 500;
-        MediaPlayer mp = new MediaPlayer();
-        try {
-            mp.setDataSource(MBApp.getApp(), file);
-            mp.prepare();
-            duration = mp.getDuration();
-        } catch (IOException e) {
-            Log.e(TAG, e.toString());
-        }
-
-        mp.reset();
-        mp = null;
-
-        return duration;
-    }
-
-    /**
-     * Allows to show additional dialog window while alarm is on.
-     *
-     * @param textMsg     Text message to show.
-     * @param popupAction Popup code action.
-     */
     private static void showDialogWithAction(String textMsg, int popupAction) {
         PopUp.showFromService(MBApp.getApp(), "",
                 textMsg,
@@ -256,17 +282,28 @@ public class AlertPlugin {
                 PopUp.TYPE_ALERT, popupAction);
     }
 
-    /**
-     * Simplified version to show additional dialog window while alarm.
-     *
-     * @param textMsg Text message to show.
-     */
-    private static void showDialog(String textMsg) {
-        PopUp.showFromService(MBApp.getApp(), "",
-                textMsg,
+    private static void showDialog(String message, String title) {
+        PopUp.showFromService(MBApp.getApp(), message,
+                title,
                 R.drawable.message_face, R.drawable.blue_btn,
                 0, /* TODO - nothing needs to be done */
                 PopUp.TYPE_ALERT);
     }
 
+    @Override
+    public void destroy() {
+        stopPlaying();
+        for (Presenter presenter : activePresenters) {
+            presenter.destroy();
+        }
+        activePresenters.clear();
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @IntDef(value = {TYPE_VIBRATION, TYPE_RINGTONE, TYPE_RAW})
+    @interface AlertType {
+        int TYPE_VIBRATION = 0;
+        int TYPE_RINGTONE = 1;
+        int TYPE_RAW = 2;
+    }
 }
