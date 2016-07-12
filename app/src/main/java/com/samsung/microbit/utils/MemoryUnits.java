@@ -1,5 +1,10 @@
 package com.samsung.microbit.utils;
 
+/**
+ * Utility that provides functionality to work with memory,
+ * such as converting bytes to kilobytes, megabytes, gigabytes
+ * and visa versa.
+ */
 public abstract class MemoryUnits {
     private MemoryUnits() {
     }
@@ -16,6 +21,10 @@ public abstract class MemoryUnits {
 
     public abstract long toTerabytes(long value);
 
+    /**
+     * Represents a byte measure.
+     * Allows to convert to another measures.
+     */
     public static class Bytes extends MemoryUnits {
 
         @Override
@@ -49,6 +58,10 @@ public abstract class MemoryUnits {
         }
     }
 
+    /**
+     * Represents a kilobyte measure.
+     * Allows to convert to another measures.
+     */
     public static class Kilobytes extends MemoryUnits {
         @Override
         public long toBytes(long value) {
@@ -80,6 +93,10 @@ public abstract class MemoryUnits {
         }
     }
 
+    /**
+     * Represents a megabyte measure.
+     * Allows to convert to another measures.
+     */
     public static class Megabytes extends MemoryUnits {
         @Override
         public long toBytes(long value) {
@@ -111,6 +128,10 @@ public abstract class MemoryUnits {
         }
     }
 
+    /**
+     * Represents a gigabyte measure.
+     * Allows to convert to another measures.
+     */
     public static class Gigabytes extends MemoryUnits {
         @Override
         public long toBytes(long value) {
@@ -142,6 +163,10 @@ public abstract class MemoryUnits {
         }
     }
 
+    /**
+     * Represents a terabyte measure.
+     * Allows to convert to another measures.
+     */
     public static class Terabytes extends MemoryUnits {
         @Override
         public long toBytes(long value) {

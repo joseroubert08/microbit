@@ -7,6 +7,11 @@ import android.util.Log;
 import com.samsung.microbit.common.ConfigInfo;
 import com.samsung.microbit.core.EchoClientManager;
 
+/**
+ * Represents a custom class of the app.
+ * Provides some resources that use along app modules,
+ * such as app context, font styles and etc.
+ */
 public class MBApp extends Application {
 
     private static MBApp app = null;
@@ -31,7 +36,7 @@ public class MBApp extends Application {
     }
 
     /**
-     * Creates font styles from an asset.
+     * Creates font styles from the assets and initializes typefaces.
      */
     private void initTypefaces() {
         mTypeface = Typeface.createFromAsset(getAssets(), "fonts/GT-Walsheim.otf");
@@ -39,11 +44,11 @@ public class MBApp extends Application {
         mRobotoTypeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Regular.ttf");
     }
 
-    public Typeface getTypeface(){
+    public Typeface getTypeface() {
         return mTypeface;
     }
 
-    public Typeface getTypefaceBold(){
+    public Typeface getTypefaceBold() {
         return mBoldTypeface;
     }
 
@@ -58,6 +63,7 @@ public class MBApp extends Application {
     public EchoClientManager getEchoClientManager() {
         return echoClientManager;
     }
+
     public ConfigInfo getConfigInfo() {
         return configInfo;
     }

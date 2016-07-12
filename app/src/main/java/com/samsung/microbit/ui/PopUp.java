@@ -24,6 +24,8 @@ import java.util.Deque;
  */
 public class PopUp {
 
+    private static final String TAG = PopUp.class.getSimpleName();
+
     public static final int TYPE_CHOICE = 0;//2 buttons type
     public static final int TYPE_ALERT = 1;//1 button type
     public static final int TYPE_PROGRESS = 2;//0 button progress.xml bar type
@@ -94,13 +96,13 @@ public class PopUp {
                 if (cancelPressListener != null)
                     cancelPressListener.onClick(null);
             } else if (intent.getAction().equals(PopUpActivity.INTENT_ACTION_DESTROYED)) {
-                Log.d("PopUp", "INTENT_ACTION_DESTROYED size queue = " + pendingQueue.size());
+                Log.d(TAG, "INTENT_ACTION_DESTROYED size queue = " + pendingQueue.size());
                 pendingQueue.poll();
                 isCurrentRequestPending = false;
                 sCurrentType = TYPE_MAX;
                 processNextPendingRequest();
             } else if (intent.getAction().equals(PopUpActivity.INTENT_ACTION_CREATED)) {
-                Log.d("PopUp", "INTENT_ACTION_CREATED size queue = " + pendingQueue.size());
+                Log.d(TAG, "INTENT_ACTION_CREATED size queue = " + pendingQueue.size());
                 PendingRequest request = pendingQueue.poll();
                 if (request != null) {
                     sCurrentType = request.intent.getIntExtra(PopUpActivity.INTENT_EXTRA_TYPE, 0);
@@ -122,10 +124,14 @@ public class PopUp {
             PopUp.hide();
         }
     };
-    //  static private String inputText = "";//TODO: deprecated remove
 
+    /**
+     * Closes a popup window by creating a pending request
+     * with intent to close the window. If current request isn't pending
+     * then process next pending request.
+     */
     public static void hide() {
-        Log.d("PopUp", "hide START");
+        Log.d(TAG, "hide START");
         pendingQueue.add(new PendingRequest(new Intent(PopUpActivity.INTENT_ACTION_CLOSE),
                 null, null, REQUEST_TYPE_HIDE));
 
@@ -134,6 +140,11 @@ public class PopUp {
         }
     }
 
+    /**
+     * Updates progress of the progress bar, for example, during the
+     * flashing process.
+     * @param val New progress value.
+     */
     public static void updateProgressBar(int val) {
         Intent intent = new Intent(PopUpActivity.INTENT_ACTION_UPDATE_PROGRESS);
         intent.putExtra(PopUpActivity.INTENT_EXTRA_PROGRESS, val);
@@ -147,17 +158,18 @@ public class PopUp {
     //Interface function for showing a popup inside a service plugin class
     //only supports TYPE_ALERT popup for now.
     public static void showFromService(Context context, String message, String title,
-                                       int imageResId, int imageBackgroundResId, int animationCode, int type) {
-        Log.d("PopUp", "showFromService");
+                                       int imageResId, int imageBackgroundResId,
+                                       int animationCode, int type) {
+        Log.d(TAG, "showFromService");
         Intent intent = new Intent("com.samsung.microbit.core.SHOWFROMSERVICE");
         putIntentExtra(intent, message, title, imageResId, imageBackgroundResId, animationCode, type);
         context.sendBroadcast(intent);
     }
 
     public static void showFromService(Context context, String message, String title,
-                                       int imageResId, int imageBackgroundResId, int animationCode, int type, int
-                                               okAction) {
-        Log.d("PopUp", "showFromService");
+                                       int imageResId, int imageBackgroundResId,
+                                       int animationCode,int type, int okAction) {
+        Log.d(TAG, "showFromService");
         Intent intent = new Intent("com.samsung.microbit.core.SHOWFROMSERVICE");
         putIntentExtra(intent, message, title, imageResId, imageBackgroundResId, animationCode, type);
         intent.putExtra(INTENT_EXTRA_OK_ACTION, okAction);
@@ -237,9 +249,11 @@ public class PopUp {
     }
 
     private static synchronized boolean showInternal(String message, String title,
-                                                     int imageResId, int imageBackgroundResId, int animationCode, int type,
-                                                     View.OnClickListener okListener, View.OnClickListener cancelListener) {
-        Log.d("PopUp", "show START popup type " + type);
+                                                     int imageResId, int imageBackgroundResId,
+                                                     int animationCode, int type,
+                                                     View.OnClickListener okListener,
+                                                     View.OnClickListener cancelListener) {
+        Log.d(TAG, "show START popup type " + type);
 
         if (!registered) {
             IntentFilter popupIntentFilter = new IntentFilter();
@@ -264,8 +278,12 @@ public class PopUp {
         return true;
     }
 
+    /**
+     * Allows to process a queue of pending requests while queue is not empty
+     * and action is not done. Processes show, hide and update progress requests for now.
+     */
     private static void processNextPendingRequest() {
-        Log.d("PopUp", "processNextPendingRequest START size = " + pendingQueue.size());
+        Log.d(TAG, "processNextPendingRequest START size = " + pendingQueue.size());
         boolean done = false;
         //keep iterating until we find async. request (HIDE, SHOW) to process
         while (!pendingQueue.isEmpty() && !done) {
@@ -273,9 +291,9 @@ public class PopUp {
 
             switch (request.type) {
                 case REQUEST_TYPE_SHOW: {
-                    Log.d("PopUp", "processNextPendingRequest REQUEST_TYPE_SHOW");
+                    Log.d(TAG, "processNextPendingRequest REQUEST_TYPE_SHOW");
                     if (sCurrentType != TYPE_MAX) {
-                        Log.d("Popup", "processNextPendingRequest Update existing layout instead of hiding");
+                        Log.d(TAG, "processNextPendingRequest Update existing layout instead of hiding");
                         request.intent.setAction(PopUpActivity.INTENT_ACTION_UPDATE_LAYOUT);
                         LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(request.intent);
                         sCurrentType = request.intent.getIntExtra(PopUpActivity.INTENT_EXTRA_TYPE, 0);
@@ -293,7 +311,7 @@ public class PopUp {
                 }
                 case REQUEST_TYPE_HIDE: {
                     if (sCurrentType == TYPE_MAX) {
-                        Log.d("Popup", "processNextPendingRequest Nothing to hide");
+                        Log.d(TAG, "processNextPendingRequest Nothing to hide");
                         pendingQueue.poll();
                         continue;
                     }
@@ -310,6 +328,6 @@ public class PopUp {
                 }
             }
         }
-        Log.d("PopUp", "processNextPendingRequest END size = " + pendingQueue.size());
+        Log.d(TAG, "processNextPendingRequest END size = " + pendingQueue.size());
     }
 }

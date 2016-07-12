@@ -75,9 +75,9 @@ public class PluginService extends Service {
 
                         logi("make :: plugin send");
 
-                        ServiceUtils.sendtoBLEService(PluginService.class, IPCMessageManager.MESSAGE_ANDROID,
+                        ServiceUtils.sendToBLEService(PluginService.class, IPCMessageManager.MESSAGE_ANDROID,
                                 EventCategories.IPC_INIT, null, null);
-                        ServiceUtils.sendtoIPCService(PluginService.class, IPCMessageManager.MESSAGE_ANDROID,
+                        ServiceUtils.sendToIPCService(PluginService.class, IPCMessageManager.MESSAGE_ANDROID,
                                 EventCategories.IPC_INIT, null, null);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -118,7 +118,7 @@ public class PluginService extends Service {
         args[1] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_GUID, CharacteristicUUIDs.ES_CLIENT_EVENT.toString());
         args[2] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_VALUE, value);
         args[3] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE, GattFormats.FORMAT_UINT32);
-        ServiceUtils.sendtoBLEService(PluginService.class, IPCMessageManager.MESSAGE_MICROBIT,
+        ServiceUtils.sendToBLEService(PluginService.class, IPCMessageManager.MESSAGE_MICROBIT,
                 EventCategories.IPC_WRITE_CHARACTERISTIC, null, args);
     }
 

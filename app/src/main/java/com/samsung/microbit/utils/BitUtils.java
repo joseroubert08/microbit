@@ -1,5 +1,10 @@
 package com.samsung.microbit.utils;
 
+/**
+ * Represent an utility that provides methods to work with
+ * bitwise operations.
+ */
+//TODO: consider to use somewhere or remove
 public class BitUtils {
 
     private BitUtils() {

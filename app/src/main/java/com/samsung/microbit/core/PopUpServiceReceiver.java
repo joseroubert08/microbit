@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 
-import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.activity.PopUpActivity;
@@ -41,7 +40,7 @@ public class PopUpServiceReceiver extends BroadcastReceiver {
             okListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ServiceUtils.sendtoPluginService(PopUpServiceReceiver.class, IPCMessageManager.MESSAGE_ANDROID,
+                    ServiceUtils.sendToPluginService(PopUpServiceReceiver.class, IPCMessageManager.MESSAGE_ANDROID,
                             EventCategories.IPC_PLUGIN_STOP_PLAYING, null, null);
                     PopUp.hide();
                 }

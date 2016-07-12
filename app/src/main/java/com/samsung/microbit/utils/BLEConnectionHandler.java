@@ -18,6 +18,11 @@ public class BLEConnectionHandler {
     private BLEConnectionHandler() {
     }
 
+    /**
+     * Allows to handle connection between a micro:bit board
+     * and a mobile device. It updates connection state UI and
+     * changes connection state between STATE_CONNECTED and STATE_DISCONNECTED.
+     */
     public static BroadcastReceiver bleConnectionChangedReceiver(final BLEConnectionManager bleConnectionManager) {
         return new BroadcastReceiver() {
             @Override
