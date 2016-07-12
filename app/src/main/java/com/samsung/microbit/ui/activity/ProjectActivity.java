@@ -846,9 +846,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         if (id == ALERT_DIALOG_RECONNECT) {
             //Create dialog to reconnect to a micro:bit board after successful flashing.
             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-            /*dialogBuilder.setTitle(R.string.reconnect_title);
+            dialogBuilder.setTitle(R.string.reconnect_title);
             dialogBuilder.setMessage(R.string.reconnect_text);
-            dialogBuilder.setPositiveButton(R.string.reconnect_ok_button, reconnectOnClickListener);*/
+            dialogBuilder.setPositiveButton(R.string.reconnect_ok_button, reconnectOnClickListener);
             dialogBuilder.setNegativeButton(android.R.string.cancel, reconnectOnClickListener);
             return dialogBuilder.create();
         }
