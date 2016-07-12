@@ -372,5 +372,9 @@
     <string name="bluetooth_pairing_internal_error">Bluetooth pairing error happened. Disconnecting now &#8230;</string>
 
     <string name="samples_are_about_to_be_copied">Samples will now be copied to your device. You can check them out in the Flash section.</string>
+
+    <string name="reconnect_title">Reconnect</string>
+    <string name="reconnect_text">You\'ve been disconnected from a micro:bit. Do you want to reconnect?</string>
+    <string name="reconnect_ok_button">Reconnect</string>
 </resources>
 
