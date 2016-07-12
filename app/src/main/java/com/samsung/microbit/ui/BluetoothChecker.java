@@ -10,16 +10,17 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 
 /**
- * Represents a bluetooth switcher that allows to turn on/off
- * a bluetooth adapter and check current bluetooth state.
+ * Represents a bluetooth checker that allows to check current bluetooth state
+ * and ask user to turn on a bluetooth adapter.
  */
-public class BluetoothSwitch {
+public class BluetoothChecker {
+    private static final String TAG = BluetoothChecker.class.getSimpleName();
 
-    private static BluetoothSwitch instance = null;
+    private static BluetoothChecker instance = null;
 
     private static BluetoothAdapter mBluetoothAdapter = null;
 
-    private BluetoothSwitch() {
+    private BluetoothChecker() {
         if (mBluetoothAdapter == null) {
             final BluetoothManager bluetoothManager = (BluetoothManager) MBApp.getApp().getSystemService(Context
                     .BLUETOOTH_SERVICE);
@@ -27,9 +28,9 @@ public class BluetoothSwitch {
         }
     }
 
-    public static BluetoothSwitch getInstance() {
+    public static BluetoothChecker getInstance() {
         if (instance == null) {
-            instance = new BluetoothSwitch();
+            instance = new BluetoothChecker();
         }
         return instance;
     }

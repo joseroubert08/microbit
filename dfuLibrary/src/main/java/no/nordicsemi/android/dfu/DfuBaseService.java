@@ -1187,7 +1187,7 @@ public abstract class DfuBaseService extends IntentService {
 
 	ResultReceiver resultReceiver;
 
-    static int mServicePhase = 0 ;
+    private int mServicePhase = 0 ;
 
 	@Override
 	protected void onHandleIntent(final Intent intent) {

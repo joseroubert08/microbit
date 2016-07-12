@@ -1,7 +1,7 @@
 package com.samsung.microbit.presentation;
 
 /**
- * Provides common methods for presenter classes.
+ * Provides common methods for presenters.
  */
 public interface Presenter {
     /**

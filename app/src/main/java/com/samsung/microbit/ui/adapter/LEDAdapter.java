@@ -15,21 +15,24 @@ import com.samsung.microbit.R;
  */
 public class LEDAdapter extends BaseAdapter {
     private Context mContext;
-    private String mDeviceCodeArray[];
+    private int mDeviceCodeArray[];
 
-    public LEDAdapter(Context c, String deviceCodeArray[]) {
+    public LEDAdapter(Context c, int deviceCodeArray[]) {
         mContext = c;
         mDeviceCodeArray = deviceCodeArray;
     }
 
+    @Override
     public int getCount() {
         return 25;
     }
 
+    @Override
     public Object getItem(int position) {
         return null;
     }
 
+    @Override
     public long getItemId(int position) {
         return position;
     }
@@ -37,6 +40,7 @@ public class LEDAdapter extends BaseAdapter {
     /**
      * Creates a new ImageView for each item referenced by the Adapter.
      */
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView;
         if (convertView == null) {
@@ -50,14 +54,14 @@ public class LEDAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        if (mDeviceCodeArray[position].equals("1")) {
+        if (mDeviceCodeArray[position] == 1) {
             imageView.setBackground(mContext.getResources().getDrawable(R.drawable.red_white_led_btn));
         } else {
             imageView.setBackground(mContext.getResources().getDrawable(R.drawable.white_red_led_btn));
 
             int startIndex = position - 5;
             while (startIndex >= 0) {
-                if (mDeviceCodeArray[startIndex].equals("1")) {
+                if (mDeviceCodeArray[startIndex] == 1) {
                     imageView.setBackground(mContext.getResources().getDrawable(R.drawable.red_white_led_btn));
                 }
                 startIndex -= 5;
@@ -90,6 +94,6 @@ public class LEDAdapter extends BaseAdapter {
      * @return Status of the led at given position.
      */
     private String getLEDStatus(int position) {
-        return mDeviceCodeArray[position].equals("1") ? "on" : "off";
+        return mDeviceCodeArray[position] == 1 ? "on" : "off";
     }
 }

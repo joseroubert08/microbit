@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -29,12 +30,11 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.common.AppInfo;
+import com.samsung.microbit.common.ConfigInfo;
 import com.samsung.microbit.data.constants.PermissionCodes;
-import com.samsung.microbit.presentation.AppInfoPresenter;
+import com.samsung.microbit.presentation.ConfigInfoPresenter;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.service.PluginService;
@@ -43,6 +43,8 @@ import com.samsung.microbit.utils.FileUtils;
 
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
+
+import static com.samsung.microbit.BuildConfig.DEBUG;
 
 /**
  * Represents a home screen. Allows to navigate to all functionality
@@ -61,23 +63,21 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     // Hello animation
     private GifImageView gifAnimationHelloEmoji;
 
-    protected boolean debug = BuildConfig.DEBUG;
-
     /* Debug code*/
-    private String urlToOpen = null;
+    private String urlToOpen;
     /* Debug code ends*/
 
-    private String emailBodyString = null;
+    private String emailBodyString;
 
-    private AppInfoPresenter appInfoPresenter;
+    private ConfigInfoPresenter configInfoPresenter;
 
     /**
      * Provides simplified way to log informational messages.
      *
      * @param message Message to log.
      */
-    protected void logi(String message) {
-        if (debug) {
+    private void logi(String message) {
+        if (DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
@@ -86,6 +86,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void onConfigurationChanged(Configuration newConfig) {
         //handle orientation change to prevent re-creation of activity.
         super.onConfigurationChanged(newConfig);
+
+        unbindDrawables();
 
         setContentView(R.layout.activity_home);
         setupDrawer();
@@ -108,15 +110,18 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         setContentView(R.layout.activity_home);
 
-        appInfoPresenter = new AppInfoPresenter();
+        configInfoPresenter = new ConfigInfoPresenter();
 
-        appInfoPresenter.start();
+        configInfoPresenter.start();
 
         setupDrawer();
         setupButtonsFontStyle();
+        initViews();
 
         checkMinimumPermissionsForThisScreen();
-        startOtherServices();
+        if(savedInstanceState == null) {
+            startOtherServices();
+        }
 
         MBApp.getApp().getEchoClientManager().sendViewEventStats("homeactivity");
 
@@ -126,13 +131,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             item.setChecked(true);
         }
 
-        AppInfo appInfo = MBApp.getApp().getAppInfo();
+        ConfigInfo configInfo = MBApp.getApp().getConfigInfo();
 
-        if (!appInfo.isAppStatusOn()) {
+        if (!configInfo.isAppStatusOn()) {
             finish();
             //Cannot proceed with the application. Shutdown NOW
-            PopUp.show(appInfo.getExceptionMsg(),
-                    appInfo.getExceptionTitle(),
+            PopUp.show(configInfo.getExceptionMsg(),
+                    configInfo.getExceptionTitle(),
                     R.drawable.error_face,//image icon res id
                     R.drawable.red_btn,
                     PopUp.GIFF_ANIMATION_ERROR,
@@ -149,14 +154,21 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
      * Sets buttons font style by setting an appropriate typeface.
      */
     private void setupButtonsFontStyle() {
+        Typeface typeface = MBApp.getApp().getTypeface();
+
         Button connectButton = (Button) findViewById(R.id.connect_device_btn);
-        connectButton.setTypeface(MBApp.getApp().getTypeface());
+        connectButton.setTypeface(typeface);
         Button flashButton = (Button) findViewById(R.id.flash_microbit_btn);
-        flashButton.setTypeface(MBApp.getApp().getTypeface());
+        flashButton.setTypeface(typeface);
         Button createCodeButton = (Button) findViewById(R.id.create_code_btn);
-        createCodeButton.setTypeface(MBApp.getApp().getTypeface());
+        createCodeButton.setTypeface(typeface);
         Button discoverButton = (Button) findViewById(R.id.discover_btn);
-        discoverButton.setTypeface(MBApp.getApp().getTypeface());
+        discoverButton.setTypeface(typeface);
+    }
+
+    private void initViews() {
+        // animation for loading hello .giff
+        gifAnimationHelloEmoji = (GifImageView) findViewById(R.id.homeHelloAnimationGifView);
     }
 
     /**
@@ -166,14 +178,19 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private void startOtherServices() {
         // IPC service to communicate between the services
         Intent ipcIntent = new Intent(this, IPCService.class);
-        startService(ipcIntent);
 
         // BLE service to Handle all BLE communications
         Intent bleIntent = new Intent(this, BLEService.class);
-        startService(bleIntent);
 
         // Plugin service to handle incoming requests
         final Intent intent = new Intent(this, PluginService.class);
+
+        stopService(ipcIntent);
+        stopService(bleIntent);
+        stopService(intent);
+
+        startService(ipcIntent);
+        startService(bleIntent);
         startService(intent);
     }
 
@@ -262,7 +279,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 version,
                 Build.MODEL,
                 Build.VERSION.RELEASE,
-                MBApp.getApp().getAppInfo().getPrivacyURL());
+                MBApp.getApp().getConfigInfo().getPrivacyURL());
         return emailBodyString;
     }
 
@@ -280,8 +297,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        appInfoPresenter.destroy();
+        configInfoPresenter.destroy();
 
+        unbindDrawables();
+    }
+
+    private void unbindDrawables() {
         unbindDrawables(gifAnimationHelloEmoji);
         unbindDrawables(findViewById(R.id.connect_device_btn));
         unbindDrawables(findViewById(R.id.flash_microbit_btn));
@@ -317,6 +338,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 ((GifDrawable) backgroundDrawable).recycle();
             }
         }
+
+        if(view instanceof ImageView && ((ImageView) view).getDrawable() != null) {
+            Drawable backgroundDrawable = ((ImageView) view).getDrawable();
+            backgroundDrawable.setCallback(null);
+            view.unscheduleDrawable(backgroundDrawable);
+
+            if (backgroundDrawable instanceof GifDrawable) {
+                ((GifDrawable) backgroundDrawable).recycle();
+            }
+        }
+
         if (view instanceof ViewGroup) {
             ViewGroup viewGroup = (ViewGroup) view;
 
@@ -332,7 +364,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        urlToOpen = MBApp.getApp().getAppInfo().getCreateCodeURL();
+        urlToOpen = MBApp.getApp().getConfigInfo().getCreateCodeURL();
         switch (id) {
             case R.id.live:
                 item.setChecked(true);
@@ -354,16 +386,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
         // Pause animation
@@ -377,7 +399,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(final View v) {
-        if (debug) logi("onBtnClicked() :: ");
+        if (DEBUG) logi("onBtnClicked() :: ");
 
         // Drawer closes only after certain items are selected from the Navigation View
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -393,10 +415,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 //Update Stats
                 MBApp.getApp().getEchoClientManager().sendNavigationStats("home", "create-code");
                 if (urlToOpen == null) {
-                    urlToOpen = MBApp.getApp().getAppInfo().getCreateCodeURL();
+                    urlToOpen = MBApp.getApp().getConfigInfo().getCreateCodeURL();
                 }
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(urlToOpen));
+
+                //TODO create code open in same app
+                Intent intent = new Intent(this, HelpWebView.class);
+                intent.putExtra("url", urlToOpen);
+
+                //Intent intent = new Intent(Intent.ACTION_VIEW);
+                //intent.setData(Uri.parse(urlToOpen));
 
                 startActivity(intent);
             }
@@ -409,7 +436,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.discover_btn:
                 MBApp.getApp().getEchoClientManager().sendNavigationStats("home", "discover");
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(MBApp.getApp().getAppInfo().getDiscoverURL()));
+                intent.setData(Uri.parse(MBApp.getApp().getConfigInfo().getDiscoverURL()));
                 startActivity(intent);
                 break;
 
@@ -421,7 +448,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.btn_about: {
-                String url = MBApp.getApp().getAppInfo().getAboutURL();
+                String url = MBApp.getApp().getConfigInfo().getAboutURL();
                 Intent aboutIntent = new Intent(Intent.ACTION_VIEW);
                 aboutIntent.setData(Uri.parse(url));
                 startActivity(aboutIntent);
@@ -439,7 +466,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.btn_privacy_cookies: {
-                String url = MBApp.getApp().getAppInfo().getPrivacyURL();
+                String url = MBApp.getApp().getConfigInfo().getPrivacyURL();
                 Intent privacyIntent = new Intent(Intent.ACTION_VIEW);
                 privacyIntent.setData(Uri.parse(url));
                 startActivity(privacyIntent);
@@ -449,7 +476,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.btn_terms_conditions: {
-                String url = MBApp.getApp().getAppInfo().getTermsOfUseURL();
+                String url = MBApp.getApp().getConfigInfo().getTermsOfUseURL();
                 Intent termsIntent = new Intent(Intent.ACTION_VIEW);
                 termsIntent.setData(Uri.parse(url));
                 startActivity(termsIntent);
@@ -461,7 +488,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             break;
 
             case R.id.btn_send_feedback: {
-                String emailAddress = MBApp.getApp().getAppInfo().getSendEmailAddress();
+                String emailAddress = MBApp.getApp().getConfigInfo().getSendEmailAddress();
                 Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
                 feedbackIntent.setType("message/rfc822");
                 feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{emailAddress});
@@ -619,8 +646,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onResume() {
-        if (debug) logi("onResume() :: ");
+        if (DEBUG) logi("onResume() :: ");
         super.onResume();
-        gifAnimationHelloEmoji.animate();
+        if(gifAnimationHelloEmoji != null) {
+            gifAnimationHelloEmoji.animate();
+        }
     }
 }

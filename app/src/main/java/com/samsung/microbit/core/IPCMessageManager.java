@@ -15,7 +15,6 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.model.CmdArg;
@@ -23,6 +22,8 @@ import com.samsung.microbit.data.model.NameValuePair;
 
 import java.util.HashMap;
 import java.util.List;
+
+import static com.samsung.microbit.BuildConfig.DEBUG;
 
 /**
  * Provides ability to send messages between processes.
@@ -47,9 +48,9 @@ public final class IPCMessageManager {
     public static final int MESSAGE_ANDROID = 1;
     public static final int MESSAGE_MICROBIT = 2;
 
-    private IncomingHandler incomingHandler = null;
-    private HandlerThread handlerThread = null;
-    private Messenger clientMessenger = null;
+    private IncomingHandler incomingHandler;
+    private HandlerThread handlerThread;
+    private Messenger clientMessenger;
 
     private static volatile IPCMessageManager instance;
     private static final Object lock = new Object();
@@ -59,10 +60,10 @@ public final class IPCMessageManager {
     /**
      * Listener to handle service connection states.
      */
-    ServiceConnection serviceConnection = new ServiceConnection() {
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            if (debug) {
+            if(DEBUG) {
                 logi("serviceConnection.onServiceConnected() :: name.getClassName() " + name.getClassName());
             }
 
@@ -71,7 +72,7 @@ public final class IPCMessageManager {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            if (debug) {
+            if(DEBUG) {
                 logi("serviceConnection.onServiceDisconnected() :: name.getClassName() " + name.getClassName());
             }
 
@@ -79,9 +80,7 @@ public final class IPCMessageManager {
         }
     };
 
-    static final boolean debug = BuildConfig.DEBUG;
-
-    static void logi(final String message) {
+    private static void logi(String message) {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
     }
 
@@ -92,36 +91,32 @@ public final class IPCMessageManager {
         return instance;
     }
 
-    public static IPCMessageManager getInstance(String serviceName, Handler clientHandler) {
-        if (getInstance() == null) {
-            synchronized (lock) {
-                if (getInstance() == null) {
-                    IPCMessageManager ni = new IPCMessageManager();
-                    ni.configureClientHandler(serviceName, clientHandler);
-                    instance = ni;
-                }
+    public static void configureMessageManager(String serviceName, Handler clientHandler) {
+        synchronized (lock) {
+            if (instance == null) {
+                instance = new IPCMessageManager();
             }
+            instance.configureClientHandler(serviceName, clientHandler);
         }
-
-        return getInstance();
     }
 
     /**
-     * Sends IPC message to destination class providing message type, event category,
-     * special command and an array of data.
+     * Sends message to some service
+     * ({@link com.samsung.microbit.service.PluginService PluginService},
+     * {@link com.samsung.microbit.service.BLEService BLEService},
+     * {@link com.samsung.microbit.service.IPCService IPCService})
      *
-     * @param destService   Destination class to send to.
-     * @param messageType   Android or microbit message.
-     * @param eventCategory Event category listed in EventCategories.
+     * @param destService   Class of service, message need sent to.
+     * @param messageType   Android or microbit message. One of the {@link IPCMessageManager#MESSAGE_ANDROID},
+     *                      {@link IPCMessageManager#MESSAGE_MICROBIT}
+     * @param eventCategory Event category listed in {@link EventCategories}
      * @param cmd           Command argument.
      * @param args          Array of data.
      */
-    public static void sendIPCMessage(Class destService, int messageType, int eventCategory, CmdArg cmd,
+    public void sendIPCMessage(Class destService, int messageType, int eventCategory, CmdArg cmd,
                                       NameValuePair[] args) {
-        IPCMessageManager inst = IPCMessageManager.getInstance();
-
-        if (!inst.isConnected(destService)) {
-            inst.configureServerConnection(destService, MBApp.getApp());
+        if (!isConnected(destService)) {
+            configureServerConnection(destService, MBApp.getApp());
         }
 
         if (messageType != IPCMessageManager.MESSAGE_ANDROID && messageType != IPCMessageManager.MESSAGE_MICROBIT) {
@@ -144,18 +139,18 @@ public final class IPCMessageManager {
 
         msg.setData(bundle);
         try {
-            inst.sendMessage(destService, msg);
+            sendMessage(destService, msg);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
     }
 
-    public android.os.Messenger getClientMessenger() {
+    public Messenger getClientMessenger() {
         return clientMessenger;
     }
 
-    public void configureClientHandler(String serviceName, Handler clientHandler) {
-        if (debug) {
+    private void configureClientHandler(String serviceName, Handler clientHandler) {
+        if(DEBUG) {
             logi("configureClientHandler()");
             logi("Init handler ::" + clientHandler.getLooper().getThread().getName());
         }
@@ -173,8 +168,8 @@ public final class IPCMessageManager {
         }
     }
 
-    public void configureServerConnection(Class serviceClass, Context context) {
-        if (debug) {
+    private void configureServerConnection(Class serviceClass, Context context) {
+        if(DEBUG) {
             logi("configureServerConnection() :: serviceClass.getName() = " + serviceClass.getName());
         }
 
@@ -184,12 +179,12 @@ public final class IPCMessageManager {
         context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
-    public boolean isConnected(Class serviceClass) {
+    private boolean isConnected(Class serviceClass) {
         return remoteServices.containsKey(serviceClass.getName());
     }
 
-    public void sendMessage(Class serviceClass, Message msg) throws RemoteException {
-        if (debug) {
+    private void sendMessage(Class serviceClass, Message msg) throws RemoteException {
+        if(DEBUG) {
             logi("sendMessage()");
         }
 
@@ -204,7 +199,7 @@ public final class IPCMessageManager {
         return remoteServices.size();
     }
 
-    public static Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {
+    private static Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {
         // Retrieve all services that can match the given intent
         PackageManager pm = context.getPackageManager();
         List<ResolveInfo> resolveInfo = pm.queryIntentServices(implicitIntent, 0);
@@ -231,13 +226,13 @@ public final class IPCMessageManager {
     /**
      * Provides custom implementation to handle incoming messages.
      */
-    static class IncomingHandler extends Handler {
+    private static class IncomingHandler extends Handler {
 
-        volatile Handler clientHandler;
+        private volatile Handler clientHandler;
 
         public IncomingHandler(HandlerThread thr, Handler clientHandler) {
             super(thr.getLooper());
-            if (debug) {
+            if(DEBUG) {
                 logi("IncomingHandler.IncomingHandler() :: clientHandler = " + clientHandler);
             }
 
@@ -246,7 +241,7 @@ public final class IPCMessageManager {
 
         @Override
         public void handleMessage(Message msg) {
-            if (debug) {
+            if(DEBUG) {
                 logi("IncomingHandler.handleMessage()");
             }
 
@@ -254,7 +249,7 @@ public final class IPCMessageManager {
 
             if (msg.what == MESSAGE_ANDROID) {
                 if (msg.arg1 == EventCategories.IPC_INIT) {
-                    if (debug) {
+                    if(DEBUG) {
                         logi("IncomingHandler.handleMessage() :: MESSAGE_ANDROID.IPC_INIT");
                     }
 
@@ -264,7 +259,7 @@ public final class IPCMessageManager {
 
             Handler c;
             synchronized (lock) {
-                if (debug) {
+                if(DEBUG) {
                     logi("IncomingHandler.handleMessage() :: getting clientHandler");
                 }
 
@@ -272,7 +267,7 @@ public final class IPCMessageManager {
             }
 
             if (c != null) {
-                if (debug) {
+                if(DEBUG) {
                     logi("IncomingHandler.handleMessage() :: c != null");
                 }
 

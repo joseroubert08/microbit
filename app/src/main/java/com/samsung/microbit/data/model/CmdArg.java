@@ -1,7 +1,7 @@
 package com.samsung.microbit.data.model;
 
 /**
- * Represents a command argument that consists of an int command code
+ * Represents class, that consists of int command code
  * and a String value.
  */
 public class CmdArg {

@@ -10,17 +10,15 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
 
-import com.samsung.microbit.BuildConfig;
-
 import java.util.List;
+
+import static com.samsung.microbit.BuildConfig.DEBUG;
 
 public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
     private static final String TAG = CameraPreview.class.getSimpleName();
 
-    private boolean isDebug = BuildConfig.DEBUG;
-
     private void logi(String message) {
-        if (isDebug) {
+        if (DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
@@ -50,6 +48,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
                 mCamera.setParameters(parameters);
                 mCamera.startPreview();
                 mCamera.autoFocus(new Camera.AutoFocusCallback() {
+                    @Override
                     public void onAutoFocus(boolean success, Camera camera) {
                     }
                 });
@@ -201,10 +200,12 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
         }
     }
 
+    @Override
     public void surfaceCreated(SurfaceHolder holder) {
         logi("surfaceCreated()");
     }
 
+    @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         // Surface will be destroyed when we return, so stop the preview.
         if (mCamera != null) {
@@ -212,6 +213,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
         }
     }
 
+    @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
         logi("surfaceChanged()");
         if (mHolder.getSurface() == null) {
