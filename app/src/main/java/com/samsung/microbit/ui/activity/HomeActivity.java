@@ -642,6 +642,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void onResume() {
         if (DEBUG) logi("onResume() :: ");
         super.onResume();
-        gifAnimationHelloEmoji.animate();
+        if(gifAnimationHelloEmoji != null) {
+            gifAnimationHelloEmoji.animate();
+        }
     }
 }

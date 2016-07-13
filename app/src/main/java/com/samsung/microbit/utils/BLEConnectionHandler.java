@@ -18,6 +18,11 @@ public class BLEConnectionHandler {
     private BLEConnectionHandler() {
     }
 
+    /**
+     * Allows to handle connection between a micro:bit board
+     * and a mobile device. It updates connection state UI and
+     * changes connection state between STATE_CONNECTED and STATE_DISCONNECTED.
+     */
     public static BroadcastReceiver bleConnectionChangedReceiver(final BLEConnectionManager bleConnectionManager) {
         return new BroadcastReceiver() {
             @Override
@@ -74,13 +79,11 @@ public class BLEConnectionHandler {
                         bleConnectionManager.logi("localBroadcastReceiver Error message = " + message);
                         MBApp application = MBApp.getApp();
 
-                                PopUp.show(application.getString(R.string.micro_bit_reset_msg),
-                                        application.getString(R.string.general_error_title),
-                                        R.drawable.error_face, R.drawable.red_btn,
-                                        PopUp.GIFF_ANIMATION_ERROR,
-                                        PopUp.TYPE_ALERT, null, null);
-/*                            }
-                        });*/
+                        PopUp.show(application.getString(R.string.micro_bit_reset_msg),
+                                application.getString(R.string.general_error_title),
+                                R.drawable.error_face, R.drawable.red_btn,
+                                PopUp.GIFF_ANIMATION_ERROR,
+                                PopUp.TYPE_ALERT, null, null);
                     }
                 }
             }

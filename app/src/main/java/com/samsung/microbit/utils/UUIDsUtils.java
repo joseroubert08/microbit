@@ -2,6 +2,10 @@ package com.samsung.microbit.utils;
 
 import java.util.UUID;
 
+/**
+ * Provides common functionality to work with UUID values.
+ * For example, make UUID value from String and etc.
+ */
 public class UUIDsUtils {
     private UUIDsUtils() {
     }

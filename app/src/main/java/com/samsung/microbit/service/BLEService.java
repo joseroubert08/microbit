@@ -22,7 +22,6 @@ import com.samsung.microbit.core.bluetooth.BLEManager;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.data.constants.CharacteristicUUIDs;
 import com.samsung.microbit.data.constants.EventCategories;
-import com.samsung.microbit.data.constants.EventSubCodes;
 import com.samsung.microbit.data.constants.GattFormats;
 import com.samsung.microbit.data.constants.GattServiceUUIDs;
 import com.samsung.microbit.data.constants.RegistrationIds;
@@ -89,9 +88,9 @@ public class BLEService extends BLEBaseService {
 
                         logi("make :: ble send");
 
-                        ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID,
+                        ServiceUtils.sendToIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID,
                                 EventCategories.IPC_INIT, null, null);
-                        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID,
+                        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID,
                                 EventCategories.IPC_INIT, null, null);
                         setNotification(false, 0);
                     } catch (InterruptedException e) {
@@ -236,6 +235,11 @@ public class BLEService extends BLEBaseService {
         logi("setNotification() :: errorCode = " + errorCode);
         logi("setNotification() :: actual_Error = " + actual_Error);
 
+
+        NotificationManager notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        String notificationString = null;
+        boolean onGoingNotification = false;
+
         NameValuePair[] args = new NameValuePair[3];
 
         args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
@@ -255,21 +259,25 @@ public class BLEService extends BLEBaseService {
                     setBluetoothDevice(null);
                 }
             }
+            notificationString = getString(R.string.tray_notification_failure);
+            onGoingNotification = false;
 
-            ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
+            ServiceUtils.sendToIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
                     .IPC_BLE_NOTIFICATION_GATT_DISCONNECTED, null, args);
-            ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
+            ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
                     .IPC_BLE_NOTIFICATION_GATT_DISCONNECTED, null, args);
         } else {
+            notificationString = getString(R.string.tray_notification_sucsess);
+            onGoingNotification = true;
 
-            ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
+            ServiceUtils.sendToIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
                     .IPC_BLE_NOTIFICATION_GATT_CONNECTED, null, args);
-            ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
+            ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
                     .IPC_BLE_NOTIFICATION_GATT_CONNECTED, null, args);
         }
     }
 
-    /**
+    /*
      * IPC Messenger handling
      */
     @Override
@@ -462,7 +470,7 @@ public class BLEService extends BLEBaseService {
         NameValuePair[] args = new NameValuePair[2];
         args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
         args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE, firmware);
-        ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
+        ServiceUtils.sendToIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
                 .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
     }
 
@@ -472,7 +480,7 @@ public class BLEService extends BLEBaseService {
         args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
         args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, EventCategories
                 .IPC_BLE_NOTIFICATION_INCOMING_CALL);
-        ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
+        ServiceUtils.sendToIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
                 .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
     }
 
@@ -482,7 +490,7 @@ public class BLEService extends BLEBaseService {
         args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
         args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, EventCategories
                 .IPC_BLE_NOTIFICATION_INCOMING_SMS);
-        ServiceUtils.sendtoIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
+        ServiceUtils.sendToIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
                 .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);
     }
 
@@ -504,7 +512,7 @@ public class BLEService extends BLEBaseService {
             default:
                 return;
         }
-        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT,
+        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT,
                 msgService, cmd, null);
     }
 
@@ -517,7 +525,7 @@ public class BLEService extends BLEBaseService {
         logi("registerForSignalStrength() -- " + register);
         CmdArg cmd = register ? new CmdArg(RegistrationIds.REG_SIGNALSTRENGTH, "On") : new CmdArg(RegistrationIds
                 .REG_SIGNALSTRENGTH, "Off");
-        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
+        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
                 .SAMSUNG_SIGNAL_STRENGTH_ID, cmd, null);
     }
 
@@ -532,41 +540,41 @@ public class BLEService extends BLEBaseService {
         //Device Orientation
         CmdArg cmd = register ? new CmdArg(RegistrationIds.REG_DEVICEORIENTATION, "On") : new CmdArg(RegistrationIds
                 .REG_DEVICEORIENTATION, "Off");
-        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
+        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
                 .SAMSUNG_DEVICE_INFO_ID, cmd, null);
 
         //Device Gesture
         CmdArg cmd1 = register ? new CmdArg(RegistrationIds.REG_DEVICEGESTURE, "On") : new CmdArg(RegistrationIds.REG_DEVICEGESTURE,
                 "Off");
-        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
+        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
                 .SAMSUNG_DEVICE_INFO_ID, cmd1, null);
 
 
         //Device Battery Strength
         CmdArg cmd2 = register ? new CmdArg(RegistrationIds.REG_BATTERYSTRENGTH, "On") : new CmdArg(RegistrationIds.REG_BATTERYSTRENGTH,
                 "Off");
-        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
+        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
                 .SAMSUNG_DEVICE_INFO_ID, cmd2, null);
 
         //Device Temperature
         CmdArg cmd3 = register ? new CmdArg(RegistrationIds.REG_TEMPERATURE, "On") : new CmdArg(RegistrationIds.REG_TEMPERATURE, "Off");
-        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
+        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
                 .SAMSUNG_DEVICE_INFO_ID, cmd3, null);
 
 
         //Register Telephony
         CmdArg cmd4 = register ? new CmdArg(RegistrationIds.REG_TELEPHONY, "On") : new CmdArg(RegistrationIds.REG_TELEPHONY, "Off");
-        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
+        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
                 .SAMSUNG_TELEPHONY_ID, cmd4, null);
 
         //Register Messaging
         CmdArg cmd5 = register ? new CmdArg(RegistrationIds.REG_MESSAGING, "On") : new CmdArg(RegistrationIds.REG_MESSAGING, "Off");
-        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
+        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
                 .SAMSUNG_TELEPHONY_ID, cmd5, null);
 
         //Register Display
         CmdArg cmd6 = register ? new CmdArg(RegistrationIds.REG_DISPLAY, "On") : new CmdArg(RegistrationIds.REG_DISPLAY, "Off");
-        ServiceUtils.sendtoPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
+        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
                 .SAMSUNG_DEVICE_INFO_ID, cmd6, null);
     }
 

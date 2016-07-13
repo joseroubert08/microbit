@@ -625,7 +625,8 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
     private void generateName() {
 
-        StringBuilder deviceNameBuilder = new StringBuilder();
+        mNewDeviceName = "";
+        mNewDeviceCode = "";
         //Columns
         for (int col = 0; col < 5; col++) {
             //Rows

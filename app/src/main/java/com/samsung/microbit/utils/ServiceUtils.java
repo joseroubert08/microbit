@@ -15,48 +15,78 @@ import com.samsung.microbit.service.PluginService;
 
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
+/**
+ * Provides additional functionality to work with services,
+ * such as send messages to different services using IPC message manager.
+ */
 public class ServiceUtils {
     private static final String TAG = ServiceUtils.class.getSimpleName();
 
     private ServiceUtils() {
     }
 
-    private static void logi(Class serviceClass, String message) {
-        if(serviceClass.equals(IPCService.class)) {
+    /**
+     * Unified method to log informational messages in different services.
+     *
+     * @param serviceClass Service class where the log method should be called.
+     * @param message      Message to log.
+     */
+    private static void logi(final Class serviceClass, final String message) {
+        if (serviceClass.equals(IPCService.class)) {
             IPCService.logi(message);
-        } else if(serviceClass.equals(PluginService.class)) {
+        } else if (serviceClass.equals(PluginService.class)) {
             PluginService.logi(message);
-        } else if(serviceClass.equals(BLEService.class)) {
+        } else if (serviceClass.equals(BLEService.class)) {
             BLEService.logi(message);
-        } else if(serviceClass.equals(PopUpServiceReceiver.class)) {
+        } else if (serviceClass.equals(PopUpServiceReceiver.class)) {
             PopUpServiceReceiver.logi(message);
         }
     }
 
-    public static void sendtoIPCService(Class serviceClass, int messageType, int eventCategory, CmdArg cmd,
+    /**
+     * Sends a message to IPC service using IPC message manager and logs it
+     * if debug is on.
+     *
+     * @param serviceClass  Class of the service, which is initiator of messages. Used for debug (logging) purposes.
+     * @param messageType   Type of the message.
+     * @param eventCategory Event category.
+     * @param cmd           Command argument.
+     * @param args          Additional array of arguments.
+     */
+    public static void sendToIPCService(Class serviceClass, int messageType, int eventCategory, CmdArg cmd,
                                         NameValuePair[] args) {
         if (DEBUG) {
-            if(cmd != null) {
-                logi(serviceClass, serviceClass.getSimpleName() + ": sendtoIPCService(), " + messageType + "," +
+            if (cmd != null) {
+                logi(serviceClass, serviceClass.getSimpleName() + ": sendToIPCService(), " + messageType + "," +
                         eventCategory + "," +
                         "(" + cmd.getValue() + "," + cmd.getCMD() + "");
             } else {
-                logi(serviceClass, serviceClass.getSimpleName() + ": sendtoIPCService(), " + messageType + "," + eventCategory);
+                logi(serviceClass, serviceClass.getSimpleName() + ": sendToIPCService(), " + messageType + "," + eventCategory);
             }
         }
 
         IPCMessageManager.getInstance().sendIPCMessage(IPCService.class, messageType, eventCategory, cmd, args);
     }
 
-    public static void sendtoPluginService(Class serviceClass, int messageType, int eventCategory, CmdArg cmd,
-                                        NameValuePair[] args) {
+    /**
+     * Sends a message to Plugin service using IPC message manager and logs it
+     * if debug is on.
+     *
+     * @param serviceClass  Class of the service, which is initiator of messages. Used for debug (logging) purposes.
+     * @param messageType   Type of the message.
+     * @param eventCategory Event category.
+     * @param cmd           Command argument.
+     * @param args          Additional array of arguments.
+     */
+    public static void sendToPluginService(Class serviceClass, int messageType, int eventCategory, CmdArg cmd,
+                                           NameValuePair[] args) {
         if (DEBUG) {
-            if(cmd != null) {
-                logi(serviceClass, serviceClass.getSimpleName() + ": sendtoPluginService(), " + messageType + "," +
+            if (cmd != null) {
+                logi(serviceClass, serviceClass.getSimpleName() + ": sendToPluginService(), " + messageType + "," +
                         eventCategory + "," +
                         "(" + cmd.getValue() + "," + cmd.getCMD() + "");
             } else {
-                logi(serviceClass, serviceClass.getSimpleName() + ": sendtoPluginService(), " + messageType + "," +
+                logi(serviceClass, serviceClass.getSimpleName() + ": sendToPluginService(), " + messageType + "," +
                         eventCategory);
             }
         }
@@ -64,15 +94,25 @@ public class ServiceUtils {
         IPCMessageManager.getInstance().sendIPCMessage(PluginService.class, messageType, eventCategory, cmd, args);
     }
 
-    public static void sendtoBLEService(Class serviceClass, int messageType, int eventCategory, CmdArg cmd,
+    /**
+     * Sends a message to BLE service using IPC message manager and logs it
+     * if debug is on.
+     *
+     * @param serviceClass  Class of service, which is initiator of messages. Used for debug (logging) purposes.
+     * @param messageType   Type of the message.
+     * @param eventCategory Event category.
+     * @param cmd           Command argument.
+     * @param args          Additional array of arguments.
+     */
+    public static void sendToBLEService(Class serviceClass, int messageType, int eventCategory, CmdArg cmd,
                                         NameValuePair[] args) {
         if (DEBUG) {
-            if(cmd != null) {
-                logi(serviceClass, serviceClass.getSimpleName() + ": sendtoBLEService(), " + messageType + "," + eventCategory +
+            if (cmd != null) {
+                logi(serviceClass, serviceClass.getSimpleName() + ": sendToBLEService(), " + messageType + "," + eventCategory +
                         "," + cmd
                         .getValue() + "," + cmd.getCMD() + "");
             } else {
-                logi(serviceClass, serviceClass.getSimpleName() + ": sendtoBLEService(), " + messageType + "," + eventCategory);
+                logi(serviceClass, serviceClass.getSimpleName() + ": sendToBLEService(), " + messageType + "," + eventCategory);
             }
         }
 

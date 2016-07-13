@@ -8,6 +8,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Utility that contains common functionality that
+ * uses along the app.
+ */
 public class Utils {
     public final static int SORTBY_PROJECT_DATE = 0;
     public final static int SORTBY_PROJECT_NAME = 1;
@@ -17,6 +21,16 @@ public class Utils {
     private Utils() {
     }
 
+    /**
+     * Allows to sort the list of projects on the Flash screen according
+     * to given parameters. It allows to sort by date or name, for now, and
+     * set sort order to ascending or descending.
+     *
+     * @param list List to sort.
+     * @param orderBy Defines sorting criteria of a project by which to sort.
+     * @param sortOrder Ascending or descending.
+     * @return Sorted list.
+     */
     public static List<Project> sortProjectList(List<Project> list, final int orderBy, final int sortOrder) {
         Project[] projectArray = list.toArray(new Project[list.size()]);
         Comparator<Project> comparator = new Comparator<Project>() {

@@ -576,7 +576,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
             UnpackUtils.findProgramsAndPopulate(mPrettyFileNameMap, mProjectList);
         }
 
-        int projectListSortOrder = PreferenceUtils.getListOrderPrefs();
+        int projectListSortOrder = PreferenceUtils.getListSortOrder();
         int sortBy = (projectListSortOrder >> 1);
         int sortOrder = projectListSortOrder & 0x01;
         com.samsung.microbit.utils.Utils.sortProjectList(mProjectList, sortBy, sortOrder);

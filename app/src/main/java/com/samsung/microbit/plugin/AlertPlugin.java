@@ -295,7 +295,12 @@ public class AlertPlugin implements AbstractPlugin {
                 0, /* TODO - nothing needs to be done */
                 PopUp.TYPE_ALERT, popupAction);
     }
-
+    /**
+     * Simplified version to show additional dialog window while alarm.
+     *
+     * @param message Text message to show.
+     * @param title Title of dialog
+     */
     private static void showDialog(String message, String title) {
         PopUp.showFromService(MBApp.getApp(), message,
                 title,

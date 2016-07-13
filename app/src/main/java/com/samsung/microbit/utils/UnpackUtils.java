@@ -9,6 +9,11 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Provides functionality to operate with a project items,
+ * such as get a number of total saved projects and find
+ * programs on a mobile device.
+ */
 public class UnpackUtils {
     //TODO: Change to data/data/appName/files MBApp.getContext().getFilesDir();
     public static File HEX_FILE_DIR = Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);

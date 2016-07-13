@@ -9,6 +9,10 @@ import android.view.View;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 
+/**
+ * Represents a bluetooth checker that allows to check current bluetooth state
+ * and ask user to turn on a bluetooth adapter.
+ */
 public class BluetoothChecker {
     private static final String TAG = BluetoothChecker.class.getSimpleName();
 
@@ -35,6 +39,12 @@ public class BluetoothChecker {
         return mBluetoothAdapter.isEnabled();
     }
 
+    /**
+     * Checks if bluetooth adapter is enabled and provides
+     * a dialog window to allow a user to enable it.
+     *
+     * @return True - if bluetooth is already on.
+     */
     public boolean checkBluetoothAndStart() {
         if (!mBluetoothAdapter.isEnabled()) {
             MBApp application = MBApp.getApp();
@@ -42,7 +52,7 @@ public class BluetoothChecker {
             PopUp.show(application.getString(R.string.bluetooth_turn_on_guide),
                     application.getString(R.string.turn_on_bluetooth),
                     R.drawable.bluetooth, R.drawable.blue_btn,
-                    0, /* TODO - nothing needs to be done */
+                    0,
                     PopUp.TYPE_CHOICE,
                     new View.OnClickListener() {
                         @Override

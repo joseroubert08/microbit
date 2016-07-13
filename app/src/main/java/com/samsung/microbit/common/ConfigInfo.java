@@ -28,7 +28,7 @@ import static com.samsung.microbit.ConfigPreferenceNames.REMOTE_CONFIG_PREFERENC
 public class ConfigInfo {
 
     /**
-     * Represents app status. It got from server, and if status is false, just finish application and display error.
+     * Represents app status about sharing information.
      */
     public enum AppStatus {
         ON("On"), OFF("Off");
@@ -90,7 +90,7 @@ public class ConfigInfo {
     }
 
     /**
-     * Reads common app information from external storage and store it.
+     * Reads common app information from external storage and stores it to the class' members.
      */
     public void searchStoredValues() {
         appStatus = AppStatus.byName(preferences.getString(RC_APPSTATUS_KEY, AppStatus.OFF.toString()));

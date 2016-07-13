@@ -65,9 +65,9 @@ public class IPCService extends Service {
                     try {
                         Thread.sleep(IPCMessageManager.STARTUP_DELAY);
                         logi("make :: ipc send");
-                        ServiceUtils.sendtoBLEService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID,
+                        ServiceUtils.sendToBLEService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID,
                                 EventCategories.IPC_INIT, null, null);
-                        ServiceUtils.sendtoPluginService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID,
+                        ServiceUtils.sendToPluginService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID,
                                 EventCategories.IPC_INIT, null, null);
                     } catch (InterruptedException e) {
                         Log.e(TAG, e.toString());
@@ -91,17 +91,17 @@ public class IPCService extends Service {
 	 */
 
     public static void bleDisconnect() {
-        ServiceUtils.sendtoBLEService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
+        ServiceUtils.sendToBLEService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
                 .IPC_BLE_DISCONNECT, null, null);
     }
 
     public static void bleConnect() {
-        ServiceUtils.sendtoBLEService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
+        ServiceUtils.sendToBLEService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
                 .IPC_BLE_CONNECT, null, null);
     }
 
     public static void bleReconnect() {
-        ServiceUtils.sendtoBLEService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
+        ServiceUtils.sendToBLEService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
                 .IPC_BLE_RECONNECT, null, null);
     }
 
@@ -111,7 +111,7 @@ public class IPCService extends Service {
         args[1] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_GUID, characteristic.toString());
         args[2] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_VALUE, value);
         args[3] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE, type);
-        ServiceUtils.sendtoBLEService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
+        ServiceUtils.sendToBLEService(IPCService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
                 .IPC_WRITE_CHARACTERISTIC, null, args);
     }
 
