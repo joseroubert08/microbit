@@ -6,6 +6,7 @@
 
     <Button
         android:id="@+id/appNameButton"
+        style="@style/Base.Widget.AppCompat.Button.Borderless"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/grey_bg"
@@ -21,13 +22,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/grey_bg"
-        android:editable="true"
-        android:enabled="true"
-        android:focusable="true"
-        android:textAllCaps="false"
-        android:focusableInTouchMode="true"
         android:gravity="start|center_vertical"
         android:inputType="textNoSuggestions|textVisiblePassword"
+        android:textAllCaps="false"
         android:textColor="@android:color/black"
         android:textSize="@dimen/project_items_text_size"
         android:visibility="invisible" />
