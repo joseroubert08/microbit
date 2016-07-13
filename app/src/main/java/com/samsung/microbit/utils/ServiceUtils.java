@@ -47,7 +47,7 @@ public class ServiceUtils {
      * Sends a message to IPC service using IPC message manager and logs it
      * if debug is on.
      *
-     * @param serviceClass  Destination service class which should receive the message.
+     * @param serviceClass  Class of the service, which is initiator of messages. Used for debug (logging) purposes.
      * @param messageType   Type of the message.
      * @param eventCategory Event category.
      * @param cmd           Command argument.
@@ -72,7 +72,7 @@ public class ServiceUtils {
      * Sends a message to Plugin service using IPC message manager and logs it
      * if debug is on.
      *
-     * @param serviceClass  Destination service class which should receive the message.
+     * @param serviceClass  Class of the service, which is initiator of messages. Used for debug (logging) purposes.
      * @param messageType   Type of the message.
      * @param eventCategory Event category.
      * @param cmd           Command argument.
@@ -98,7 +98,7 @@ public class ServiceUtils {
      * Sends a message to BLE service using IPC message manager and logs it
      * if debug is on.
      *
-     * @param serviceClass  Destination service class which should receive the message.
+     * @param serviceClass  Class of service, which is initiator of messages. Used for debug (logging) purposes.
      * @param messageType   Type of the message.
      * @param eventCategory Event category.
      * @param cmd           Command argument.
