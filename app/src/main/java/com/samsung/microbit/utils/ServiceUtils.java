@@ -52,6 +52,8 @@ public class ServiceUtils {
      * @param eventCategory Event category.
      * @param cmd           Command argument.
      * @param args          Additional array of arguments.
+     *
+     * @see IPCMessageManager#sendIPCMessage(Class, int, int, CmdArg, NameValuePair[])
      */
     public static void sendToIPCService(Class serviceClass, int messageType, int eventCategory, CmdArg cmd,
                                         NameValuePair[] args) {
@@ -77,6 +79,8 @@ public class ServiceUtils {
      * @param eventCategory Event category.
      * @param cmd           Command argument.
      * @param args          Additional array of arguments.
+     *
+     * @see IPCMessageManager#sendIPCMessage(Class, int, int, CmdArg, NameValuePair[])
      */
     public static void sendToPluginService(Class serviceClass, int messageType, int eventCategory, CmdArg cmd,
                                            NameValuePair[] args) {
@@ -103,6 +107,8 @@ public class ServiceUtils {
      * @param eventCategory Event category.
      * @param cmd           Command argument.
      * @param args          Additional array of arguments.
+     *
+     * @see IPCMessageManager#sendIPCMessage(Class, int, int, CmdArg, NameValuePair[])
      */
     public static void sendToBLEService(Class serviceClass, int messageType, int eventCategory, CmdArg cmd,
                                         NameValuePair[] args) {

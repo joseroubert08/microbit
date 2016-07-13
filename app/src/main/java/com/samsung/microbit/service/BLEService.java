@@ -120,6 +120,8 @@ public class BLEService extends BLEBaseService {
         return pairedDeviceName;
     }
 
+    private boolean tryingToReconnect = false;
+
     @Override
     protected void startupConnection() {
         logi("startupConnection() bleManager=" + getBleManager());
@@ -139,8 +141,18 @@ public class BLEService extends BLEBaseService {
                     success = false;
                 }
             } else {
-                success = false;
                 logi("startupConnection() :: discoverServices() != 0");
+
+                if(!tryingToReconnect) {
+                    tryingToReconnect = true;
+                    reset();
+                    setNotification(false, 0);
+                    ServiceUtils.sendToBLEService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID,
+                            EventCategories.IPC_BLE_CONNECT, null, null);
+                } else {
+                    tryingToReconnect = false;
+                    success = false;
+                }
             }
         } else {
             success = false;
@@ -262,10 +274,12 @@ public class BLEService extends BLEBaseService {
             notificationString = getString(R.string.tray_notification_failure);
             onGoingNotification = false;
 
-            ServiceUtils.sendToIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
-                    .IPC_BLE_NOTIFICATION_GATT_DISCONNECTED, null, args);
-            ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
-                    .IPC_BLE_NOTIFICATION_GATT_DISCONNECTED, null, args);
+            if(!tryingToReconnect) {
+                ServiceUtils.sendToIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
+                        .IPC_BLE_NOTIFICATION_GATT_DISCONNECTED, null, args);
+                ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
+                        .IPC_BLE_NOTIFICATION_GATT_DISCONNECTED, null, args);
+            }
         } else {
             notificationString = getString(R.string.tray_notification_sucsess);
             onGoingNotification = true;
@@ -305,7 +319,6 @@ public class BLEService extends BLEBaseService {
         } else {
             Log.e(TAG, "Not found DeviceInformationService");
         }
-
 
         BluetoothGattService eventService = getService(GattServiceUUIDs.EVENT_SERVICE);
         if (eventService == null) {
@@ -653,6 +666,7 @@ public class BLEService extends BLEBaseService {
             switch (msg.arg1) {
                 case EventCategories.IPC_BLE_CONNECT:
                     logi("handleIncomingMessage() :: IPCMessageManager.IPC_BLE_CONNECT bleManager = " + bleManager);
+                    tryingToReconnect = false;
                     setupBLE();
                     break;
 
