@@ -5,16 +5,24 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
+import android.util.Log;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.EventSubCodes;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.plugin.InformationPlugin;
-import com.samsung.microbit.service.PluginService;
+import com.samsung.microbit.service.BLEServiceNew;
+import com.samsung.microbit.service.PluginServiceNew;
+import com.samsung.microbit.utils.ServiceUtils;
 import com.samsung.microbit.utils.Utils;
 
-public class ShakePresenter implements Presenter{
+public class ShakePresenter implements Presenter {
+    private static final String TAG = ShakePresenter.class.getSimpleName();
+
     /*
      * ShakeEventListener
      */
@@ -47,14 +55,31 @@ public class ShakePresenter implements Presenter{
                 if (speed > SPEED_THRESHOLD) {
                     mSwingCount++;
                     if (mSwingCount >= THRESHOLD_SWING_COUNT) {
-                        if(informationPlugin != null) {
+                        if (informationPlugin != null) {
                             //notify BLE client
                             CmdArg cmd = new CmdArg(InformationPlugin.AlertType.TYPE_SHAKE, "Device Shaked");
-                            informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
+                            informationPlugin.sendReplyCommand(PluginServiceNew.INFORMATION, cmd);
                         }
 
-                        PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_DEVICE_INFO_ID,
-                                EventSubCodes.SAMSUNG_DEVICE_GESTURE_DEVICE_SHAKEN));
+                        ServiceUtils.IMessengerFinder messengerFinder = MBApp.getApp().getMessengerFinder();
+
+                        if (messengerFinder != null) {
+                            Messenger bleMessenger = messengerFinder.getMessengerForService(BLEServiceNew.class.getName());
+
+                            if (bleMessenger != null) {
+                                Message message = ServiceUtils.composeBLECharacteristicMessage(Utils
+                                        .makeMicroBitValue(EventCategories.SAMSUNG_DEVICE_INFO_ID,
+                                                EventSubCodes.SAMSUNG_DEVICE_GESTURE_DEVICE_SHAKEN));
+                                if (message != null) {
+                                    try {
+                                        bleMessenger.send(message);
+                                    } catch (RemoteException e) {
+                                        Log.e(TAG, e.toString());
+                                    }
+                                }
+                            }
+                        }
+
                         mSwingCount = 0;
                     }
                 } else {
@@ -92,9 +117,9 @@ public class ShakePresenter implements Presenter{
             sensorManager.registerListener(shakeEventListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                     SensorManager.SENSOR_DELAY_NORMAL);
 
-            if(informationPlugin != null) {
+            if (informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Registered Shake.");
-                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginServiceNew.INFORMATION, cmd);
             }
         }
     }
@@ -104,9 +129,9 @@ public class ShakePresenter implements Presenter{
         if (isRegistered) {
             sensorManager.unregisterListener(shakeEventListener);
 
-            if(informationPlugin != null) {
+            if (informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Unregistered Shake.");
-                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginServiceNew.INFORMATION, cmd);
             }
 
             isRegistered = false;

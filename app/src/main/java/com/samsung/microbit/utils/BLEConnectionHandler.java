@@ -6,10 +6,10 @@ import android.content.Intent;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.data.constants.Constants;
 import com.samsung.microbit.data.constants.EventCategories;
+import com.samsung.microbit.data.constants.IPCConstants;
 import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.data.model.ui.BaseActivityState;
 import com.samsung.microbit.ui.PopUp;
@@ -27,9 +27,9 @@ public class BLEConnectionHandler {
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                int error = intent.getIntExtra(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-                String firmware = intent.getStringExtra(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE);
-                int getNotification = intent.getIntExtra(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, -1);
+                int error = intent.getIntExtra(IPCConstants.BUNDLE_ERROR_CODE, 0);
+                String firmware = intent.getStringExtra(IPCConstants.BUNDLE_MICROBIT_FIRMWARE);
+                int getNotification = intent.getIntExtra(IPCConstants.BUNDLE_MICROBIT_REQUESTS, -1);
 
                 bleConnectionManager.preUpdateUi();
                 //setConnectedDeviceText();
@@ -75,7 +75,7 @@ public class BLEConnectionHandler {
                     PopUp.hide();
 
                     if (error != 0) {
-                        String message = intent.getStringExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
+                        String message = intent.getStringExtra(IPCConstants.BUNDLE_ERROR_MESSAGE);
                         bleConnectionManager.logi("localBroadcastReceiver Error message = " + message);
                         MBApp application = MBApp.getApp();
 

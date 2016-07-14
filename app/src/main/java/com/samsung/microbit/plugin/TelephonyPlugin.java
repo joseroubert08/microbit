@@ -1,11 +1,9 @@
 package com.samsung.microbit.plugin;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
-import android.util.Log;
 
-import com.samsung.microbit.core.IPCMessageManager;
 import com.samsung.microbit.data.constants.RegistrationIds;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.presentation.IncomingCallPresenter;
@@ -22,6 +20,12 @@ public class TelephonyPlugin implements AbstractPlugin {
 
     private boolean callPresenterInited;
     private boolean smsPresenterInited;
+
+    private final Handler serviceHandler;
+
+    public TelephonyPlugin(Handler serviceHandler) {
+        this.serviceHandler = serviceHandler;
+    }
 
     @Override
     public void handleEntry(CmdArg cmd) {
@@ -90,7 +94,15 @@ public class TelephonyPlugin implements AbstractPlugin {
     }
 
     public void sendCommandBLE(int mbsService, CmdArg cmd) {
-        if (IPCMessageManager.getInstance().getClientMessenger() != null) {
+        Message msg = Message.obtain(null, mbsService);
+        Bundle bundle = new Bundle();
+        bundle.putInt("cmd", cmd.getCMD());
+        bundle.putString("value", cmd.getValue());
+        msg.setData(bundle);
+        serviceHandler.sendMessage(msg);
+
+        //TODO check it if correct
+        /*if (IPCMessageManager.getInstance().getClientMessenger() != null) {
             Message msg = Message.obtain(null, mbsService);
             Bundle bundle = new Bundle();
             bundle.putInt("cmd", cmd.getCMD());
@@ -102,6 +114,6 @@ public class TelephonyPlugin implements AbstractPlugin {
             } catch (RemoteException e) {
                 Log.e(TAG, e.toString());
             }
-        }
+        }*/
     }
 }

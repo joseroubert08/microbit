@@ -9,7 +9,7 @@ import android.hardware.SensorManager;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.plugin.InformationPlugin;
-import com.samsung.microbit.service.PluginService;
+import com.samsung.microbit.service.PluginServiceNew;
 
 public class TemperaturePresenter implements Presenter {
     /*
@@ -23,7 +23,7 @@ public class TemperaturePresenter implements Presenter {
             if(informationPlugin != null) {
                 //notify BLE
                 CmdArg cmd = new CmdArg(InformationPlugin.AlertType.TYPE_TEMPERATURE, "Temperature " + temperature);
-                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginServiceNew.INFORMATION, cmd);
             }
         }
 
@@ -60,7 +60,7 @@ public class TemperaturePresenter implements Presenter {
 
             if(informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Registered Temperature.");
-                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginServiceNew.INFORMATION, cmd);
             }
         }
     }
@@ -76,7 +76,7 @@ public class TemperaturePresenter implements Presenter {
 
             if(informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Unregistered Temperature.");
-                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginServiceNew.INFORMATION, cmd);
             }
 
             isRegistered = false;

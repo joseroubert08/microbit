@@ -6,9 +6,8 @@ import java.util.UUID;
 
 /**
  * Contains characteristic universally unique identifiers,
- * that used by services {@link com.samsung.microbit.service.PluginService PluginService},
- * {@link com.samsung.microbit.service.BLEService BLEService},
- * {@link com.samsung.microbit.service.IPCService IPCService}.
+ * that used by services {@link com.samsung.microbit.service.PluginServiceNew PluginServiceNew},
+ * {@link com.samsung.microbit.service.BLEServiceNew BLEServiceNew}
  */
 public class CharacteristicUUIDs {
     private CharacteristicUUIDs() {

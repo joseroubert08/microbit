@@ -3,10 +3,17 @@ package com.samsung.microbit.core;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 
+import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventCategories;
+import com.samsung.microbit.data.constants.IPCConstants;
+import com.samsung.microbit.data.constants.ServiceIds;
+import com.samsung.microbit.service.PluginServiceNew;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.activity.PopUpActivity;
 import com.samsung.microbit.utils.ServiceUtils;
@@ -40,8 +47,25 @@ public class PopUpServiceReceiver extends BroadcastReceiver {
             okListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ServiceUtils.sendToPluginService(PopUpServiceReceiver.class, IPCMessageManager.MESSAGE_ANDROID,
-                            EventCategories.IPC_PLUGIN_STOP_PLAYING, null, null);
+
+                    ServiceUtils.IMessengerFinder messengerFinder = MBApp.getApp().getMessengerFinder();
+
+                    if (messengerFinder != null) {
+                        Messenger bleMessenger = messengerFinder.getMessengerForService(PluginServiceNew.class
+                                 .getName());
+
+                        if (bleMessenger != null) {
+                            Message message = ServiceUtils.composeMessage(IPCConstants.MESSAGE_ANDROID,
+                                    EventCategories.IPC_PLUGIN_STOP_PLAYING, ServiceIds.SERVICE_NONE, null, null);
+                            if (message != null) {
+                                try {
+                                    bleMessenger.send(message);
+                                } catch (RemoteException e) {
+                                    Log.e(TAG, e.toString());
+                                }
+                            }
+                        }
+                    }
                     PopUp.hide();
                 }
             };

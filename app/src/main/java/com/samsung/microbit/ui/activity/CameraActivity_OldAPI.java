@@ -50,7 +50,7 @@ import com.samsung.microbit.data.constants.RawConstants;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.plugin.CameraPlugin;
 import com.samsung.microbit.presentation.PlayRawPresenter;
-import com.samsung.microbit.service.PluginService;
+import com.samsung.microbit.service.PluginServiceNew;
 import com.samsung.microbit.ui.view.CameraPreview;
 import com.samsung.microbit.utils.ServiceUtils;
 
@@ -486,7 +486,7 @@ public class CameraActivity_OldAPI extends Activity {
      */
     private void sendCameraError() {
         CmdArg cmd = new CmdArg(0, "Camera Error");
-        ServiceUtils.sendReplyCommand(PluginService.CAMERA, cmd);
+        ServiceUtils.sendReplyCommand(PluginServiceNew.CAMERA, cmd);
     }
 
     private void setOrientationOffset() {
@@ -608,7 +608,7 @@ public class CameraActivity_OldAPI extends Activity {
                 } else {
                     //Wrong sequence of commands
                     CmdArg cmd = new CmdArg(0, "Wrong Camera Command Sequence");
-                    ServiceUtils.sendReplyCommand(PluginService.CAMERA, cmd);
+                    ServiceUtils.sendReplyCommand(PluginServiceNew.CAMERA, cmd);
                     Log.e(TAG, "Wrong command sequence");
                 }
             }
@@ -864,7 +864,7 @@ public class CameraActivity_OldAPI extends Activity {
         logi("onCreate() :: onStart");
         //Informing microbit that the mCamera is active now
         CmdArg cmd = new CmdArg(0, "Camera on");
-        ServiceUtils.sendReplyCommand(PluginService.CAMERA, cmd);
+        ServiceUtils.sendReplyCommand(PluginServiceNew.CAMERA, cmd);
         super.onStart();
     }
 
@@ -873,7 +873,7 @@ public class CameraActivity_OldAPI extends Activity {
         logi("onCreate() :: onDestroy");
         //Informing microbit that the mCamera is active now
         CmdArg cmd = new CmdArg(0, "Camera off");
-        ServiceUtils.sendReplyCommand(PluginService.CAMERA, cmd);
+        ServiceUtils.sendReplyCommand(PluginServiceNew.CAMERA, cmd);
 
         this.unregisterReceiver(mMessageReceiver);
 
@@ -899,7 +899,7 @@ public class CameraActivity_OldAPI extends Activity {
             if(cameraActivity_oldAPIWeakReference.get() != null && savedFile != null) {
                 cameraActivity_oldAPIWeakReference.get().refreshGallery(savedFile);
                 CmdArg cmd = new CmdArg(0, "Camera picture saved");
-                ServiceUtils.sendReplyCommand(PluginService.CAMERA, cmd);
+                ServiceUtils.sendReplyCommand(PluginServiceNew.CAMERA, cmd);
             }
         }
 

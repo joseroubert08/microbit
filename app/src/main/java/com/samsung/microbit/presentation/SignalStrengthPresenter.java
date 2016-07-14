@@ -1,6 +1,9 @@
 package com.samsung.microbit.presentation;
 
 import android.content.Context;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
@@ -11,7 +14,9 @@ import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.EventSubCodes;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.plugin.InformationPlugin;
-import com.samsung.microbit.service.PluginService;
+import com.samsung.microbit.service.BLEServiceNew;
+import com.samsung.microbit.service.PluginServiceNew;
+import com.samsung.microbit.utils.ServiceUtils;
 import com.samsung.microbit.utils.Utils;
 
 public class SignalStrengthPresenter implements Presenter {
@@ -48,7 +53,7 @@ public class SignalStrengthPresenter implements Presenter {
 
             if(informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Registered Signal Strength.");
-                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginServiceNew.INFORMATION, cmd);
             }
         }
     }
@@ -60,7 +65,7 @@ public class SignalStrengthPresenter implements Presenter {
 
             if(informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Unregistered Signal Strength.");
-                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginServiceNew.INFORMATION, cmd);
             }
 
             isRegistered = false;
@@ -92,7 +97,24 @@ public class SignalStrengthPresenter implements Presenter {
 
         if (level != sCurrentSignalStrength) {
             sCurrentSignalStrength = level;
-            PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_SIGNAL_STRENGTH_ID, level));
+
+            ServiceUtils.IMessengerFinder messengerFinder = MBApp.getApp().getMessengerFinder();
+
+            if(messengerFinder != null) {
+                Messenger bleMessenger = messengerFinder.getMessengerForService(BLEServiceNew.class.getName());
+
+                if(bleMessenger != null) {
+                    Message message = ServiceUtils.composeBLECharacteristicMessage(Utils.makeMicroBitValue
+                             (EventCategories.SAMSUNG_SIGNAL_STRENGTH_ID, level));
+                    if(message != null) {
+                        try {
+                            bleMessenger.send(message);
+                        } catch (RemoteException e) {
+                            Log.e(TAG, e.toString());
+                        }
+                    }
+                }
+            }
         }
     }
 

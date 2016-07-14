@@ -1,5 +1,6 @@
 package com.samsung.microbit.plugin;
 
+import android.os.Handler;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -22,7 +23,7 @@ public class PluginsCreator {
      * @param eventCategory Category, plugin must be managing
      * @return Concrete plugin for managing selected {@code eventCategory}
      */
-    public AbstractPlugin createPlugin(int eventCategory) {
+    public AbstractPlugin createPlugin(int eventCategory, Handler serviceHandler) {
         if (DEBUG) {
             logi("handleMessage() ##  " + eventCategory);
         }
@@ -61,7 +62,7 @@ public class PluginsCreator {
                 break;
 
             case EventCategories.SAMSUNG_TELEPHONY_ID:
-                abstractPlugin = new TelephonyPlugin();
+                abstractPlugin = new TelephonyPlugin(serviceHandler);
                 break;
             default:
                 abstractPlugin = null;

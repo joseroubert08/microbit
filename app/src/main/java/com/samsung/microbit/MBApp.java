@@ -2,10 +2,12 @@ package com.samsung.microbit;
 
 import android.app.Application;
 import android.graphics.Typeface;
+import android.os.Messenger;
 import android.util.Log;
 
 import com.samsung.microbit.common.ConfigInfo;
 import com.samsung.microbit.core.EchoClientManager;
+import com.samsung.microbit.utils.ServiceUtils;
 
 /**
  * Represents a custom class of the app.
@@ -23,6 +25,12 @@ public class MBApp extends Application {
     private EchoClientManager echoClientManager;
 
     private ConfigInfo configInfo;
+
+    private ServiceUtils.IMessengerFinder messengerFinder;
+
+    private Messenger ipcMessenger;
+
+    private boolean wasConnected;
 
     @Override
     public void onCreate() {
@@ -42,6 +50,30 @@ public class MBApp extends Application {
         mTypeface = Typeface.createFromAsset(getAssets(), "fonts/GT-Walsheim.otf");
         mBoldTypeface = Typeface.createFromAsset(getAssets(), "fonts/GT-Walsheim-Bold.otf");
         mRobotoTypeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Regular.ttf");
+    }
+
+    public void setMessengerFinder(ServiceUtils.IMessengerFinder messengerFinder) {
+        this.messengerFinder = messengerFinder;
+    }
+
+    public ServiceUtils.IMessengerFinder getMessengerFinder() {
+        return messengerFinder;
+    }
+
+    public void setIpcMessenger(Messenger ipcMessenger) {
+        this.ipcMessenger = ipcMessenger;
+    }
+
+    public Messenger getIpcMessenger() {
+        return ipcMessenger;
+    }
+
+    public void setWasConnected(boolean wasConnected) {
+        this.wasConnected = wasConnected;
+    }
+
+    public boolean wasConnected() {
+        return wasConnected;
     }
 
     public Typeface getTypeface() {

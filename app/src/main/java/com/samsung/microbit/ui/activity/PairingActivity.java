@@ -48,16 +48,17 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.data.constants.EventCategories;
+import com.samsung.microbit.data.constants.IPCConstants;
 import com.samsung.microbit.data.constants.PermissionCodes;
 import com.samsung.microbit.data.constants.RequestCodes;
 import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.data.model.ui.PairingActivityState;
-import com.samsung.microbit.service.BLEService;
-import com.samsung.microbit.service.IPCService;
+import com.samsung.microbit.service.BLEServiceNew;
 import com.samsung.microbit.ui.BluetoothChecker;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.adapter.LEDAdapter;
 import com.samsung.microbit.utils.BLEConnectionHandler;
+import com.samsung.microbit.utils.ServiceUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -169,7 +170,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     private final BroadcastReceiver gattForceClosedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(BLEService.GATT_FORCE_CLOSED)) {
+            if (intent.getAction().equals(BLEServiceNew.GATT_FORCE_CLOSED)) {
                 updatePairedDeviceCard();
             }
         }
@@ -212,7 +213,6 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                                 }
                             });
                 }
-
             }
         }
     };
@@ -513,11 +513,11 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         IntentFilter intent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(mPairReceiver, intent);
 
-        IntentFilter broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
+        IntentFilter broadcastIntentFilter = new IntentFilter(IPCConstants.INTENT_BLE_NOTIFICATION);
         LocalBroadcastManager.getInstance(application).registerReceiver(connectionChangedReceiver, broadcastIntentFilter);
 
         LocalBroadcastManager.getInstance(application).registerReceiver(gattForceClosedReceiver, new
-                IntentFilter(BLEService.GATT_FORCE_CLOSED));
+                IntentFilter(BLEServiceNew.GATT_FORCE_CLOSED));
 
         setupBleController();
 
@@ -849,6 +849,8 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         ConnectedDevice currentDevice = BluetoothUtils.getPairedMicrobit(this);
         if (currentDevice.mAddress != null) {
             boolean currentState = currentDevice.mStatus;
+            MBApp application = MBApp.getApp();
+
             if (!currentState) {
                 mActivityState = PairingActivityState.STATE_CONNECTING;
                 mRequestPermissions.clear();
@@ -859,7 +861,8 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                         PopUp.GIFF_ANIMATION_NONE,
                         PopUp.TYPE_SPINNER,
                         null, null);
-                IPCService.bleConnect();
+
+                ServiceUtils.sendConnectDisconnectMessage(true);
             } else {
                 mActivityState = PairingActivityState.STATE_DISCONNECTING;
                 PopUp.show(
@@ -869,7 +872,8 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                         PopUp.GIFF_ANIMATION_NONE,
                         PopUp.TYPE_SPINNER,
                         null, null);
-                IPCService.bleDisconnect();
+
+                ServiceUtils.sendConnectDisconnectMessage(false);
             }
         }
     }

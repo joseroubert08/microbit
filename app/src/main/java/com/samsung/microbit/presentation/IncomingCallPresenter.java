@@ -1,6 +1,9 @@
 package com.samsung.microbit.presentation;
 
 import android.content.Context;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -10,7 +13,9 @@ import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.EventSubCodes;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.plugin.TelephonyPlugin;
-import com.samsung.microbit.service.PluginService;
+import com.samsung.microbit.service.BLEServiceNew;
+import com.samsung.microbit.service.PluginServiceNew;
+import com.samsung.microbit.utils.ServiceUtils;
 import com.samsung.microbit.utils.Utils;
 
 public class IncomingCallPresenter implements Presenter {
@@ -23,8 +28,23 @@ public class IncomingCallPresenter implements Presenter {
                 case TelephonyManager.CALL_STATE_RINGING:
                     Log.i(TAG, "onCallStateChanged: " + state);
 
-                    PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_DEVICE_INFO_ID,
-                            EventSubCodes.SAMSUNG_INCOMING_CALL));
+                    ServiceUtils.IMessengerFinder messengerFinder = MBApp.getApp().getMessengerFinder();
+
+                    if(messengerFinder != null) {
+                        Messenger bleMessenger = messengerFinder.getMessengerForService(BLEServiceNew.class.getName());
+
+                        if(bleMessenger != null) {
+                            Message message = ServiceUtils.composeBLECharacteristicMessage(Utils.makeMicroBitValue
+                                     (EventCategories.SAMSUNG_DEVICE_INFO_ID, EventSubCodes.SAMSUNG_INCOMING_CALL));
+                            if(message != null) {
+                                try {
+                                    bleMessenger.send(message);
+                                } catch (RemoteException e) {
+                                    Log.e(TAG, e.toString());
+                                }
+                            }
+                        }
+                    }
                     break;
             }
         }
@@ -50,7 +70,8 @@ public class IncomingCallPresenter implements Presenter {
 
             if(telephonyPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Registered Incoming Call Alert");
-                telephonyPlugin.sendCommandBLE(PluginService.TELEPHONY, cmd);//TODO: do we need to report registration status?
+                telephonyPlugin.sendCommandBLE(PluginServiceNew.TELEPHONY, cmd);//TODO: do we need to report
+                // registration status?
             }
         }
     }
@@ -62,7 +83,8 @@ public class IncomingCallPresenter implements Presenter {
 
             if(telephonyPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Unregistered Incoming Call Alert");
-                telephonyPlugin.sendCommandBLE(PluginService.TELEPHONY, cmd);//TODO: do we need to report registration status?
+                telephonyPlugin.sendCommandBLE(PluginServiceNew.TELEPHONY, cmd);//TODO: do we need to report
+                // registration status?
             }
 
             isRegistered = false;

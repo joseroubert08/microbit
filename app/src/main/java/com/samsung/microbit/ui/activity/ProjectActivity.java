@@ -33,21 +33,22 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.data.constants.EventCategories;
+import com.samsung.microbit.data.constants.IPCConstants;
 import com.samsung.microbit.data.constants.PermissionCodes;
 import com.samsung.microbit.data.constants.RequestCodes;
 import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.data.model.Project;
 import com.samsung.microbit.data.model.ui.FlashActivityState;
 import com.samsung.microbit.presentation.ConfigInfoPresenter;
-import com.samsung.microbit.service.BLEService;
+import com.samsung.microbit.service.BLEServiceNew;
 import com.samsung.microbit.service.DfuService;
-import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.ui.BluetoothChecker;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.adapter.ProjectAdapter;
-import com.samsung.microbit.utils.FileUtils;
 import com.samsung.microbit.utils.BLEConnectionHandler;
+import com.samsung.microbit.utils.FileUtils;
 import com.samsung.microbit.utils.PreferenceUtils;
+import com.samsung.microbit.utils.ServiceUtils;
 import com.samsung.microbit.utils.UnpackUtils;
 
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     private final BroadcastReceiver gattForceClosedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(BLEService.GATT_FORCE_CLOSED)) {
+            if (intent.getAction().equals(BLEServiceNew.GATT_FORCE_CLOSED)) {
                 setConnectedDeviceText();
             }
         }
@@ -279,10 +280,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(application);
 
-        IntentFilter broadcastIntentFilter = new IntentFilter(IPCService.INTENT_BLE_NOTIFICATION);
+        IntentFilter broadcastIntentFilter = new IntentFilter(IPCConstants.INTENT_BLE_NOTIFICATION);
         localBroadcastManager.registerReceiver(connectionChangedReceiver, broadcastIntentFilter);
 
-        localBroadcastManager.registerReceiver(gattForceClosedReceiver, new IntentFilter(BLEService.GATT_FORCE_CLOSED));
+        localBroadcastManager.registerReceiver(gattForceClosedReceiver, new IntentFilter(BLEServiceNew
+                .GATT_FORCE_CLOSED));
 
         setConnectedDeviceText();
         String fullPathOfFile = null;
@@ -615,7 +617,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                         PopUp.GIFF_ANIMATION_NONE,
                         PopUp.TYPE_SPINNER,
                         null, null);
-                IPCService.bleDisconnect();
+                ServiceUtils.sendConnectDisconnectMessage(false);
             } else {
                 mRequestPermissions.clear();
                 setActivityState(FlashActivityState.STATE_CONNECTING);
@@ -626,7 +628,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                         PopUp.TYPE_SPINNER,
                         null, null);
 
-                IPCService.bleConnect();
+                ServiceUtils.sendConnectDisconnectMessage(true);
             }
         }
     }

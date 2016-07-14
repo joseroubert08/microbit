@@ -1,6 +1,7 @@
 package com.samsung.microbit.ui.activity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -10,9 +11,14 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.content.PermissionChecker;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -33,13 +39,20 @@ import android.widget.TextView;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.common.ConfigInfo;
+import com.samsung.microbit.core.bluetooth.BluetoothUtils;
+import com.samsung.microbit.data.constants.EventCategories;
+import com.samsung.microbit.data.constants.IPCConstants;
 import com.samsung.microbit.data.constants.PermissionCodes;
+import com.samsung.microbit.data.constants.ServiceIds;
+import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.presentation.ConfigInfoPresenter;
-import com.samsung.microbit.service.BLEService;
-import com.samsung.microbit.service.IPCService;
-import com.samsung.microbit.service.PluginService;
+import com.samsung.microbit.service.BLEServiceNew;
+import com.samsung.microbit.service.PluginServiceNew;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.utils.FileUtils;
+import com.samsung.microbit.utils.ServiceUtils;
+
+import java.lang.ref.WeakReference;
 
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
@@ -54,6 +67,23 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG = HomeActivity.class.getSimpleName();
 
     public static final String FIRST_RUN = "firstrun";
+
+    private static final class IPCHandler extends Handler {
+        private final WeakReference<HomeActivity> homeActivityWeakReference;
+
+        private IPCHandler(HomeActivity homeActivity) {
+            super();
+            homeActivityWeakReference = new WeakReference<>(homeActivity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if(homeActivityWeakReference.get() != null) {
+                homeActivityWeakReference.get().handleIPCMessage(msg);
+            }
+        }
+    }
 
     // share stats checkbox
     private CheckBox mShareStatsCheckBox;
@@ -71,6 +101,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private ConfigInfoPresenter configInfoPresenter;
 
+    private Handler initHandlerOfFirstConnection = new Handler();
+
     /**
      * Provides simplified way to log informational messages.
      *
@@ -79,6 +111,63 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private void logi(String message) {
         if (DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+        }
+    }
+
+    private void handleIPCMessage(Message message) {
+        String replyToServiceName = null;
+        switch (message.arg2) {
+            case ServiceIds.SERVICE_PLUGIN:
+                replyToServiceName = PluginServiceNew.class.getName();
+                break;
+            case ServiceIds.SERVICE_BLE:
+                replyToServiceName = BLEServiceNew.class.getName();
+                break;
+        }
+
+        if(replyToServiceName != null) {
+            MBApp application = MBApp.getApp();
+            Messenger messenger = application.getMessengerFinder().getMessengerForService(replyToServiceName);
+            if(messenger != null) {
+                Message newMessage = ServiceUtils.copyMessageFromOld(message, ServiceIds.SERVICE_NONE);
+                newMessage.replyTo = application.getIpcMessenger();
+                try {
+                    messenger.send(newMessage);
+                } catch (RemoteException e) {
+                    Log.e(TAG, e.toString());
+                }
+            }
+        } else {
+            if (message.arg1 == EventCategories.IPC_BLE_NOTIFICATION_GATT_CONNECTED ||
+                    message.arg1 == EventCategories.IPC_BLE_NOTIFICATION_GATT_DISCONNECTED) {
+                Context appContext = MBApp.getApp();
+
+                ConnectedDevice cd = BluetoothUtils.getPairedMicrobit(MBApp.getApp());
+                cd.mStatus = (message.arg1 == EventCategories.IPC_BLE_NOTIFICATION_GATT_CONNECTED);
+                BluetoothUtils.setPairedMicroBit(appContext, cd);
+
+                Bundle messageData = message.getData();
+
+                int errorCode = (int) messageData.getSerializable(IPCConstants.BUNDLE_ERROR_CODE);
+
+                String error_message = (String) messageData.getSerializable(IPCConstants.BUNDLE_ERROR_MESSAGE);
+
+                String firmware = (String) messageData.getSerializable(IPCConstants.BUNDLE_MICROBIT_FIRMWARE);
+
+                int microbitRequest = -1;
+                if (messageData.getSerializable(IPCConstants.BUNDLE_MICROBIT_REQUESTS) != null) {
+                    microbitRequest = (int) messageData.getSerializable(IPCConstants.BUNDLE_MICROBIT_REQUESTS);
+                }
+
+                Intent intent = new Intent(IPCConstants.INTENT_BLE_NOTIFICATION);
+                intent.putExtra(IPCConstants.NOTIFICATION_CAUSE, message.arg1);
+                intent.putExtra(IPCConstants.BUNDLE_ERROR_CODE, errorCode);
+                intent.putExtra(IPCConstants.BUNDLE_ERROR_MESSAGE, error_message);
+                intent.putExtra(IPCConstants.BUNDLE_MICROBIT_FIRMWARE, firmware);
+                intent.putExtra(IPCConstants.BUNDLE_MICROBIT_REQUESTS, microbitRequest);
+
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            }
         }
     }
 
@@ -110,6 +199,42 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         setContentView(R.layout.activity_home);
 
+        MBApp application = MBApp.getApp();
+
+        if(savedInstanceState == null && application.getMessengerFinder() == null) {
+            ServiceUtils.IMessengerFinder messengerFinder = ServiceUtils.createMessengerFinder();
+            ServiceUtils.bindService(PluginServiceNew.class, messengerFinder);
+            ServiceUtils.bindService(BLEServiceNew.class, messengerFinder);
+
+            Messenger ipcMessenger = new Messenger(new IPCHandler(this));
+
+            application.setIpcMessenger(ipcMessenger);
+            application.setMessengerFinder(messengerFinder);
+
+            initHandlerOfFirstConnection.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    MBApp application = MBApp.getApp();
+                    ConnectedDevice connectedDevice = BluetoothUtils.getPairedMicrobit(application);
+
+                    if(connectedDevice.mStatus) {
+                        Messenger bleMessenger = application.getMessengerFinder().getMessengerForService(BLEServiceNew
+                                .class.getName());
+
+                        if(bleMessenger != null) {
+                            //Init service to correct handling disconnection.
+                            if (!application.wasConnected()) {
+                                ServiceUtils.sendConnectDisconnectMessage(true);
+                                application.setWasConnected(true);
+                            }
+                        } else {
+                            initHandlerOfFirstConnection.postDelayed(this, 300);
+                        }
+                    }
+                }
+            }, 300);
+        }
+
         configInfoPresenter = new ConfigInfoPresenter();
 
         configInfoPresenter.start();
@@ -119,9 +244,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         initViews();
 
         checkMinimumPermissionsForThisScreen();
-        if(savedInstanceState == null) {
-            startOtherServices();
-        }
 
         MBApp.getApp().getEchoClientManager().sendViewEventStats("homeactivity");
 
@@ -169,29 +291,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private void initViews() {
         // animation for loading hello .giff
         gifAnimationHelloEmoji = (GifImageView) findViewById(R.id.homeHelloAnimationGifView);
-    }
-
-    /**
-     * Starts amount of additional services such as IPC service,
-     * BLE service and Plugin service.
-     */
-    private void startOtherServices() {
-        // IPC service to communicate between the services
-        Intent ipcIntent = new Intent(this, IPCService.class);
-
-        // BLE service to Handle all BLE communications
-        Intent bleIntent = new Intent(this, BLEService.class);
-
-        // Plugin service to handle incoming requests
-        final Intent intent = new Intent(this, PluginService.class);
-
-        stopService(ipcIntent);
-        stopService(bleIntent);
-        stopService(intent);
-
-        startService(ipcIntent);
-        startService(bleIntent);
-        startService(intent);
     }
 
     /**
@@ -298,6 +397,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onDestroy() {
         super.onDestroy();
         configInfoPresenter.destroy();
+
+        MBApp application = MBApp.getApp();
+
+        if(application.getMessengerFinder() != null) {
+            ServiceUtils.unbindService(application.getMessengerFinder());
+            application.setIpcMessenger(null);
+            application.setMessengerFinder(null);
+            application.setWasConnected(false);
+        }
+        initHandlerOfFirstConnection.removeCallbacks(null);
 
         unbindDrawables();
     }

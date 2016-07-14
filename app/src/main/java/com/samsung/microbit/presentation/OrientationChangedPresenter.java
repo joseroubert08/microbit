@@ -5,12 +5,16 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.Log;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.EventSubCodes;
-import com.samsung.microbit.service.PluginService;
+import com.samsung.microbit.service.BLEServiceNew;
+import com.samsung.microbit.utils.ServiceUtils;
 import com.samsung.microbit.utils.Utils;
 
 public class OrientationChangedPresenter implements Presenter {
@@ -34,8 +38,24 @@ public class OrientationChangedPresenter implements Presenter {
             }
 
             if (previousOrientation != orientation) {
-                PluginService.sendMessageToBle(Utils.makeMicroBitValue(EventCategories.SAMSUNG_DEVICE_INFO_ID,
-                        orientation));
+                ServiceUtils.IMessengerFinder messengerFinder = MBApp.getApp().getMessengerFinder();
+
+                if(messengerFinder != null) {
+                    Messenger bleMessenger = messengerFinder.getMessengerForService(BLEServiceNew.class.getName());
+
+                    if(bleMessenger != null) {
+                        Message message = ServiceUtils.composeBLECharacteristicMessage(Utils.makeMicroBitValue
+                                 (EventCategories.SAMSUNG_DEVICE_INFO_ID, orientation));
+                        if(message != null) {
+                            try {
+                                bleMessenger.send(message);
+                            } catch (RemoteException e) {
+                                Log.e(TAG, e.toString());
+                            }
+                        }
+                    }
+                }
+
                 previousOrientation = orientation;
             }
         }

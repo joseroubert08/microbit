@@ -130,28 +130,26 @@
         <service
             android:name=".service.DfuService"
             android:enabled="true"/>
+
         <service
-            android:name=".service.PluginService"
+            android:name=".service.PluginServiceNew"
             android:exported="false"
-            android:process=":PluginService">
+            android:process=":PluginServiceNew">
+
             <intent-filter>
-                <action android:name="com.samsung.microbit.service.PluginService"/>
+                <action android:name="com.samsung.microbit.service.PluginServiceNew"/>
             </intent-filter>
         </service>
         <service
-            android:name=".service.BLEService"
+            android:name=".service.BLEServiceNew"
             android:exported="false"
-            android:process=":BLEService">
+            android:process=":BLEServiceNew">
             <intent-filter>
-                <action android:name="com.samsung.microbit.service.BLEService"/>
+                <action android:name="com.samsung.microbit.service.BLEServiceNew"/>
             </intent-filter>
         </service>
-        <service android:name=".service.IPCService"
-                 android:exported="false">
-            <intent-filter>
-                <action android:name="com.samsung.microbit.service.IPCService"/>
-            </intent-filter>
-        </service>
+
+
         <activity
             android:name=".ui.activity.SplashScreenActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
