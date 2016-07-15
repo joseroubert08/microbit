@@ -103,6 +103,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private Handler initHandlerOfFirstConnection = new Handler();
 
+    private IPCHandler ipcHandler;
+
     /**
      * Provides simplified way to log informational messages.
      *
@@ -127,14 +129,19 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         if(replyToServiceName != null) {
             MBApp application = MBApp.getApp();
-            Messenger messenger = application.getMessengerFinder().getMessengerForService(replyToServiceName);
-            if(messenger != null) {
-                Message newMessage = ServiceUtils.copyMessageFromOld(message, ServiceIds.SERVICE_NONE);
-                newMessage.replyTo = application.getIpcMessenger();
-                try {
-                    messenger.send(newMessage);
-                } catch (RemoteException e) {
-                    Log.e(TAG, e.toString());
+
+            ServiceUtils.IMessengerFinder messengerFinder = application.getMessengerFinder();
+
+            if(messengerFinder != null) {
+                Messenger messenger = messengerFinder.getMessengerForService(replyToServiceName);
+                if (messenger != null) {
+                    Message newMessage = ServiceUtils.copyMessageFromOld(message, ServiceIds.SERVICE_NONE);
+                    newMessage.replyTo = application.getIpcMessenger();
+                    try {
+                        messenger.send(newMessage);
+                    } catch (RemoteException e) {
+                        Log.e(TAG, e.toString());
+                    }
                 }
             }
         } else {
@@ -206,7 +213,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             ServiceUtils.bindService(PluginServiceNew.class, messengerFinder);
             ServiceUtils.bindService(BLEServiceNew.class, messengerFinder);
 
-            Messenger ipcMessenger = new Messenger(new IPCHandler(this));
+            ipcHandler = new IPCHandler(this);
+
+            Messenger ipcMessenger = new Messenger(ipcHandler);
 
             application.setIpcMessenger(ipcMessenger);
             application.setMessengerFinder(messengerFinder);
@@ -407,6 +416,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             application.setWasConnected(false);
         }
         initHandlerOfFirstConnection.removeCallbacks(null);
+        ipcHandler.removeCallbacks(null);
 
         unbindDrawables();
     }

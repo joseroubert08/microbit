@@ -101,6 +101,16 @@ public class BLEServiceNew extends Service {
         return new Messenger(bleHandler).getBinder();
     }
 
+    @Override
+    public boolean onUnbind(Intent intent) {
+        if(bleHandler != null) {
+            Message disconnectMessage = Message.obtain(null, IPCConstants.MESSAGE_ANDROID);
+            disconnectMessage.arg1 = EventCategories.IPC_BLE_DISCONNECT;
+            bleHandler.sendMessage(disconnectMessage);
+        }
+        return super.onUnbind(intent);
+    }
+
     private void handleMessage(Message msg) {
         inputMessenger = msg.replyTo;
         logi("handleIncomingMessage()");
@@ -114,6 +124,7 @@ public class BLEServiceNew extends Service {
                     break;
 
                 case EventCategories.IPC_BLE_DISCONNECT:
+                    initBLEManager();
                     if (reset()) {
                         setNotification(false, ERROR_NONE);
                     }
@@ -682,60 +693,73 @@ public class BLEServiceNew extends Service {
      * Setups bluetooth low energy service.
      */
     private void setupBLE() {
-        logi("setupBLE()");
+        initBLEManager();
 
-        this.deviceAddress = getDeviceAddress();
-
-        logi("setupBLE() :: deviceAddress = " + deviceAddress);
-
-        if (this.deviceAddress != null) {
-            bluetoothDevice = null;
-            if (initialize()) {
-                bleManager = new BLEManager(getApplicationContext(), bluetoothDevice,
-                        new CharacteristicChangeListener() {
-                            @Override
-                            public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic
-                                    characteristic) {
-                                logi("setupBLE().CharacteristicChangeListener.onCharacteristicChanged()");
-
-                                if (bleManager != null) {
-                                    handleCharacteristicChanged(gatt, characteristic);
-                                }
-                            }
-                        },
-                        new UnexpectedConnectionEventListener() {
-                            @Override
-                            public void handleConnectionEvent(int event, boolean gattForceClosed) {
-                                logi("setupBLE().CharacteristicChangeListener.handleUnexpectedConnectionEvent()"
-                                        + event);
-
-                                if (bleManager != null) {
-                                    handleUnexpectedConnectionEvent(event, gattForceClosed);
-                                }
-                            }
-                        });
-                startupConnection();
-                return;
-            }
-        }
-
-        setNotification(false, ERROR_UNKNOWN_2);
+        startupConnection();
     }
 
-    private String getDeviceAddress() {
+    private void initBLEManager() {
+        if(bleManager != null) {
+            return;
+        }
+
+        logi("setupBLE()");
+
+        this.deviceAddress = searchDeviceAddress();
+        logi("setupBLE() :: deviceAddress = " + deviceAddress);
+
+        if (deviceAddress == null) {
+            setNotification(false, ERROR_UNKNOWN_2);
+            return;
+        }
+
+        bluetoothDevice = null;
+
+        if (!initialize()) {
+            setNotification(false, ERROR_UNKNOWN_2);
+            return;
+        }
+
+        bleManager = new BLEManager(getApplicationContext(), bluetoothDevice,
+                new CharacteristicChangeListener() {
+                    @Override
+                    public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic
+                            characteristic) {
+                        logi("setupBLE().CharacteristicChangeListener.onCharacteristicChanged()");
+
+                        if (bleManager != null) {
+                            handleCharacteristicChanged(gatt, characteristic);
+                        }
+                    }
+                },
+                new UnexpectedConnectionEventListener() {
+                    @Override
+                    public void handleConnectionEvent(int event, boolean gattForceClosed) {
+                        logi("setupBLE().CharacteristicChangeListener.handleUnexpectedConnectionEvent()"
+                                + event);
+
+                        if (bleManager != null) {
+                            handleUnexpectedConnectionEvent(event, gattForceClosed);
+                        }
+                    }
+                });
+
+    }
+
+    private String searchDeviceAddress() {
         logi("getDeviceAddress()");
 
         ConnectedDevice currentDevice = BluetoothUtils.getPairedMicrobit(this);
-        String pairedDeviceName = currentDevice.mAddress;
-        if (pairedDeviceName == null) {
+        String deviceAddress = currentDevice.mAddress;
+        if (deviceAddress == null) {
             setNotification(false, ERROR_UNKNOWN_3);
         }
 
-        return pairedDeviceName;
+        return deviceAddress;
     }
 
     private void setNotification(boolean isConnected, int errorCode) {
-        int actual_Error = getActualError();
+        int actual_Error = actualError;
 
         logi("setNotification() :: isConnected = " + isConnected);
         logi("setNotification() :: errorCode = " + errorCode);
@@ -749,12 +773,11 @@ public class BLEServiceNew extends Service {
         NameValuePair[] args = new NameValuePair[3];
 
         args[0] = new NameValuePair(IPCConstants.BUNDLE_ERROR_CODE, errorCode);
-        args[1] = new NameValuePair(IPCConstants.BUNDLE_DEVICE_ADDRESS, getInitializedDeviceAddress());
+        args[1] = new NameValuePair(IPCConstants.BUNDLE_DEVICE_ADDRESS, deviceAddress);
         args[2] = new NameValuePair(IPCConstants.BUNDLE_ERROR_MESSAGE, GattError.parse(actual_Error));
 
         if (!isConnected) {
             logi("setNotification() :: !isConnected");
-            BluetoothAdapter bluetoothAdapter = getBluetoothAdapter();
 
             if (bluetoothAdapter != null) {
                 if (!bluetoothAdapter.isEnabled()) {
@@ -762,7 +785,7 @@ public class BLEServiceNew extends Service {
                     logi("setNotification() :: !bluetoothAdapter.isEnabled()");
                     reset();
                     //bleManager = null;
-                    setBluetoothDevice(null);
+                    bluetoothDevice = null;
                 }
             }
             notificationString = getString(R.string.tray_notification_failure);
@@ -804,22 +827,6 @@ public class BLEServiceNew extends Service {
             //ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
             //        .IPC_BLE_NOTIFICATION_GATT_CONNECTED, null, args);
         }
-    }
-
-    private int getActualError() {
-        return actualError;
-    }
-
-    private String getInitializedDeviceAddress() {
-        return deviceAddress;
-    }
-
-    private BluetoothAdapter getBluetoothAdapter() {
-        return bluetoothAdapter;
-    }
-
-    private void setBluetoothDevice(BluetoothDevice bluetoothDevice) {
-        this.bluetoothDevice = bluetoothDevice;
     }
 
     private void handleCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
@@ -1000,7 +1007,7 @@ public class BLEServiceNew extends Service {
     }
 
     private void startupConnection() {
-        logi("startupConnection() bleManager=" + getBleManager());
+        logi("startupConnection() bleManager=" + bleManager);
 
         boolean success = true;
         int rc = connect();
@@ -1027,7 +1034,7 @@ public class BLEServiceNew extends Service {
 
         if (!success) {
             logi("startupConnection() :: Failed ErrorCode = " + rc);
-            if (getBleManager() != null) {
+            if (bleManager != null) {
                 reset();
                 setNotification(false, rc);
                 Toast.makeText(MBApp.getApp(), R.string.bluetooth_pairing_internal_error, Toast.LENGTH_LONG).show();
@@ -1035,10 +1042,6 @@ public class BLEServiceNew extends Service {
         }
 
         logi("startupConnection() :: end");
-    }
-
-    private BLEManager getBleManager() {
-        return bleManager;
     }
 
     /**
