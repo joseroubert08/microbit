@@ -420,7 +420,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             application.setBleConnectionEstablished(false);
         }
         initHandlerOfFirstConnection.removeCallbacks(null);
-        ipcHandler.removeCallbacks(null);
+
+        if(ipcHandler != null) {
+            ipcHandler.removeCallbacks(null);
+        }
 
         unbindDrawables();
     }
