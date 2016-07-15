@@ -52,7 +52,7 @@ public class BLEServiceNew extends Service {
 
     private static final String TAG = BLEServiceNew.class.getSimpleName();
 
-    private static final long JUST_PAIRED_DELAY_ON_CONNECTION = 5000;
+    private static final long JUST_PAIRED_DELAY_ON_CONNECTION = 6000;
 
     private static final int ERROR_NONE = 0;
     private static final int ERROR_TIME_OUT = 10;
@@ -97,8 +97,6 @@ public class BLEServiceNew extends Service {
 
     private boolean justPaired;
 
-    private boolean tryingToReconnectAfterPairing;
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -109,7 +107,7 @@ public class BLEServiceNew extends Service {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        if(bleHandler != null) {
+        if (bleHandler != null) {
             Message disconnectMessage = Message.obtain(null, IPCConstants.MESSAGE_ANDROID);
             disconnectMessage.arg1 = EventCategories.IPC_BLE_DISCONNECT;
             bleHandler.sendMessage(disconnectMessage);
@@ -128,7 +126,7 @@ public class BLEServiceNew extends Service {
                 case EventCategories.IPC_BLE_CONNECT:
                     justPaired = msg.arg2 == IPCConstants.JUST_PAIRED;
 
-                    if(justPaired) {
+                    if (justPaired) {
                         Log.e(TAG, "just paired delay");
                     /*    try {
                             Thread.sleep(JUST_PAIRED_DELAY_ON_CONNECTION);
@@ -717,7 +715,7 @@ public class BLEServiceNew extends Service {
     }
 
     private void initBLEManager() {
-        if(bleManager != null) {
+        if (bleManager != null) {
             return;
         }
 
@@ -923,15 +921,15 @@ public class BLEServiceNew extends Service {
 
         if ((event & BLEManager.BLE_CONNECTED) != 0) {
             //TODO Is really needed new thread ???
-            new Thread(new Runnable() {
+            /*new Thread(new Runnable() {
                 @Override
-                public void run() {
-                    logi("handleUnexpectedConnectionEvent() :: BLE_CONNECTED");
-                    discoverServices();
-                    registerNotifications(true);
-                    setNotification(true, ERROR_NONE);
-                }
-            }).start();
+                public void run() {*/
+            logi("handleUnexpectedConnectionEvent() :: BLE_CONNECTED");
+            discoverServices();
+            registerNotifications(true);
+            setNotification(true, ERROR_NONE);
+                /*}
+            }).start();*/
 
         } else if (event == BLEManager.BLE_DISCONNECTED) {
             logi("handleUnexpectedConnectionEvent() :: BLE_DISCONNECTED");
@@ -1030,7 +1028,7 @@ public class BLEServiceNew extends Service {
         boolean success = true;
         int rc = connect();
         if (rc == ERROR_NONE) {
-            if(justPaired) {
+            if (justPaired) {
                 bleManager.refresh();
                 try {
                     Thread.sleep(JUST_PAIRED_DELAY_ON_CONNECTION);
@@ -1050,20 +1048,8 @@ public class BLEServiceNew extends Service {
                     success = false;
                 }
             } else {
-                if(justPaired) {
-                    if (tryingToReconnectAfterPairing) {
-                        discoverFailed();
-                        success = false;
-                    } else {
-                        tryingToReconnectAfterPairing = false;
-                        bleManager.reset();
-                        startupConnection();
-                        return;
-                    }
-                } else {
-                    discoverFailed();
-                    success = false;
-                }
+                discoverFailed();
+                success = false;
             }
             justPaired = false;
         } else {
