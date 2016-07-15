@@ -52,6 +52,12 @@ public class BLEServiceNew extends Service {
 
     private static final String TAG = BLEServiceNew.class.getSimpleName();
 
+    private static final int ERROR_NONE = 0;
+    private static final int ERROR_TIME_OUT = 10;
+    private static final int ERROR_UNKNOWN_1 = 99;
+    private static final int ERROR_UNKNOWN_2 = 1;
+    private static final int ERROR_UNKNOWN_3 = 2;
+
     public static final String GATT_FORCE_CLOSED = "com.microbit.gatt_force_closed";
 
     private static final class BLEHandler extends Handler {
@@ -81,7 +87,7 @@ public class BLEServiceNew extends Service {
 
     private String deviceAddress;
 
-    private int actualError = 0;
+    private int actualError = ERROR_NONE;
 
     private Messenger inputMessenger;
 
@@ -109,7 +115,7 @@ public class BLEServiceNew extends Service {
 
                 case EventCategories.IPC_BLE_DISCONNECT:
                     if (reset()) {
-                        setNotification(false, 0);
+                        setNotification(false, ERROR_NONE);
                     }
 
                     break;
@@ -240,7 +246,7 @@ public class BLEServiceNew extends Service {
         if (bleManager != null) {
             int rc = bleManager.readCharacteristic(characteristic);
             rc = interpretCode(rc);
-            if (rc == 0) {
+            if (rc == ERROR_NONE) {
                 return bleManager.getLastCharacteristic();
             }
         }
@@ -258,16 +264,16 @@ public class BLEServiceNew extends Service {
         if (rc > 0) {
             if ((rc & BLEManager.BLE_ERROR_FAIL) != 0) {
                 if ((rc & BLEManager.BLE_ERROR_TIMEOUT) != 0) {
-                    rc = 10;
+                    rc = ERROR_TIME_OUT;
                 } else {
-                    rc = 99;
+                    rc = ERROR_UNKNOWN_1;
                 }
             } else {
                 rc &= 0x0000ffff;
                 if (rc == BLEManager.BLE_DISCONNECTED) {
-                    rc = 1;
+                    rc = ERROR_UNKNOWN_2;
                 } else {
-                    rc = 0;
+                    rc = ERROR_NONE;
                 }
             }
         }
@@ -438,15 +444,6 @@ public class BLEServiceNew extends Service {
                 e.printStackTrace();
             }
         }
-
-        /**
-         * TODO check it work with {@link inputMessenger}
-         */
-        /*logi("registerForSignalStrength() -- " + register);
-        CmdArg cmd = register ? new CmdArg(RegistrationIds.REG_SIGNALSTRENGTH, "On") : new CmdArg(RegistrationIds
-                .REG_SIGNALSTRENGTH, "Off");
-        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
-                .SAMSUNG_SIGNAL_STRENGTH_ID, cmd, null);*/
     }
 
     /**
@@ -549,50 +546,6 @@ public class BLEServiceNew extends Service {
                 e.printStackTrace();
             }
         }
-
-        /**
-         * TODO check it work with {@link inputMessenger}
-         */
-        /*logi("registerForDeviceInfo() -- " + register);
-        //Device Orientation
-        CmdArg cmd = register ? new CmdArg(RegistrationIds.REG_DEVICEORIENTATION, "On") : new CmdArg(RegistrationIds
-                .REG_DEVICEORIENTATION, "Off");
-        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
-                .SAMSUNG_DEVICE_INFO_ID, cmd, null);
-
-        //Device Gesture
-        CmdArg cmd1 = register ? new CmdArg(RegistrationIds.REG_DEVICEGESTURE, "On") : new CmdArg(RegistrationIds.REG_DEVICEGESTURE,
-                "Off");
-        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
-                .SAMSUNG_DEVICE_INFO_ID, cmd1, null);
-
-
-        //Device Battery Strength
-        CmdArg cmd2 = register ? new CmdArg(RegistrationIds.REG_BATTERYSTRENGTH, "On") : new CmdArg(RegistrationIds.REG_BATTERYSTRENGTH,
-                "Off");
-        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
-                .SAMSUNG_DEVICE_INFO_ID, cmd2, null);
-
-        //Device Temperature
-        CmdArg cmd3 = register ? new CmdArg(RegistrationIds.REG_TEMPERATURE, "On") : new CmdArg(RegistrationIds.REG_TEMPERATURE, "Off");
-        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
-                .SAMSUNG_DEVICE_INFO_ID, cmd3, null);
-
-
-        //Register Telephony
-        CmdArg cmd4 = register ? new CmdArg(RegistrationIds.REG_TELEPHONY, "On") : new CmdArg(RegistrationIds.REG_TELEPHONY, "Off");
-        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
-                .SAMSUNG_TELEPHONY_ID, cmd4, null);
-
-        //Register Messaging
-        CmdArg cmd5 = register ? new CmdArg(RegistrationIds.REG_MESSAGING, "On") : new CmdArg(RegistrationIds.REG_MESSAGING, "Off");
-        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
-                .SAMSUNG_TELEPHONY_ID, cmd5, null);
-
-        //Register Display
-        CmdArg cmd6 = register ? new CmdArg(RegistrationIds.REG_DISPLAY, "On") : new CmdArg(RegistrationIds.REG_DISPLAY, "Off");
-        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT, EventCategories
-                .SAMSUNG_DEVICE_INFO_ID, cmd6, null);*/
     }
 
     /**
@@ -605,7 +558,7 @@ public class BLEServiceNew extends Service {
      */
     private int enableCharacteristicNotification(BluetoothGattCharacteristic characteristic, BluetoothGattDescriptor
             descriptor, boolean enable) {
-        int rc = 99;
+        int rc = ERROR_UNKNOWN_1;
 
         if (bleManager != null) {
             rc = bleManager.enableCharacteristicNotification(characteristic, descriptor, enable);
@@ -687,7 +640,7 @@ public class BLEServiceNew extends Service {
      * @return Operation result code.
      */
     private int writeCharacteristic(BluetoothGattCharacteristic characteristic) {
-        int rc = 99;
+        int rc = ERROR_UNKNOWN_1;
 
         if (bleManager != null) {
             rc = bleManager.writeCharacteristic(characteristic);
@@ -766,7 +719,7 @@ public class BLEServiceNew extends Service {
             }
         }
 
-        setNotification(false, 1);
+        setNotification(false, ERROR_UNKNOWN_2);
     }
 
     private String getDeviceAddress() {
@@ -775,7 +728,7 @@ public class BLEServiceNew extends Service {
         ConnectedDevice currentDevice = BluetoothUtils.getPairedMicrobit(this);
         String pairedDeviceName = currentDevice.mAddress;
         if (pairedDeviceName == null) {
-            setNotification(false, 2);
+            setNotification(false, ERROR_UNKNOWN_3);
         }
 
         return pairedDeviceName;
@@ -924,13 +877,6 @@ public class BLEServiceNew extends Service {
                 e.printStackTrace();
             }
         }
-
-        /**
-         * TODO check it work with {@link inputMessenger}
-         */
-        /*
-        ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_MICROBIT,
-                msgService, cmd, null);*/
     }
 
     private void handleUnexpectedConnectionEvent(int event, boolean gattForceClosed) {
@@ -958,13 +904,13 @@ public class BLEServiceNew extends Service {
                     logi("handleUnexpectedConnectionEvent() :: BLE_CONNECTED");
                     discoverServices();
                     registerNotifications(true);
-                    setNotification(true, 0);
+                    setNotification(true, ERROR_NONE);
                 }
             }).start();
 
         } else if (event == BLEManager.BLE_DISCONNECTED) {
             logi("handleUnexpectedConnectionEvent() :: BLE_DISCONNECTED");
-            setNotification(false, 0);
+            setNotification(false, ERROR_NONE);
         }
     }
 
@@ -975,7 +921,7 @@ public class BLEServiceNew extends Service {
      * @return Result of discovering.
      */
     private int discoverServices() {
-        int rc = 99;
+        int rc = ERROR_UNKNOWN_1;
 
         if (bleManager != null) {
             if (DEBUG) {
@@ -1001,17 +947,17 @@ public class BLEServiceNew extends Service {
             if ((rc & BLEManager.BLE_ERROR_FAIL) != 0) {
                 actualError = bleManager.getExtendedError();
                 if ((rc & BLEManager.BLE_ERROR_TIMEOUT) != 0) {
-                    rc = 10;
+                    rc = ERROR_TIME_OUT;
                 } else {
-                    rc = 99;
+                    rc = ERROR_UNKNOWN_1;
                 }
             } else {
                 actualError = 0;
                 rc &= 0x0ffff;
                 if ((rc & goodCode) != 0) {
-                    rc = 0;
+                    rc = ERROR_NONE;
                 } else {
-                    rc = 1;
+                    rc = ERROR_UNKNOWN_2;
                 }
             }
         }
@@ -1058,16 +1004,16 @@ public class BLEServiceNew extends Service {
 
         boolean success = true;
         int rc = connect();
-        if (rc == 0) {
+        if (rc == ERROR_NONE) {
             logi("startupConnection() :: connectMaybeInit() == 0");
             rc = discoverServices();
-            if (rc == 0) {
+            if (rc == ERROR_NONE) {
 
                 logi("startupConnection() :: discoverServices() == 0");
                 if (registerNotifications(true)) {
                     setNotification(true, 0);
                 } else {
-                    rc = 1;
+                    rc = ERROR_UNKNOWN_2;
                     success = false;
                 }
             } else {
@@ -1101,7 +1047,7 @@ public class BLEServiceNew extends Service {
      * @return Result code number.
      */
     private int connect() {
-        int rc = 99;
+        int rc = ERROR_UNKNOWN_1;
 
         if (bleManager != null) {
             rc = bleManager.connect(AUTO_CONNECT);

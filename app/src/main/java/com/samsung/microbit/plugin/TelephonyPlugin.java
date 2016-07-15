@@ -100,20 +100,5 @@ public class TelephonyPlugin implements AbstractPlugin {
         bundle.putString("value", cmd.getValue());
         msg.setData(bundle);
         serviceHandler.sendMessage(msg);
-
-        //TODO check it if correct
-        /*if (IPCMessageManager.getInstance().getClientMessenger() != null) {
-            Message msg = Message.obtain(null, mbsService);
-            Bundle bundle = new Bundle();
-            bundle.putInt("cmd", cmd.getCMD());
-            bundle.putString("value", cmd.getValue());
-            msg.setData(bundle);
-
-            try {
-                IPCMessageManager.getInstance().getClientMessenger().send(msg);
-            } catch (RemoteException e) {
-                Log.e(TAG, e.toString());
-            }
-        }*/
     }
 }

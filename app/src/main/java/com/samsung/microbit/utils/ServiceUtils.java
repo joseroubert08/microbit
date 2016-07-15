@@ -54,21 +54,6 @@ public class ServiceUtils {
                 Log.e(TAG, e.toString());
             }
         }
-
-        //TODO check it for work
-        /*if (IPCMessageManager.getInstance().getClientMessenger() != null) {
-            Message msg = Message.obtain(null, mbsService);
-            Bundle bundle = new Bundle();
-            bundle.putInt("cmd", cmd.getCMD());
-            bundle.putString("value", cmd.getValue());
-            msg.setData(bundle);
-
-            try {
-                IPCMessageManager.getInstance().getClientMessenger().send(msg);
-            } catch (RemoteException e) {
-                Log.e(TAG, e.toString());
-            }
-        }*/
     }
 
     public static Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {
