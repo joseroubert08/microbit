@@ -26,5 +26,8 @@ public class IPCConstants {
 
     public static final String NOTIFICATION_CAUSE = "com.samsung.microbit.service.IPCService.CAUSE";
 
+    public static final int JUST_PAIRED = 1;
+    public static final int PAIRED_EARLIER = 0;
+
 
 }

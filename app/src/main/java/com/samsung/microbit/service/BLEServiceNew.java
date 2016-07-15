@@ -52,6 +52,8 @@ public class BLEServiceNew extends Service {
 
     private static final String TAG = BLEServiceNew.class.getSimpleName();
 
+    private static final long JUST_PAIRED_DELAY_ON_CONNECTION = 3000;
+
     private static final int ERROR_NONE = 0;
     private static final int ERROR_TIME_OUT = 10;
     private static final int ERROR_UNKNOWN_1 = 99;
@@ -93,6 +95,10 @@ public class BLEServiceNew extends Service {
 
     private BLEHandler bleHandler;
 
+    private boolean justPaired;
+
+    private boolean tryingToReconnectAfterPairing;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -120,6 +126,18 @@ public class BLEServiceNew extends Service {
 
             switch (msg.arg1) {
                 case EventCategories.IPC_BLE_CONNECT:
+                    justPaired = msg.arg2 == IPCConstants.JUST_PAIRED;
+
+                    if(justPaired) {
+                        Log.e(TAG, "just paired delay");
+                    /*    try {
+                            Thread.sleep(JUST_PAIRED_DELAY_ON_CONNECTION);
+                        } catch (InterruptedException e) {
+                            Log.e(TAG, e.toString());
+                        }*/
+                    } else {
+                        Log.e(TAG, "paired earlier");
+                    }
                     setupBLE();
                     break;
 
@@ -1012,6 +1030,14 @@ public class BLEServiceNew extends Service {
         boolean success = true;
         int rc = connect();
         if (rc == ERROR_NONE) {
+            if(justPaired) {
+                bleManager.refresh();
+                try {
+                    Thread.sleep(JUST_PAIRED_DELAY_ON_CONNECTION);
+                } catch (InterruptedException e) {
+                    Log.e(TAG, e.toString());
+                }
+            }
             logi("startupConnection() :: connectMaybeInit() == 0");
             rc = discoverServices();
             if (rc == ERROR_NONE) {
@@ -1024,11 +1050,24 @@ public class BLEServiceNew extends Service {
                     success = false;
                 }
             } else {
-                logi("startupConnection() :: discoverServices() != 0");
-                success = false;
-
+                if(justPaired) {
+                    if (tryingToReconnectAfterPairing) {
+                        discoverFailed();
+                        success = false;
+                    } else {
+                        tryingToReconnectAfterPairing = false;
+                        bleManager.reset();
+                        startupConnection();
+                        return;
+                    }
+                } else {
+                    discoverFailed();
+                    success = false;
+                }
             }
+            justPaired = false;
         } else {
+            Log.e(TAG, "connect failed");
             success = false;
         }
 
@@ -1042,6 +1081,11 @@ public class BLEServiceNew extends Service {
         }
 
         logi("startupConnection() :: end");
+    }
+
+    private void discoverFailed() {
+        Log.e(TAG, "discover failed");
+        logi("startupConnection() :: discoverServices() != 0");
     }
 
     /**

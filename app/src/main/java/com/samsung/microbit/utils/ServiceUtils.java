@@ -198,6 +198,8 @@ public class ServiceUtils {
                     .IPC_BLE_CONNECT, ServiceIds.SERVICE_NONE, null, null);
 
             if(connectMessage != null) {
+                connectMessage.arg2 = MBApp.getApp().isJustPaired() ? IPCConstants.JUST_PAIRED : IPCConstants
+                        .PAIRED_EARLIER;
                 connectMessage.replyTo = application.getIpcMessenger();
 
                 try {
@@ -206,6 +208,7 @@ public class ServiceUtils {
 
                     if (bleMessenger != null) {
                         bleMessenger.send(connectMessage);
+                        MBApp.getApp().setJustPaired(false);
                     }
                 } catch (RemoteException e) {
                     e.printStackTrace();

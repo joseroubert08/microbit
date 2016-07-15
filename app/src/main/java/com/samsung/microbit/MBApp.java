@@ -30,7 +30,9 @@ public class MBApp extends Application {
 
     private Messenger ipcMessenger;
 
-    private boolean wasConnected;
+    private boolean bleConnectionEstablished;
+
+    private boolean justPaired;
 
     @Override
     public void onCreate() {
@@ -68,12 +70,20 @@ public class MBApp extends Application {
         return ipcMessenger;
     }
 
-    public void setWasConnected(boolean wasConnected) {
-        this.wasConnected = wasConnected;
+    public void setBleConnectionEstablished(boolean bleConnectionEstablished) {
+        this.bleConnectionEstablished = bleConnectionEstablished;
     }
 
-    public boolean wasConnected() {
-        return wasConnected;
+    public boolean isBleConnectionEstablished() {
+        return bleConnectionEstablished;
+    }
+
+    public void setJustPaired(boolean justPaired) {
+        this.justPaired = justPaired;
+    }
+
+    public boolean isJustPaired() {
+        return justPaired;
     }
 
     public Typeface getTypeface() {

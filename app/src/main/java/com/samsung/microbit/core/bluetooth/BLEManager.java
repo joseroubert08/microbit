@@ -11,6 +11,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.UUID;
 
@@ -368,6 +369,23 @@ public class BLEManager {
         }
 
         return rc;
+    }
+
+    public void refresh() {
+        if(gatt == null) {
+            Log.e(TAG, "gatt is null");
+            return;
+        }
+
+        try {
+            final Method refresh = gatt.getClass().getMethod("refresh");
+            if (refresh != null) {
+                final boolean success = (Boolean) refresh.invoke(gatt);
+                logi("Refreshing result: " + success);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
     }
 
     /**

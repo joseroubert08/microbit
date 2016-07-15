@@ -1084,7 +1084,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         ConnectedDevice connectedDevice = BluetoothUtils.getPairedMicrobit(this);
         String addressToDelete = connectedDevice.mAddress;
         // Get the paired devices and put them in a Set
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        BluetoothAdapter mBluetoothAdapter = ((BluetoothManager) getSystemService(BLUETOOTH_SERVICE)).getAdapter();
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         for (BluetoothDevice bt : pairedDevices) {
             logi("Paired device " + bt.getName());
@@ -1141,6 +1141,9 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 PopUp.TYPE_ALERT, //type of popup.
                 mSuccessFulPairingHandler,
                 mSuccessFulPairingHandler);
+
+        Log.e(TAG, "Set just paired to true");
+        MBApp.getApp().setJustPaired(true);
     }
 
     private void cancelPairing() {

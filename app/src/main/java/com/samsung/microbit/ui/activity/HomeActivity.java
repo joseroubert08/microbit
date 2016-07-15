@@ -220,6 +220,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             application.setIpcMessenger(ipcMessenger);
             application.setMessengerFinder(messengerFinder);
 
+            Log.e(TAG, "Set just paired to false");
+
+            application.setJustPaired(false);
+
             initHandlerOfFirstConnection.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -232,9 +236,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                         if(bleMessenger != null) {
                             //Init service to correct handling disconnection.
-                            if (!application.wasConnected()) {
+                            if (!application.isBleConnectionEstablished()) {
                                 ServiceUtils.sendConnectDisconnectMessage(true);
-                                application.setWasConnected(true);
+                                application.setBleConnectionEstablished(true);
                             }
                         } else {
                             initHandlerOfFirstConnection.postDelayed(this, 300);
@@ -413,7 +417,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             ServiceUtils.unbindService(application.getMessengerFinder());
             application.setIpcMessenger(null);
             application.setMessengerFinder(null);
-            application.setWasConnected(false);
+            application.setBleConnectionEstablished(false);
         }
         initHandlerOfFirstConnection.removeCallbacks(null);
         ipcHandler.removeCallbacks(null);
