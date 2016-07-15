@@ -52,7 +52,7 @@ public class BLEServiceNew extends Service {
 
     private static final String TAG = BLEServiceNew.class.getSimpleName();
 
-    private static final long JUST_PAIRED_DELAY_ON_CONNECTION = 6000;
+    private static final long JUST_PAIRED_DELAY_ON_CONNECTION = 12000;
 
     private static final int ERROR_NONE = 0;
     private static final int ERROR_TIME_OUT = 10;
@@ -95,8 +95,6 @@ public class BLEServiceNew extends Service {
 
     private BLEHandler bleHandler;
 
-    private boolean justPaired;
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -124,15 +122,14 @@ public class BLEServiceNew extends Service {
 
             switch (msg.arg1) {
                 case EventCategories.IPC_BLE_CONNECT:
-                    justPaired = msg.arg2 == IPCConstants.JUST_PAIRED;
-
-                    if (justPaired) {
+                    int justPaired = msg.arg2;
+                    if(justPaired == IPCConstants.JUST_PAIRED) {
                         Log.e(TAG, "just paired delay");
-                    /*    try {
+                        try {
                             Thread.sleep(JUST_PAIRED_DELAY_ON_CONNECTION);
                         } catch (InterruptedException e) {
                             Log.e(TAG, e.toString());
-                        }*/
+                        }
                     } else {
                         Log.e(TAG, "paired earlier");
                     }
@@ -1028,14 +1025,6 @@ public class BLEServiceNew extends Service {
         boolean success = true;
         int rc = connect();
         if (rc == ERROR_NONE) {
-            if (justPaired) {
-                bleManager.refresh();
-                try {
-                    Thread.sleep(JUST_PAIRED_DELAY_ON_CONNECTION);
-                } catch (InterruptedException e) {
-                    Log.e(TAG, e.toString());
-                }
-            }
             logi("startupConnection() :: connectMaybeInit() == 0");
             rc = discoverServices();
             if (rc == ERROR_NONE) {
@@ -1051,7 +1040,6 @@ public class BLEServiceNew extends Service {
                 discoverFailed();
                 success = false;
             }
-            justPaired = false;
         } else {
             Log.e(TAG, "connect failed");
             success = false;
