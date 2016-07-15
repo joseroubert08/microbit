@@ -52,7 +52,7 @@ public class BLEServiceNew extends Service {
 
     private static final String TAG = BLEServiceNew.class.getSimpleName();
 
-    private static final long JUST_PAIRED_DELAY_ON_CONNECTION = 3000;
+    private static final long JUST_PAIRED_DELAY_ON_CONNECTION = 5000;
 
     private static final int ERROR_NONE = 0;
     private static final int ERROR_TIME_OUT = 10;
