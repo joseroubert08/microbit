@@ -22,7 +22,8 @@ import com.samsung.microbit.data.constants.IPCConstants;
 import com.samsung.microbit.data.constants.ServiceIds;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.data.model.NameValuePair;
-import com.samsung.microbit.service.BLEServiceNew;
+import com.samsung.microbit.service.BLEService;
+import com.samsung.microbit.service.PluginService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -112,8 +113,8 @@ public class ServiceUtils {
 
     /**
      * Sends message to some service
-     * ({@link com.samsung.microbit.service.PluginServiceNew PluginServiceNew},
-     * {@link com.samsung.microbit.service.BLEServiceNew BLEServiceNew},
+     * ({@link PluginService PluginServiceNew},
+     * {@link BLEService BLEServiceNew},
      *
      * @param destService   Class of service, message need sent to.
      * @param messageType   Android or microbit message. One of the {@link com.samsung.microbit.data.constants.IPCConstants#MESSAGE_ANDROID},
@@ -203,7 +204,7 @@ public class ServiceUtils {
                 connectMessage.replyTo = application.getIpcMessenger();
 
                 try {
-                    Messenger bleMessenger = application.getMessengerFinder().getMessengerForService(BLEServiceNew
+                    Messenger bleMessenger = application.getMessengerFinder().getMessengerForService(BLEService
                              .class.getName());
 
                     if (bleMessenger != null) {
@@ -222,7 +223,7 @@ public class ServiceUtils {
                 connectMessage.replyTo = application.getIpcMessenger();
 
                 try {
-                    Messenger bleMessenger = application.getMessengerFinder().getMessengerForService(BLEServiceNew
+                    Messenger bleMessenger = application.getMessengerFinder().getMessengerForService(BLEService
                              .class.getName());
 
                     if (bleMessenger != null) {

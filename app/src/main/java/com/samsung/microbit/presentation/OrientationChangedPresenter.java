@@ -13,7 +13,7 @@ import android.util.Log;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.EventSubCodes;
-import com.samsung.microbit.service.BLEServiceNew;
+import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.utils.ServiceUtils;
 import com.samsung.microbit.utils.Utils;
 
@@ -41,7 +41,7 @@ public class OrientationChangedPresenter implements Presenter {
                 ServiceUtils.IMessengerFinder messengerFinder = MBApp.getApp().getMessengerFinder();
 
                 if(messengerFinder != null) {
-                    Messenger bleMessenger = messengerFinder.getMessengerForService(BLEServiceNew.class.getName());
+                    Messenger bleMessenger = messengerFinder.getMessengerForService(BLEService.class.getName());
 
                     if(bleMessenger != null) {
                         Message message = ServiceUtils.composeBLECharacteristicMessage(Utils.makeMicroBitValue

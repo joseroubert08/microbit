@@ -48,11 +48,11 @@ import no.nordicsemi.android.error.GattError;
 
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
-public class BLEServiceNew extends Service {
+public class BLEService extends Service {
 
-    private static final String TAG = BLEServiceNew.class.getSimpleName();
+    private static final String TAG = BLEService.class.getSimpleName();
 
-    private static final long JUST_PAIRED_DELAY_ON_CONNECTION = 12000;
+    private static final long JUST_PAIRED_DELAY_ON_CONNECTION = 11000;
 
     private static final int ERROR_NONE = 0;
     private static final int ERROR_TIME_OUT = 10;
@@ -63,11 +63,11 @@ public class BLEServiceNew extends Service {
     public static final String GATT_FORCE_CLOSED = "com.microbit.gatt_force_closed";
 
     private static final class BLEHandler extends Handler {
-        private WeakReference<BLEServiceNew> bleServiceNewWeakReference;
+        private WeakReference<BLEService> bleServiceNewWeakReference;
 
-        private BLEHandler(BLEServiceNew bleServiceNew) {
+        private BLEHandler(BLEService bleService) {
             super();
-            bleServiceNewWeakReference = new WeakReference<>(bleServiceNew);
+            bleServiceNewWeakReference = new WeakReference<>(bleService);
         }
 
         @Override

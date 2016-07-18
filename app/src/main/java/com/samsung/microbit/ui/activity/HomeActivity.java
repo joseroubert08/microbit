@@ -46,8 +46,8 @@ import com.samsung.microbit.data.constants.PermissionCodes;
 import com.samsung.microbit.data.constants.ServiceIds;
 import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.presentation.ConfigInfoPresenter;
-import com.samsung.microbit.service.BLEServiceNew;
-import com.samsung.microbit.service.PluginServiceNew;
+import com.samsung.microbit.service.BLEService;
+import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.utils.FileUtils;
 import com.samsung.microbit.utils.ServiceUtils;
@@ -120,10 +120,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         String replyToServiceName = null;
         switch (message.arg2) {
             case ServiceIds.SERVICE_PLUGIN:
-                replyToServiceName = PluginServiceNew.class.getName();
+                replyToServiceName = PluginService.class.getName();
                 break;
             case ServiceIds.SERVICE_BLE:
-                replyToServiceName = BLEServiceNew.class.getName();
+                replyToServiceName = BLEService.class.getName();
                 break;
         }
 
@@ -210,8 +210,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         if(savedInstanceState == null && application.getMessengerFinder() == null) {
             ServiceUtils.IMessengerFinder messengerFinder = ServiceUtils.createMessengerFinder();
-            ServiceUtils.bindService(PluginServiceNew.class, messengerFinder);
-            ServiceUtils.bindService(BLEServiceNew.class, messengerFinder);
+            ServiceUtils.bindService(PluginService.class, messengerFinder);
+            ServiceUtils.bindService(BLEService.class, messengerFinder);
 
             ipcHandler = new IPCHandler(this);
 
@@ -231,7 +231,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     ConnectedDevice connectedDevice = BluetoothUtils.getPairedMicrobit(application);
 
                     if(connectedDevice.mStatus) {
-                        Messenger bleMessenger = application.getMessengerFinder().getMessengerForService(BLEServiceNew
+                        Messenger bleMessenger = application.getMessengerFinder().getMessengerForService(BLEService
                                 .class.getName());
 
                         if(bleMessenger != null) {

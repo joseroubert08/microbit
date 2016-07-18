@@ -21,9 +21,9 @@ import java.lang.ref.WeakReference;
 
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
-public class PluginServiceNew extends Service {
+public class PluginService extends Service {
 
-    private static final String TAG = PluginServiceNew.class.getSimpleName();
+    private static final String TAG = PluginService.class.getSimpleName();
 
     //MBS Services
     public static final int ALERT = 0;
@@ -36,11 +36,11 @@ public class PluginServiceNew extends Service {
     public static final int FILE = 7;
 
     private static final class PluginHandler extends Handler {
-        private final WeakReference<PluginServiceNew> pluginServiceNewWeakReference;
+        private final WeakReference<PluginService> pluginServiceNewWeakReference;
 
-        private PluginHandler(PluginServiceNew pluginServiceNew) {
+        private PluginHandler(PluginService pluginService) {
             super();
-            pluginServiceNewWeakReference = new WeakReference<>(pluginServiceNew);
+            pluginServiceNewWeakReference = new WeakReference<>(pluginService);
         }
 
         @Override

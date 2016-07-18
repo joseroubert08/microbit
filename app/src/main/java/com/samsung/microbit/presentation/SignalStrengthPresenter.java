@@ -14,8 +14,8 @@ import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.EventSubCodes;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.plugin.InformationPlugin;
-import com.samsung.microbit.service.BLEServiceNew;
-import com.samsung.microbit.service.PluginServiceNew;
+import com.samsung.microbit.service.BLEService;
+import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.utils.ServiceUtils;
 import com.samsung.microbit.utils.Utils;
 
@@ -53,7 +53,7 @@ public class SignalStrengthPresenter implements Presenter {
 
             if(informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Registered Signal Strength.");
-                informationPlugin.sendReplyCommand(PluginServiceNew.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
             }
         }
     }
@@ -65,7 +65,7 @@ public class SignalStrengthPresenter implements Presenter {
 
             if(informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Unregistered Signal Strength.");
-                informationPlugin.sendReplyCommand(PluginServiceNew.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
             }
 
             isRegistered = false;
@@ -101,7 +101,7 @@ public class SignalStrengthPresenter implements Presenter {
             ServiceUtils.IMessengerFinder messengerFinder = MBApp.getApp().getMessengerFinder();
 
             if(messengerFinder != null) {
-                Messenger bleMessenger = messengerFinder.getMessengerForService(BLEServiceNew.class.getName());
+                Messenger bleMessenger = messengerFinder.getMessengerForService(BLEService.class.getName());
 
                 if(bleMessenger != null) {
                     Message message = ServiceUtils.composeBLECharacteristicMessage(Utils.makeMicroBitValue

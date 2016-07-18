@@ -13,7 +13,7 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.IPCConstants;
 import com.samsung.microbit.data.constants.ServiceIds;
-import com.samsung.microbit.service.PluginServiceNew;
+import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.activity.PopUpActivity;
 import com.samsung.microbit.utils.ServiceUtils;
@@ -51,7 +51,7 @@ public class PopUpServiceReceiver extends BroadcastReceiver {
                     ServiceUtils.IMessengerFinder messengerFinder = MBApp.getApp().getMessengerFinder();
 
                     if (messengerFinder != null) {
-                        Messenger bleMessenger = messengerFinder.getMessengerForService(PluginServiceNew.class
+                        Messenger bleMessenger = messengerFinder.getMessengerForService(PluginService.class
                                  .getName());
 
                         if (bleMessenger != null) {

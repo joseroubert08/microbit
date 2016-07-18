@@ -53,7 +53,7 @@ import com.samsung.microbit.data.constants.PermissionCodes;
 import com.samsung.microbit.data.constants.RequestCodes;
 import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.data.model.ui.PairingActivityState;
-import com.samsung.microbit.service.BLEServiceNew;
+import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.ui.BluetoothChecker;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.adapter.LEDAdapter;
@@ -170,7 +170,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     private final BroadcastReceiver gattForceClosedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(BLEServiceNew.GATT_FORCE_CLOSED)) {
+            if (intent.getAction().equals(BLEService.GATT_FORCE_CLOSED)) {
                 updatePairedDeviceCard();
             }
         }
@@ -517,7 +517,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         LocalBroadcastManager.getInstance(application).registerReceiver(connectionChangedReceiver, broadcastIntentFilter);
 
         LocalBroadcastManager.getInstance(application).registerReceiver(gattForceClosedReceiver, new
-                IntentFilter(BLEServiceNew.GATT_FORCE_CLOSED));
+                IntentFilter(BLEService.GATT_FORCE_CLOSED));
 
         setupBleController();
 

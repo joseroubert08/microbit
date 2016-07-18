@@ -39,7 +39,7 @@ import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.data.model.Project;
 import com.samsung.microbit.data.model.ui.FlashActivityState;
 import com.samsung.microbit.presentation.ConfigInfoPresenter;
-import com.samsung.microbit.service.BLEServiceNew;
+import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.DfuService;
 import com.samsung.microbit.ui.BluetoothChecker;
 import com.samsung.microbit.ui.PopUp;
@@ -91,7 +91,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     private final BroadcastReceiver gattForceClosedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(BLEServiceNew.GATT_FORCE_CLOSED)) {
+            if (intent.getAction().equals(BLEService.GATT_FORCE_CLOSED)) {
                 setConnectedDeviceText();
             }
         }
@@ -275,14 +275,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         setContentView(R.layout.activity_projects);
         initViews();
         setupFontStyle();
-        checkMinimumPermissionsForThisScreen();
 
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(application);
 
         IntentFilter broadcastIntentFilter = new IntentFilter(IPCConstants.INTENT_BLE_NOTIFICATION);
         localBroadcastManager.registerReceiver(connectionChangedReceiver, broadcastIntentFilter);
 
-        localBroadcastManager.registerReceiver(gattForceClosedReceiver, new IntentFilter(BLEServiceNew
+        localBroadcastManager.registerReceiver(gattForceClosedReceiver, new IntentFilter(BLEService
                 .GATT_FORCE_CLOSED));
 
         setConnectedDeviceText();
@@ -319,6 +318,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
         super.onDestroy();
         releaseViews();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkMinimumPermissionsForThisScreen();
     }
 
     private void requestPermission(String[] permissions, final int requestCode) {

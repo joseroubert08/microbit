@@ -1,13 +1,15 @@
 package com.samsung.microbit.data.constants;
 
+import com.samsung.microbit.service.BLEService;
+import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.utils.UUIDsUtils;
 
 import java.util.UUID;
 
 /**
  * Contains characteristic universally unique identifiers,
- * that used by services {@link com.samsung.microbit.service.PluginServiceNew PluginServiceNew},
- * {@link com.samsung.microbit.service.BLEServiceNew BLEServiceNew}
+ * that used by services {@link PluginService PluginServiceNew},
+ * {@link BLEService BLEServiceNew}
  */
 public class CharacteristicUUIDs {
     private CharacteristicUUIDs() {

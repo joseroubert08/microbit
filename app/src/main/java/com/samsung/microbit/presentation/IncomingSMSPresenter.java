@@ -15,8 +15,8 @@ import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.EventSubCodes;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.plugin.TelephonyPlugin;
-import com.samsung.microbit.service.BLEServiceNew;
-import com.samsung.microbit.service.PluginServiceNew;
+import com.samsung.microbit.service.BLEService;
+import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.utils.ServiceUtils;
 import com.samsung.microbit.utils.Utils;
 
@@ -30,7 +30,7 @@ public class IncomingSMSPresenter implements Presenter {
                 ServiceUtils.IMessengerFinder messengerFinder = MBApp.getApp().getMessengerFinder();
 
                 if(messengerFinder != null) {
-                    Messenger bleMessenger = messengerFinder.getMessengerForService(BLEServiceNew.class.getName());
+                    Messenger bleMessenger = messengerFinder.getMessengerForService(BLEService.class.getName());
 
                     if(bleMessenger != null) {
                         Message message = ServiceUtils.composeBLECharacteristicMessage(Utils.makeMicroBitValue
@@ -69,7 +69,7 @@ public class IncomingSMSPresenter implements Presenter {
 
             if (telephonyPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Registered Incoming SMS Alert");
-                telephonyPlugin.sendCommandBLE(PluginServiceNew.TELEPHONY, cmd);
+                telephonyPlugin.sendCommandBLE(PluginService.TELEPHONY, cmd);
                 //TODO: do we need to report registration status?
             }
             isRegistered = true;
@@ -83,7 +83,7 @@ public class IncomingSMSPresenter implements Presenter {
 
             if (telephonyPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Unregistered Incoming SMS Alert");
-                telephonyPlugin.sendCommandBLE(PluginServiceNew.TELEPHONY, cmd);
+                telephonyPlugin.sendCommandBLE(PluginService.TELEPHONY, cmd);
                 //TODO: do we need to report registration status?
             }
             isRegistered = false;

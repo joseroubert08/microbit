@@ -132,7 +132,7 @@
             android:enabled="true"/>
 
         <service
-            android:name=".service.PluginServiceNew"
+            android:name=".service.PluginService"
             android:exported="false"
             android:process=":PluginServiceNew">
 
@@ -141,7 +141,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".service.BLEServiceNew"
+            android:name=".service.BLEService"
             android:exported="false"
             android:process=":BLEServiceNew">
             <intent-filter>

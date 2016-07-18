@@ -9,7 +9,7 @@ import android.os.BatteryManager;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.plugin.InformationPlugin;
-import com.samsung.microbit.service.PluginServiceNew;
+import com.samsung.microbit.service.PluginService;
 
 public class BatteryPresenter implements Presenter{
     private BroadcastReceiver batteryReceiver = new BroadcastReceiver() {
@@ -22,7 +22,7 @@ public class BatteryPresenter implements Presenter{
             if (batteryPct != previousBatteryPct) {
                 if(informationPlugin != null) {
                     CmdArg cmd = new CmdArg(InformationPlugin.AlertType.TYPE_BATTERY, "Battery level " + batteryPct);
-                    informationPlugin.sendReplyCommand(PluginServiceNew.INFORMATION, cmd);
+                    informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
                 }
 
                 previousBatteryPct = batteryPct;
@@ -52,7 +52,7 @@ public class BatteryPresenter implements Presenter{
 
             if(informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Registered Battery.");
-                informationPlugin.sendReplyCommand(PluginServiceNew.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
             }
         }
     }
@@ -64,7 +64,7 @@ public class BatteryPresenter implements Presenter{
 
             if(informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Unregistered Battery.");
-                informationPlugin.sendReplyCommand(PluginServiceNew.INFORMATION, cmd);
+                informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
             }
             isRegistered = false;
         }
