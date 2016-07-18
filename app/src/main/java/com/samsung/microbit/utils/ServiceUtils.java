@@ -23,7 +23,6 @@ import com.samsung.microbit.data.constants.ServiceIds;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.data.model.NameValuePair;
 import com.samsung.microbit.service.BLEService;
-import com.samsung.microbit.service.PluginService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +38,12 @@ public class ServiceUtils {
     private ServiceUtils() {
     }
 
+    /**
+     * Send some reply message to the ipc.
+     *
+     * @param mbsService MbsService of reply.
+     * @param cmd Command should be sent, as reply.
+     */
     public static void sendReplyCommand(int mbsService, CmdArg cmd) {
         MBApp application = MBApp.getApp();
 
@@ -81,15 +86,30 @@ public class ServiceUtils {
         return explicitIntent;
     }
 
-    public static void bindService(Class serviceClass, IMessengerFinder serviceConnection) {
+    /**
+     * Bind service with messenger finder. For getting messengers for services and create {@link ServiceConnection}
+     * use {@link IMessengerFinder} interface.
+     *
+     * @param serviceClass Class of service, that messenger finder is handled.
+     * @param messengerFinder MessengerFinder, via which service is binding to app.
+     */
+    public static void bindService(Class serviceClass, IMessengerFinder messengerFinder) {
         MBApp application = MBApp.getApp();
-        application.bindService(new Intent(application, serviceClass), serviceConnection, Context.BIND_AUTO_CREATE);
+        application.bindService(new Intent(application, serviceClass), messengerFinder, Context.BIND_AUTO_CREATE);
     }
 
-    public static void unbindService(IMessengerFinder serviceConnection) {
-        MBApp.getApp().unbindService(serviceConnection);
+    /**
+     * Unbind messengerFinder from application.
+     *
+     * @param messengerFinder MessengerFinder, that app should be disconnected from.
+     */
+    public static void unbindService(IMessengerFinder messengerFinder) {
+        MBApp.getApp().unbindService(messengerFinder);
     }
 
+    /**
+     * Used for creating base component for IPC interaction.
+     */
     public static IMessengerFinder createMessengerFinder() {
         return new IMessengerFinder() {
             private final Map<String, Messenger> clientMessengers = new HashMap<>();
@@ -112,28 +132,17 @@ public class ServiceUtils {
     }
 
     /**
-     * Sends message to some service
-     * ({@link PluginService PluginServiceNew},
-     * {@link BLEService BLEServiceNew},
+     * Compose message for IPC communication
      *
-     * @param destService   Class of service, message need sent to.
      * @param messageType   Android or microbit message. One of the {@link com.samsung.microbit.data.constants.IPCConstants#MESSAGE_ANDROID},
      *                      {@link com.samsung.microbit.data.constants.IPCConstants#MESSAGE_MICROBIT}
      * @param eventCategory Event category listed in {@link EventCategories}
+     * @param serviceId Identifier of service. Detect where message should be delivered to. Can be one of possible
+     *                  values - {@link ServiceIds#SERVICE_NONE}, {@link ServiceIds#SERVICE_BLE}, and
+     *                  {@link ServiceIds#SERVICE_PLUGIN}
      * @param cmd           Command argument.
      * @param args          Array of data.
      */
-    public static void sendMessage(IMessengerFinder messengerFinder, Class destService, int messageType, @ServiceIds int
-            serviceId, int eventCategory, CmdArg cmd, NameValuePair[] args, Messenger messengerForAnswer) {
-        Message msg = composeMessage(messageType, serviceId, eventCategory, cmd, args);
-
-        try {
-            sendMessage(messengerFinder, destService, msg, messengerForAnswer);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static Message composeMessage(int messageType, int eventCategory, @ServiceIds int serviceId, CmdArg cmd,
                                          NameValuePair[] args) {
         if (messageType != IPCConstants.MESSAGE_ANDROID && messageType != IPCConstants.MESSAGE_MICROBIT) {
@@ -161,6 +170,11 @@ public class ServiceUtils {
         return msg;
     }
 
+    /**
+     * Compose message for BLE sensor notifications.
+     *
+     * @param value characteristic value for creating final message
+     */
     public static Message composeBLECharacteristicMessage(int value) {
         NameValuePair[] args = new NameValuePair[4];
         args[0] = new NameValuePair(IPCConstants.BUNDLE_SERVICE_GUID, GattServiceUUIDs.EVENT_SERVICE.toString());
@@ -172,25 +186,28 @@ public class ServiceUtils {
                 ServiceIds.SERVICE_NONE, null, args);
     }
 
+    /**
+     * Copy values from old message to new one.
+     *
+     * @param oldMessage Old messages, values should be copied from.
+     * @param serviceId Identifier of service. Detect where message should be delivered to. Can be one of possible
+     *                  values - {@link ServiceIds#SERVICE_NONE}, {@link ServiceIds#SERVICE_BLE}, and
+     *                  {@link ServiceIds#SERVICE_PLUGIN}
+     */
     public static Message copyMessageFromOld(Message oldMessage, @ServiceIds int serviceId) {
         Message newMessage = Message.obtain(null, oldMessage.what);
         newMessage.arg1 = oldMessage.arg1;
-        newMessage.arg2 = oldMessage.arg2;
+        newMessage.arg2 = serviceId;
         newMessage.setData(new Bundle(oldMessage.getData()));
         return newMessage;
     }
 
-    private static void sendMessage(IMessengerFinder messengerFinder, Class destService, Message msg, Messenger
-            messengerForAnswer) throws RemoteException {
-        Log.i(TAG, "sendMessage()");
-
-        Messenger messenger = messengerFinder.getMessengerForService(destService.getName());
-        if (messenger != null) {
-            msg.replyTo = messengerForAnswer;
-            messenger.send(msg);
-        }
-    }
-
+    /**
+     * Sent connect /or disconnect/ messages to the corresponding service.
+     *
+     * @param connect true, if message about connection establishing should be sent. False, if message of aborting
+     *                connection should be sent.
+     */
     public static void sendConnectDisconnectMessage(boolean connect) {
         MBApp application = MBApp.getApp();
 
@@ -198,14 +215,14 @@ public class ServiceUtils {
             Message connectMessage = ServiceUtils.composeMessage(IPCConstants.MESSAGE_ANDROID, EventCategories
                     .IPC_BLE_CONNECT, ServiceIds.SERVICE_NONE, null, null);
 
-            if(connectMessage != null) {
+            if (connectMessage != null) {
                 connectMessage.arg2 = MBApp.getApp().isJustPaired() ? IPCConstants.JUST_PAIRED : IPCConstants
                         .PAIRED_EARLIER;
                 connectMessage.replyTo = application.getIpcMessenger();
 
                 try {
                     Messenger bleMessenger = application.getMessengerFinder().getMessengerForService(BLEService
-                             .class.getName());
+                            .class.getName());
 
                     if (bleMessenger != null) {
                         bleMessenger.send(connectMessage);
@@ -224,7 +241,7 @@ public class ServiceUtils {
 
                 try {
                     Messenger bleMessenger = application.getMessengerFinder().getMessengerForService(BLEService
-                             .class.getName());
+                            .class.getName());
 
                     if (bleMessenger != null) {
                         bleMessenger.send(connectMessage);
@@ -236,6 +253,9 @@ public class ServiceUtils {
         }
     }
 
+    /**
+     * Used for make ipc interaction.
+     */
     public interface IMessengerFinder extends ServiceConnection {
         Messenger getMessengerForService(String serviceName);
     }

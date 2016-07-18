@@ -7,7 +7,6 @@ public class EventCategories {
     private EventCategories() {
     }
 
-    public static final int IPC_INIT = 0;
     public static final int IPC_BLE_DISCONNECT = 1;
     public static final int IPC_BLE_CONNECT = 2;
     public static final int IPC_BLE_RECONNECT = 3;

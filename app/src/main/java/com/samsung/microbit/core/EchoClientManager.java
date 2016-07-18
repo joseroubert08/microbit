@@ -8,7 +8,7 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.data.constants.Constants;
-import com.samsung.microbit.utils.UnpackUtils;
+import com.samsung.microbit.utils.ProjectsHelper;
 
 import java.util.HashMap;
 
@@ -90,7 +90,7 @@ public class EchoClientManager {
             eventLabels.put("name", "kl.education.microbit.appstart.page");
             eventLabels.put("bbc_site", "bitesize");
             eventLabels.put("microbits_paired", Integer.toString(BluetoothUtils.getTotalPairedMicroBitsFromSystem()));
-            eventLabels.put("saved_projects", Integer.toString(UnpackUtils.getTotalSavedPrograms()));
+            eventLabels.put("saved_projects", Integer.toString(ProjectsHelper.getTotalSavedProjects()));
             echo.userActionEvent(null, null, eventLabels);
         } else {
             Log.d(TAG, "Sharing of stats is disabled by user or Echo not initialised");

@@ -23,7 +23,4 @@ public class RegistrationIds {
     public static final int REG_SIGNALSTRENGTH = 0x020;    // 0x00000020;
     public static final int REG_BATTERYSTRENGTH = 0x040;    // 0x00000040;
     public static final int REG_TEMPERATURE = 0x080;    // 0x00000080;
-
-    public static final byte[] REGISTRATION_ON = {REG_TELEPHONY, REG_MESSAGING, REG_DEVICEORIENTATION, REG_DEVICEGESTURE, REG_DISPLAY, REG_SIGNALSTRENGTH, REG_BATTERYSTRENGTH};
-    public static final byte[] REGISTRATION_OFF = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 }

@@ -48,7 +48,7 @@ import com.samsung.microbit.utils.BLEConnectionHandler;
 import com.samsung.microbit.utils.FileUtils;
 import com.samsung.microbit.utils.PreferenceUtils;
 import com.samsung.microbit.utils.ServiceUtils;
-import com.samsung.microbit.utils.UnpackUtils;
+import com.samsung.microbit.utils.ProjectsHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -529,7 +529,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     public void updateProjectsListSortOrder(boolean reReadFS) {
         if (reReadFS) {
             mProjectList.clear();
-            UnpackUtils.findProgramsAndPopulate(mPrettyFileNameMap, mProjectList);
+            ProjectsHelper.findProjectssAndPopulate(mPrettyFileNameMap, mProjectList);
         }
 
         int projectListSortOrder = PreferenceUtils.getListSortOrder();

@@ -4,11 +4,6 @@ public class IPCConstants {
     public static final int MESSAGE_ANDROID = 1;
     public static final int MESSAGE_MICROBIT = 2;
 
-    public static final String BROADCAST_ANDROID_NOTIFICATION = "com.samsung.microbit.service.IPCService" +
-            ".INTENT_BLE_NOTIFICATION";
-    public static final String BROADCAST_MICROBIT_NOTIFICATION = "com.samsung.microbit.service.IPCService" +
-            ".INTENT_MICROBIT_NOTIFICATION";
-
     public static final String BUNDLE_DATA = "data";
     public static final String BUNDLE_VALUE = "value";
     public static final String BUNDLE_MICROBIT_FIRMWARE = "BUNDLE_MICROBIT_FIRMWARE";
@@ -21,13 +16,13 @@ public class IPCConstants {
     public static final String BUNDLE_CHARACTERISTIC_VALUE = "BUNDLE_CHARACTERISTIC_VALUE";
     public static final String BUNDLE_DEVICE_ADDRESS = "BUNDLE_DEVICE_ADDRESS";
 
-    public static final String INTENT_BLE_NOTIFICATION = "com.samsung.microbit.service.IPCService.INTENT_BLE_NOTIFICATION";
-    public static final String INTENT_MICROBIT_NOTIFICATION = "com.samsung.microbit.service.IPCService.INTENT_MICROBIT_NOTIFICATION";
+    public static final String INTENT_BLE_NOTIFICATION = "com.samsung.microbit.service.IPCService" +
+             ".INTENT_BLE_NOTIFICATION";
+    public static final String INTENT_MICRO_BIT_NOTIFICATION = "com.samsung.microbit.service.IPCService" +
+            ".INTENT_MICROBIT_NOTIFICATION";
 
     public static final String NOTIFICATION_CAUSE = "com.samsung.microbit.service.IPCService.CAUSE";
 
     public static final int JUST_PAIRED = 1;
     public static final int PAIRED_EARLIER = 0;
-
-
 }

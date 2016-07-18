@@ -11,18 +11,18 @@ import java.util.List;
 
 /**
  * Provides functionality to operate with a project items,
- * such as get a number of total saved projects and find
- * programs on a mobile device.
+ * such as get a number of total saved projects and search
+ * projects on a mobile device.
  */
-public class UnpackUtils {
+public class ProjectsHelper {
     //TODO: Change to data/data/appName/files MBApp.getContext().getFilesDir();
     public static File HEX_FILE_DIR = Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
     //public static File HEX_FILE_DIR = MBApp.getContext().getFilesDir();
 
-    private UnpackUtils() {
+    private ProjectsHelper() {
     }
 
-    public static int getTotalSavedPrograms() {
+    public static int getTotalSavedProjects() {
         File sdcardDownloads = HEX_FILE_DIR;
         int totalPrograms = 0;
         if (sdcardDownloads.exists()) {
@@ -39,7 +39,7 @@ public class UnpackUtils {
         return totalPrograms;
     }
 
-    public static int findProgramsAndPopulate(HashMap<String, String> prettyFileNameMap, List<Project> list) {
+    public static int findProjectssAndPopulate(HashMap<String, String> prettyFileNameMap, List<Project> list) {
         File sdcardDownloads = HEX_FILE_DIR;
         Log.d("MicroBit", "Searching files in " + sdcardDownloads.getAbsolutePath());
 
