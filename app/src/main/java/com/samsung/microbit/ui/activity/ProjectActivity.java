@@ -209,7 +209,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     @Override
     public void setActivityState(int baseActivityState) {
         mActivityState = baseActivityState;
-        setConnectedDeviceText();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                setConnectedDeviceText();
+            }
+        });
     }
 
     @Override
