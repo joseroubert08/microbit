@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  Copyright 2012 The Android Open Source Project
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.samsung.microbit"
+    android:versionCode="5"
+    android:versionName="1.5.1">
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+
+
+    <application
+        android:name=".MBApp"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme.NoActionBar">
+        <activity
+            android:name=".ui.activity.HomeActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:label="@string/home_activity_name"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".ui.activity.ProjectActivity"
+            android:parentActivityName=".ui.activity.HomeActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:windowSoftInputMode="adjustResize">
+
+            <!-- Register for the HEX file -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="microbit.co.uk"
+                    android:scheme="http" />
+                <data
+                    android:host="microbit.co.uk"
+                    android:scheme="https" />
+                <data
+                    android:host="*"
+                    android:scheme="content" />
+                <data
+                    android:host="*"
+                    android:scheme="file" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.hex" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.activity.NotificationActivity"
+            android:label="@string/device_details"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.PairingActivity"
+            android:label="@string/title_activity_connect"
+            android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName=".ui.activity.HomeActivity"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity
+            android:name=".ui.activity.PopUpActivity"
+            android:launchMode="singleTask"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:theme="@style/PopUpTheme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".ui.activity.AudioRecorderActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="Audio Recorder"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.CameraActivity_OldAPI"
+            android:label="Camera Microbit"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
+        <activity
+            android:name=".ui.activity.HelpWebView"
+            android:configChanges="orientation|screenSize"
+            android:label="Help Webview"
+            android:launchMode="singleTask"
+            android:parentActivityName=".ui.activity.HomeActivity"
+            android:screenOrientation="portrait">
+            >
+        </activity>
+        <activity
+            android:name=".ui.activity.CameraActivityPermissionChecker"
+            android:label="@string/title_activity_camera_activity_permission_checker"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <service
+            android:name=".service.DfuService"
+            android:enabled="true" />
+        <service
+            android:name=".service.PluginService"
+            android:process=":PluginService">
+            <intent-filter>
+                <action android:name="com.samsung.microbit.service.PluginService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".service.BLEService"
+            android:process=":BLEService">
+            <intent-filter>
+                <action android:name="com.samsung.microbit.service.BLEService" />
+            </intent-filter>
+        </service>
+        <service android:name=".service.IPCService">
+            <intent-filter>
+                <action android:name="com.samsung.microbit.service.IPCService" />
+            </intent-filter>
+        </service>
+        <activity
+            android:name=".ui.activity.SplashScreenActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <receiver android:name=".core.PopUpServiceReceiver">
+            <intent-filter>
+                <action android:name="com.samsung.microbit.core.SHOWFROMSERVICE" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>
