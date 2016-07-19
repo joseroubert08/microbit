@@ -64,5 +64,6 @@
         style="@style/main_activity_button_style"
         android:contentDescription="@string/desc_discover"
         android:drawableEnd="@drawable/ic_discover"
+        android:layout_marginBottom="0dp"
         android:text="@string/discover" />
 </LinearLayout>
