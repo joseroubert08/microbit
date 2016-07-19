@@ -17,36 +17,50 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.EchoClientManager;
-import com.samsung.microbit.core.Utils;
-import com.samsung.microbit.model.Project;
+import com.samsung.microbit.data.model.Project;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.activity.ProjectActivity;
 import com.samsung.microbit.ui.control.ExtendedEditText;
+import com.samsung.microbit.utils.FileUtils;
+
+import static com.samsung.microbit.BuildConfig.DEBUG;
 
 import java.util.List;
 
+/**
+ * Represents a project adapter that allows to custom view for
+ * a single project item.
+ */
 public class ProjectAdapter extends BaseAdapter {
+    private static final String TAG = ProjectAdapter.class.getSimpleName();
 
     private List<Project> mProjects;
     private ProjectActivity mProjectActivity;
     int currentEditableRow = -1;
 
-    protected String TAG = ProjectAdapter.class.getSimpleName();
-    protected boolean debug = BuildConfig.DEBUG;
-
+    /**
+     * Simplified method to log informational messages.
+     * Uses in Debug mode only.
+     *
+     * @param message Message to log.
+     */
     protected void logi(String message) {
-        Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+        if (DEBUG) {
+            Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+        }
     }
 
+    /**
+     * Listener for some editor's actions. If editing is done then
+     * hide the keyboard and rename the project. If canceled then just
+     * hide the keyboard.
+     */
     private TextView.OnEditorActionListener editorOnActionListener = new TextView.OnEditorActionListener() {
 
         @Override
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-
             logi("onEditorAction() :: currentEditableRow=" + currentEditableRow);
 
             int pos = (int) v.getTag(R.id.positionId);
@@ -64,10 +78,14 @@ public class ProjectAdapter extends BaseAdapter {
         }
     };
 
+    /**
+     * On click listener for a project item. Allows to expand or shrink
+     * project item view if it's in expand mode. If not, click provides
+     * confirmation to rename the project.
+     */
     private View.OnClickListener appNameClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
             logi("OnClickListener() :: " + v.getClass().getName());
 
             boolean expandProjectItem;
@@ -89,6 +107,9 @@ public class ProjectAdapter extends BaseAdapter {
         }
     };
 
+    /**
+     * On long click listener that provides rename action.
+     */
     private View.OnLongClickListener appNameLongClickListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
@@ -99,18 +120,36 @@ public class ProjectAdapter extends BaseAdapter {
         }
     };
 
-    private void HideEditTextView(View v) {
+    /**
+     * Sets editTextView invisible and project button visible.
+     *
+     * @param v Edit text view.
+     */
+    private void hideEditTextView(View v) {
         Button bt = (Button) v.getTag(R.id.editbutton);
         bt.setVisibility(View.VISIBLE);
         v.setVisibility(View.INVISIBLE);
     }
 
-    private void ShowEditTextView(View v) {
+    /**
+     * Sets editTextView visible and project button invisible.
+     *
+     * @param v Edit text view.
+     */
+    private void showEditTextView(View v) {
         Button bt = (Button) v.getTag(R.id.editbutton);
         bt.setVisibility(View.INVISIBLE);
         v.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Allows to hide keyboard and rename a project file by given view
+     * from the list of projects.
+     *
+     * @param v    View that represents a project from the list.
+     * @param hide If true - hides the keyboard.
+     * @param done If true - renames given project file.
+     */
     private void dismissKeyBoard(View v, boolean hide, boolean done) {
         logi("dismissKeyBoard() :: ");
 
@@ -118,12 +157,11 @@ public class ProjectAdapter extends BaseAdapter {
 
         logi("dismissKeyBoard() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
 
-
         InputMethodManager imm = (InputMethodManager) mProjectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
 
         if (hide) {
-            HideEditTextView(v);
+            hideEditTextView(v);
         }
 
         if (done) {
@@ -139,6 +177,11 @@ public class ProjectAdapter extends BaseAdapter {
         }
     }
 
+    /**
+     * Sets project item in edit mode and shows keyboard to edit project name.
+     *
+     * @param v Edit text view.
+     */
     private void showKeyBoard(final View v) {
         logi("showKeyBoard() :: " + v.getClass().getName());
 
@@ -146,8 +189,7 @@ public class ProjectAdapter extends BaseAdapter {
 
         logi("showKeyBoard() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
 
-        //v.setVisibility(View.VISIBLE);
-        ShowEditTextView(v);
+        showEditTextView(v);
 
         final InputMethodManager imm = (InputMethodManager) mProjectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
         v.postDelayed(new Runnable() {
@@ -159,8 +201,13 @@ public class ProjectAdapter extends BaseAdapter {
         }, 100);
     }
 
+    /**
+     * Changes project item state from expanded to not expanded and visa versa.
+     * If it is in edit mode then it additionally closes edit mode and hides keyboard.
+     *
+     * @param v Project item view.
+     */
     private void changeActionBar(View v) {
-
         logi("changeActionBar() :: ");
 
         int pos = (int) v.getTag(R.id.positionId);
@@ -178,8 +225,13 @@ public class ProjectAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    /**
+     * Renames a project item by given view. View contains reference to editTextView
+     * from where it gets a new project name.
+     *
+     * @param v Edit text view.
+     */
     private void renameProject(View v) {
-
         logi("renameProject() :: ");
 
         int pos = (int) v.getTag(R.id.positionId);
@@ -200,6 +252,10 @@ public class ProjectAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    /**
+     * Occurs when a user clicks on the Flash button on some project item.
+     * Sends clicked project to flash to a micro:bit board.
+     */
     private View.OnClickListener sendBtnClickListener = new View.OnClickListener() {
 
         @Override
@@ -209,18 +265,24 @@ public class ProjectAdapter extends BaseAdapter {
         }
     };
 
+    /**
+     * Occurs when a user clicks on the Delete button on some project item.
+     * Shows a dialog window to confirm deletion.
+     */
     private View.OnClickListener deleteBtnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             logi("deleteBtnClickListener() :: ");
             final int pos = (int) v.getTag();
             //Update Stats
-            if (EchoClientManager.getInstance().getEcho() != null) {
-                EchoClientManager.getInstance().getEcho().userActionEvent("click", "DeleteProject", null);
+
+            MBApp application = MBApp.getApp();
+
+            if (application.getEchoClientManager().getEcho() != null) {
+                application.getEchoClientManager().getEcho().userActionEvent("click", "DeleteProject", null);
             }
-            PopUp.show(MBApp.getContext(),
-                    MBApp.getContext().getString(R.string.delete_project_message),
-                    MBApp.getContext().getString(R.string.delete_project_title),
+            PopUp.show(application.getString(R.string.delete_project_message),
+                    application.getString(R.string.delete_project_title),
                     R.drawable.ic_trash, R.drawable.red_btn,
                     PopUp.GIFF_ANIMATION_NONE,
                     PopUp.TYPE_CHOICE,
@@ -229,7 +291,7 @@ public class ProjectAdapter extends BaseAdapter {
                         public void onClick(View v) {
                             PopUp.hide();
                             Project proj = mProjects.get(pos);
-                            if (Utils.deleteFile(proj.filePath)) {
+                            if (FileUtils.deleteFile(proj.filePath)) {
                                 mProjects.remove(pos);
                                 notifyDataSetChanged();
                                 mProjectActivity.updateProjectsListSortOrder(true);
@@ -240,20 +302,17 @@ public class ProjectAdapter extends BaseAdapter {
     };
 
     public ProjectAdapter(ProjectActivity projectActivity, List<Project> list) {
-
         this.mProjectActivity = projectActivity;
         mProjects = list;
     }
 
     @Override
     public int getCount() {
-
         return mProjects.size();
     }
 
     @Override
     public Object getItem(int position) {
-
         return mProjects.get(position);
     }
 
@@ -267,7 +326,7 @@ public class ProjectAdapter extends BaseAdapter {
 
         Project project = mProjects.get(position);
         if (convertView == null) {
-            LayoutInflater inflater = LayoutInflater.from(MBApp.getContext());
+            LayoutInflater inflater = LayoutInflater.from(MBApp.getApp());
             convertView = inflater.inflate(R.layout.project_items, null);
         }
 
@@ -281,10 +340,12 @@ public class ProjectAdapter extends BaseAdapter {
         if (actionBarLayout != null) {
             if (project.actionBarExpanded) {
                 actionBarLayout.setVisibility(View.VISIBLE);
-                appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getContext(), R.drawable.ic_arrow_down), null);
+                appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getApp()
+                        , R.drawable.ic_arrow_down), null);
             } else {
                 actionBarLayout.setVisibility(View.GONE);
-                appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getContext(), R.drawable.ic_arrow_left), null);
+                appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getApp()
+                        , R.drawable.ic_arrow_left), null);
             }
         }
 

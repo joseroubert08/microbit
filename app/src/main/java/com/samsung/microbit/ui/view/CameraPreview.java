@@ -10,17 +10,15 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
 
-import com.samsung.microbit.BuildConfig;
-
 import java.util.List;
 
+import static com.samsung.microbit.BuildConfig.DEBUG;
+
 public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
+    private static final String TAG = CameraPreview.class.getSimpleName();
 
-    private static final String TAG = "CameraPreview";
-    private boolean debug = BuildConfig.DEBUG;
-
-    void logi(String message) {
-        if (debug) {
+    private void logi(String message) {
+        if (DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
@@ -31,12 +29,6 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
     List<Size> mSupportedPreviewSizes;
     Camera mCamera;
     int mCameraIdx;
-
-    private Activity mParentActivity;
-
-    public void setParentActivity(Activity parentActivity) {
-        mParentActivity = parentActivity;
-    }
 
     public SurfaceHolder getHolder() {
         return mHolder;
@@ -56,6 +48,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
                 mCamera.setParameters(parameters);
                 mCamera.startPreview();
                 mCamera.autoFocus(new Camera.AutoFocusCallback() {
+                    @Override
                     public void onAutoFocus(boolean success, Camera camera) {
                     }
                 });
@@ -69,6 +62,8 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
     }
 
     public int getCameraDisplayOrientation(int cameraId, android.hardware.Camera mCamera) {
+        Activity mParentActivity = (Activity) getContext();
+
         android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
         android.hardware.Camera.getCameraInfo(cameraId, info);
         int rotation = mParentActivity.getWindowManager().getDefaultDisplay().getRotation();
@@ -101,8 +96,12 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
         return result;
     }
 
-    public CameraPreview(Context context, SurfaceView sv) {
+    public CameraPreview(Context context) {
         super(context);
+    }
+
+    public CameraPreview(Context context, SurfaceView sv) {
+        this(context);
 
         mCameraIdx = -1;
         mCamera = null;
@@ -162,7 +161,6 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
         logi("onLayout()");
 
         if (changed) {
-
             final int width = r - l;
             final int height = b - t;
 
@@ -202,10 +200,12 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
         }
     }
 
+    @Override
     public void surfaceCreated(SurfaceHolder holder) {
         logi("surfaceCreated()");
     }
 
+    @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         // Surface will be destroyed when we return, so stop the preview.
         if (mCamera != null) {
@@ -213,6 +213,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
         }
     }
 
+    @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
         logi("surfaceChanged()");
         if (mHolder.getSurface() == null) {

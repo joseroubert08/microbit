@@ -24,17 +24,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.samsung.microbit.R;
-import com.samsung.microbit.plugin.AudioPlugin;
+import com.samsung.microbit.plugin.AudioRecordPlugin;
 import com.samsung.microbit.ui.PopUp;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.Calendar;
 
 public class AudioRecorderActivity extends Activity {
 
-    static final int NOTIFICATION_ID = 1;
+    private static final int NOTIFICATION_ID = 1;
     private static final String TAG = AudioRecorderActivity.class.getSimpleName();
 
     private TextView filenameTxt;
@@ -44,14 +44,14 @@ public class AudioRecorderActivity extends Activity {
     private Drawable drawable_mic_on;
     private Bitmap notificationLargeIconBitmapRecordingOn;
     private Bitmap notificationLargeIconBitmapRecordingOff;
-    NotificationCompat.Builder mBuilder;
+    private NotificationCompat.Builder mBuilder;
 
     private boolean backPressed;
 
-    private static MediaRecorder mRecorder = null;
-    private static File mFile = null;
-    private static boolean mIsRecording = false;
-    private static boolean mLaunchActivity = false;
+    private MediaRecorder mRecorder;
+    private File mRecordFileOutput;
+    private boolean mIsRecording;
+    private boolean mLaunchActivity;
 
     private void create(String action) {
         setContentView(R.layout.activity_audio_recorder);
@@ -84,8 +84,7 @@ public class AudioRecorderActivity extends Activity {
     }
 
     private boolean showPopup(final String action) {
-        return PopUp.show(this,
-                "",
+        return PopUp.show("",
                 getString(R.string.record_audio),
                 R.drawable.record_icon, //image icon res id (pass 0 to use default icon)
                 R.drawable.white_btn, //image icon background res id (pass 0 if there is no background)
@@ -115,11 +114,6 @@ public class AudioRecorderActivity extends Activity {
         if (!showPopup(getIntent().getAction())) {//pass null to use default listener
             finish();
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     @Override
@@ -174,13 +168,13 @@ public class AudioRecorderActivity extends Activity {
             return;
 
         switch (action) {
-            case AudioPlugin.INTENT_ACTION_START_RECORD:
+            case AudioRecordPlugin.INTENT_ACTION_START_RECORD:
                 startRecording();
                 break;
-            case AudioPlugin.INTENT_ACTION_STOP_RECORD:
+            case AudioRecordPlugin.INTENT_ACTION_STOP_RECORD:
                 stopRecording();
                 break;
-            case AudioPlugin.INTENT_ACTION_STOP:
+            case AudioRecordPlugin.INTENT_ACTION_STOP:
                 if (mIsRecording)
                     stopRecording();
                 finish();
@@ -224,39 +218,34 @@ public class AudioRecorderActivity extends Activity {
         File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
-                Log.e("AudioPlugin", "Failed to create directory");
+                Log.e(TAG, "Failed to create directory");
             }
         }
 
         Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyy_HHmmss");
+        DateFormat sdf = DateFormat.getDateTimeInstance();
         String filename = "voice_" + sdf.format(c.getTime());
 
         return new File(dir, filename + ".3gp");
     }
 
-    void startRecording() {
-        if (mRecorder != null)
-            return;
+    private void startRecording() {
+        releaseRecorder();
 
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
 
-        mFile = getAudioFilename();
+        mRecordFileOutput = getAudioFilename();
 
         //TODO: check disk space left?
-        mRecorder.setOutputFile(mFile.getPath());
+        mRecorder.setOutputFile(mRecordFileOutput.getPath());
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         try {
             mRecorder.prepare();
         } catch (IOException e) {
-            if (mRecorder != null) {
-                mRecorder.reset();
-                mRecorder.release();
-                mRecorder = null;
-            }
+            releaseRecorder();
             //TODO: show popup for failure?
             Log.e(TAG, e.toString());
             return;
@@ -269,20 +258,29 @@ public class AudioRecorderActivity extends Activity {
         chronometer.setBase(SystemClock.elapsedRealtime());
         chronometer.start();
 
-        filenameTxt.setText(mFile.getName());
+        filenameTxt.setText(mRecordFileOutput.getName());
         imageMic.setImageDrawable(drawable_mic_on);
     }
 
-    void stopRecording() {
-        if (mRecorder == null)
-            return;
+    private void releaseRecorder() {
+        if (mRecorder != null) {
+            if(mIsRecording) {
+                mRecorder.stop();
+            } else {
+                mRecorder.reset();
+            }
+            mRecorder.release();
 
-        mRecorder.stop();
-        mRecorder.release();
-        mRecorder = null;
+            mRecorder = null;
+        }
+    }
+
+    private void stopRecording() {
+        releaseRecorder();
+
         mIsRecording = false;
 
-        refreshAudio(mFile);
+        refreshAudio(mRecordFileOutput);
 
         //UI update
         chronometer.stop();
@@ -294,9 +292,5 @@ public class AudioRecorderActivity extends Activity {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         mediaScanIntent.setData(Uri.fromFile(file));
         sendBroadcast(mediaScanIntent);
-    }
-
-    public static boolean isRecording() {
-        return mIsRecording;
     }
 }

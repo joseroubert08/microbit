@@ -121,6 +121,7 @@
     <dimen name="pairing_step_tip_title_margin_bottom">8dp</dimen>
     <dimen name="pairing_step_buttons_space_margin">4dp</dimen>
     <integer name="pairing_searching_step_button_layout_weight_sum">3</integer>
+    <dimen name="pairing_step_button_height">58dp</dimen>
 
     <!-- Pattern grid -->
     <dimen name="led_gap">4dp</dimen>

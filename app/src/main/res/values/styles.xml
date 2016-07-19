@@ -114,6 +114,7 @@
     </style>
 
     <style name="custom_button_layout" parent="match_width_parent_wrap_height_content">
+        <item name="android:layout_height">@dimen/custom_button_height</item>
         <item name="android:padding">@dimen/custom_button_padding</item>
         <item name="android:gravity">center</item>
     </style>
@@ -132,6 +133,7 @@
         <item name="android:importantForAccessibility">yes</item>
         <item name="android:drawablePadding">@dimen/pair_prev_connected_button_drawable_padding
         </item>
+        <item name="android:layout_height">@dimen/connect_button_height</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:padding">@dimen/pair_prev_connected_button_padding</item>
         <item name="android:textAppearance">?android:textAppearanceMedium</item>
@@ -165,13 +167,10 @@
         <item name="android:background">@color/main_gray_transparent_60_opacity_color</item>
     </style>
 
-    <style name="connect_activity_layout_style">
-        <item name="android:background">@drawable/bg</item>
-    </style>
-
     <!-- Main activity styles -->
     <style name="main_activity_button_style" parent="match_width_parent_wrap_height_content">
         <item name="android:layout_marginBottom">@dimen/main_activity_button_margin_bottom</item>
+        <item name="android:layout_height">@dimen/main_activity_button_height</item>
         <item name="android:background">@drawable/grey_transparent_btn</item>
         <item name="android:elevation">@dimen/elevation</item>
         <item name="android:ellipsize">end</item>
@@ -287,5 +286,9 @@
     </style>
 
     <style name="popup_buttons_layout_style">
+    </style>
+
+    <style name="pairing_searching_horizontal_progress_bar_style" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@android:color/white</item>
     </style>
 </resources>

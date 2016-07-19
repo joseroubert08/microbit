@@ -36,10 +36,6 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="connect_activity_layout_style">
-        <item name="android:background">@drawable/bg_land</item>
-    </style>
-
     <!-- Pairing step screens styles -->
     <style name="pairing_step_tip_layout_style" parent="match_width_parent_wrap_height_content">
         <item name="android:layout_height">0dp</item>

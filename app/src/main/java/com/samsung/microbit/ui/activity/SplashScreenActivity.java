@@ -12,12 +12,15 @@ import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.EchoClientManager;
 
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 import pl.droidsonroids.gif.AnimationListener;
 
+/**
+ * Represents a loading screen activity.
+ * Provides methods to create and manage splash screen animation.
+ */
 public class SplashScreenActivity extends Activity {
     private static final int ANIM_STEP_ONE_DURATION = 1000;
     private static final int ANIM_STEP_TWO_DURATION = 800;
@@ -25,8 +28,6 @@ public class SplashScreenActivity extends Activity {
     private static final int ANIM_STEP_THREE_DELAY = 600;
     private static final int ANIM_STEP_THREE_DURATION = 800;
     private static final int ANIM_FADE_OUT_GIF_FIRST_FRAME_DURATION = 400;
-
-    private boolean mAnimationStarted = false;
 
     private ViewGroup mLogoLayout;
     private TextView mDevByText;
@@ -37,16 +38,16 @@ public class SplashScreenActivity extends Activity {
     private GifDrawable mGifDrawable;
     private Handler mLastAnimStepHandler;
 
+    private boolean mAnimationStarted;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        MBApp.setContext(this);
-
         initViews();
 
-        EchoClientManager.getInstance().sendAppStats();
+        MBApp.getApp().getEchoClientManager().sendAppStats();
     }
 
     private void initViews() {
@@ -268,6 +269,9 @@ public class SplashScreenActivity extends Activity {
 
     }
 
+    /**
+     * Ends a splash screen and starts Home activity.
+     */
     private void startHomeActivity() {
         startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
         finish();
