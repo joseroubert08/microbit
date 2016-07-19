@@ -3,6 +3,7 @@ package com.samsung.microbit.ui.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -907,6 +908,36 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         }
     };
 
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        if (id == ALERT_DIALOG_RECONNECT) {
+            //Create dialog to reconnect to a micro:bit board after successful flashing.
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+            dialogBuilder.setTitle(R.string.reconnect_title);
+            dialogBuilder.setMessage(R.string.reconnect_text);
+            dialogBuilder.setPositiveButton(R.string.reconnect_ok_button, reconnectOnClickListener);
+            dialogBuilder.setNegativeButton(android.R.string.cancel, reconnectOnClickListener);
+            return dialogBuilder.create();
+        }
+        return super.onCreateDialog(id);
+    }
+
+    private DialogInterface.OnClickListener reconnectOnClickListener
+            = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which) {
+                case Dialog.BUTTON_POSITIVE:
+                    //Do reconnect.
+                    toggleConnection();
+                    break;
+                case Dialog.BUTTON_NEGATIVE:
+                case Dialog.BUTTON_NEUTRAL:
+                    break;
+            }
+        }
+    };
+
     /**
      * Represents a broadcast receiver that allows to handle states of
      * flashing process.
@@ -916,6 +947,17 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         private boolean isCompleted = false;
         private boolean inInit = false;
         private boolean inProgress = false;
+
+        private View.OnClickListener popupFinishFlashingHandler = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logi("popupOkHandler");
+                PopUp.hide();
+
+                //Show dialog to reconnect to a board.
+                showDialog(ALERT_DIALOG_RECONNECT);
+            }
+        };
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -960,8 +1002,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                                         R.drawable.message_face, R.drawable.blue_btn,
                                         PopUp.GIFF_ANIMATION_NONE,
                                         PopUp.TYPE_ALERT, //type of popup.
-                                        null,//override click listener for ok button
-                                        null);//pass null to use default listener
+                                        popupFinishFlashingHandler,//override click listener for ok button
+                                        popupFinishFlashingHandler);//pass null to use default listener
                             }
 
                             isCompleted = true;
