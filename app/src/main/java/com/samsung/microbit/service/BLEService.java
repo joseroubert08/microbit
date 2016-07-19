@@ -796,11 +796,11 @@ public class BLEService extends Service {
                 if (!bluetoothAdapter.isEnabled()) {
 
                     logi("setNotification() :: !bluetoothAdapter.isEnabled()");
-                    //reset();
+                    reset();
                     //bleManager = null;
                     bluetoothDevice = null;
                 } else {
-                    bluetoothAdapter.disable();
+                    //bluetoothAdapter.disable();
                 }
             }
             notificationString = getString(R.string.tray_notification_failure);
