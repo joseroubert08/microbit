@@ -3,12 +3,14 @@ package com.samsung.microbit.core.bluetooth;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.provider.Settings;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.model.ConnectedDevice;
 
 import java.util.Set;
@@ -37,7 +39,8 @@ public class BluetoothUtils {
 
     public static int getTotalPairedMicroBitsFromSystem() {
         int totalPairedMicroBits = 0;
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        BluetoothAdapter mBluetoothAdapter = ((BluetoothManager) MBApp.getApp().getSystemService(Context
+                .BLUETOOTH_SERVICE)).getAdapter();
         if (mBluetoothAdapter.isEnabled()) {
             Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
             for (BluetoothDevice bt : pairedDevices) {
@@ -91,9 +94,7 @@ public class BluetoothUtils {
         if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
             String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
             Log.v("BluetoothUtils", "Updating the microbit firmware");
-            ConnectedDevice deviceInSharedPref = new ConnectedDevice();
-            Gson gson = new Gson();
-            deviceInSharedPref = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
+            ConnectedDevice deviceInSharedPref = new Gson().fromJson(pairedDeviceString, ConnectedDevice.class);
             deviceInSharedPref.mfirmware_version = firmware;
             setPairedMicroBit(ctx, deviceInSharedPref);
         }
@@ -105,9 +106,7 @@ public class BluetoothUtils {
         if (pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
             String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
             Log.e("BluetoothUtils", "Updating the microbit firmware");
-            ConnectedDevice deviceInSharedPref = new ConnectedDevice();
-            Gson gson = new Gson();
-            deviceInSharedPref = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
+            ConnectedDevice deviceInSharedPref = new Gson().fromJson(pairedDeviceString, ConnectedDevice.class);
             deviceInSharedPref.mlast_connection_time = time;
             setPairedMicroBit(ctx, deviceInSharedPref);
         }
@@ -122,7 +121,8 @@ public class BluetoothUtils {
             Gson gson = new Gson();
             sConnectedDevice = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
             //Check if the microbit is still paired with our mobile
-            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            BluetoothAdapter mBluetoothAdapter = ((BluetoothManager)MBApp.getApp().getSystemService(Context
+                    .BLUETOOTH_SERVICE)).getAdapter();
             if (mBluetoothAdapter.isEnabled()) {
                 Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
                 for (BluetoothDevice bt : pairedDevices) {
@@ -149,7 +149,8 @@ public class BluetoothUtils {
             Gson gson = new Gson();
             sConnectedDevice = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
             //Check if the microbit is still paired with our mobile
-            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            BluetoothAdapter mBluetoothAdapter = ((BluetoothManager) MBApp.getApp().getSystemService(Context
+                    .BLUETOOTH_SERVICE)).getAdapter();
             if (mBluetoothAdapter.isEnabled()) {
                 Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
                 for (BluetoothDevice bt : pairedDevices) {

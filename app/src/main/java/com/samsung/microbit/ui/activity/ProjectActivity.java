@@ -47,8 +47,8 @@ import com.samsung.microbit.ui.adapter.ProjectAdapter;
 import com.samsung.microbit.utils.BLEConnectionHandler;
 import com.samsung.microbit.utils.FileUtils;
 import com.samsung.microbit.utils.PreferenceUtils;
-import com.samsung.microbit.utils.ServiceUtils;
 import com.samsung.microbit.utils.ProjectsHelper;
+import com.samsung.microbit.utils.ServiceUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -217,6 +217,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
+        mProjectListView.setAdapter(null);
+
+        if(mProjectListViewRight != null) {
+            mProjectListViewRight.setAdapter(null);
+        }
+
         setContentView(R.layout.activity_projects);
         initViews();
         setupFontStyle();
@@ -254,17 +260,25 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        MBApp application = MBApp.getApp();
+
         if (savedInstanceState == null) {
             mActivityState = FlashActivityState.STATE_IDLE;
+
+            configInfoPresenter = new ConfigInfoPresenter();
+
+            configInfoPresenter.start();
+
+            LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(application);
+
+            IntentFilter broadcastIntentFilter = new IntentFilter(IPCConstants.INTENT_BLE_NOTIFICATION);
+            localBroadcastManager.registerReceiver(connectionChangedReceiver, broadcastIntentFilter);
+
+            localBroadcastManager.registerReceiver(gattForceClosedReceiver, new IntentFilter(BLEService
+                    .GATT_FORCE_CLOSED));
         }
 
         logi("onCreate() :: ");
-
-        configInfoPresenter = new ConfigInfoPresenter();
-
-        configInfoPresenter.start();
-
-        MBApp application = MBApp.getApp();
 
         // Make sure to call this before any other userActionEvent is sent
         application.getEchoClientManager().sendViewEventStats("projectactivity");
@@ -275,14 +289,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         setContentView(R.layout.activity_projects);
         initViews();
         setupFontStyle();
-
-        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(application);
-
-        IntentFilter broadcastIntentFilter = new IntentFilter(IPCConstants.INTENT_BLE_NOTIFICATION);
-        localBroadcastManager.registerReceiver(connectionChangedReceiver, broadcastIntentFilter);
-
-        localBroadcastManager.registerReceiver(gattForceClosedReceiver, new IntentFilter(BLEService
-                .GATT_FORCE_CLOSED));
 
         setConnectedDeviceText();
         String fullPathOfFile = null;
@@ -313,6 +319,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
         localBroadcastManager.unregisterReceiver(gattForceClosedReceiver);
         localBroadcastManager.unregisterReceiver(connectionChangedReceiver);
+
+        if(dfuResultReceiver != null) {
+            localBroadcastManager.unregisterReceiver(dfuResultReceiver);
+        }
 
         application.stopService(new Intent(application, DfuService.class));
 

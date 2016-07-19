@@ -246,11 +246,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
             }, 300);
+
+            configInfoPresenter = new ConfigInfoPresenter();
+
+            configInfoPresenter.start();
         }
-
-        configInfoPresenter = new ConfigInfoPresenter();
-
-        configInfoPresenter.start();
 
         setupDrawer();
         setupButtonsFontStyle();
@@ -450,7 +450,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         unbindDrawables(findViewById(R.id.share_statistics_status));
     }
 
-    private void unbindDrawables(View view) {
+    public static void unbindDrawables(View view) {
         if (view == null) {
             return;
         }

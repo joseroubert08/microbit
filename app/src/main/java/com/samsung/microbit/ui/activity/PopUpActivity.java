@@ -100,6 +100,8 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
+        releaseViews();
+
         setContentView(R.layout.activity_popup);
         initViews();
         //Check if an intent was passed through a receiver.
@@ -138,18 +140,33 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     }
 
     private void releaseViews() {
+        HomeActivity.unbindDrawables(imageIcon);
         imageIcon = null;
+
+        HomeActivity.unbindDrawables(titleTxt);
         titleTxt = null;
+
         progressBar = null;
         spinnerBar = null;
+
+        HomeActivity.unbindDrawables(messageTxt);
         messageTxt = null;
+
+        HomeActivity.unbindDrawables(layoutBottom);
         layoutBottom = null;
+
+        HomeActivity.unbindDrawables(okButton);
         okButton = null;
+
+        HomeActivity.unbindDrawables(cancelButton);
         cancelButton = null;
+
+        HomeActivity.unbindDrawables(affirmationOKButton);
         affirmationOKButton = null;
+
+        HomeActivity.unbindDrawables(gifImageView);
         gifImageView = null;
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,14 +201,16 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     protected void onResume() {
         super.onResume();
         // Ensure sure animation remains loading
-        gifImageView.animate();
+        if(gifImageView != null) {
+            gifImageView.animate();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // Ensure animation pauses
-        gifImageView.clearAnimation();
+
+        gifImageView.setFreezesAnimation(true);
     }
 
     /**

@@ -714,6 +714,7 @@ public class BLEManager {
             error = 0;
 
             if (gatt.setCharacteristicNotification(characteristic, enable)) {
+                logi("characteristic notif success");
                 rc = error | bleState;
 
                 descriptor.setValue(enable ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE :

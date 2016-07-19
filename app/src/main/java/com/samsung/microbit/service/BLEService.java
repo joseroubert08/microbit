@@ -796,9 +796,11 @@ public class BLEService extends Service {
                 if (!bluetoothAdapter.isEnabled()) {
 
                     logi("setNotification() :: !bluetoothAdapter.isEnabled()");
-                    reset();
+                    //reset();
                     //bleManager = null;
                     bluetoothDevice = null;
+                } else {
+                    bluetoothAdapter.disable();
                 }
             }
             notificationString = getString(R.string.tray_notification_failure);
@@ -815,10 +817,6 @@ public class BLEService extends Service {
                     }
                 }
             }
-            //ServiceUtils.sendToIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
-            //        .IPC_BLE_NOTIFICATION_GATT_DISCONNECTED, null, args);
-            //ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
-            //        .IPC_BLE_NOTIFICATION_GATT_DISCONNECTED, null, args);
         } else {
             notificationString = getString(R.string.tray_notification_sucsess);
             onGoingNotification = true;
@@ -834,12 +832,9 @@ public class BLEService extends Service {
                     }
                 }
             }
-
-            //ServiceUtils.sendToIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
-            //        .IPC_BLE_NOTIFICATION_GATT_CONNECTED, null, args);
-            //ServiceUtils.sendToPluginService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
-            //        .IPC_BLE_NOTIFICATION_GATT_CONNECTED, null, args);
         }
+
+        //TODO use notificationString, notifyMgr, and onGoingNotification
     }
 
     private void handleCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {

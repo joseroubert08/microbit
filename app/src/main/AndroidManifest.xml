@@ -134,18 +134,18 @@
         <service
             android:name=".service.PluginService"
             android:exported="false"
-            android:process=":PluginServiceNew">
+            android:process=":PluginService">
 
             <intent-filter>
-                <action android:name="com.samsung.microbit.service.PluginServiceNew"/>
+                <action android:name="com.samsung.microbit.service.PluginService"/>
             </intent-filter>
         </service>
         <service
             android:name=".service.BLEService"
             android:exported="false"
-            android:process=":BLEServiceNew">
+            android:process=":BLEService">
             <intent-filter>
-                <action android:name="com.samsung.microbit.service.BLEServiceNew"/>
+                <action android:name="com.samsung.microbit.service.BLEService"/>
             </intent-filter>
         </service>
 
