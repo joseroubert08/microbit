@@ -10,8 +10,6 @@
     <include layout="@layout/view_pairing_step_1" />
     <!-- enter the pattern screen (Step 2) -->
     <include layout="@layout/view_pairing_step_2" />
-    <!-- device pairing tip screen two (steps 3 and 4) -->
-    <include layout="@layout/view_pairing_step_3_4" />
     <!-- searching for micro:bit screen-->
     <include layout="@layout/view_pairing_searching" />
 </LinearLayout>

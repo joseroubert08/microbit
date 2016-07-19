@@ -141,4 +141,6 @@
     <!-- Popup screens -->
     <dimen name="popup_gif_size">200dp</dimen>
 
+    <dimen name="pairing_searching_step_cycle_progress_bar_size">100dp</dimen>
+
 </resources>
