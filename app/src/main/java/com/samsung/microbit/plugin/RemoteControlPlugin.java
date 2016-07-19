@@ -15,9 +15,19 @@ import java.util.TimerTask;
 
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
+/**
+ * Provides remote control of a media player.
+ * For example, it can start a music player on your phone and control playback
+ * using keys on a micro:bit board.
+ */
 public class RemoteControlPlugin implements AbstractPlugin {
     private static final String TAG = RemoteControlPlugin.class.getSimpleName();
 
+    /**
+     * Simplified method to log informational messages.
+     *
+     * @param message Message to log.
+     */
     private static void logi(String message) {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
     }
@@ -75,6 +85,12 @@ public class RemoteControlPlugin implements AbstractPlugin {
         }
     }
 
+    /**
+     * General method to send media key event with provides event code and action to perform.
+     *
+     * @param action Key event action.
+     * @param code   Event code.
+     */
     private void sendMediaKeyEvent(final int action, final int code) {
         Intent mediaEvent = new Intent(Intent.ACTION_MEDIA_BUTTON);
         KeyEvent event = new KeyEvent(action, code);
@@ -82,6 +98,13 @@ public class RemoteControlPlugin implements AbstractPlugin {
         MBApp.getApp().sendOrderedBroadcast(mediaEvent, null);
     }
 
+    /**
+     * Provides schedule to send media key event.
+     *
+     * @param action Event action.
+     * @param code   Event code.
+     * @param delay  Schedule delay.
+     */
     private void scheduleMediaKeyEvent(final int action, final int code, final int delay) {
         timer.schedule(new TimerTask() {
             @Override

@@ -254,7 +254,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         setupDrawer();
         setupButtonsFontStyle();
-        initViews();
 
         checkMinimumPermissionsForThisScreen();
 
@@ -299,11 +298,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         createCodeButton.setTypeface(typeface);
         Button discoverButton = (Button) findViewById(R.id.discover_btn);
         discoverButton.setTypeface(typeface);
-    }
-
-    private void initViews() {
-        // animation for loading hello .giff
-        gifAnimationHelloEmoji = (GifImageView) findViewById(R.id.homeHelloAnimationGifView);
     }
 
     /**
