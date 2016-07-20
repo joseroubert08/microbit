@@ -11,7 +11,6 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +23,7 @@ import static com.samsung.microbit.BuildConfig.DEBUG;
  * and manage bluetooth low energy connection.
  */
 public class BLEManager {
-    public static final String TAG = BLEManager.class.getSimpleName();
+    private static final String TAG = BLEManager.class.getSimpleName();
 
     public static final int BLE_DISCONNECTED = 0x0000;
     public static final int BLE_CONNECTED = 0x0001;
@@ -59,7 +58,16 @@ public class BLEManager {
     private volatile int bleState = BLE_DISCONNECTED;
     private volatile int error = 0;
 
-    private volatile int inBleOp = 0;
+    /**
+     * It represents ble current operation.
+     * Can be one of possible values:
+     * {@link BLEManager#OP_NOOP}, {@link BLEManager#OP_CONNECT}, {@link BLEManager#OP_CHARACTERISTIC_CHANGED},
+     * {@link BLEManager#OP_DISCOVER_SERVICES}, {@link BLEManager#OP_MTU_CHANGED},
+     * {@link BLEManager#OP_READ_CHARACTERISTIC}, {@link BLEManager#OP_READ_DESCRIPTOR},
+     * {@link BLEManager#OP_READ_REMOTE_RSSI}, {@link BLEManager#OP_RELIABLE_WRITE_COMPLETED},
+     * {@link BLEManager#OP_WRITE_CHARACTERISTIC}, {@link BLEManager#OP_WRITE_DESCRIPTOR},
+     */
+    private volatile int inBleOp = OP_NOOP;
     private volatile boolean callbackCompleted = false;
 
     private volatile int rssi;
@@ -81,19 +89,8 @@ public class BLEManager {
      *
      * @param message Message to log.
      */
-    void logi(String message) {
+    private static void logi(String message) {
         Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
-    }
-
-    public BLEManager(Context context, BluetoothDevice bluetoothDevice, UnexpectedConnectionEventListener
-            unexpectedDisconnectionListener) {
-        if (DEBUG) {
-            logi("start");
-        }
-
-        this.context = context;
-        this.bluetoothDevice = bluetoothDevice;
-        this.unexpectedDisconnectionListener = unexpectedDisconnectionListener;
     }
 
     public BLEManager(Context context, BluetoothDevice bluetoothDevice, CharacteristicChangeListener
@@ -114,18 +111,6 @@ public class BLEManager {
 
     public void setCharacteristicChangeListener(CharacteristicChangeListener characteristicChangeListener) {
         this.characteristicChangeListener = characteristicChangeListener;
-    }
-
-    public int getError() {
-        return error;
-    }
-
-    public int getBleState() {
-        return bleState;
-    }
-
-    public int getInBleOp() {
-        return inBleOp;
     }
 
     @Nullable
@@ -157,11 +142,11 @@ public class BLEManager {
         }
 
         synchronized (locker) {
-            if (bleState != 0) {
+            if (bleState != BLE_DISCONNECTED) {
                 disconnect();
             }
 
-            if (bleState != 0) {
+            if (bleState != BLE_DISCONNECTED) {
                 return false;
             }
 
@@ -286,7 +271,7 @@ public class BLEManager {
                 inBleOp = OP_CONNECT;
                 error = 0;
                 try {
-                    if (bleState == 0) {
+                    if (bleState == BLE_DISCONNECTED) {
                         if (DEBUG) {
                             logi("gattConnect() :: gatt.connectMaybeInit()");
                         }
@@ -331,7 +316,6 @@ public class BLEManager {
      * @return Disconnection result.
      * @see BLEManager#connect(boolean)
      * @see BLEManager#discoverServices()
-     * @see BLEManager#waitDisconnect()
      */
     public int disconnect() {
         if (DEBUG) {
@@ -346,7 +330,7 @@ public class BLEManager {
                 inBleOp = OP_CONNECT;
                 try {
                     error = 0;
-                    if (bleState != 0) {
+                    if (bleState != BLE_DISCONNECTED) {
                         callbackCompleted = false;
                         gatt.disconnect();
                         locker.wait(BLE_WAIT_TIMEOUT);
@@ -366,69 +350,6 @@ public class BLEManager {
 
         if (DEBUG) {
             logi("disconnect() :: rc = " + rc);
-        }
-
-        return rc;
-    }
-
-    public void refresh() {
-        if(gatt == null) {
-            Log.e(TAG, "gatt is null");
-            return;
-        }
-
-        try {
-            final Method refresh = gatt.getClass().getMethod("refresh");
-            if (refresh != null) {
-                final boolean success = (Boolean) refresh.invoke(gatt);
-                logi("Refreshing result: " + success);
-            }
-        } catch (Exception e) {
-            Log.e(TAG, e.toString());
-        }
-    }
-
-    /**
-     * Wait {@value BLE_WAIT_TIMEOUT} millis for disconnection if it's not finished yet.
-     *
-     * @return Wait result.
-     * @see BLEManager#disconnect()
-     */
-    public int waitDisconnect() {
-        if (DEBUG) {
-            logi("waitDisconnect() :: start");
-        }
-
-        int rc = BLE_ERROR_NOOP;
-
-        synchronized (locker) {
-            if (gatt != null && inBleOp == OP_NOOP) {
-
-                inBleOp = OP_CONNECT;
-                error = 0;
-                int bleState = this.bleState;
-                try {
-                    if (bleState != 0) {
-                        callbackCompleted = false;
-                        locker.wait(BLE_WAIT_TIMEOUT);
-                        if (!callbackCompleted) {
-                            error = (BLE_ERROR_FAIL | BLE_ERROR_TIMEOUT);
-                        } else {
-                            bleState = this.bleState;
-                        }
-                    }
-
-                    rc = error | bleState;
-                } catch (InterruptedException e) {
-                    Log.e(TAG, e.toString());
-                }
-
-                inBleOp = OP_NOOP;
-            }
-        }
-
-        if (DEBUG) {
-            logi("waitDisconnect() :: rc = " + rc);
         }
 
         return rc;
@@ -692,10 +613,6 @@ public class BLEManager {
 
     public BluetoothGattCharacteristic getLastCharacteristic() {
         return lastCharacteristic;
-    }
-
-    public BluetoothGattDescriptor getLastDescriptor() {
-        return lastDescriptor;
     }
 
     /**
@@ -1047,4 +964,3 @@ public class BLEManager {
         }
     };
 }
-

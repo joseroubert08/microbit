@@ -346,7 +346,6 @@ public class BLEService extends Service {
      * @return True, if successful.
      */
     private boolean registerMicrobitRequirements(BluetoothGattService eventService, boolean enable) {
-
         BluetoothGattCharacteristic microbit_requirements = eventService.getCharacteristic(CharacteristicUUIDs
                 .ES_MICROBIT_REQUIREMENTS);
         if (microbit_requirements == null) {
@@ -873,7 +872,6 @@ public class BLEService extends Service {
             case EventCategories.SAMSUNG_ALERTS_ID:
             case EventCategories.SAMSUNG_AUDIO_RECORDER_ID:
             case EventCategories.SAMSUNG_CAMERA_ID:
-                //TODO Rohit - This is not actually storing the value from the msg. Rectify this.
                 msgService = eventSrc;
                 cmd = new CmdArg(event, "1000");
                 break;
@@ -912,17 +910,10 @@ public class BLEService extends Service {
         }*/
 
         if ((event & BLEManager.BLE_CONNECTED) != 0) {
-            //TODO Is really needed new thread ???
-            /*new Thread(new Runnable() {
-                @Override
-                public void run() {*/
             logi("handleUnexpectedConnectionEvent() :: BLE_CONNECTED");
             discoverServices();
             registerNotifications(true);
             setNotification(true, ERROR_NONE);
-                /*}
-            }).start();*/
-
         } else if (event == BLEManager.BLE_DISCONNECTED) {
             logi("handleUnexpectedConnectionEvent() :: BLE_DISCONNECTED");
             setNotification(false, ERROR_NONE);
