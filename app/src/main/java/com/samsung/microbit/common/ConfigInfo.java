@@ -8,24 +8,24 @@ import com.samsung.microbit.R;
 
 import java.net.URL;
 
-import static com.samsung.microbit.ConfigPreferenceNames.RC_APPSTATUS_KEY;
-import static com.samsung.microbit.ConfigPreferenceNames.RC_APPSTATUS_MYSCRIPTS;
-import static com.samsung.microbit.ConfigPreferenceNames.RC_CONFIG_EMAIL;
-import static com.samsung.microbit.ConfigPreferenceNames.RC_ENDPOINT_ABOUT;
-import static com.samsung.microbit.ConfigPreferenceNames.RC_ENDPOINT_CREATECODE;
-import static com.samsung.microbit.ConfigPreferenceNames.RC_ENDPOINT_DISCOVER;
-import static com.samsung.microbit.ConfigPreferenceNames.RC_ENDPOINT_PP;
-import static com.samsung.microbit.ConfigPreferenceNames.RC_ENDPOINT_TOU;
-import static com.samsung.microbit.ConfigPreferenceNames.RC_ETAG;
-import static com.samsung.microbit.ConfigPreferenceNames.RC_EXCEPTIONMSG_KEY;
-import static com.samsung.microbit.ConfigPreferenceNames.RC_EXCEPTIONTITLE_KEY;
-import static com.samsung.microbit.ConfigPreferenceNames.RC_LAST_QUERY;
-import static com.samsung.microbit.ConfigPreferenceNames.REMOTE_CONFIG_PREFERENCE_KEY;
-
 /**
  * Contains common config information.
  */
 public class ConfigInfo {
+
+    public static final String RC_APPSTATUS_KEY = "com.samsung.microbit.appStatus";
+    public static final String RC_EXCEPTIONTITLE_KEY = "com.samsung.microbit.exceptiontitle";
+    public static final String RC_EXCEPTIONMSG_KEY = "com.samsung.microbit.exceptionMessage";
+    public static final String RC_ENDPOINT_ABOUT = "com.samsung.microbit.about";
+    public static final String RC_ENDPOINT_CREATECODE = "com.samsung.microbit.createcode";
+    public static final String RC_ENDPOINT_DISCOVER = "com.samsung.microbit.discover";
+    public static final String RC_APPSTATUS_MYSCRIPTS = "com.samsung.microbit.myscripts";
+    public static final String RC_CONFIG_EMAIL = "com.samsung.microbit.feedbackEmailAddress";
+    public static final String RC_ENDPOINT_PP = "com.samsung.microbit.privacyPolicy";
+    public static final String RC_ENDPOINT_TOU = "com.samsung.microbit.termsOfUse";
+    public static final String RC_ETAG = "com.samsung.microbit.ETag";
+    public static final String RC_LAST_QUERY = "com.samsung.microbit.lastQuery";
+    public static final String REMOTE_CONFIG_PREFERENCE_KEY = "com.samsung.microbit.remote_config_preferences";
 
     /**
      * Represents app status about sharing information.
@@ -86,13 +86,13 @@ public class ConfigInfo {
         this.appContext = appContext;
         this.preferences = appContext.getSharedPreferences(REMOTE_CONFIG_PREFERENCE_KEY, Context.MODE_PRIVATE);
 
-        searchStoredValues();
+        reInit();
     }
 
     /**
      * Reads common app information from external storage and stores it to the class' members.
      */
-    public void searchStoredValues() {
+    public void reInit() {
         appStatus = AppStatus.byName(preferences.getString(RC_APPSTATUS_KEY, AppStatus.OFF.toString()));
         aboutURL = preferences.getString(RC_ENDPOINT_ABOUT, "");
         TOUURL = preferences.getString(RC_ENDPOINT_TOU, "");
@@ -177,7 +177,7 @@ public class ConfigInfo {
     }
 
     public boolean isAppStatusOn() {
-        searchStoredValues();
+        reInit();
         appStatus = AppStatus.byName(preferences.getString(RC_APPSTATUS_KEY, AppStatus.ON.toString()));
 
         if (appStatus == AppStatus.OFF) {

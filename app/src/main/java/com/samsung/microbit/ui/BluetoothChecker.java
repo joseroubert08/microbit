@@ -18,7 +18,7 @@ public class BluetoothChecker {
 
     private static BluetoothChecker instance = null;
 
-    private static BluetoothAdapter mBluetoothAdapter = null;
+    private BluetoothAdapter mBluetoothAdapter = null;
 
     private BluetoothChecker() {
         if (mBluetoothAdapter == null) {

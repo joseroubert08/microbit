@@ -58,6 +58,7 @@ import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.adapter.LEDAdapter;
 import com.samsung.microbit.utils.BLEConnectionHandler;
 import com.samsung.microbit.utils.ServiceUtils;
+import com.samsung.microbit.utils.Utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -1412,33 +1413,33 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
         releaseViews();
 
-        HomeActivity.unbindDrawables(findViewById(R.id.connected_device_status_button));
-        HomeActivity.unbindDrawables(findViewById(R.id.pairButtonView));
-        HomeActivity.unbindDrawables(findViewById(R.id.pairTipView));
-        HomeActivity.unbindDrawables(findViewById(R.id.connectDeviceView));
-        HomeActivity.unbindDrawables(findViewById(R.id.pairSearchView));
-        HomeActivity.unbindDrawables(findViewById(R.id.flash_projects_title_txt));
-        HomeActivity.unbindDrawables(findViewById(R.id.title_manage_microbit));
-        HomeActivity.unbindDrawables(findViewById(R.id.device_status_txt));
-        HomeActivity.unbindDrawables(findViewById(R.id.description_manage_microbit));
-        HomeActivity.unbindDrawables(findViewById(R.id.pairButton));
-        HomeActivity.unbindDrawables(findViewById(R.id.connect_microbit_problems_message));
-        HomeActivity.unbindDrawables(findViewById(R.id.pairTipTitle));
-        HomeActivity.unbindDrawables(findViewById(R.id.pair_tip_step_1_step));
-        HomeActivity.unbindDrawables(findViewById(R.id.pair_tip_step_1_instructions));
+        Utils.unbindDrawables(findViewById(R.id.connected_device_status_button));
+        Utils.unbindDrawables(findViewById(R.id.pairButtonView));
+        Utils.unbindDrawables(findViewById(R.id.pairTipView));
+        Utils.unbindDrawables(findViewById(R.id.connectDeviceView));
+        Utils.unbindDrawables(findViewById(R.id.pairSearchView));
+        Utils.unbindDrawables(findViewById(R.id.flash_projects_title_txt));
+        Utils.unbindDrawables(findViewById(R.id.title_manage_microbit));
+        Utils.unbindDrawables(findViewById(R.id.device_status_txt));
+        Utils.unbindDrawables(findViewById(R.id.description_manage_microbit));
+        Utils.unbindDrawables(findViewById(R.id.pairButton));
+        Utils.unbindDrawables(findViewById(R.id.connect_microbit_problems_message));
+        Utils.unbindDrawables(findViewById(R.id.pairTipTitle));
+        Utils.unbindDrawables(findViewById(R.id.pair_tip_step_1_step));
+        Utils.unbindDrawables(findViewById(R.id.pair_tip_step_1_instructions));
 
-        HomeActivity.unbindDrawables(findViewById(R.id.cancel_tip_step_1_btn));
-        HomeActivity.unbindDrawables(findViewById(R.id.ok_tip_step_1_btn));
-        HomeActivity.unbindDrawables(findViewById(R.id.enter_pattern_step_2_title));
-        HomeActivity.unbindDrawables(findViewById(R.id.pair_enter_pattern_step_2_instructions));
-        HomeActivity.unbindDrawables(findViewById(R.id.oh_pretty_emoji));
-        HomeActivity.unbindDrawables(findViewById(R.id.cancel_enter_pattern_step_2_btn));
-        HomeActivity.unbindDrawables(findViewById(R.id.ok_enter_pattern_step_2_btn));
-        HomeActivity.unbindDrawables(findViewById(R.id.search_microbit_step_3_title));
-        HomeActivity.unbindDrawables(findViewById(R.id.searching_microbit_step));
-        HomeActivity.unbindDrawables(findViewById(R.id.searching_microbit_step_instructions));
-        HomeActivity.unbindDrawables(findViewById(R.id.cancel_search_microbit_step_3_btn));
-        HomeActivity.unbindDrawables(findViewById(R.id.searching_progress_spinner));
+        Utils.unbindDrawables(findViewById(R.id.cancel_tip_step_1_btn));
+        Utils.unbindDrawables(findViewById(R.id.ok_tip_step_1_btn));
+        Utils.unbindDrawables(findViewById(R.id.enter_pattern_step_2_title));
+        Utils.unbindDrawables(findViewById(R.id.pair_enter_pattern_step_2_instructions));
+        Utils.unbindDrawables(findViewById(R.id.oh_pretty_emoji));
+        Utils.unbindDrawables(findViewById(R.id.cancel_enter_pattern_step_2_btn));
+        Utils.unbindDrawables(findViewById(R.id.ok_enter_pattern_step_2_btn));
+        Utils.unbindDrawables(findViewById(R.id.search_microbit_step_3_title));
+        Utils.unbindDrawables(findViewById(R.id.searching_microbit_step));
+        Utils.unbindDrawables(findViewById(R.id.searching_microbit_step_instructions));
+        Utils.unbindDrawables(findViewById(R.id.cancel_search_microbit_step_3_btn));
+        Utils.unbindDrawables(findViewById(R.id.searching_progress_spinner));
 
         unregisterReceiver(pairReceiver);
 

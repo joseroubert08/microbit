@@ -36,19 +36,19 @@ public class PluginService extends Service {
     public static final int FILE = 7;
 
     private static final class PluginHandler extends Handler {
-        private final WeakReference<PluginService> pluginServiceNewWeakReference;
+        private final WeakReference<PluginService> pluginServiceWeakReference;
 
         private PluginHandler(PluginService pluginService) {
             super();
-            pluginServiceNewWeakReference = new WeakReference<>(pluginService);
+            pluginServiceWeakReference = new WeakReference<>(pluginService);
         }
 
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
 
-            if (pluginServiceNewWeakReference.get() != null) {
-                pluginServiceNewWeakReference.get().handleMessage(msg);
+            if (pluginServiceWeakReference.get() != null) {
+                pluginServiceWeakReference.get().handleMessage(msg);
             }
         }
     }

@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,7 +29,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -51,10 +49,10 @@ import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.utils.FileUtils;
 import com.samsung.microbit.utils.ServiceUtils;
+import com.samsung.microbit.utils.Utils;
 
 import java.lang.ref.WeakReference;
 
-import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
 import static com.samsung.microbit.BuildConfig.DEBUG;
@@ -423,59 +421,25 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void unbindDrawables() {
-        unbindDrawables(gifAnimationHelloEmoji);
-        unbindDrawables(findViewById(R.id.connect_device_btn));
-        unbindDrawables(findViewById(R.id.flash_microbit_btn));
-        unbindDrawables(findViewById(R.id.create_code_btn));
-        unbindDrawables(findViewById(R.id.discover_btn));
+        Utils.unbindDrawables(gifAnimationHelloEmoji);
+        Utils.unbindDrawables(findViewById(R.id.connect_device_btn));
+        Utils.unbindDrawables(findViewById(R.id.flash_microbit_btn));
+        Utils.unbindDrawables(findViewById(R.id.create_code_btn));
+        Utils.unbindDrawables(findViewById(R.id.discover_btn));
 
-        unbindDrawables(findViewById(R.id.img_toolbar_bbc_logo));
-        unbindDrawables(findViewById(R.id.toolbar));
-        unbindDrawables(findViewById(R.id.nav_view));
-        unbindDrawables(findViewById(R.id.drawer_layout));
-        unbindDrawables(findViewById(R.id.btn_nav_menu));
-        unbindDrawables(findViewById(R.id.btn_about));
-        unbindDrawables(findViewById(R.id.btn_help));
-        unbindDrawables(findViewById(R.id.btn_privacy_cookies));
-        unbindDrawables(findViewById(R.id.btn_terms_conditions));
-        unbindDrawables(findViewById(R.id.btn_send_feedback));
-        unbindDrawables(findViewById(R.id.share_statistics_title));
-        unbindDrawables(findViewById(R.id.share_statistics_description));
-        unbindDrawables(findViewById(R.id.share_statistics_status));
-    }
-
-    public static void unbindDrawables(View view) {
-        if (view == null) {
-            return;
-        }
-
-        if (view.getBackground() != null) {
-            Drawable backgroundDrawable = view.getBackground();
-            backgroundDrawable.setCallback(null);
-            view.unscheduleDrawable(backgroundDrawable);
-
-            if (backgroundDrawable instanceof GifDrawable) {
-                ((GifDrawable) backgroundDrawable).recycle();
-            }
-        }
-
-        if(view instanceof ImageView && ((ImageView) view).getDrawable() != null) {
-            Drawable backgroundDrawable = ((ImageView) view).getDrawable();
-            backgroundDrawable.setCallback(null);
-            view.unscheduleDrawable(backgroundDrawable);
-
-            if (backgroundDrawable instanceof GifDrawable) {
-                ((GifDrawable) backgroundDrawable).recycle();
-            }
-        }
-
-        if (view instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) view;
-
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                unbindDrawables(viewGroup.getChildAt(i));
-            }
-        }
+        Utils.unbindDrawables(findViewById(R.id.img_toolbar_bbc_logo));
+        Utils.unbindDrawables(findViewById(R.id.toolbar));
+        Utils.unbindDrawables(findViewById(R.id.nav_view));
+        Utils.unbindDrawables(findViewById(R.id.drawer_layout));
+        Utils.unbindDrawables(findViewById(R.id.btn_nav_menu));
+        Utils.unbindDrawables(findViewById(R.id.btn_about));
+        Utils.unbindDrawables(findViewById(R.id.btn_help));
+        Utils.unbindDrawables(findViewById(R.id.btn_privacy_cookies));
+        Utils.unbindDrawables(findViewById(R.id.btn_terms_conditions));
+        Utils.unbindDrawables(findViewById(R.id.btn_send_feedback));
+        Utils.unbindDrawables(findViewById(R.id.share_statistics_title));
+        Utils.unbindDrawables(findViewById(R.id.share_statistics_description));
+        Utils.unbindDrawables(findViewById(R.id.share_statistics_status));
     }
 
     @Override

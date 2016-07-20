@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.ui.PopUp;
+import com.samsung.microbit.utils.Utils;
 
 import pl.droidsonroids.gif.GifImageView;
 
@@ -140,31 +141,31 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     }
 
     private void releaseViews() {
-        HomeActivity.unbindDrawables(imageIcon);
+        Utils.unbindDrawables(imageIcon);
         imageIcon = null;
 
-        HomeActivity.unbindDrawables(titleTxt);
+        Utils.unbindDrawables(titleTxt);
         titleTxt = null;
 
         progressBar = null;
         spinnerBar = null;
 
-        HomeActivity.unbindDrawables(messageTxt);
+        Utils.unbindDrawables(messageTxt);
         messageTxt = null;
 
-        HomeActivity.unbindDrawables(layoutBottom);
+        Utils.unbindDrawables(layoutBottom);
         layoutBottom = null;
 
-        HomeActivity.unbindDrawables(okButton);
+        Utils.unbindDrawables(okButton);
         okButton = null;
 
-        HomeActivity.unbindDrawables(cancelButton);
+        Utils.unbindDrawables(cancelButton);
         cancelButton = null;
 
-        HomeActivity.unbindDrawables(affirmationOKButton);
+        Utils.unbindDrawables(affirmationOKButton);
         affirmationOKButton = null;
 
-        HomeActivity.unbindDrawables(gifImageView);
+        Utils.unbindDrawables(gifImageView);
         gifImageView = null;
     }
 

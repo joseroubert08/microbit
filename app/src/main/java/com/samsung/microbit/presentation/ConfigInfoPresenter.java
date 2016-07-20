@@ -8,7 +8,7 @@ import android.util.Log;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.common.ConfigInfo;
-import com.samsung.microbit.common.RetrieveConfigDataTask;
+import com.samsung.microbit.common.SaveConfigInfoTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class ConfigInfoPresenter implements Presenter {
     private Context appContext;
     private ConfigInfo configInfo;
 
-    private AsyncTask<String, Void, ?> retrieveAppInfoTask;
+    private AsyncTask<String, Void, ?> reInitConfigInfoTask;
 
     public ConfigInfoPresenter() {
         appContext = MBApp.getApp();
@@ -77,13 +77,13 @@ public class ConfigInfoPresenter implements Presenter {
 
         //Check if we should get new config file
         if (shouldRefreshValue()) {
-            if (retrieveAppInfoTask != null) {
-                retrieveAppInfoTask.cancel(true);
+            if (reInitConfigInfoTask != null) {
+                reInitConfigInfoTask.cancel(true);
             }
 
-            retrieveAppInfoTask = new RetrieveAppInfoTask(configInfo.getPreferences(), configInfo);
+            reInitConfigInfoTask = new ReInitConfigInfoTask(configInfo.getPreferences(), configInfo);
 
-            retrieveAppInfoTask.execute();
+            reInitConfigInfoTask.execute();
         }
     }
 
@@ -96,9 +96,9 @@ public class ConfigInfoPresenter implements Presenter {
 
     @Override
     public void stop() {
-        if (retrieveAppInfoTask != null && retrieveAppInfoTask.getStatus() == AsyncTask.Status.RUNNING) {
-            retrieveAppInfoTask.cancel(true);
-            retrieveAppInfoTask = null;
+        if (reInitConfigInfoTask != null && reInitConfigInfoTask.getStatus() == AsyncTask.Status.RUNNING) {
+            reInitConfigInfoTask.cancel(true);
+            reInitConfigInfoTask = null;
         }
     }
 
@@ -119,10 +119,10 @@ public class ConfigInfoPresenter implements Presenter {
     /**
      * An asynchronous task that retrieves app information in background.
      */
-    private static class RetrieveAppInfoTask extends RetrieveConfigDataTask {
+    private static class ReInitConfigInfoTask extends SaveConfigInfoTask {
         private ConfigInfo configInfo;
 
-        RetrieveAppInfoTask(SharedPreferences preferences, ConfigInfo configInfo) {
+        ReInitConfigInfoTask(SharedPreferences preferences, ConfigInfo configInfo) {
             super(preferences);
             this.configInfo = configInfo;
             setEtag(configInfo.getEtag());
@@ -132,7 +132,7 @@ public class ConfigInfoPresenter implements Presenter {
 
         @Override
         protected void onPostExecute() {
-            configInfo.searchStoredValues();
+            configInfo.reInit();
         }
     }
 }

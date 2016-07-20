@@ -63,18 +63,18 @@ public class BLEService extends Service {
     public static final String GATT_FORCE_CLOSED = "com.microbit.gatt_force_closed";
 
     private static final class BLEHandler extends Handler {
-        private WeakReference<BLEService> bleServiceNewWeakReference;
+        private WeakReference<BLEService> bleServiceWeakReference;
 
         private BLEHandler(BLEService bleService) {
             super();
-            bleServiceNewWeakReference = new WeakReference<>(bleService);
+            bleServiceWeakReference = new WeakReference<>(bleService);
         }
 
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if (bleServiceNewWeakReference.get() != null) {
-                bleServiceNewWeakReference.get().handleMessage(msg);
+            if (bleServiceWeakReference.get() != null) {
+                bleServiceWeakReference.get().handleMessage(msg);
             }
         }
     }

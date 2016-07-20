@@ -7,8 +7,8 @@ import com.samsung.microbit.service.PluginService;
  * Contains registration ids.
  * Used for registering/unregistering device sensors for send statistic.
  * <p/>
- * Used for handling changes inside {@link PluginService PluginServiceNew}.<br/>
- * Registering for changes inside {@link BLEService BLEServiceNew}
+ * Used for handling changes inside {@link PluginService PluginService}.<br/>
+ * Registering for changes inside {@link BLEService BLEService}
  */
 public class RegistrationIds {
     private RegistrationIds() {

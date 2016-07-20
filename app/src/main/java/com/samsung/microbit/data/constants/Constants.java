@@ -20,6 +20,9 @@ public class Constants {
     public static final long TIME_FOR_RECONNECTION = TimeUnit.SECONDS.toMillis(15);
     public static final long DELAY_BETWEEN_PAUSE_AND_RESUME = TimeUnit.SECONDS.toMillis(1);
 
+    public static final String PREFERENCES = "Preferences";
+    public static final String PREFERENCES_LIST_ORDER = "Preferences.listOrder";
+
     /**
      * Represents common states of connection.
      * It uses for sending appropriate statistics.

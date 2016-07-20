@@ -48,9 +48,9 @@ import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.adapter.ProjectAdapter;
 import com.samsung.microbit.utils.BLEConnectionHandler;
 import com.samsung.microbit.utils.FileUtils;
-import com.samsung.microbit.utils.PreferenceUtils;
 import com.samsung.microbit.utils.ProjectsHelper;
 import com.samsung.microbit.utils.ServiceUtils;
+import com.samsung.microbit.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -598,7 +598,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
             ProjectsHelper.findProjectssAndPopulate(mPrettyFileNameMap, mProjectList);
         }
 
-        int projectListSortOrder = PreferenceUtils.getListSortOrder();
+        int projectListSortOrder = Utils.getListSortOrder();
         int sortBy = (projectListSortOrder >> 1);
         int sortOrder = projectListSortOrder & 0x01;
         com.samsung.microbit.utils.Utils.sortProjectList(mProjectList, sortBy, sortOrder);

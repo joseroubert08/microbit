@@ -24,20 +24,20 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 import javax.xml.transform.Result;
 
-import static com.samsung.microbit.ConfigPreferenceNames.*;
+import static com.samsung.microbit.common.ConfigInfo.*;
 
 /**
  * Base class for loading config data.
  */
-public abstract class RetrieveConfigDataTask extends AsyncTask<String, Void, Result> {
-    private static final String TAG = RetrieveConfigDataTask.class.getSimpleName();
+public abstract class SaveConfigInfoTask extends AsyncTask<String, Void, Result> {
+    private static final String TAG = SaveConfigInfoTask.class.getSimpleName();
 
     private final SharedPreferences preferences;
     private long LastQueryTime = 0;
     private String Etag = "";
     private Context appContext;
 
-    public RetrieveConfigDataTask(SharedPreferences preferences) {
+    public SaveConfigInfoTask(SharedPreferences preferences) {
         this.preferences = preferences;
         this.appContext = MBApp.getApp();
     }
