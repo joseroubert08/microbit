@@ -91,6 +91,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     // Hello animation
     private GifImageView gifAnimationHelloEmoji;
 
+    private DrawerLayout mDrawer;
+
     /* Debug code*/
     private String urlToOpen;
     /* Debug code ends*/
@@ -309,10 +311,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         imgToolbarLogo.setContentDescription("BBC Micro:bit");
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.setDrawerTitle(GravityCompat.START, "Menu"); // TODO - Accessibility for touching the drawer
+        final boolean previousDrawerState = mDrawer != null && mDrawer.isDrawerOpen(GravityCompat.START);
+
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawer.setDrawerTitle(GravityCompat.START, "Menu"); // TODO - Accessibility for touching the drawer
+
+        if (previousDrawerState) {
+            mDrawer.openDrawer(GravityCompat.START);
+        }
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
         boolean shareStats = false;
         mPrefs = getSharedPreferences("com.samsung.microbit", MODE_PRIVATE);
@@ -321,7 +330,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             MBApp.getApp().getEchoClientManager().setShareStatistic(shareStats);
         }
         //TODO focusable view
-        drawer.setDrawerListener(toggle);
+        mDrawer.setDrawerListener(toggle);
 
         toggle.syncState();
 
