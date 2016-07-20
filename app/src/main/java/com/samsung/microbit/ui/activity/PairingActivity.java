@@ -79,6 +79,8 @@ import static com.samsung.microbit.BuildConfig.DEBUG;
 public class PairingActivity extends Activity implements View.OnClickListener, BluetoothAdapter.LeScanCallback,
         BLEConnectionHandler.BLEConnectionManager {
 
+    private static final String TAG = PairingActivity.class.getSimpleName();
+
     // @formatter:off
     private static final int DEVICE_CODE_ARRAY[] = {
             0, 0, 0, 0, 0,
@@ -110,34 +112,34 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         PAIRING_STATE_ERROR
     }
 
-    private int mActivityState;
+    private int activityState;
 
     private PAIRING_STATE pairingState;
-    private String newDeviceName;
-    private String newDeviceCode;
+    private String newDeviceName = "";
+    private String newDeviceCode = "";
     private String newDeviceAddress;
 
-    LinearLayout mPairButtonView;
-    LinearLayout mPairTipView;
-    View mConnectDeviceView;
-    LinearLayout mNewDeviceView;
-    LinearLayout mPairSearchView;
-    LinearLayout mBottomPairButton;
+    LinearLayout pairButtonView;
+    LinearLayout pairTipView;
+    View connectDeviceView;
+    LinearLayout newDeviceView;
+    LinearLayout pairSearchView;
+    LinearLayout bottomPairButton;
 
     // Connected Device Status
     Button deviceConnectionStatusBtn;
 
-    private Handler mHandler;
+    private Handler handler;
 
-    private BluetoothAdapter mBluetoothAdapter;
-    private volatile boolean mScanning;
+    private BluetoothAdapter bluetoothAdapter;
+    private volatile boolean scanning;
 
-    private int mCurrentOrientation;
-    private BluetoothLeScanner mLEScanner;
+    private int currentOrientation;
+    private BluetoothLeScanner leScanner;
 
-    private List<Integer> mRequestPermissions = new ArrayList<>();
+    private List<Integer> requestPermissions = new ArrayList<>();
 
-    private int mRequestingPermission = -1;
+    private int requestingPermission = -1;
 
     private ScanCallback newScanCallback;
 
@@ -147,10 +149,10 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
      * Occurs after successfully finished pairing process and
      * redirects to the first screen of the pairing activity.
      */
-    private View.OnClickListener mSuccessfulPairingHandler = new View.OnClickListener() {
+    private View.OnClickListener successfulPairingHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            logi("======mSuccessfulPairingHandler======");
+            logi("======successfulPairingHandler======");
             PopUp.hide();
             displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
         }
@@ -160,10 +162,10 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
      * Occurs after pairing process failed and redirects to
      * Step 2 screen of the pairing process.
      */
-    private View.OnClickListener mFailedPairingHandler = new View.OnClickListener() {
+    private View.OnClickListener failedPairingHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            logi("======mFailedPairingHandler======");
+            logi("======failedPairingHandler======");
             PopUp.hide();
             displayScreen(PAIRING_STATE.PAIRING_STATE_STEP_2);
         }
@@ -172,12 +174,12 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     /**
      * Allows to do device scanning after unsuccessful one.
      */
-    private View.OnClickListener mRetryPairing = new View.OnClickListener() {
+    private View.OnClickListener retryPairing = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            logi("======mRetryPairing======");
+            logi("======retryPairing======");
             PopUp.hide();
-            scanLeDevice(true);
+            startScanning();
             displayScreen(PAIRING_STATE.PAIRING_STATE_SEARCHING);
         }
     };
@@ -198,7 +200,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     /**
      * Occurs when a bond state has been changed and provides action to handle that.
      */
-    private final BroadcastReceiver mPairReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver pairReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
@@ -206,13 +208,17 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 final int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
                 final int prevState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
 
-                logi(" mPairReceiver - state = " + state + " prevState = " + prevState);
+                logi(" pairReceiver - state = " + state + " prevState = " + prevState);
                 if (state == BluetoothDevice.BOND_BONDED && prevState == BluetoothDevice.BOND_BONDING) {
-                    ConnectedDevice newDev = new ConnectedDevice(newDeviceCode.toUpperCase(), newDeviceCode
-                            .toUpperCase(), false, newDeviceAddress, 0, null, System.currentTimeMillis());
-                    handlePairingSuccessful(newDev);
+                    if(newDeviceCode.isEmpty()) {
+                        Log.e(TAG, "device code empty. State = " + state + ", prevState = " + prevState + ".");
+                    } else {
+                        ConnectedDevice newDev = new ConnectedDevice(newDeviceCode.toUpperCase(), newDeviceCode
+                                .toUpperCase(), false, newDeviceAddress, 0, null, System.currentTimeMillis());
+                        handlePairingSuccessful(newDev);
+                    }
                 } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDING) {
-                    scanLeDevice(false);
+                    stopScanning();
                     MBApp.getApp().getEchoClientManager().sendPairingStats(false, null);
                     PopUp.show(getString(R.string.pairing_failed_message), //message
                             getString(R.string.pairing_failed_title), //title
@@ -243,7 +249,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
     @Override
     public void setActivityState(int baseActivityState) {
-        mActivityState = baseActivityState;
+        activityState = baseActivityState;
     }
 
     @Override
@@ -253,7 +259,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
     @Override
     public int getActivityState() {
-        return mActivityState;
+        return activityState;
     }
 
     @Override
@@ -265,12 +271,12 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
     @Override
     public void checkTelephonyPermissions() {
-        if (!mRequestPermissions.isEmpty()) {
+        if (!requestPermissions.isEmpty()) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PermissionChecker.PERMISSION_GRANTED ||
                     (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PermissionChecker.PERMISSION_GRANTED)) {
-                mRequestingPermission = mRequestPermissions.get(0);
-                mRequestPermissions.remove(0);
-                PopUp.show((mRequestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL) ? getString(R.string
+                requestingPermission = requestPermissions.get(0);
+                requestPermissions.remove(0);
+                PopUp.show((requestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL) ? getString(R.string
                                 .telephony_permission) : getString(R.string.sms_permission),
                         getString(R.string.permissions_needed_title),
                         R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
@@ -284,12 +290,12 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
     @Override
     public void addPermissionRequest(int permission) {
-        mRequestPermissions.add(permission);
+        requestPermissions.add(permission);
     }
 
     @Override
     public boolean arePermissionsGranted() {
-        return mRequestPermissions.isEmpty();
+        return requestPermissions.isEmpty();
     }
 
     /**
@@ -301,11 +307,11 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         public void onClick(View v) {
             logi("notificationOKHandler");
             PopUp.hide();
-            if (mRequestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL) {
+            if (requestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL) {
                 String[] permissionsNeeded = {Manifest.permission.READ_PHONE_STATE};
                 requestPermission(permissionsNeeded, PermissionCodes.INCOMING_CALL_PERMISSIONS_REQUESTED);
             }
-            if (mRequestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_SMS) {
+            if (requestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_SMS) {
                 String[] permissionsNeeded = {Manifest.permission.RECEIVE_SMS};
                 requestPermission(permissionsNeeded, PermissionCodes.INCOMING_SMS_PERMISSIONS_REQUESTED);
             }
@@ -318,7 +324,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     View.OnClickListener checkMorePermissionsNeeded = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!mRequestPermissions.isEmpty()) {
+            if (!requestPermissions.isEmpty()) {
                 checkTelephonyPermissions();
             } else {
                 PopUp.hide();
@@ -335,9 +341,9 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         public void onClick(View v) {
             logi("notificationCancelHandler");
             String msg = "Your program might not run properly";
-            if (mRequestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL) {
+            if (requestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL) {
                 msg = getString(R.string.telephony_permission_error);
-            } else if (mRequestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_SMS) {
+            } else if (requestingPermission == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_SMS) {
                 msg = getString(R.string.sms_permission_error);
             }
             PopUp.hide();
@@ -350,15 +356,13 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         }
     };
 
-    private static final String TAG = PairingActivity.class.getSimpleName();
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
         setContentView(R.layout.activity_connect);
         initViews();
-        mCurrentOrientation = getResources().getConfiguration().orientation;
+        currentOrientation = getResources().getConfiguration().orientation;
         displayScreen(pairingState);
     }
 
@@ -449,12 +453,12 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
      */
     private void initViews() {
         deviceConnectionStatusBtn = (Button) findViewById(R.id.connected_device_status_button);
-        mBottomPairButton = (LinearLayout) findViewById(R.id.ll_pairing_activity_screen);
-        mPairButtonView = (LinearLayout) findViewById(R.id.pairButtonView);
-        mPairTipView = (LinearLayout) findViewById(R.id.pairTipView);
-        mConnectDeviceView = findViewById(R.id.connectDeviceView);
-        mNewDeviceView = (LinearLayout) findViewById(R.id.newDeviceView);
-        mPairSearchView = (LinearLayout) findViewById(R.id.pairSearchView);
+        bottomPairButton = (LinearLayout) findViewById(R.id.ll_pairing_activity_screen);
+        pairButtonView = (LinearLayout) findViewById(R.id.pairButtonView);
+        pairTipView = (LinearLayout) findViewById(R.id.pairTipView);
+        connectDeviceView = findViewById(R.id.connectDeviceView);
+        newDeviceView = (LinearLayout) findViewById(R.id.newDeviceView);
+        pairSearchView = (LinearLayout) findViewById(R.id.pairSearchView);
 
         //Setup on click listeners.
         deviceConnectionStatusBtn.setOnClickListener(this);
@@ -469,12 +473,12 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
     private void releaseViews() {
         deviceConnectionStatusBtn = null;
-        mBottomPairButton = null;
-        mPairButtonView = null;
-        mPairTipView = null;
-        mConnectDeviceView = null;
-        mNewDeviceView = null;
-        mPairSearchView = null;
+        bottomPairButton = null;
+        pairButtonView = null;
+        pairTipView = null;
+        connectDeviceView = null;
+        newDeviceView = null;
+        pairSearchView = null;
     }
 
     @Override
@@ -505,13 +509,13 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         MBApp application = MBApp.getApp();
 
         if (savedInstanceState == null) {
-            mActivityState = PairingActivityState.STATE_IDLE;
+            activityState = PairingActivityState.STATE_IDLE;
             pairingState = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
             justPaired = false;
 
             //Register receiver
             IntentFilter intent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-            registerReceiver(mPairReceiver, intent);
+            registerReceiver(pairReceiver, intent);
 
             LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(application);
 
@@ -522,7 +526,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
             localBroadcastManager.registerReceiver(gattForceClosedReceiver, new IntentFilter(BLEService
                     .GATT_FORCE_CLOSED));
 
-            mHandler = new Handler(Looper.getMainLooper());
+            handler = new Handler(Looper.getMainLooper());
         }
 
         // Make sure to call this before any other userActionEvent is sent
@@ -540,7 +544,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
         updatePairedDeviceCard();
 
-        mCurrentOrientation = getResources().getConfiguration().orientation;
+        currentOrientation = getResources().getConfiguration().orientation;
 
         // pin view
         displayScreen(pairingState);
@@ -549,15 +553,15 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     boolean setupBleController() {
         boolean retvalue = true;
 
-        if (mBluetoothAdapter == null) {
+        if (bluetoothAdapter == null) {
             final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-            mBluetoothAdapter = bluetoothManager.getAdapter();
+            bluetoothAdapter = bluetoothManager.getAdapter();
             retvalue = false;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mLEScanner == null) {
-            mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
-            if (mLEScanner == null)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && leScanner == null) {
+            leScanner = bluetoothAdapter.getBluetoothLeScanner();
+            if (leScanner == null)
                 retvalue = false;
         }
         return retvalue;
@@ -571,9 +575,9 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
             switch (resultCode) {
                 case RESULT_OK:
-                    if (mActivityState == PairingActivityState.STATE_ENABLE_BT_FOR_PAIRING) {
+                    if (activityState == PairingActivityState.STATE_ENABLE_BT_FOR_PAIRING) {
                         startWithPairing();
-                    } else if (mActivityState == PairingActivityState.STATE_ENABLE_BT_FOR_CONNECT) {
+                    } else if (activityState == PairingActivityState.STATE_ENABLE_BT_FOR_CONNECT) {
                         toggleConnection();
                     }
                     break;
@@ -634,7 +638,6 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     }
 
     private void generateName() {
-
         StringBuilder deviceNameBuilder = new StringBuilder();
         //Columns
         for (int col = 0; col < 5; col++) {
@@ -797,10 +800,10 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
      */
     private void displayScreen(PAIRING_STATE gotoState) {
         //Reset all screens first
-        mPairTipView.setVisibility(View.GONE);
-        mNewDeviceView.setVisibility(View.GONE);
-        mPairSearchView.setVisibility(View.GONE);
-        mConnectDeviceView.setVisibility(View.GONE);
+        pairTipView.setVisibility(View.GONE);
+        newDeviceView.setVisibility(View.GONE);
+        pairSearchView.setVisibility(View.GONE);
+        connectDeviceView.setVisibility(View.GONE);
 
         logi("********** Connect: state from " + pairingState + " to " + gotoState);
         pairingState = gotoState;
@@ -810,7 +813,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
         if (mDeviceListAvailable) {
             updatePairedDeviceCard();
-            mConnectDeviceView.setVisibility(View.VISIBLE);
+            connectDeviceView.setVisibility(View.VISIBLE);
         }
 
         switch (gotoState) {
@@ -825,12 +828,12 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 break;
 
             case PAIRING_STATE_STEP_1:
-                mPairTipView.setVisibility(View.VISIBLE);
+                pairTipView.setVisibility(View.VISIBLE);
                 findViewById(R.id.ok_tip_step_1_btn).setOnClickListener(this);
                 break;
 
             case PAIRING_STATE_STEP_2:
-                mNewDeviceView.setVisibility(View.VISIBLE);
+                newDeviceView.setVisibility(View.VISIBLE);
                 findViewById(R.id.cancel_enter_pattern_step_2_btn).setVisibility(View.VISIBLE);
                 findViewById(R.id.enter_pattern_step_2_title).setVisibility(View.VISIBLE);
                 findViewById(R.id.oh_pretty_emoji).setVisibility(View.VISIBLE);
@@ -839,8 +842,8 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 break;
 
             case PAIRING_STATE_SEARCHING:
-                if (mPairSearchView != null) {
-                    mPairSearchView.setVisibility(View.VISIBLE);
+                if (pairSearchView != null) {
+                    pairSearchView.setVisibility(View.VISIBLE);
                     TextView tvTitle = (TextView) findViewById(R.id.search_microbit_step_3_title);
                     TextView tvSearchingStep = (TextView) findViewById(R.id.searching_microbit_step);
                     tvSearchingStep.setContentDescription(tvSearchingStep.getText());
@@ -850,7 +853,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                         findViewById(R.id.searching_progress_spinner).setVisibility(View.VISIBLE);
                         ((GifImageView) findViewById(R.id.searching_microbit_found_giffview))
                                 .setImageResource(R.drawable.pairing_pin_screen_two);
-                        if (mCurrentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
                             tvSearchingStep.setText(R.string.searching_tip_step_text_one_line);
                         } else {
                             tvSearchingStep.setText(R.string.searching_tip_step_text);
@@ -890,7 +893,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
             if (!currentState) {
                 setActivityState(PairingActivityState.STATE_CONNECTING);
-                mRequestPermissions.clear();
+                requestPermissions.clear();
                 PopUp.show(getString(R.string.init_connection),
                         "",
                         R.drawable.message_face, R.drawable.blue_btn,
@@ -939,7 +942,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                             PopUp.TYPE_ALERT,
                             checkMorePermissionsNeeded, checkMorePermissionsNeeded);
                 } else {
-                    if (!mRequestPermissions.isEmpty()) {
+                    if (!requestPermissions.isEmpty()) {
                         checkTelephonyPermissions();
                     }
                 }
@@ -954,7 +957,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                             PopUp.TYPE_ALERT,
                             checkMorePermissionsNeeded, checkMorePermissionsNeeded);
                 } else {
-                    if (!mRequestPermissions.isEmpty()) {
+                    if (!requestPermissions.isEmpty()) {
                         checkTelephonyPermissions();
                     }
                 }
@@ -1054,7 +1057,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 if (!BluetoothChecker.getInstance().checkBluetoothAndStart()) {
                     return;
                 }
-                scanLeDevice(true);
+                startScanning();
                 displayScreen(PAIRING_STATE.PAIRING_STATE_SEARCHING);
                 break;
 
@@ -1071,7 +1074,6 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
             case R.id.cancel_search_microbit_step_3_btn:
                 logi("onClick() :: cancel_search_button");
-                scanLeDevice(false);
                 stopScanning();
                 displayScreen(PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON);
                 break;
@@ -1119,7 +1121,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                     public void onClick(View v) {
                         PopUp.hide();
                         //Unpair the device for secure BLE
-                        unpairDevice();
+                        unPairDevice();
                         BluetoothUtils.setPairedMicroBit(MBApp.getApp(), null);
                         updatePairedDeviceCard();
                     }
@@ -1130,7 +1132,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     /**
      * Finds all bonded devices and tries to unbond it.
      */
-    private void unpairDevice() {
+    private void unPairDevice() {
         ConnectedDevice connectedDevice = BluetoothUtils.getPairedMicrobit(this);
         String addressToDelete = connectedDevice.mAddress;
         // Get the paired devices and put them in a Set
@@ -1156,7 +1158,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
      */
     private void handleResetAll() {
         Arrays.fill(DEVICE_CODE_ARRAY, 0);
-        scanLeDevice(false);
+        stopScanning();
         stopScanning();
 
         if (pairingState == PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON) {
@@ -1179,8 +1181,8 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 R.drawable.red_btn,
                 PopUp.GIFF_ANIMATION_ERROR,
                 PopUp.TYPE_CHOICE, //type of popup.
-                mRetryPairing,//override click listener for ok button
-                mFailedPairingHandler);
+                retryPairing,//override click listener for ok button
+                failedPairingHandler);
     }
 
     /**
@@ -1201,8 +1203,8 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 R.drawable.green_btn,
                 PopUp.GIFF_ANIMATION_NONE,
                 PopUp.TYPE_ALERT, //type of popup.
-                mSuccessfulPairingHandler,
-                mSuccessfulPairingHandler);
+                successfulPairingHandler,
+                successfulPairingHandler);
 
         Log.e(TAG, "Set just paired to true");
         if (justPaired) {
@@ -1218,6 +1220,10 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         scanLeDevice(false);
     }
 
+    private void startScanning() {
+        scanLeDevice(true);
+    }
+
     /**
      * Allows to start or stop scanning for a low energy device.
      *
@@ -1231,31 +1237,31 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                 logi("scanLeDevice() :: FAILED ");
                 return;
             }
-            if (!mScanning) {
+            if (!scanning) {
                 logi("scanLeDevice ::   Searching For " + newDeviceName.toLowerCase());
                 // Stops scanning after a pre-defined scan period.
-                mScanning = true;
+                scanning = true;
                 ((TextView) findViewById(R.id.search_microbit_step_3_title))
                         .setText(getString(R.string.searchingTitle));
-                mHandler.postDelayed(scanTimedOut, SCAN_PERIOD);
+                handler.postDelayed(scanTimedOut, SCAN_PERIOD);
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                    mBluetoothAdapter.startLeScan(getOldScanCallback());
+                    bluetoothAdapter.startLeScan(getOldScanCallback());
                 } else {
                     List<ScanFilter> filters = new ArrayList<>();
                     // TODO: play with ScanSettings further to ensure the Kit kat devices connectMaybeInit with higher success rate
                     ScanSettings settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_BALANCED).build();
-                    mLEScanner.startScan(filters, settings, getNewScanCallback());
+                    leScanner.startScan(filters, settings, getNewScanCallback());
                 }
             }
         } else {
             //Stop scanning.
-            if (mScanning) {
-                mScanning = false;
-                mHandler.removeCallbacks(scanTimedOut);
+            if (scanning) {
+                scanning = false;
+                handler.removeCallbacks(scanTimedOut);
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                    mBluetoothAdapter.stopLeScan(getOldScanCallback());
+                    bluetoothAdapter.stopLeScan(getOldScanCallback());
                 } else {
-                    mLEScanner.stopScan(getNewScanCallback());
+                    leScanner.stopScan(getNewScanCallback());
                 }
             }
         }
@@ -1311,8 +1317,8 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     private Runnable scanTimedOut = new Runnable() {
         @Override
         public void run() {
-            boolean scanning = mScanning;
-            scanLeDevice(false);
+            boolean scanning = PairingActivity.this.scanning;
+            stopScanning();
 
             if (scanning) { // was scanning
                 handlePairingFailed();
@@ -1322,10 +1328,9 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
     @Override
     public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
-
         logi("mLeScanCallback.onLeScan() [+]");
 
-        if (!mScanning) {
+        if (!scanning) {
             return;
         }
 
@@ -1341,9 +1346,10 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
             //TODO Use pattern recognition instead
             s = s.replaceAll(":", "");
             if (newDeviceName.toLowerCase().startsWith(s)) {
-                logi("mLeScanCallback.onLeScan() ::   Found micro:bit -" + device.getName().toLowerCase() + " " + device.getAddress());
+                logi("mLeScanCallback.onLeScan() ::   Found micro:bit -" + device.getName().toLowerCase() + " " +
+                         device.getAddress());
                 // Stop scanning as device is found.
-                scanLeDevice(false);
+                stopScanning();
                 newDeviceAddress = device.getAddress();
                 runOnUiThread(new Runnable() {
                     @Override
@@ -1356,7 +1362,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                             findViewById(R.id.searching_progress_spinner).setVisibility(View.GONE);
                             ((GifImageView) findViewById(R.id.searching_microbit_found_giffview))
                                     .setImageResource(R.drawable.emoji_microbit_found);
-                            if (mCurrentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                            if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
                                 tvSearchingStep.setText(R.string.searching_microbit_found_message_one_line);
                             } else {
                                 tvSearchingStep.setText(R.string.searching_microbit_found_message);
@@ -1398,11 +1404,11 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mPairTipView.setVisibility(View.GONE);
-        mNewDeviceView.setVisibility(View.GONE);
-        mPairSearchView.setVisibility(View.GONE);
-        mConnectDeviceView.setVisibility(View.GONE);
-        mHandler.removeCallbacks(null);
+        pairTipView.setVisibility(View.GONE);
+        newDeviceView.setVisibility(View.GONE);
+        pairSearchView.setVisibility(View.GONE);
+        connectDeviceView.setVisibility(View.GONE);
+        handler.removeCallbacks(null);
 
         releaseViews();
 
@@ -1434,7 +1440,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         HomeActivity.unbindDrawables(findViewById(R.id.cancel_search_microbit_step_3_btn));
         HomeActivity.unbindDrawables(findViewById(R.id.searching_progress_spinner));
 
-        unregisterReceiver(mPairReceiver);
+        unregisterReceiver(pairReceiver);
 
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(MBApp.getApp());
 
