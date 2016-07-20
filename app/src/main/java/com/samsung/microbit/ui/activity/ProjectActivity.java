@@ -15,7 +15,6 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -865,10 +864,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         service.putExtra(DfuService.EXTRA_FILE_MIME_TYPE, DfuService.MIME_TYPE_OCTET_STREAM);
         service.putExtra(DfuService.EXTRA_FILE_PATH, mProgramToSend.filePath); // a path or URI must be provided.
         service.putExtra(DfuService.EXTRA_KEEP_BOND, false);
-        service.putExtra(DfuService.INTENT_RESULT_RECEIVER, resultReceiver);
         service.putExtra(DfuService.INTENT_REQUESTED_PHASE, 2);
 
-        application.stopService(service);
         application.startService(service);
     }
 
@@ -885,22 +882,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
         LocalBroadcastManager.getInstance(MBApp.getApp()).registerReceiver(dfuResultReceiver, filter);
     }
-
-    /**
-     * Allows to handle received result from another activity
-     * and log it.
-     */
-    ResultReceiver resultReceiver = new ResultReceiver(new Handler()) {
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-
-            int phase = resultCode & 0x0ffff;
-
-            logi("resultReceiver.onReceiveResult() :: Phase = " + phase + " resultCode = " + resultCode);
-            super.onReceiveResult(resultCode, resultData);
-        }
-    };
 
     /**
      * Listener for OK button that just hides a popup window.

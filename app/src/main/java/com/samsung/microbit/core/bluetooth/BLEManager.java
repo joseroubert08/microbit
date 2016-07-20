@@ -675,6 +675,9 @@ public class BLEManager {
                             gatt.disconnect();
                             gatt.close();
                             gattForceClosed = true;
+                            if(BLEManager.this.gatt.getDevice().getAddress().equals(gatt.getDevice().getAddress())) {
+                                BLEManager.this.gatt = null;
+                            }
                         }
                     }
                 }
