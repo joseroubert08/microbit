@@ -14,6 +14,9 @@ import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.data.model.ui.BaseActivityState;
 import com.samsung.microbit.ui.PopUp;
 
+/**
+ * Used for make common way of handling connection process.
+ */
 public class BLEConnectionHandler {
     private BLEConnectionHandler() {
     }

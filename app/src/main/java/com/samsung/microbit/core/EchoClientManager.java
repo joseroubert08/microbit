@@ -21,8 +21,8 @@ import uk.co.bbc.echo.enumerations.ApplicationType;
  * connection and flashing statistics.
  */
 public class EchoClientManager {
-
     private static final String TAG = EchoClientManager.class.getSimpleName();
+
     private static EchoClientManager instance = null;
 
     public static synchronized EchoClientManager getInstance(MBApp mbApp) {

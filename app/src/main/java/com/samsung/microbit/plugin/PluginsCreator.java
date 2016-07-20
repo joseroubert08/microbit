@@ -8,6 +8,9 @@ import com.samsung.microbit.data.constants.EventCategories;
 
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
+/**
+ * Used for creating plugins, and cache them whether it's possible.
+ */
 public class PluginsCreator {
     private static final String TAG = PluginsCreator.class.getSimpleName();
 

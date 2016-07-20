@@ -46,10 +46,10 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.data.constants.Constants;
 import com.samsung.microbit.data.constants.FileConstants;
-import com.samsung.microbit.data.constants.RawConstants;
+import com.samsung.microbit.data.constants.InternalPaths;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.plugin.CameraPlugin;
-import com.samsung.microbit.presentation.PlayRawPresenter;
+import com.samsung.microbit.presentation.PlayAudioPresenter;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.view.CameraPreview;
 import com.samsung.microbit.utils.ServiceUtils;
@@ -94,7 +94,7 @@ public class CameraActivity_OldAPI extends Activity {
     private boolean isMakingPicOnResume;
     private boolean isRecordingVideoOnResume;
 
-    private PlayRawPresenter playRawPresenter;
+    private PlayAudioPresenter playAudioPresenter;
 
     private boolean debug = BuildConfig.DEBUG;
 
@@ -107,8 +107,8 @@ public class CameraActivity_OldAPI extends Activity {
             switch (what) {
                 case MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED:
                 case MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED:
-                    playRawPresenter.setRawNameForPlay(RawConstants.MAX_VIDEO_RECORDED);
-                    playRawPresenter.start();
+                    playAudioPresenter.setInternalPathForPlay(InternalPaths.MAX_VIDEO_RECORDED);
+                    playAudioPresenter.start();
                     stopRecording();
                     break;
                 case MediaRecorder.MEDIA_RECORDER_INFO_UNKNOWN:
@@ -533,7 +533,7 @@ public class CameraActivity_OldAPI extends Activity {
             mFrontCamera = true;
         }
 
-        playRawPresenter = new PlayRawPresenter();
+        playAudioPresenter = new PlayAudioPresenter();
 
         createRotatedIcons();
 
@@ -665,8 +665,8 @@ public class CameraActivity_OldAPI extends Activity {
      */
     private void startTakePicCounter() {
 
-        playRawPresenter.setRawNameForPlay(RawConstants.TAKING_PHOTO_AUDIO);
-        playRawPresenter.start();
+        playAudioPresenter.setInternalPathForPlay(InternalPaths.TAKING_PHOTO_AUDIO);
+        playAudioPresenter.start();
 
         @SuppressLint("ShowToast") final Toast toast = Toast.makeText(MBApp.getApp().getApplicationContext(), "bbb", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
@@ -750,8 +750,8 @@ public class CameraActivity_OldAPI extends Activity {
      * Plays notification sound and starts recording a video.
      */
     private void recordVideo() {
-        playRawPresenter.setRawNameForPlay(RawConstants.RECORDING_VIDEO_AUDIO);
-        playRawPresenter.start();
+        playAudioPresenter.setInternalPathForPlay(InternalPaths.RECORDING_VIDEO_AUDIO);
+        playAudioPresenter.start();
         mButtonClick.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -835,8 +835,8 @@ public class CameraActivity_OldAPI extends Activity {
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
 
-            playRawPresenter.setRawNameForPlay(RawConstants.PICTURE_TAKEN_AUDIO);
-            playRawPresenter.start();
+            playAudioPresenter.setInternalPathForPlay(InternalPaths.PICTURE_TAKEN_AUDIO);
+            playAudioPresenter.start();
 
         }
     };
@@ -877,7 +877,7 @@ public class CameraActivity_OldAPI extends Activity {
 
         this.unregisterReceiver(mMessageReceiver);
 
-        playRawPresenter.destroy();
+        playAudioPresenter.destroy();
 
         super.onDestroy();
     }

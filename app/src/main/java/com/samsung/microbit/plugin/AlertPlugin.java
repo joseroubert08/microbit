@@ -13,9 +13,9 @@ import android.util.Log;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.data.constants.EventSubCodes;
-import com.samsung.microbit.data.constants.RawConstants;
+import com.samsung.microbit.data.constants.InternalPaths;
 import com.samsung.microbit.data.model.CmdArg;
-import com.samsung.microbit.presentation.PlayRawPresenter;
+import com.samsung.microbit.presentation.PlayAudioPresenter;
 import com.samsung.microbit.presentation.PlayRingtonePresenter;
 import com.samsung.microbit.presentation.Presenter;
 import com.samsung.microbit.presentation.VibratePresenter;
@@ -88,9 +88,9 @@ public class AlertPlugin implements AbstractPlugin {
                 title = context.getString(R.string.findphone_via_microbit);
                 popupAction = PopUp.OK_ACTION_STOP_SERVICE_PLAYING;
 
-                durationNotExceed = getMaxRawDuration(RawConstants.FIND_MY_PHONE_AUDIO);
+                durationNotExceed = getMaxAudioDuration(InternalPaths.FIND_MY_PHONE_AUDIO);
 
-                addRawForPlaying(RawConstants.FIND_MY_PHONE_AUDIO, null);
+                addInternalPathForPlaying(InternalPaths.FIND_MY_PHONE_AUDIO, null);
                 addVibrationForPlaying(durationNotExceed);
                 break;
             case EventSubCodes.SAMSUNG_ALERT_EVT_ALARM1:
@@ -185,7 +185,7 @@ public class AlertPlugin implements AbstractPlugin {
         return duration;
     }
 
-    private int getMaxRawDuration(String rawNameForPlay) {
+    private int getMaxAudioDuration(String rawNameForPlay) {
         MBApp app = MBApp.getApp();
 
         Resources resources = app.getResources();
@@ -243,22 +243,22 @@ public class AlertPlugin implements AbstractPlugin {
         }
     }
 
-    private void addRawForPlaying(String rawNameForPlay, MediaPlayer.OnCompletionListener onCompletionListener) {
+    private void addInternalPathForPlaying(String rawNameForPlay, MediaPlayer.OnCompletionListener onCompletionListener) {
         int playRawIndex = alertTypes.indexOf(AlertType.TYPE_RAW);
 
-        final PlayRawPresenter playRawPresenter;
+        final PlayAudioPresenter playAudioPresenter;
 
         if(playRawIndex == -1) {
-            playRawPresenter = new PlayRawPresenter();
+            playAudioPresenter = new PlayAudioPresenter();
         } else {
-            playRawPresenter = (PlayRawPresenter) activePresenters.get(playRawIndex);
+            playAudioPresenter = (PlayAudioPresenter) activePresenters.get(playRawIndex);
         }
 
-        playRawPresenter.setRawNameForPlay(rawNameForPlay);
-        playRawPresenter.setCallBack(onCompletionListener);
+        playAudioPresenter.setInternalPathForPlay(rawNameForPlay);
+        playAudioPresenter.setCallBack(onCompletionListener);
 
         if(playRawIndex == -1) {
-            activePresenters.add(playRawPresenter);
+            activePresenters.add(playAudioPresenter);
             alertTypes.add(AlertType.TYPE_RAW);
         }
     }

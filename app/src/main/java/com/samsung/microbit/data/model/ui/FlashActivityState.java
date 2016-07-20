@@ -1,5 +1,8 @@
 package com.samsung.microbit.data.model.ui;
 
+/**
+ * Activity states of flashing process.
+ */
 public class FlashActivityState extends BaseActivityState {
     public static final int STATE_ENABLE_BT_INTERNAL_FLASH_REQUEST = 5;
     public static final int STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST = 6;

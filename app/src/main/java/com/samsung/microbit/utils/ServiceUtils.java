@@ -30,7 +30,7 @@ import java.util.Map;
 
 /**
  * Provides additional functionality to work with services,
- * such as send messages to different services using IPC message manager.
+ * such as create messages, create connection, disconnect from services.
  */
 public class ServiceUtils {
     private static final String TAG = ServiceUtils.class.getSimpleName();

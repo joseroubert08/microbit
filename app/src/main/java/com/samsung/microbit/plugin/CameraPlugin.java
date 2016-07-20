@@ -8,9 +8,9 @@ import android.util.Log;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventSubCodes;
-import com.samsung.microbit.data.constants.RawConstants;
+import com.samsung.microbit.data.constants.InternalPaths;
 import com.samsung.microbit.data.model.CmdArg;
-import com.samsung.microbit.presentation.PlayRawPresenter;
+import com.samsung.microbit.presentation.PlayAudioPresenter;
 import com.samsung.microbit.ui.activity.CameraActivityPermissionChecker;
 
 /**
@@ -33,7 +33,7 @@ public class CameraPlugin implements AbstractPlugin {
 
     private int m_CurrentState;
     private int m_NextState;
-    private PlayRawPresenter playRawPresenter;
+    private PlayAudioPresenter playAudioPresenter;
 
     private MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
         @Override
@@ -67,30 +67,30 @@ public class CameraPlugin implements AbstractPlugin {
                 m_CurrentState = EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE;
                 m_NextState = EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE;
 
-                if(playRawPresenter != null) {
-                    playRawPresenter.stop();
+                if(playAudioPresenter != null) {
+                    playAudioPresenter.stop();
                 } else {
-                    playRawPresenter = new PlayRawPresenter();
+                    playAudioPresenter = new PlayAudioPresenter();
                 }
 
-                playRawPresenter.setRawNameForPlay(RawConstants.LAUNCH_CAMERA_AUDIO_PHOTO);
-                playRawPresenter.setCallBack(onCompletionListener);
-                playRawPresenter.start();
+                playAudioPresenter.setInternalPathForPlay(InternalPaths.LAUNCH_CAMERA_AUDIO_PHOTO);
+                playAudioPresenter.setCallBack(onCompletionListener);
+                playAudioPresenter.start();
                 break;
 
             case EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE:
                 m_CurrentState = EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE;
                 m_NextState = EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_VIDEO_MODE;
 
-                if(playRawPresenter != null) {
-                    playRawPresenter.stop();
+                if(playAudioPresenter != null) {
+                    playAudioPresenter.stop();
                 } else {
-                    playRawPresenter = new PlayRawPresenter();
+                    playAudioPresenter = new PlayAudioPresenter();
                 }
 
-                playRawPresenter.setRawNameForPlay(RawConstants.LAUNCH_CAMERA_AUDIO_VIDEO);
-                playRawPresenter.setCallBack(onCompletionListener);
-                playRawPresenter.start();
+                playAudioPresenter.setInternalPathForPlay(InternalPaths.LAUNCH_CAMERA_AUDIO_VIDEO);
+                playAudioPresenter.setCallBack(onCompletionListener);
+                playAudioPresenter.start();
                 break;
 
             case EventSubCodes.SAMSUNG_CAMERA_EVT_TAKE_PHOTO:
@@ -118,10 +118,10 @@ public class CameraPlugin implements AbstractPlugin {
 
     @Override
     public void destroy() {
-        if(playRawPresenter != null) {
-            playRawPresenter.stop();
-            playRawPresenter.setCallBack(null);
-            playRawPresenter = null;
+        if(playAudioPresenter != null) {
+            playAudioPresenter.stop();
+            playAudioPresenter.setCallBack(null);
+            playAudioPresenter = null;
         }
     }
 

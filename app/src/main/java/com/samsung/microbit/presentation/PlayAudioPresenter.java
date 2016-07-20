@@ -14,23 +14,23 @@ import java.io.IOException;
 /**
  * Provides methods to manage a media player and play raw audio files.
  */
-public class PlayRawPresenter implements Presenter {
-    private static final String TAG = PlayRawPresenter.class.getSimpleName();
+public class PlayAudioPresenter implements Presenter {
+    private static final String TAG = PlayAudioPresenter.class.getSimpleName();
 
     private AudioManager audioManager;
 
     private int originalRingerMode;
     private int originalRingerVolume;
 
-    private String rawNameForPlay;
+    private String internalPath;
     private MediaPlayer mediaplayer;
     private MediaPlayer.OnCompletionListener callBack;
 
-    public PlayRawPresenter() {
+    public PlayAudioPresenter() {
     }
 
-    public void setRawNameForPlay(String rawNameForPlay) {
-        this.rawNameForPlay = rawNameForPlay;
+    public void setInternalPathForPlay(String rawNameForPlay) {
+        this.internalPath = rawNameForPlay;
     }
 
     public void setCallBack(MediaPlayer.OnCompletionListener callBack) {
@@ -42,7 +42,7 @@ public class PlayRawPresenter implements Presenter {
         MBApp app = MBApp.getApp();
 
         Resources resources = app.getResources();
-        int resID = resources.getIdentifier(rawNameForPlay, "raw", app.getPackageName());
+        int resID = resources.getIdentifier(internalPath, "raw", app.getPackageName());
         AssetFileDescriptor afd = resources.openRawResourceFd(resID);
 
         preparePhoneToPlayAudio(app);

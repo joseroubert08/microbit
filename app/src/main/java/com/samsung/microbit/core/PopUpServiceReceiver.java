@@ -38,7 +38,6 @@ public class PopUpServiceReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
         int popupExtraOkType = intent.getIntExtra(PopUp.INTENT_EXTRA_OK_ACTION, PopUp.OK_ACTION_NONE);
 
         final View.OnClickListener okListener;

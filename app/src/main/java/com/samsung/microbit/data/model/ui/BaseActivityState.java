@@ -1,5 +1,11 @@
 package com.samsung.microbit.data.model.ui;
 
+/**
+ * Base activity states. Used for make handling of connect process
+ * automatized.
+ *
+ * @see com.samsung.microbit.utils.BLEConnectionHandler
+ */
 public class BaseActivityState {
     protected BaseActivityState() {
     }

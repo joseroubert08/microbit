@@ -3,8 +3,8 @@ package com.samsung.microbit.data.constants;
 /**
  * Contains raw paths for playing audio sounds.
  */
-public class RawConstants {
-    private RawConstants() {
+public class InternalPaths {
+    private InternalPaths() {
     }
 
     public static final String LAUNCH_CAMERA_AUDIO_PHOTO = "raw/en_gb_emma_launching_camera_photo";

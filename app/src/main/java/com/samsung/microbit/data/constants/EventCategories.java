@@ -38,7 +38,7 @@ public class EventCategories {
      * DON'T DELETE. Used for internal proposes!!!!
      * </strong>
      */
-    public static final int SAMSUNG_TELEPHONY_ID = 5555; //DO NOT DELETE. Used for internal registration
+    public static final int SAMSUNG_TELEPHONY_ID = 5555;
 
     /**
      * Category for signal strength
