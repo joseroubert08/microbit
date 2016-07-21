@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -21,7 +22,7 @@ import pl.droidsonroids.gif.AnimationListener;
  * Represents a loading screen activity.
  * Provides methods to create and manage splash screen animation.
  */
-public class SplashScreenActivity extends Activity {
+public class SplashScreenActivity extends Activity implements View.OnClickListener{
     private static final String EXTRA_ANIMATION_STARTED = "animation_started";
     private static final int ANIM_STEP_ONE_DURATION = 1000;
     private static final int ANIM_STEP_TWO_DURATION = 800;
@@ -45,25 +46,10 @@ public class SplashScreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(savedInstanceState != null) {
-            mAnimationStarted = savedInstanceState.getBoolean(EXTRA_ANIMATION_STARTED, false);
-        }
+        setContentView(R.layout.activity_splash_screen);
+        initViews();
 
-        if(mAnimationStarted) {
-            mAnimationStarted = false;
-            startHomeActivity();
-        } else {
-            setContentView(R.layout.activity_splash_screen);
-            initViews();
-
-            MBApp.getApp().getEchoClientManager().sendAppStats();
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean(EXTRA_ANIMATION_STARTED, mAnimationStarted);
-        super.onSaveInstanceState(outState);
+        MBApp.getApp().getEchoClientManager().sendAppStats();
     }
 
     private void initViews() {
@@ -74,6 +60,8 @@ public class SplashScreenActivity extends Activity {
         mGifImageFirstFrame = (ImageView) findViewById(R.id.splash_screen_gif_image_first_frame);
         mGifImage = (GifImageView) findViewById(R.id.splash_screen_gif_image);
         mLastAnimStepHandler = new Handler();
+
+        findViewById(R.id.splash_screen_layout).setOnClickListener(this);
     }
 
     /**
@@ -282,7 +270,6 @@ public class SplashScreenActivity extends Activity {
         } else {
             startHomeActivity();
         }
-
     }
 
     /**
@@ -300,7 +287,7 @@ public class SplashScreenActivity extends Activity {
     }
 
     private void removeAnimation() {
-        if(mAnimationStarted) {
+        if (mAnimationStarted) {
             mLastAnimStepHandler.removeCallbacks(mLastAnimStepCallback);
             mGifDrawable.removeAnimationListener(mGifAnimListener);
         }
@@ -311,5 +298,10 @@ public class SplashScreenActivity extends Activity {
         super.onDestroy();
         removeAnimation();
         releaseViews();
+    }
+
+    @Override
+    public void onClick(View v) {
+        startHomeActivity();
     }
 }
