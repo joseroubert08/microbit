@@ -11,7 +11,7 @@ public class Project {
     public final long timestamp;
     public final String filePath;
     public final String codeUrl;
-    public final boolean runStatus;
+    public boolean runStatus;
     public boolean actionBarExpanded;
     public boolean inEditMode;
 
@@ -22,5 +22,17 @@ public class Project {
         this.codeUrl = codeUrl;
         this.runStatus = runStatus;
         this.actionBarExpanded = false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o == null || !(o instanceof Project)) {
+            return false;
+        }
+
+        Project comparedProject = (Project) o;
+
+        return comparedProject.timestamp == timestamp && (comparedProject.filePath != null && filePath != null
+                && comparedProject.filePath.equals(filePath));
     }
 }

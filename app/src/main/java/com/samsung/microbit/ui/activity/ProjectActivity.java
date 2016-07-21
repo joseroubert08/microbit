@@ -69,6 +69,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     private static final int ALERT_DIALOG_RECONNECT = 1;
 
     private List<Project> mProjectList = new ArrayList<>();
+    private List<Project> mOldProjectList = new ArrayList<>();
     private ListView mProjectListView;
     private ListView mProjectListViewRight;
     private HashMap<String, String> mPrettyFileNameMap = new HashMap<>();
@@ -595,6 +596,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
      */
     public void updateProjectsListSortOrder(boolean reReadFS) {
         if (reReadFS) {
+            mOldProjectList.clear();
+            mOldProjectList.addAll(mProjectList);
             mProjectList.clear();
             ProjectsHelper.findProjectssAndPopulate(mPrettyFileNameMap, mProjectList);
         }
@@ -602,7 +605,17 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         int projectListSortOrder = Utils.getListSortOrder();
         int sortBy = (projectListSortOrder >> 1);
         int sortOrder = projectListSortOrder & 0x01;
-        com.samsung.microbit.utils.Utils.sortProjectList(mProjectList, sortBy, sortOrder);
+        Utils.sortProjectList(mProjectList, sortBy, sortOrder);
+
+        for (Project project : mProjectList) {
+            int indexInProjectsBeforeReloading = mOldProjectList.indexOf(project);
+            if(indexInProjectsBeforeReloading != -1) {
+                Project oldProject = mOldProjectList.get(indexInProjectsBeforeReloading);
+                project.inEditMode = oldProject.inEditMode;
+                project.actionBarExpanded = oldProject.actionBarExpanded;
+                project.runStatus = oldProject.runStatus;
+            }
+        }
 
         setupListAdapter();
     }
