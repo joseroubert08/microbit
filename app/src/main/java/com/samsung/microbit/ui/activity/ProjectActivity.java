@@ -329,8 +329,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
             localBroadcastManager.registerReceiver(gattForceClosedReceiver, new IntentFilter(BLEService
                     .GATT_FORCE_CLOSED));
-
-            checkMinimumPermissionsForThisScreen();
         }
 
         logi("onCreate() :: ");
@@ -345,6 +343,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         initViews();
         setupFontStyle();
 
+        checkMinimumPermissionsForThisScreen();
         setConnectedDeviceText();
         String fullPathOfFile = null;
         String fileName = null;
