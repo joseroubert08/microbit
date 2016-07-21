@@ -152,6 +152,7 @@
 
         <activity
             android:name=".ui.activity.SplashScreenActivity"
+            android:screenOrientation="locked"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
