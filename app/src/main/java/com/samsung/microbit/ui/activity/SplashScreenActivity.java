@@ -22,6 +22,7 @@ import pl.droidsonroids.gif.AnimationListener;
  * Provides methods to create and manage splash screen animation.
  */
 public class SplashScreenActivity extends Activity {
+    private static final String EXTRA_ANIMATION_STARTED = "animation_started";
     private static final int ANIM_STEP_ONE_DURATION = 1000;
     private static final int ANIM_STEP_TWO_DURATION = 800;
     private static final int ANIM_STEP_TWO_DELAY = 600;
@@ -43,11 +44,26 @@ public class SplashScreenActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash_screen);
 
-        initViews();
+        if(savedInstanceState != null) {
+            mAnimationStarted = savedInstanceState.getBoolean(EXTRA_ANIMATION_STARTED, false);
+        }
 
-        MBApp.getApp().getEchoClientManager().sendAppStats();
+        if(mAnimationStarted) {
+            mAnimationStarted = false;
+            startHomeActivity();
+        } else {
+            setContentView(R.layout.activity_splash_screen);
+            initViews();
+
+            MBApp.getApp().getEchoClientManager().sendAppStats();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(EXTRA_ANIMATION_STARTED, mAnimationStarted);
+        super.onSaveInstanceState(outState);
     }
 
     private void initViews() {
@@ -280,13 +296,20 @@ public class SplashScreenActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        mLastAnimStepHandler.removeCallbacks(mLastAnimStepCallback);
-        mGifDrawable.removeAnimationListener(mGifAnimListener);
+        removeAnimation();
+    }
+
+    private void removeAnimation() {
+        if(mAnimationStarted) {
+            mLastAnimStepHandler.removeCallbacks(mLastAnimStepCallback);
+            mGifDrawable.removeAnimationListener(mGifAnimListener);
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        removeAnimation();
         releaseViews();
     }
 }
