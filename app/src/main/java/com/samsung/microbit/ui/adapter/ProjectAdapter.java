@@ -42,6 +42,8 @@ public class ProjectAdapter extends BaseAdapter {
     private ProjectActivity mProjectActivity;
     int currentEditableRow = -1;
 
+    private static final int FOCUS_DELAY = 300;
+
     private InputFilter renameFilter = new InputFilter() {
         public CharSequence filter(CharSequence source, int start, int end,
                                    Spanned dest, int dstart, int dend) {
@@ -214,9 +216,15 @@ public class ProjectAdapter extends BaseAdapter {
             @Override
             public void run() {
                 imm.showSoftInput(v, 0);
+            }
+        }, 0);
+
+        v.postDelayed(new Runnable() {
+            @Override
+            public void run() {
                 v.requestFocus();
             }
-        }, 100);
+        }, FOCUS_DELAY);
     }
 
     /**
