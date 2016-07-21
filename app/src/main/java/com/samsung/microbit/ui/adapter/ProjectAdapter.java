@@ -3,6 +3,8 @@ package com.samsung.microbit.ui.adapter;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -25,9 +27,9 @@ import com.samsung.microbit.ui.activity.ProjectActivity;
 import com.samsung.microbit.ui.control.ExtendedEditText;
 import com.samsung.microbit.utils.FileUtils;
 
-import static com.samsung.microbit.BuildConfig.DEBUG;
-
 import java.util.List;
+
+import static com.samsung.microbit.BuildConfig.DEBUG;
 
 /**
  * Represents a project adapter that allows to custom view for
@@ -39,6 +41,22 @@ public class ProjectAdapter extends BaseAdapter {
     private List<Project> mProjects;
     private ProjectActivity mProjectActivity;
     int currentEditableRow = -1;
+
+    private InputFilter renameFilter = new InputFilter() {
+        public CharSequence filter(CharSequence source, int start, int end,
+                                   Spanned dest, int dstart, int dend) {
+            for (int i = start; i < end; i++) {
+                if (!Character.isLetterOrDigit(source.charAt(i)) && !isAdditionalAllowedSymbol(source.charAt(i))) {
+                    return "";
+                }
+            }
+            return null;
+        }
+
+        private boolean isAdditionalAllowedSymbol(char value) {
+            return value == '-' || value == '_' || value == ' ';
+        }
+    };
 
     /**
      * Simplified method to log informational messages.
@@ -358,6 +376,7 @@ public class ProjectAdapter extends BaseAdapter {
         appNameEdit.setTag(R.id.positionId, position);
         appNameEdit.setTag(R.id.editbutton, appNameButton);
         appNameEdit.setOnEditorActionListener(editorOnActionListener);
+        appNameEdit.setFilters(new InputFilter[] { renameFilter });
 
         if (project.inEditMode) {
             appNameEdit.setVisibility(View.VISIBLE);
