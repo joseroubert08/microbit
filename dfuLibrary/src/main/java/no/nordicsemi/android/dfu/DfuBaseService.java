@@ -182,6 +182,8 @@ public abstract class DfuBaseService extends IntentService {
     public static final String MIME_TYPE_OCTET_STREAM = "application/octet-stream";
     public static final String MIME_TYPE_ZIP = "application/zip";
 
+    public static final String EXTRA_WAIT_FOR_INIT_DEVICE_FIRMWARE = "com.samsung.microbit.WAIT_FOR_INIT";
+
     /**
      * This optional extra parameter may contain a file type. Currently supported are:
      * <ul>
@@ -375,6 +377,8 @@ public abstract class DfuBaseService extends IntentService {
      * The upload has been aborted. Previous software version will be restored on the target.
      */
     public static final int PROGRESS_ABORTED = -7;
+
+    public static final int PROGRESS_SERVICE_NOT_FOUND = -10;
 
 
     public static final int PROGRESS_VALIDATION_FAILED = -8;
@@ -739,6 +743,8 @@ public abstract class DfuBaseService extends IntentService {
     private boolean mPaused;
     private boolean mAborted;
 
+    private long delayForInitDeviceFirmware;
+
     private volatile BluetoothGatt gatt = null;
     private volatile BluetoothDevice device = null;
 
@@ -834,7 +840,7 @@ public abstract class DfuBaseService extends IntentService {
                     mConnectionState = STATE_CONNECTED;
 
 					/*
-					 *  The onConnectionStateChange callback is called just after establishing connection and before sending Encryption Request BLE event in case of a paired device. 
+                     *  The onConnectionStateChange callback is called just after establishing connection and before sending Encryption Request BLE event in case of a paired device.
 					 *  In that case and when the Service Changed CCCD is enabled we will get the indication after initializing the encryption, about 1600 milliseconds later. 
 					 *  If we discover services right after connecting, the onServicesDiscovered callback will be called immediately, before receiving the indication and the following 
 					 *  service discovery and we may end up with old, application's services instead.
@@ -857,6 +863,7 @@ public abstract class DfuBaseService extends IntentService {
                                 // about 600ms after establishing connection. Values 600 - 1600ms should be OK.
                             }
                         } catch (InterruptedException e) {
+                            Log.e(TAG, e.toString());
                             // Do nothing
                         }
                     }
@@ -1194,6 +1201,7 @@ public abstract class DfuBaseService extends IntentService {
 
         int phase = intent.getIntExtra(INTENT_REQUESTED_PHASE, 0) & 0x03;
         resultReceiver = (ResultReceiver) intent.getParcelableExtra(INTENT_RESULT_RECEIVER);
+        delayForInitDeviceFirmware = intent.getLongExtra(EXTRA_WAIT_FOR_INIT_DEVICE_FIRMWARE, 0);
 
         int rc = 0;
 
@@ -1202,6 +1210,7 @@ public abstract class DfuBaseService extends IntentService {
 
         if ((phase & FLASHING_WITH_PAIR_CODE) != 0) {
             mServicePhase = FLASHING_WITH_PAIR_CODE;
+
             rc = flashingWithPairCode(intent);
         }
 
@@ -1216,6 +1225,17 @@ public abstract class DfuBaseService extends IntentService {
         gatt = null;
         sendLogBroadcast(LOG_LEVEL_VERBOSE, "makeGattConnection to target..." + deviceAddress);
         updateProgressNotification(PROGRESS_CONNECTING);
+
+        if (delayForInitDeviceFirmware != 0) {
+            try {
+                synchronized (mLock) {
+                    mLock.wait(delayForInitDeviceFirmware);
+                }
+            } catch (InterruptedException e) {
+                Log.e(TAG, e.toString());
+            }
+            delayForInitDeviceFirmware = 0;
+        }
 
         mConnectionState = STATE_DISCONNECTED;
         mBytesSent = 0;
@@ -1295,7 +1315,7 @@ public abstract class DfuBaseService extends IntentService {
         if (fps == null) {
             logi("Error Cannot find MICROBIT_FLASH_SERVICE_UUID");
             sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
-            terminateConnection(gatt, PROGRESS_ABORTED);
+            terminateConnection(gatt, PROGRESS_SERVICE_NOT_FOUND);
             return 6;
         }
 
@@ -1303,7 +1323,7 @@ public abstract class DfuBaseService extends IntentService {
         if (sfpc1 == null) {
             logi("Error Cannot find MICROBIT_FLASH_SERVICE_CONTROL_CHARACTERISTIC_UUID");
             sendLogBroadcast(LOG_LEVEL_WARNING, "Upload aborted");
-            terminateConnection(gatt, PROGRESS_ABORTED);
+            terminateConnection(gatt, PROGRESS_SERVICE_NOT_FOUND);
             return 6;
         }
 
@@ -1314,6 +1334,7 @@ public abstract class DfuBaseService extends IntentService {
             rc = 0;
         } catch (Exception e) {
             e.printStackTrace();
+            Log.e(TAG, e.toString());
         }
 
         if (rc == 0) {
@@ -1330,7 +1351,7 @@ public abstract class DfuBaseService extends IntentService {
                 resultReceiver = null;
                 gatt.disconnect();
                 waitUntilDisconnected();
-                if(mConnectionState != STATE_CLOSED) {
+                if (mConnectionState != STATE_CLOSED) {
                     close(gatt);
                 }
                 gatt = null;
@@ -1340,13 +1361,6 @@ public abstract class DfuBaseService extends IntentService {
 
         logi("Phase2 e");
         return rc;
-    }
-
-    private void sleep(long period) {
-        try {
-            Thread.sleep(2500L);
-        } catch (InterruptedException e) {
-        }
     }
 
     private Intent phase3(Intent intent) {
@@ -1383,6 +1397,7 @@ public abstract class DfuBaseService extends IntentService {
                 numberOfPackets = DfuSettingsConstants.SETTINGS_NUMBER_OF_PACKETS_DEFAULT;
         } catch (final NumberFormatException e) {
             numberOfPackets = DfuSettingsConstants.SETTINGS_NUMBER_OF_PACKETS_DEFAULT;
+            Log.e(TAG, e.toString());
         }
 
         if (!packetReceiptNotificationEnabled)
@@ -1399,6 +1414,7 @@ public abstract class DfuBaseService extends IntentService {
                 mbrSize = 0;
         } catch (final NumberFormatException e) {
             mbrSize = DfuSettingsConstants.SETTINGS_DEFAULT_MBR_SIZE;
+            Log.e(TAG, e.toString());
         }
 
         sendLogBroadcast(LOG_LEVEL_VERBOSE, "Starting DFU service");
@@ -1769,6 +1785,8 @@ public abstract class DfuBaseService extends IntentService {
                             throw new RemoteDfuException("Starting DFU failed", status);
                     } catch (final RemoteDfuException e) {
                         try {
+                            Log.e(TAG, e.toString());
+
                             if (e.getErrorNumber() != DFU_STATUS_NOT_SUPPORTED)
                                 throw e;
 
@@ -1793,6 +1811,7 @@ public abstract class DfuBaseService extends IntentService {
                                     appImageSize = 0;
                                     mImageSizeInBytes = is.available();
                                 } catch (final IOException e1) {
+                                    Log.e(TAG, e.toString());
                                     // never happen
                                 }
 
@@ -1817,6 +1836,8 @@ public abstract class DfuBaseService extends IntentService {
                             } else
                                 throw e;
                         } catch (final RemoteDfuException e1) {
+                            Log.e(TAG, e1.toString());
+
                             if (e1.getErrorNumber() != DFU_STATUS_NOT_SUPPORTED)
                                 throw e1;
 
@@ -2025,6 +2046,7 @@ public abstract class DfuBaseService extends IntentService {
                             try {
                                 mLock.wait(1400);
                             } catch (final InterruptedException e) {
+                                Log.e(TAG, e.toString());
                                 // do nothing
                             }
                         }
@@ -2079,6 +2101,7 @@ public abstract class DfuBaseService extends IntentService {
                         writeOpCode(gatt, controlPointCharacteristic, OP_CODE_RESET);
                         sendLogBroadcast(LOG_LEVEL_APPLICATION, "Reset request sent");
                     } catch (final Exception e1) {
+                        Log.e(TAG, e1.toString());
                         // do nothing
                     }
 
@@ -2107,6 +2130,7 @@ public abstract class DfuBaseService extends IntentService {
                         writeOpCode(gatt, controlPointCharacteristic, OP_CODE_RESET);
                         sendLogBroadcast(LOG_LEVEL_APPLICATION, "Reset request sent");
                     } catch (final Exception e1) {
+                        Log.e(TAG, e1.toString());
                         // do nothing
                     }
 
@@ -2120,6 +2144,7 @@ public abstract class DfuBaseService extends IntentService {
                     is.close();
 
             } catch (final IOException e) {
+                Log.e(TAG, e.toString());
                 // do nothing
             }
         }
@@ -2969,6 +2994,7 @@ public abstract class DfuBaseService extends IntentService {
             }
         } catch (final Exception e) {
             Log.w(TAG, "An exception occurred while creating bond", e);
+            Log.e(TAG, e.toString());
         }
 
         return false;
@@ -3010,6 +3036,7 @@ public abstract class DfuBaseService extends IntentService {
             result = true;
         } catch (final Exception e) {
             Log.w(TAG, "An exception occurred while removing bond information", e);
+            Log.e(TAG, e.toString());
         }
 
         return result;

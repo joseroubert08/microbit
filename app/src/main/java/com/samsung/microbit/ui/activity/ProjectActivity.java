@@ -93,18 +93,20 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     private int countOfReconnecting;
     private boolean sentPause;
 
+    private boolean notAValidFlashHexFile;
+
     private final Runnable tryToConnectAgain = new Runnable() {
 
         @Override
         public void run() {
-            if(sentPause) {
+            if (sentPause) {
                 countOfReconnecting++;
             }
 
             final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager
                     .getInstance(ProjectActivity.this);
 
-            if(countOfReconnecting == Constants.MAX_COUNT_OF_RE_CONNECTIONS_FOR_DFU) {
+            if (countOfReconnecting == Constants.MAX_COUNT_OF_RE_CONNECTIONS_FOR_DFU) {
                 countOfReconnecting = 0;
                 Intent intent = new Intent(DfuService.BROADCAST_ACTION);
                 intent.putExtra(DfuService.EXTRA_ACTION, DfuService.ACTION_ABORT);
@@ -113,9 +115,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                 final int nextAction;
                 final long delayForNewlyBroadcast;
 
-                if(sentPause) {
+                if (sentPause) {
                     nextAction = DfuService.ACTION_RESUME;
-                    delayForNewlyBroadcast = Constants.TIME_FOR_RECONNECTION;
+                    delayForNewlyBroadcast = Constants.TIME_FOR_CONNECTION_COMPLETED;
                 } else {
                     nextAction = DfuService.ACTION_PAUSE;
                     delayForNewlyBroadcast = Constants.DELAY_BETWEEN_PAUSE_AND_RESUME;
@@ -272,7 +274,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
         mProjectListView.setAdapter(null);
 
-        if(mProjectListViewRight != null) {
+        if (mProjectListViewRight != null) {
             mProjectListViewRight.setAdapter(null);
         }
 
@@ -375,7 +377,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         localBroadcastManager.unregisterReceiver(gattForceClosedReceiver);
         localBroadcastManager.unregisterReceiver(connectionChangedReceiver);
 
-        if(dfuResultReceiver != null) {
+        if (dfuResultReceiver != null) {
             localBroadcastManager.unregisterReceiver(dfuResultReceiver);
         }
 
@@ -865,6 +867,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         service.putExtra(DfuService.EXTRA_FILE_PATH, mProgramToSend.filePath); // a path or URI must be provided.
         service.putExtra(DfuService.EXTRA_KEEP_BOND, false);
         service.putExtra(DfuService.INTENT_REQUESTED_PHASE, 2);
+        if (notAValidFlashHexFile) {
+            service.putExtra(DfuService.EXTRA_WAIT_FOR_INIT_DEVICE_FIRMWARE, Constants.JUST_PAIRED_DELAY_ON_CONNECTION);
+        }
 
         application.startService(service);
     }
@@ -1019,7 +1024,15 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
                                 countOfReconnecting = 0;
                                 sentPause = false;
-                                handler.postDelayed(tryToConnectAgain, Constants.TIME_FOR_RECONNECTION);
+
+                                long delayForCheckOnConnection = Constants.TIME_FOR_CONNECTION_COMPLETED;
+
+                                if (notAValidFlashHexFile) {
+                                    notAValidFlashHexFile = false;
+                                    delayForCheckOnConnection += Constants.JUST_PAIRED_DELAY_ON_CONNECTION;
+                                }
+
+                                handler.postDelayed(tryToConnectAgain, delayForCheckOnConnection);
                             }
 
                             inInit = true;
@@ -1096,6 +1109,29 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
                             LocalBroadcastManager.getInstance(application).unregisterReceiver(dfuResultReceiver);
                             dfuResultReceiver = null;
+                            removeReconnectionRunnable();
+                            break;
+                        case DfuService.PROGRESS_SERVICE_NOT_FOUND:
+                            Log.e(TAG, "service not found");
+                            setActivityState(FlashActivityState.STATE_IDLE);
+
+                            application = MBApp.getApp();
+
+                            //Update Stats
+                            application.getEchoClientManager().sendFlashStats(false, mProgramToSend.name,
+                                    m_HexFileSizeStats,
+                                    m_BinSizeStats, m_MicroBitFirmware);
+                            PopUp.show(getString(R.string.flashing_aborted), //message
+                                    getString(R.string.flashing_aborted_title),
+                                    R.drawable.error_face, R.drawable.red_btn,
+                                    PopUp.GIFF_ANIMATION_ERROR,
+                                    PopUp.TYPE_ALERT, //type of popup.
+                                    popupOkHandler,//override click listener for ok button
+                                    popupOkHandler);//pass null to use default listener
+
+                            LocalBroadcastManager.getInstance(application).unregisterReceiver(dfuResultReceiver);
+                            dfuResultReceiver = null;
+                            removeReconnectionRunnable();
                             break;
 
                     }
@@ -1113,16 +1149,24 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
                         inProgress = true;
 
-                        handler.removeCallbacks(tryToConnectAgain);
-                        countOfReconnecting = 0;
-                        sentPause = false;
+                        removeReconnectionRunnable();
                     }
 
                     PopUp.updateProgressBar(state);
 
                 }
             } else if (intent.getAction().equals(DfuService.BROADCAST_ERROR)) {
-                String error_message = GattError.parse(intent.getIntExtra(DfuService.EXTRA_DATA, 0));
+                int errorCode = intent.getIntExtra(DfuService.EXTRA_DATA, 0);
+
+                if (errorCode == DfuService.ERROR_FILE_INVALID) {
+                    notAValidFlashHexFile = true;
+                }
+
+                String error_message = GattError.parse(errorCode);
+
+                if(errorCode == DfuService.ERROR_FILE_INVALID) {
+                    error_message += getString(R.string.reset_microbit_because_of_hex_file_wrong);
+                }
 
                 logi("DFUResultReceiver.onReceive() :: Flashing ERROR!!  Code - [" + intent.getIntExtra(DfuService.EXTRA_DATA, 0)
                         + "] Error Type - [" + intent.getIntExtra(DfuService.EXTRA_ERROR_TYPE, 0) + "]");
@@ -1143,6 +1187,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                         PopUp.TYPE_ALERT, //type of popup.
                         popupOkHandler,//override click listener for ok button
                         popupOkHandler);//pass null to use default listener
+
+                removeReconnectionRunnable();
             } else if (intent.getAction().equals(DfuService.BROADCAST_LOG)) {
                 //Only used for Stats at the moment
                 String data;
@@ -1159,6 +1205,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                 }
             }
         }
+    }
+
+    private void removeReconnectionRunnable() {
+        handler.removeCallbacks(tryToConnectAgain);
+        countOfReconnecting = 0;
+        sentPause = false;
     }
 
     @Override

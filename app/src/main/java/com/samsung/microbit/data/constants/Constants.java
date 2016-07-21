@@ -17,7 +17,7 @@ public class Constants {
     public static final int PIC_COUNTER_INTERVAL_MILLIS = 900;
 
     public static final int MAX_COUNT_OF_RE_CONNECTIONS_FOR_DFU = 3;
-    public static final long TIME_FOR_RECONNECTION = TimeUnit.SECONDS.toMillis(15);
+    public static final long TIME_FOR_CONNECTION_COMPLETED = TimeUnit.SECONDS.toMillis(25);
     public static final long DELAY_BETWEEN_PAUSE_AND_RESUME = TimeUnit.SECONDS.toMillis(1);
 
     public static final String PREFERENCES = "Preferences";
@@ -32,4 +32,6 @@ public class Constants {
         FAIL,
         DISCONNECT
     }
+
+    public static final long JUST_PAIRED_DELAY_ON_CONNECTION = 11000;
 }

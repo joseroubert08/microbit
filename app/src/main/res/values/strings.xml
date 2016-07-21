@@ -375,5 +375,6 @@
     <string name="reconnect_title">Reconnect</string>
     <string name="reconnect_text">You\'ve been disconnected from the micro:bit board. Do you want to reconnect?</string>
     <string name="reconnect_ok_button">Reconnect</string>
+    <string name="reset_microbit_because_of_hex_file_wrong">. Please reset micro:bit for continue using it!!!</string>
 </resources>
 

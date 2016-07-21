@@ -28,6 +28,7 @@ import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.core.bluetooth.CharacteristicChangeListener;
 import com.samsung.microbit.core.bluetooth.UnexpectedConnectionEventListener;
 import com.samsung.microbit.data.constants.CharacteristicUUIDs;
+import com.samsung.microbit.data.constants.Constants;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.GattFormats;
 import com.samsung.microbit.data.constants.GattServiceUUIDs;
@@ -51,8 +52,6 @@ import static com.samsung.microbit.BuildConfig.DEBUG;
 public class BLEService extends Service {
 
     private static final String TAG = BLEService.class.getSimpleName();
-
-    private static final long JUST_PAIRED_DELAY_ON_CONNECTION = 11000;
 
     private static final int ERROR_NONE = 0;
     private static final int ERROR_TIME_OUT = 10;
@@ -126,7 +125,7 @@ public class BLEService extends Service {
                     if(justPaired == IPCConstants.JUST_PAIRED) {
                         Log.e(TAG, "just paired delay");
                         try {
-                            Thread.sleep(JUST_PAIRED_DELAY_ON_CONNECTION);
+                            Thread.sleep(Constants.JUST_PAIRED_DELAY_ON_CONNECTION);
                         } catch (InterruptedException e) {
                             Log.e(TAG, e.toString());
                         }
