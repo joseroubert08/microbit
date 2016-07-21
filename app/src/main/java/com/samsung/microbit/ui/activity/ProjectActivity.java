@@ -329,6 +329,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
             localBroadcastManager.registerReceiver(gattForceClosedReceiver, new IntentFilter(BLEService
                     .GATT_FORCE_CLOSED));
+
+            checkMinimumPermissionsForThisScreen();
         }
 
         logi("onCreate() :: ");
@@ -385,12 +387,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         releaseViews();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        checkMinimumPermissionsForThisScreen();
-    }
-
     private void requestPermission(String[] permissions, final int requestCode) {
         ActivityCompat.requestPermissions(this, permissions, requestCode);
     }
@@ -409,6 +405,33 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         }
     };
 
+    /**
+     * Handler for OK button on More permission needed pop-up window that
+     * closes the pop-up and updates the list of projects.
+     */
+    View.OnClickListener okMorePermissionNeededHandler = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            logi("okMorePermissionNeededHandler");
+            PopUp.hide();
+            updateProjectsListSortOrder(false);
+        }
+    };
+
+    /**
+     * Shows a pop-up window "More permission needed" with message that
+     * that files cannot be accessed and displayed.
+     */
+    private void showMorePermissionsNeededWindow() {
+        PopUp.show(getString(R.string.storage_permission_for_programs_error),
+                getString(R.string.permissions_needed_title),
+                R.drawable.error_face, R.drawable.red_btn,
+                PopUp.GIFF_ANIMATION_ERROR,
+                PopUp.TYPE_ALERT,
+                okMorePermissionNeededHandler,
+                okMorePermissionNeededHandler);
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
                                            @NonNull int[] grantResults) {
@@ -418,12 +441,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     updateProjectsListSortOrder(true);
                 } else {
-                    PopUp.show(getString(R.string.storage_permission_for_programs_error),
-                            getString(R.string.permissions_needed_title),
-                            R.drawable.error_face, R.drawable.red_btn,
-                            PopUp.GIFF_ANIMATION_ERROR,
-                            PopUp.TYPE_ALERT,
-                            null, null);
+                    showMorePermissionsNeededWindow();
                 }
             }
             break;
@@ -468,12 +486,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         public void onClick(View v) {
             logi("diskStoragePermissionCancelHandler");
             PopUp.hide();
-            PopUp.show(getString(R.string.storage_permission_for_programs_error),
-                    getString(R.string.permissions_needed_title),
-                    R.drawable.error_face, R.drawable.red_btn,
-                    PopUp.GIFF_ANIMATION_ERROR,
-                    PopUp.TYPE_ALERT,
-                    null, null);
+            showMorePermissionsNeededWindow();
         }
     };
 
