@@ -78,7 +78,7 @@ public class BLEService extends Service {
         }
     }
 
-    public static final boolean AUTO_CONNECT = true;
+    public static final boolean AUTO_CONNECT = false;
 
     private BLEManager bleManager;
 

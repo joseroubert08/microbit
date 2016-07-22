@@ -947,15 +947,17 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                 logi("popupOkHandler");
                 PopUp.hide();
 
-                //Show dialog to reconnect to a board.
-                PopUp.show(getString(R.string.reconnect_text),
-                        getString(R.string.reconnect_title),
-                        R.drawable.message_face,
-                        R.drawable.green_btn,
-                        PopUp.GIFF_ANIMATION_NONE,
-                        PopUp.TYPE_CHOICE,
-                        reconnectHandler,
-                        null);
+                //Show dialog to reconnect to a board if auto reconnect feature is disabled.
+                if (!BLEService.AUTO_CONNECT) {
+                    PopUp.show(getString(R.string.reconnect_text),
+                            getString(R.string.reconnect_title),
+                            R.drawable.message_face,
+                            R.drawable.green_btn,
+                            PopUp.GIFF_ANIMATION_NONE,
+                            PopUp.TYPE_CHOICE,
+                            reconnectHandler,
+                            null);
+                }
             }
         };
 

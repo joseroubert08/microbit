@@ -207,12 +207,13 @@ public class BLEManager {
                             logi("connectMaybeInit() :: bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback)");
                         }
 
-                        gatt = bluetoothDevice.connectGatt(context, false, bluetoothGattCallback);
+                        gatt = bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback);
 
                         if (gatt == null) {
-                            if (DEBUG)
-                                logi("connectGatt failed with AutoReconnect = false. Trying again.. autoReconnect=" + autoReconnect);
-                            gatt = bluetoothDevice.connectGatt(context, autoReconnect, bluetoothGattCallback);
+                            if (DEBUG) {
+                                logi("connectGatt failed with AutoReconnect = " + autoReconnect + ". Trying again.. !autoReconnect=" + !autoReconnect);
+                            }
+                            gatt = bluetoothDevice.connectGatt(context, !autoReconnect, bluetoothGattCallback);
                         }
 
                         if (gatt != null) {
