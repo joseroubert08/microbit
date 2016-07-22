@@ -115,6 +115,10 @@ public class BLEManager {
 
     @Nullable
     public BluetoothGattService getService(UUID uuid) {
+        if(gatt == null) {
+            return null;
+        }
+
         if ((bleState & BLE_SERVICES_DISCOVERED) != 0) {
             return gatt.getService(uuid);
         }
@@ -124,6 +128,10 @@ public class BLEManager {
 
     @Nullable
     public List<BluetoothGattService> getServices() {
+        if(gatt == null) {
+            return null;
+        }
+
         if ((bleState & BLE_SERVICES_DISCOVERED) != 0) {
             return gatt.getServices();
         }
@@ -626,6 +634,9 @@ public class BLEManager {
      */
     public int enableCharacteristicNotification(BluetoothGattCharacteristic characteristic, BluetoothGattDescriptor
             descriptor, boolean enable) {
+        if(gatt == null) {
+            return BLE_ERROR_NOOP;
+        }
         int rc = BLE_ERROR_NOOP;
 
         synchronized (locker) {
