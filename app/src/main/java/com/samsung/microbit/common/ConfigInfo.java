@@ -157,21 +157,21 @@ public class ConfigInfo {
 
     public String getCreateCodeURL() {
         if (createCodeURL.isEmpty()) {
-            createCodeURL = appContext.getString(R.string.createCodeURL);
+            createCodeURL = appContext.getString(R.string.create_code_url);
         }
         return createCodeURL;
     }
 
     public String getDiscoverURL() {
         if (discoverURL.isEmpty()) {
-            discoverURL = appContext.getString(R.string.discoverURL);
+            discoverURL = appContext.getString(R.string.discover_url);
         }
         return discoverURL;
     }
 
     public String getMyScriptsURL() {
         if (myScriptsURL.isEmpty()) {
-            myScriptsURL = appContext.getString(R.string.myScriptsURL);
+            myScriptsURL = appContext.getString(R.string.my_scripts_url);
         }
         return myScriptsURL;
     }

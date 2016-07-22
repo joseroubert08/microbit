@@ -22,14 +22,13 @@
     <string name="copyright">Copyright © 1995&#8211;2015 SAMSUNG</string>
     <string name="developed_by">Developed by</string>
 
-    <string name="createCodeURL" translatable="false">https://www.microbit.co.uk/</string>
-
-    <string name="discoverURL" translatable="false">https://www.microbit.co.uk/</string>
-    <string name="myScriptsURL" translatable="false">https://www.microbit.co.uk/</string>
-
-    <string name="privacy_policy_url" translatable="false">https://www.microbit.co.uk/</string>
-    <string name="terms_of_use_url" translatable="false">https://www.microbit.co.uk/</string>
-    <string name="about_url" translatable="false">https://www.microbit.co.uk/mobile</string>
+    <!-- External links -->
+    <string name="create_code_url" translatable="false">https://www.microbit.co.uk/create-code</string>
+    <string name="discover_url" translatable="false">https://www.microbit.co.uk/</string>
+    <string name="my_scripts_url" translatable="false">https://www.microbit.co.uk/app/</string>
+    <string name="privacy_policy_url" translatable="false">https://www.microbit.co.uk/privacy</string>
+    <string name="terms_of_use_url" translatable="false">https://www.microbit.co.uk/terms-of-use</string>
+    <string name="about_url" translatable="false">https://www.microbit.co.uk/about</string>
     <string name="feedback_email_address" translatable="false">microbitsupport@bbc.co.uk</string>
 
     <string name="remote_config_url" translatable="false">https://files.microbit.co
