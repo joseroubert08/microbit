@@ -1,5 +1,6 @@
 package com.samsung.microbit.service;
 
+import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
@@ -11,6 +12,7 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -50,7 +52,6 @@ import no.nordicsemi.android.error.GattError;
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
 public class BLEService extends Service {
-
     private static final String TAG = BLEService.class.getSimpleName();
 
     private static final int ERROR_NONE = 0;
@@ -58,6 +59,8 @@ public class BLEService extends Service {
     private static final int ERROR_UNKNOWN_1 = 99;
     private static final int ERROR_UNKNOWN_2 = 1;
     private static final int ERROR_UNKNOWN_3 = 2;
+
+    public static final int SIMULATE = 10;
 
     public static final String GATT_FORCE_CLOSED = "com.microbit.gatt_force_closed";
 
@@ -118,6 +121,15 @@ public class BLEService extends Service {
         Bundle bundle = msg.getData();
         if (msg.what == IPCConstants.MESSAGE_ANDROID) {
             logi("IPCMessageManager.MESSAGE_ANDROID msg.arg1 = " + msg.arg1);
+            if(msg.arg1 == SIMULATE) {
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    Log.e(TAG, e.toString());
+                }
+                sendMessage(EventCategories.SAMSUNG_REMOTE_CONTROL_ID, 10);
+                return;
+            }
 
             switch (msg.arg1) {
                 case EventCategories.IPC_BLE_CONNECT:

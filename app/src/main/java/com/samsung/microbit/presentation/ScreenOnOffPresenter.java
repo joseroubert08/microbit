@@ -12,7 +12,9 @@ import android.util.Log;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.EventSubCodes;
+import com.samsung.microbit.data.constants.IPCConstants;
 import com.samsung.microbit.service.BLEService;
+import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.utils.ServiceUtils;
 import com.samsung.microbit.utils.Utils;
 
@@ -21,43 +23,23 @@ public class ScreenOnOffPresenter implements Presenter {
 
     private BroadcastReceiver screenReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
-                ServiceUtils.IMessengerFinder messengerFinder = MBApp.getApp().getMessengerFinder();
+        public void onReceive(Context context, Intent intent1) {
+            if (intent1.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+                MBApp application = MBApp.getApp();
 
-                if(messengerFinder != null) {
-                    Messenger bleMessenger = messengerFinder.getMessengerForService(BLEService.class.getName());
+                Intent intent = new Intent(application, IPCService.class);
+                intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED);
+                intent.putExtra(IPCConstants.INTENT_CHARACTERISTIC_MESSAGE, Utils.makeMicroBitValue
+                        (EventCategories.SAMSUNG_DEVICE_INFO_ID, EventSubCodes.SAMSUNG_DEVICE_DISPLAY_OFF));
+                application.startService(intent);
+            } else if (intent1.getAction().equals(Intent.ACTION_SCREEN_ON)) {
+                MBApp application = MBApp.getApp();
 
-                    if(bleMessenger != null) {
-                        Message message = ServiceUtils.composeBLECharacteristicMessage(Utils.makeMicroBitValue
-                                 (EventCategories.SAMSUNG_DEVICE_INFO_ID, EventSubCodes.SAMSUNG_DEVICE_DISPLAY_OFF));
-                        if(message != null) {
-                            try {
-                                bleMessenger.send(message);
-                            } catch (RemoteException e) {
-                                Log.e(TAG, e.toString());
-                            }
-                        }
-                    }
-                }
-            } else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
-                ServiceUtils.IMessengerFinder messengerFinder = MBApp.getApp().getMessengerFinder();
-
-                if(messengerFinder != null) {
-                    Messenger bleMessenger = messengerFinder.getMessengerForService(BLEService.class.getName());
-
-                    if(bleMessenger != null) {
-                        Message message = ServiceUtils.composeBLECharacteristicMessage(Utils.makeMicroBitValue
-                                 (EventCategories.SAMSUNG_DEVICE_INFO_ID, EventSubCodes.SAMSUNG_DEVICE_DISPLAY_ON));
-                        if(message != null) {
-                            try {
-                                bleMessenger.send(message);
-                            } catch (RemoteException e) {
-                                Log.e(TAG, e.toString());
-                            }
-                        }
-                    }
-                }
+                Intent intent = new Intent(application, IPCService.class);
+                intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED);
+                intent.putExtra(IPCConstants.INTENT_CHARACTERISTIC_MESSAGE, Utils.makeMicroBitValue
+                        (EventCategories.SAMSUNG_DEVICE_INFO_ID, EventSubCodes.SAMSUNG_DEVICE_DISPLAY_ON));
+                application.startService(intent);
             }
         }
     };

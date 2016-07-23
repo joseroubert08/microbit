@@ -41,7 +41,7 @@ public class BluetoothUtils {
         int totalPairedMicroBits = 0;
         BluetoothAdapter mBluetoothAdapter = ((BluetoothManager) MBApp.getApp().getSystemService(Context
                 .BLUETOOTH_SERVICE)).getAdapter();
-        if (mBluetoothAdapter.isEnabled()) {
+        if (mBluetoothAdapter != null && !mBluetoothAdapter.isEnabled()) {
             Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
             for (BluetoothDevice bt : pairedDevices) {
                 if (bt.getName().contains("micro:bit")) {

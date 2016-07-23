@@ -1,6 +1,7 @@
 package com.samsung.microbit.presentation;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -11,9 +12,11 @@ import android.util.Log;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.EventSubCodes;
+import com.samsung.microbit.data.constants.IPCConstants;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.plugin.TelephonyPlugin;
 import com.samsung.microbit.service.BLEService;
+import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.utils.ServiceUtils;
 import com.samsung.microbit.utils.Utils;
@@ -28,23 +31,13 @@ public class IncomingCallPresenter implements Presenter {
                 case TelephonyManager.CALL_STATE_RINGING:
                     Log.i(TAG, "onCallStateChanged: " + state);
 
-                    ServiceUtils.IMessengerFinder messengerFinder = MBApp.getApp().getMessengerFinder();
+                    MBApp application = MBApp.getApp();
 
-                    if(messengerFinder != null) {
-                        Messenger bleMessenger = messengerFinder.getMessengerForService(BLEService.class.getName());
-
-                        if(bleMessenger != null) {
-                            Message message = ServiceUtils.composeBLECharacteristicMessage(Utils.makeMicroBitValue
-                                     (EventCategories.SAMSUNG_DEVICE_INFO_ID, EventSubCodes.SAMSUNG_INCOMING_CALL));
-                            if(message != null) {
-                                try {
-                                    bleMessenger.send(message);
-                                } catch (RemoteException e) {
-                                    Log.e(TAG, e.toString());
-                                }
-                            }
-                        }
-                    }
+                    Intent intent = new Intent(application, IPCService.class);
+                    intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED);
+                    intent.putExtra(IPCConstants.INTENT_CHARACTERISTIC_MESSAGE, Utils.makeMicroBitValue
+                            (EventCategories.SAMSUNG_DEVICE_INFO_ID, EventSubCodes.SAMSUNG_INCOMING_CALL));
+                    application.startService(intent);
                     break;
             }
         }

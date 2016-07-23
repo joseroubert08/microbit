@@ -13,6 +13,7 @@ import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.IPCConstants;
 import com.samsung.microbit.data.constants.ServiceIds;
+import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.activity.PopUpActivity;
@@ -47,24 +48,11 @@ public class PopUpServiceReceiver extends BroadcastReceiver {
                 @Override
                 public void onClick(View v) {
 
-                    ServiceUtils.IMessengerFinder messengerFinder = MBApp.getApp().getMessengerFinder();
+                    MBApp application = MBApp.getApp();
 
-                    if (messengerFinder != null) {
-                        Messenger bleMessenger = messengerFinder.getMessengerForService(PluginService.class
-                                 .getName());
-
-                        if (bleMessenger != null) {
-                            Message message = ServiceUtils.composeMessage(IPCConstants.MESSAGE_ANDROID,
-                                    EventCategories.IPC_PLUGIN_STOP_PLAYING, ServiceIds.SERVICE_NONE, null, null);
-                            if (message != null) {
-                                try {
-                                    bleMessenger.send(message);
-                                } catch (RemoteException e) {
-                                    Log.e(TAG, e.toString());
-                                }
-                            }
-                        }
-                    }
+                    Intent intent1 = new Intent(application, IPCService.class);
+                    intent1.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_PLUGIN_STOP_PLAYING);
+                    application.startService(intent1);
                     PopUp.hide();
                 }
             };

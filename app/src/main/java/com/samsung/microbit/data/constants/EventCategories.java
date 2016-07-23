@@ -7,12 +7,19 @@ public class EventCategories {
     private EventCategories() {
     }
 
+    public static final int CATEGORY_UNKNOWN = 32;
+
     public static final int IPC_BLE_DISCONNECT = 1;
     public static final int IPC_BLE_CONNECT = 2;
+
     public static final int IPC_BLE_RECONNECT = 3;
     public static final int IPC_WRITE_CHARACTERISTIC = 4;
     public static final int IPC_DISCONNECT_FOR_FLASH = 5;
     public static final int IPC_PLUGIN_STOP_PLAYING = 6;
+
+    public static final int IPC_START_PROCESS = 7;
+    public static final int CATEGORY_REPLY = 8;
+    public static final int CATEGORY_SIMULATE = 9;
 
     public static final int IPC_BLE_NOTIFICATION_GATT_CONNECTED = 4000;
     public static final int IPC_BLE_NOTIFICATION_GATT_DISCONNECTED = 4001;

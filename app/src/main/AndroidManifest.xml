@@ -149,6 +149,14 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name=".service.IPCService"
+            android:exported="false"
+            android:process=":IPCService">
+            <intent-filter>
+                <action android:name="com.samsung.microbit.service.IPCService"/>
+            </intent-filter>
+        </service>
 
         <activity
             android:name=".ui.activity.SplashScreenActivity"

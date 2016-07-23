@@ -45,6 +45,7 @@ import com.samsung.microbit.data.constants.ServiceIds;
 import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.presentation.ConfigInfoPresenter;
 import com.samsung.microbit.service.BLEService;
+import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.utils.FileUtils;
@@ -66,23 +67,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     public static final String FIRST_RUN = "firstrun";
 
-    private static final class IPCHandler extends Handler {
-        private final WeakReference<HomeActivity> homeActivityWeakReference;
-
-        private IPCHandler(HomeActivity homeActivity) {
-            super();
-            homeActivityWeakReference = new WeakReference<>(homeActivity);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if(homeActivityWeakReference.get() != null) {
-                homeActivityWeakReference.get().handleIPCMessage(msg);
-            }
-        }
-    }
-
     // share stats checkbox
     private CheckBox mShareStatsCheckBox;
 
@@ -101,10 +85,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private ConfigInfoPresenter configInfoPresenter;
 
-    private Handler initHandlerOfFirstConnection = new Handler();
-
-    private IPCHandler ipcHandler;
-
     /**
      * Provides simplified way to log informational messages.
      *
@@ -113,68 +93,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private void logi(String message) {
         if (DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
-        }
-    }
-
-    private void handleIPCMessage(Message message) {
-        String replyToServiceName = null;
-        switch (message.arg2) {
-            case ServiceIds.SERVICE_PLUGIN:
-                replyToServiceName = PluginService.class.getName();
-                break;
-            case ServiceIds.SERVICE_BLE:
-                replyToServiceName = BLEService.class.getName();
-                break;
-        }
-
-        if(replyToServiceName != null) {
-            MBApp application = MBApp.getApp();
-
-            ServiceUtils.IMessengerFinder messengerFinder = application.getMessengerFinder();
-
-            if(messengerFinder != null) {
-                Messenger messenger = messengerFinder.getMessengerForService(replyToServiceName);
-                if (messenger != null) {
-                    Message newMessage = ServiceUtils.copyMessageFromOld(message, ServiceIds.SERVICE_NONE);
-                    newMessage.replyTo = application.getIpcMessenger();
-                    try {
-                        messenger.send(newMessage);
-                    } catch (RemoteException e) {
-                        Log.e(TAG, e.toString());
-                    }
-                }
-            }
-        } else {
-            if (message.arg1 == EventCategories.IPC_BLE_NOTIFICATION_GATT_CONNECTED ||
-                    message.arg1 == EventCategories.IPC_BLE_NOTIFICATION_GATT_DISCONNECTED) {
-                Context appContext = MBApp.getApp();
-
-                ConnectedDevice cd = BluetoothUtils.getPairedMicrobit(MBApp.getApp());
-                cd.mStatus = (message.arg1 == EventCategories.IPC_BLE_NOTIFICATION_GATT_CONNECTED);
-                BluetoothUtils.setPairedMicroBit(appContext, cd);
-
-                Bundle messageData = message.getData();
-
-                int errorCode = (int) messageData.getSerializable(IPCConstants.BUNDLE_ERROR_CODE);
-
-                String error_message = (String) messageData.getSerializable(IPCConstants.BUNDLE_ERROR_MESSAGE);
-
-                String firmware = (String) messageData.getSerializable(IPCConstants.BUNDLE_MICROBIT_FIRMWARE);
-
-                int microbitRequest = -1;
-                if (messageData.getSerializable(IPCConstants.BUNDLE_MICROBIT_REQUESTS) != null) {
-                    microbitRequest = (int) messageData.getSerializable(IPCConstants.BUNDLE_MICROBIT_REQUESTS);
-                }
-
-                Intent intent = new Intent(IPCConstants.INTENT_BLE_NOTIFICATION);
-                intent.putExtra(IPCConstants.NOTIFICATION_CAUSE, message.arg1);
-                intent.putExtra(IPCConstants.BUNDLE_ERROR_CODE, errorCode);
-                intent.putExtra(IPCConstants.BUNDLE_ERROR_MESSAGE, error_message);
-                intent.putExtra(IPCConstants.BUNDLE_MICROBIT_FIRMWARE, firmware);
-                intent.putExtra(IPCConstants.BUNDLE_MICROBIT_REQUESTS, microbitRequest);
-
-                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
-            }
         }
     }
 
@@ -206,51 +124,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         setContentView(R.layout.activity_home);
 
-        MBApp application = MBApp.getApp();
-
-        if(savedInstanceState == null && application.getMessengerFinder() == null) {
-            ServiceUtils.IMessengerFinder messengerFinder = ServiceUtils.createMessengerFinder();
-            ServiceUtils.bindService(PluginService.class, messengerFinder);
-            ServiceUtils.bindService(BLEService.class, messengerFinder);
-
-            ipcHandler = new IPCHandler(this);
-
-            Messenger ipcMessenger = new Messenger(ipcHandler);
-
-            application.setIpcMessenger(ipcMessenger);
-            application.setMessengerFinder(messengerFinder);
-
-            Log.e(TAG, "Set just paired to false");
-
-            application.setJustPaired(false);
-
-            initHandlerOfFirstConnection.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    MBApp application = MBApp.getApp();
-                    ConnectedDevice connectedDevice = BluetoothUtils.getPairedMicrobit(application);
-
-                    if(connectedDevice.mStatus) {
-                        Messenger bleMessenger = application.getMessengerFinder().getMessengerForService(BLEService
-                                .class.getName());
-
-                        if(bleMessenger != null) {
-                            //Init service to correct handling disconnection.
-                            if (!application.isBleConnectionEstablished()) {
-                                ServiceUtils.sendConnectDisconnectMessage(true);
-                                application.setBleConnectionEstablished(true);
-                            }
-                        } else {
-                            initHandlerOfFirstConnection.postDelayed(this, 300);
-                        }
-                    }
-                }
-            }, 300);
-
-            configInfoPresenter = new ConfigInfoPresenter();
-
-            configInfoPresenter.start();
+        if(savedInstanceState == null) {
+            Intent intent = new Intent(this, IPCService.class);
+            intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_START_PROCESS);
+            startService(intent);
         }
+
+        configInfoPresenter = new ConfigInfoPresenter();
+
+        configInfoPresenter.start();
 
         setupDrawer();
         setupButtonsFontStyle();
@@ -406,25 +288,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
         configInfoPresenter.destroy();
-
-        MBApp application = MBApp.getApp();
-
-        if(application.getMessengerFinder() != null) {
-            ServiceUtils.unbindService(application.getMessengerFinder());
-            application.setIpcMessenger(null);
-            application.setMessengerFinder(null);
-            application.setBleConnectionEstablished(false);
-        }
-        initHandlerOfFirstConnection.removeCallbacks(null);
-
-        if(ipcHandler != null) {
-            ipcHandler.removeCallbacks(null);
-        }
 
         unbindDrawables();
     }

@@ -23,6 +23,13 @@ public class IPCConstants {
 
     public static final String NOTIFICATION_CAUSE = "com.samsung.microbit.service.IPCService.CAUSE";
 
+    public static final String INTENT_TYPE = "com.samsung.intent_type";
+    public static final String INTENT_MBS_SERVICE = "com.samsung.mbs_service";
+    public static final String INTENT_REPLY_TO = "com.samsung.reply_to";
+    public static final String INTENT_CMD_ARG = "com.samsung.cmd_arg";
+    public static final String INTENT_CHARACTERISTIC_MESSAGE = "com.samsung.char_message";
+
     public static final int JUST_PAIRED = 1;
     public static final int PAIRED_EARLIER = 0;
+
 }

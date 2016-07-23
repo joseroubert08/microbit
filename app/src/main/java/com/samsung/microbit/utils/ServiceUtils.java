@@ -23,6 +23,7 @@ import com.samsung.microbit.data.constants.ServiceIds;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.data.model.NameValuePair;
 import com.samsung.microbit.service.BLEService;
+import com.samsung.microbit.service.IPCService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,88 +48,14 @@ public class ServiceUtils {
     public static void sendReplyCommand(int mbsService, CmdArg cmd) {
         MBApp application = MBApp.getApp();
 
-        if (application.getIpcMessenger() != null) {
-            Message msg = Message.obtain(null, mbsService);
-            Bundle bundle = new Bundle();
-            bundle.putInt("cmd", cmd.getCMD());
-            bundle.putString("value", cmd.getValue());
-            msg.setData(bundle);
-
-            try {
-                application.getIpcMessenger().send(msg);
-            } catch (RemoteException e) {
-                Log.e(TAG, e.toString());
-            }
+        if (true) {
+            Intent intent = new Intent(application, IPCService.class);
+            intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.CATEGORY_REPLY);
+            intent.putExtra(IPCConstants.INTENT_REPLY_TO, ServiceIds.SERVICE_PLUGIN);
+            intent.putExtra(IPCConstants.INTENT_MBS_SERVICE, mbsService);
+            intent.putExtra(IPCConstants.INTENT_CMD_ARG, cmd);
+            application.startService(intent);
         }
-    }
-
-    public static Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {
-        // Retrieve all services that can match the given intent
-        PackageManager pm = context.getPackageManager();
-        List<ResolveInfo> resolveInfo = pm.queryIntentServices(implicitIntent, 0);
-
-        // Make sure only one match was found
-        if (resolveInfo == null || resolveInfo.size() != 1) {
-            return null;
-        }
-
-        // Get component info and create ComponentName
-        ResolveInfo serviceInfo = resolveInfo.get(0);
-        String packageName = serviceInfo.serviceInfo.packageName;
-        String className = serviceInfo.serviceInfo.name;
-        ComponentName component = new ComponentName(packageName, className);
-
-        // Create a new intent. Use the old one for extras and such reuse
-        Intent explicitIntent = new Intent(implicitIntent);
-
-        // Set the component to be explicit
-        explicitIntent.setComponent(component);
-        return explicitIntent;
-    }
-
-    /**
-     * Bind service with messenger finder. For getting messengers for services and create {@link ServiceConnection}
-     * use {@link IMessengerFinder} interface.
-     *
-     * @param serviceClass Class of service, that messenger finder is handled.
-     * @param messengerFinder MessengerFinder, via which service is binding to app.
-     */
-    public static void bindService(Class serviceClass, IMessengerFinder messengerFinder) {
-        MBApp application = MBApp.getApp();
-        application.bindService(new Intent(application, serviceClass), messengerFinder, Context.BIND_AUTO_CREATE);
-    }
-
-    /**
-     * Unbind messengerFinder from application.
-     *
-     * @param messengerFinder MessengerFinder, that app should be disconnected from.
-     */
-    public static void unbindService(IMessengerFinder messengerFinder) {
-        MBApp.getApp().unbindService(messengerFinder);
-    }
-
-    /**
-     * Used for creating base component for IPC interaction.
-     */
-    public static IMessengerFinder createMessengerFinder() {
-        return new IMessengerFinder() {
-            private final Map<String, Messenger> clientMessengers = new HashMap<>();
-
-            @Override
-            public Messenger getMessengerForService(String serviceName) {
-                return clientMessengers.get(serviceName);
-            }
-
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                clientMessengers.put(name.getClassName(), new Messenger(service));
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                clientMessengers.remove(name.getClassName());
-            }
-        };
     }
 
     /**
@@ -212,44 +139,13 @@ public class ServiceUtils {
         MBApp application = MBApp.getApp();
 
         if (connect) {
-            Message connectMessage = ServiceUtils.composeMessage(IPCConstants.MESSAGE_ANDROID, EventCategories
-                    .IPC_BLE_CONNECT, ServiceIds.SERVICE_NONE, null, null);
-
-            if (connectMessage != null) {
-                connectMessage.arg2 = MBApp.getApp().isJustPaired() ? IPCConstants.JUST_PAIRED : IPCConstants
-                        .PAIRED_EARLIER;
-                connectMessage.replyTo = application.getIpcMessenger();
-
-                try {
-                    Messenger bleMessenger = application.getMessengerFinder().getMessengerForService(BLEService
-                            .class.getName());
-
-                    if (bleMessenger != null) {
-                        bleMessenger.send(connectMessage);
-                        MBApp.getApp().setJustPaired(false);
-                    }
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
+            Intent intent = new Intent(application, IPCService.class);
+            intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_BLE_CONNECT);
+            application.startService(intent);
         } else {
-            Message connectMessage = ServiceUtils.composeMessage(IPCConstants.MESSAGE_ANDROID, EventCategories
-                    .IPC_BLE_DISCONNECT, ServiceIds.SERVICE_NONE, null, null);
-
-            if (connectMessage != null) {
-                connectMessage.replyTo = application.getIpcMessenger();
-
-                try {
-                    Messenger bleMessenger = application.getMessengerFinder().getMessengerForService(BLEService
-                            .class.getName());
-
-                    if (bleMessenger != null) {
-                        bleMessenger.send(connectMessage);
-                    }
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
+            Intent intent = new Intent(application, IPCService.class);
+            intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_BLE_DISCONNECT);
+            application.startService(intent);
         }
     }
 
