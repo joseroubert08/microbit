@@ -69,6 +69,15 @@ public class IPCService extends Service {
     }
 
     @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        if(serviceConnector != null) {
+            Log.i(TAG, "Unbind services");
+            serviceConnector.unbindServices();
+        }
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         int category = intent.getIntExtra(IPCConstants.INTENT_TYPE, EventCategories.CATEGORY_UNKNOWN);
 

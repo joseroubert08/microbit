@@ -146,8 +146,9 @@ public class ServiceConnector {
         if (mBound) {
             mCtx.getApplicationContext().unbindService(mConnection);
             mBound = false;
+
+            handlerThread.quitSafely();
         }
-        handlerThread.quitSafely();
     }
 
     public ServiceUtils.IMessengerFinder getConnection() {
