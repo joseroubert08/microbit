@@ -81,8 +81,8 @@ public class IPCService extends Service {
         PendingIntent pi = PendingIntent.getService(getApplicationContext(), RequestCodes.REQUEST_RESTART_SERVICES,
                 intent, PendingIntent.FLAG_ONE_SHOT);
 
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TimeUnit.SECONDS
-                .toMillis(2), pi);
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TimeUnit.MILLISECONDS
+                .toMillis(400), pi);
 
         /*
         //TODO check why service is not recreating by system itself on real devices. Why do we need to use AlarmManager?
