@@ -47,7 +47,7 @@ public class PluginService extends Service {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
 
-            if (pluginServiceWeakReference.get() != null) {
+            if(pluginServiceWeakReference.get() != null) {
                 pluginServiceWeakReference.get().handleMessage(msg);
             }
         }
@@ -78,7 +78,7 @@ public class PluginService extends Service {
     }
 
     private static void logi(String message) {
-        if (DEBUG) {
+        if(DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
@@ -86,11 +86,11 @@ public class PluginService extends Service {
     private void handleMessage(Message msg) {
         logi("PluginService :: handleIncomingMessage()");
 
-        if (msg.what == IPCConstants.MESSAGE_ANDROID) {
+        if(msg.what == IPCConstants.MESSAGE_ANDROID) {
             logi("handleIncomingMessage() :: IPCMessageManager.MESSAGE_ANDROID msg.arg1 = " + msg.arg1);
 
             handleAndroidMessage(msg);
-        } else if (msg.what == IPCConstants.MESSAGE_MICROBIT) {
+        } else if(msg.what == IPCConstants.MESSAGE_MICROBIT) {
             logi("handleIncomingMessage() :: IPCMessageManager.MESSAGE_MICROBIT msg.arg1 = " + msg.arg1);
 
             handleMicroBitMessage(msg);
@@ -105,17 +105,23 @@ public class PluginService extends Service {
         CmdArg cmd = new CmdArg(data.getInt(IPCConstants.BUNDLE_DATA), data.getString(IPCConstants.BUNDLE_VALUE));
 
         logi("handleMicrobitMessage() ## msg.arg1 = " + msg.arg1 + " ## data.getInt=" + data.getInt(IPCConstants
-                     .BUNDLE_DATA) + " ## data.getString=" + data.getString(IPCConstants.BUNDLE_VALUE));
+                .BUNDLE_DATA) + " ## data.getString=" + data.getString(IPCConstants.BUNDLE_VALUE));
 
         AbstractPlugin abstractPlugin = pluginsCreator.createPlugin(msg.arg1, pluginHandler);
-        abstractPlugin.handleEntry(cmd);
+
+        if(abstractPlugin != null) {
+            abstractPlugin.handleEntry(cmd);
+        }
     }
 
     private void handleAndroidMessage(Message msg) {
-        if (msg.arg1 == EventCategories.IPC_PLUGIN_STOP_PLAYING) {
+        if(msg.arg1 == EventCategories.IPC_PLUGIN_STOP_PLAYING) {
             AbstractPlugin abstractPlugin = pluginsCreator.createPlugin(EventCategories.SAMSUNG_ALERTS_ID,
                     pluginHandler);
-            abstractPlugin.handleEntry(new CmdArg(EventSubCodes.SAMSUNG_ALERT_STOP_PLAYING, null));
+
+            if(abstractPlugin != null) {
+                abstractPlugin.handleEntry(new CmdArg(EventSubCodes.SAMSUNG_ALERT_STOP_PLAYING, null));
+            }
         }
     }
 }

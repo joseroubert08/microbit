@@ -48,7 +48,7 @@ public class TemperaturePresenter implements Presenter {
 
     @Override
     public void start() {
-        if (temperatureSensor == null) {
+        if(temperatureSensor == null) {
             //no temperature sensor
             return;
         }

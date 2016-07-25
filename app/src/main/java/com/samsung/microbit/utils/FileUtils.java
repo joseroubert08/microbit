@@ -50,14 +50,14 @@ public class FileUtils {
             //Unzip the file now
             ZipInputStream zin = new ZipInputStream(resources.openRawResource(internalResource));
             ZipEntry ze;
-            while ((ze = zin.getNextEntry()) != null) {
+            while((ze = zin.getNextEntry()) != null) {
                 Log.v("MicroBit", "Unzipping " + ze.getName());
 
-                if (ze.isDirectory()) {
+                if(ze.isDirectory()) {
                     dirChecker(ze.getName());
                 } else {
                     FileOutputStream fout = new FileOutputStream(outputDir + File.separator + ze.getName());
-                    for (int c = zin.read(); c != -1; c = zin.read()) {
+                    for(int c = zin.read(); c != -1; c = zin.read()) {
                         fout.write(c);
                     }
                     zin.closeEntry();
@@ -65,10 +65,10 @@ public class FileUtils {
                 }
             }
             zin.close();
-        } catch (Resources.NotFoundException e) {
+        } catch(Resources.NotFoundException e) {
             Log.e("MicroBit", "No internal zipfile present", e);
             return false;
-        } catch (IOException e) {
+        } catch(IOException e) {
             Log.e("MicroBit", "unzip", e);
             return false;
         }
@@ -78,7 +78,7 @@ public class FileUtils {
     private static void dirChecker(String dir) {
         File f = new File(Environment.DIRECTORY_DOWNLOADS + dir);
 
-        if (!f.isDirectory()) {
+        if(!f.isDirectory()) {
             f.mkdirs();
         }
     }
@@ -94,20 +94,20 @@ public class FileUtils {
     public static RenameResult renameFile(String filePath, String newName) {
         File oldPathname = new File(filePath);
         newName = newName.replace(' ', '_');
-        if (!newName.toLowerCase().endsWith(".hex")) {
+        if(!newName.toLowerCase().endsWith(".hex")) {
             newName = newName + ".hex";
         }
 
         File newPathname = new File(oldPathname.getParentFile().getAbsolutePath(), newName);
-        if (newPathname.exists()) {
+        if(newPathname.exists()) {
             return RenameResult.NEW_PATH_ALREADY_EXIST;
         }
 
-        if (!oldPathname.exists() || !oldPathname.isFile()) {
+        if(!oldPathname.exists() || !oldPathname.isFile()) {
             return RenameResult.OLD_PATH_NOT_CORRECT;
         }
 
-        if (oldPathname.renameTo(newPathname)) {
+        if(oldPathname.renameTo(newPathname)) {
             return RenameResult.SUCCESS;
         } else {
             return RenameResult.RENAME_ERROR;
@@ -122,8 +122,8 @@ public class FileUtils {
      */
     public static boolean deleteFile(String filePath) {
         File fileForDelete = new File(filePath);
-        if (fileForDelete.exists()) {
-            if (fileForDelete.delete()) {
+        if(fileForDelete.exists()) {
+            if(fileForDelete.delete()) {
                 Log.d("MicroBit", "file Deleted :" + filePath);
                 return true;
             } else {
@@ -144,7 +144,7 @@ public class FileUtils {
     public static String getFileSize(String filePath) {
         String size = "0";
         File file = new File(filePath);
-        if (file.exists()) {
+        if(file.exists()) {
             size = Long.toString(file.length());
         }
         return size;

@@ -11,7 +11,7 @@ import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.plugin.InformationPlugin;
 import com.samsung.microbit.service.PluginService;
 
-public class BatteryPresenter implements Presenter{
+public class BatteryPresenter implements Presenter {
     private BroadcastReceiver batteryReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -19,7 +19,7 @@ public class BatteryPresenter implements Presenter{
             int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
             int batteryPct = (int) (level / (float) scale * 100);
 
-            if (batteryPct != previousBatteryPct) {
+            if(batteryPct != previousBatteryPct) {
                 if(informationPlugin != null) {
                     CmdArg cmd = new CmdArg(InformationPlugin.AlertType.TYPE_BATTERY, "Battery level " + batteryPct);
                     informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);

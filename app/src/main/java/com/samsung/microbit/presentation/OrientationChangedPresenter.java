@@ -6,18 +6,13 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.util.Log;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.EventSubCodes;
 import com.samsung.microbit.data.constants.IPCConstants;
-import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
-import com.samsung.microbit.utils.ServiceUtils;
 import com.samsung.microbit.utils.Utils;
 
 public class OrientationChangedPresenter implements Presenter {
@@ -28,19 +23,19 @@ public class OrientationChangedPresenter implements Presenter {
 
         @Override
         public void onSensorChanged(SensorEvent event) {
-            if (event.values[1] < 6.5 && event.values[1] > -6.5) {
-                if (orientation != EventSubCodes.SAMSUNG_DEVICE_ORIENTATION_LANDSCAPE) {
+            if(event.values[1] < 6.5 && event.values[1] > -6.5) {
+                if(orientation != EventSubCodes.SAMSUNG_DEVICE_ORIENTATION_LANDSCAPE) {
                     Log.d(TAG, "Landscape");
                 }
                 orientation = EventSubCodes.SAMSUNG_DEVICE_ORIENTATION_LANDSCAPE;
             } else {
-                if (orientation != EventSubCodes.SAMSUNG_DEVICE_ORIENTATION_PORTRAIT) {
+                if(orientation != EventSubCodes.SAMSUNG_DEVICE_ORIENTATION_PORTRAIT) {
                     Log.d(TAG, "Portrait");
                 }
                 orientation = EventSubCodes.SAMSUNG_DEVICE_ORIENTATION_PORTRAIT;
             }
 
-            if (previousOrientation != orientation) {
+            if(previousOrientation != orientation) {
                 MBApp application = MBApp.getApp();
 
                 Intent intent = new Intent(application, IPCService.class);
@@ -69,7 +64,7 @@ public class OrientationChangedPresenter implements Presenter {
 
     @Override
     public void start() {
-        if (!isRegistered) {
+        if(!isRegistered) {
             sensorManager.registerListener(orientationListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                     SensorManager.SENSOR_DELAY_NORMAL);
             isRegistered = true;
@@ -78,7 +73,7 @@ public class OrientationChangedPresenter implements Presenter {
 
     @Override
     public void stop() {
-        if (isRegistered) {
+        if(isRegistered) {
             sensorManager.unregisterListener(orientationListener);
             isRegistered = false;
         }

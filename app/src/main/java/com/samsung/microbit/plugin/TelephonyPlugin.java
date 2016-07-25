@@ -30,44 +30,44 @@ public class TelephonyPlugin implements AbstractPlugin {
     @Override
     public void handleEntry(CmdArg cmd) {
         boolean register = false;
-        if (cmd.getValue() != null) {
+        if(cmd.getValue() != null) {
             register = cmd.getValue().toLowerCase().equals("on");
         }
 
-        switch (cmd.getCMD()) {
+        switch(cmd.getCMD()) {
             case RegistrationIds.REG_TELEPHONY: {
-                if (register) {
-                    if (incomingCallPresenter == null) {
+                if(register) {
+                    if(incomingCallPresenter == null) {
                         incomingCallPresenter = new IncomingCallPresenter();
                     }
 
-                    if (!callPresenterInited) {
+                    if(!callPresenterInited) {
                         incomingCallPresenter.setTelephonyPlugin(this);
                         callPresenterInited = true;
                     }
 
                     incomingCallPresenter.start();
                 } else {
-                    if (incomingCallPresenter != null) {
+                    if(incomingCallPresenter != null) {
                         incomingCallPresenter.stop();
                     }
                 }
                 break;
             }
             case RegistrationIds.REG_MESSAGING: {
-                if (register) {
-                    if (incomingSMSPresenter == null) {
+                if(register) {
+                    if(incomingSMSPresenter == null) {
                         incomingSMSPresenter = new IncomingSMSPresenter();
                     }
 
-                    if (!smsPresenterInited) {
+                    if(!smsPresenterInited) {
                         incomingSMSPresenter.setTelephonyPlugin(this);
                         smsPresenterInited = true;
                     }
 
                     incomingSMSPresenter.start();
                 } else {
-                    if (incomingSMSPresenter != null) {
+                    if(incomingSMSPresenter != null) {
                         incomingSMSPresenter.stop();
                     }
                 }
@@ -78,14 +78,14 @@ public class TelephonyPlugin implements AbstractPlugin {
 
     @Override
     public void destroy() {
-        if (incomingCallPresenter != null) {
+        if(incomingCallPresenter != null) {
             incomingCallPresenter.stop();
             incomingCallPresenter.setTelephonyPlugin(null);
             incomingCallPresenter.destroy();
             callPresenterInited = false;
         }
 
-        if (incomingSMSPresenter != null) {
+        if(incomingSMSPresenter != null) {
             incomingSMSPresenter.stop();
             incomingSMSPresenter.setTelephonyPlugin(null);
             incomingSMSPresenter.destroy();

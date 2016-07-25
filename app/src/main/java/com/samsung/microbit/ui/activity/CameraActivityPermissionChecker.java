@@ -12,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.data.constants.PermissionCodes;
@@ -41,7 +40,7 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
      * @param message Message to log.
      */
     protected void logi(String message) {
-        if (DEBUG) {
+        if(DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
@@ -56,9 +55,9 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
 
         intentAction = intent.getAction();
 
-        if (intentAction.equals(CameraPlugin.OPEN_FOR_PIC_ACTION)) {
+        if(intentAction.equals(CameraPlugin.OPEN_FOR_PIC_ACTION)) {
             mRequestedState = REQUEST_STATE.LAUNCH_CAMERA_FOR_PIC;
-        } else if (intentAction.equals(CameraPlugin.OPEN_FOR_VIDEO_ACTION)) {
+        } else if(intentAction.equals(CameraPlugin.OPEN_FOR_VIDEO_ACTION)) {
             mRequestedState = REQUEST_STATE.LAUNCH_CAMERA_FOR_VIDEO;
         }
         checkPermissionsForCamera();
@@ -71,7 +70,7 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
     private void startCameraActivity() {
         //Do not launch camera if in Do not Disturb Mode
         //Check more details on #122
-        if (BluetoothUtils.inZenMode(this)) {
+        if(BluetoothUtils.inZenMode(this)) {
             PopUp.show(getString(R.string.dnd_error_msg),
                     getString(R.string.dnd_error_title),
                     R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
@@ -81,7 +80,7 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
         } else {
             Intent intent = new Intent(this, CameraActivity_OldAPI.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            switch (mRequestedState) {
+            switch(mRequestedState) {
                 case LAUNCH_CAMERA_FOR_PIC:
                 case LAUNCH_CAMERA_FOR_VIDEO:
                     intent.setAction(intentAction);
@@ -101,7 +100,7 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
      * the camera activity, else show a dialog window to ask for it.
      */
     private void checkPermissionsForCamera() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PermissionChecker.PERMISSION_GRANTED) {
             PopUp.show(getString(R.string.camera_permission),
                     getString(R.string.permissions_needed_title),
@@ -117,9 +116,9 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
                                            @NonNull int[] grantResults) {
-        switch (requestCode) {
+        switch(requestCode) {
             case PermissionCodes.CAMERA_PERMISSIONS_REQUESTED: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startCameraActivity();
                 } else {
                     PopUp.show(getString(R.string.camera_permission_error),

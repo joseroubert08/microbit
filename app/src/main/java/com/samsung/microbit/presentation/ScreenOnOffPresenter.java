@@ -4,18 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.util.Log;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.EventSubCodes;
 import com.samsung.microbit.data.constants.IPCConstants;
-import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
-import com.samsung.microbit.utils.ServiceUtils;
 import com.samsung.microbit.utils.Utils;
 
 public class ScreenOnOffPresenter implements Presenter {
@@ -24,7 +19,7 @@ public class ScreenOnOffPresenter implements Presenter {
     private BroadcastReceiver screenReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent1) {
-            if (intent1.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+            if(intent1.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
                 MBApp application = MBApp.getApp();
 
                 Intent intent = new Intent(application, IPCService.class);
@@ -32,7 +27,7 @@ public class ScreenOnOffPresenter implements Presenter {
                 intent.putExtra(IPCConstants.INTENT_CHARACTERISTIC_MESSAGE, Utils.makeMicroBitValue
                         (EventCategories.SAMSUNG_DEVICE_INFO_ID, EventSubCodes.SAMSUNG_DEVICE_DISPLAY_OFF));
                 application.startService(intent);
-            } else if (intent1.getAction().equals(Intent.ACTION_SCREEN_ON)) {
+            } else if(intent1.getAction().equals(Intent.ACTION_SCREEN_ON)) {
                 MBApp application = MBApp.getApp();
 
                 Intent intent = new Intent(application, IPCService.class);
@@ -53,7 +48,7 @@ public class ScreenOnOffPresenter implements Presenter {
 
     @Override
     public void start() {
-        if (!isRegistered) {
+        if(!isRegistered) {
             isRegistered = true;
             Log.i(TAG, "registerDisplay() ");
 
@@ -66,7 +61,7 @@ public class ScreenOnOffPresenter implements Presenter {
 
     @Override
     public void stop() {
-        if (isRegistered) {
+        if(isRegistered) {
             Log.i(TAG, "unregisterDisplay() ");
 
             application.unregisterReceiver(screenReceiver);

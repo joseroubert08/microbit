@@ -26,7 +26,7 @@ public class EchoClientManager {
     private static EchoClientManager instance = null;
 
     public static synchronized EchoClientManager getInstance(MBApp mbApp) {
-        if (instance == null) {
+        if(instance == null) {
             instance = new EchoClientManager(mbApp);
         }
         return instance;
@@ -42,7 +42,7 @@ public class EchoClientManager {
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("com.samsung.microbit", Context
                 .MODE_PRIVATE);
-        if (sharedPreferences != null) {
+        if(sharedPreferences != null) {
             shareStatistic = sharedPreferences.getBoolean(context.getString(R.string.prefs_share_stats_status), true);
         }
 
@@ -74,7 +74,7 @@ public class EchoClientManager {
     }
 
     public EchoClient getEcho() {
-        if (shareStatistic) {
+        if(shareStatistic) {
             Log.d(TAG, "Sharing stats is enabled by user");
             return echo;
         } else {
@@ -84,7 +84,7 @@ public class EchoClientManager {
     }
 
     public void sendAppStats() {
-        if (shareStatistic && echo != null) {
+        if(shareStatistic && echo != null) {
             Log.d(TAG, "sendAppStats ");
             HashMap<String, String> eventLabels = new HashMap<>();
             eventLabels.put("name", "kl.education.microbit.appstart.page");
@@ -98,7 +98,7 @@ public class EchoClientManager {
     }
 
     public void sendViewEventStats(String viewEventString) {
-        if (shareStatistic && echo != null) {
+        if(shareStatistic && echo != null) {
             Log.d(TAG, "sendViewEventStats " + viewEventString);
             String counterName = MBApp.getApp().getString(R.string.stats_view_name, viewEventString);
             HashMap<String, String> eventLabels = new HashMap<>();
@@ -111,7 +111,7 @@ public class EchoClientManager {
 
     public void sendFlashStats(boolean success, String fileName, String hexsize, String binsize, String firmware) {
         try {
-            if (shareStatistic && echo != null) {
+            if(shareStatistic && echo != null) {
                 Log.d(TAG, "sendFlashStats fileName=" + fileName + " hexsize=" + hexsize + "  " +
                         "binsize=" + binsize + " microbit_firmwwareversion= " + firmware);
                 HashMap<String, String> eventLabels = new HashMap<>();
@@ -120,7 +120,7 @@ public class EchoClientManager {
                 eventLabels.put("hex_file_size", hexsize);
                 eventLabels.put("binary_size", binsize);
                 eventLabels.put("firmware", firmware);
-                if (success) {
+                if(success) {
                     echo.userActionEvent("success", "hex-file-flash", eventLabels);
                 } else {
                     echo.userActionEvent("fail", "hex-file-flash", eventLabels);
@@ -128,14 +128,14 @@ public class EchoClientManager {
             } else {
                 Log.d(TAG, "Sharing of stats is disabled by user or Echo not initialised");
             }
-        } catch (RuntimeException e) {
+        } catch(RuntimeException e) {
             Log.e(TAG, "Sending stats exception " + e.getMessage());
         }
     }
 
     public void sendNavigationStats(String location, String button) {
         try {
-            if (shareStatistic && echo != null) {
+            if(shareStatistic && echo != null) {
                 HashMap<String, String> eventLabels = new HashMap<>();
                 eventLabels.put("action_location", location);
                 eventLabels.put("button", button);
@@ -144,17 +144,17 @@ public class EchoClientManager {
             } else {
                 Log.d(TAG, "Sharing of stats is disabled by user or Echo not initialised");
             }
-        } catch (RuntimeException e) {
+        } catch(RuntimeException e) {
             Log.e(TAG, "Sending stats exception " + e.getMessage());
         }
     }
 
     public void sendStatSharing(boolean enable) {
         try {
-            if (echo != null) {
+            if(echo != null) {
                 HashMap<String, String> eventLabels = new HashMap<>();
                 eventLabels.put("bbc_site", "bitesize");
-                if (enable) {
+                if(enable) {
                     echo.userActionEvent("opt-in", "stats-tracking", eventLabels);
                 } else {
                     echo.userActionEvent("opt-out", "stats-tracking", eventLabels);
@@ -162,17 +162,17 @@ public class EchoClientManager {
             } else {
                 Log.d(TAG, "Sharing of stats is disabled by user or Echo not initialised");
             }
-        } catch (RuntimeException e) {
+        } catch(RuntimeException e) {
             Log.e(TAG, "Sending stats exception " + e.getMessage());
         }
     }
 
     public void sendPairingStats(boolean paired, String firmware) {
         try {
-            if (echo != null) {
+            if(echo != null) {
                 HashMap<String, String> eventLabels = new HashMap<>();
                 eventLabels.put("bbc_site", "bitesize");
-                if (paired) {
+                if(paired) {
                     eventLabels.put("firmware", firmware);
                     echo.userActionEvent("success", "pair", eventLabels);
                 } else {
@@ -181,17 +181,17 @@ public class EchoClientManager {
             } else {
                 Log.d(TAG, "Sharing of stats is disabled by user or Echo not initialised");
             }
-        } catch (RuntimeException e) {
+        } catch(RuntimeException e) {
             Log.e(TAG, "Sending stats exception " + e.getMessage());
         }
     }
 
     public void sendConnectStats(Constants.ConnectionState connectionState, String firmware, String duration) {
         try {
-            if (echo != null) {
+            if(echo != null) {
                 HashMap<String, String> eventLabels = new HashMap<>();
                 eventLabels.put("bbc_site", "bitesize");
-                switch (connectionState) {
+                switch(connectionState) {
                     case SUCCESS:
                         Log.d(TAG, "Sending Connection stats - MSG(SUCCESS) - Firmware = " + firmware);
                         eventLabels.put("firmware", firmware);
@@ -212,7 +212,7 @@ public class EchoClientManager {
             } else {
                 Log.d(TAG, "Sharing of stats is disabled by user or Echo not initialised");
             }
-        } catch (RuntimeException e) {
+        } catch(RuntimeException e) {
             Log.e(TAG, "Sending stats exception " + e.getMessage());
         }
     }

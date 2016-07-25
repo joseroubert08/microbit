@@ -3,21 +3,15 @@ package com.samsung.microbit.core;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.IPCConstants;
-import com.samsung.microbit.data.constants.ServiceIds;
 import com.samsung.microbit.service.IPCService;
-import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.activity.PopUpActivity;
-import com.samsung.microbit.utils.ServiceUtils;
 
 import static com.samsung.microbit.BuildConfig.DEBUG;
 
@@ -32,7 +26,7 @@ public class PopUpServiceReceiver extends BroadcastReceiver {
     private static final String TAG = PopUpServiceReceiver.class.getSimpleName();
 
     public static void logi(String message) {
-        if (DEBUG) {
+        if(DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
@@ -43,7 +37,7 @@ public class PopUpServiceReceiver extends BroadcastReceiver {
 
         final View.OnClickListener okListener;
 
-        if (popupExtraOkType == PopUp.OK_ACTION_STOP_SERVICE_PLAYING) {
+        if(popupExtraOkType == PopUp.OK_ACTION_STOP_SERVICE_PLAYING) {
             okListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

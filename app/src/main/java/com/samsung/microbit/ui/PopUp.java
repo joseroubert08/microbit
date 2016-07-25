@@ -89,22 +89,22 @@ public class PopUp {
     private static BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(PopUpActivity.INTENT_ACTION_OK_PRESSED)) {
-                if (okPressListener != null)
+            if(intent.getAction().equals(PopUpActivity.INTENT_ACTION_OK_PRESSED)) {
+                if(okPressListener != null)
                     okPressListener.onClick(null);
-            } else if (intent.getAction().equals(PopUpActivity.INTENT_ACTION_CANCEL_PRESSED)) {
-                if (cancelPressListener != null)
+            } else if(intent.getAction().equals(PopUpActivity.INTENT_ACTION_CANCEL_PRESSED)) {
+                if(cancelPressListener != null)
                     cancelPressListener.onClick(null);
-            } else if (intent.getAction().equals(PopUpActivity.INTENT_ACTION_DESTROYED)) {
+            } else if(intent.getAction().equals(PopUpActivity.INTENT_ACTION_DESTROYED)) {
                 Log.d(TAG, "INTENT_ACTION_DESTROYED size queue = " + pendingQueue.size());
                 pendingQueue.poll();
                 isCurrentRequestPending = false;
                 sCurrentType = TYPE_MAX;
                 processNextPendingRequest();
-            } else if (intent.getAction().equals(PopUpActivity.INTENT_ACTION_CREATED)) {
+            } else if(intent.getAction().equals(PopUpActivity.INTENT_ACTION_CREATED)) {
                 Log.d(TAG, "INTENT_ACTION_CREATED size queue = " + pendingQueue.size());
                 PendingRequest request = pendingQueue.poll();
-                if (request != null) {
+                if(request != null) {
                     sCurrentType = request.intent.getIntExtra(PopUpActivity.INTENT_EXTRA_TYPE, 0);
                     okPressListener = request.okListener;
                     cancelPressListener = request.cancelListener;
@@ -135,7 +135,7 @@ public class PopUp {
         pendingQueue.add(new PendingRequest(new Intent(PopUpActivity.INTENT_ACTION_CLOSE),
                 null, null, REQUEST_TYPE_HIDE));
 
-        if (!isCurrentRequestPending) {
+        if(!isCurrentRequestPending) {
             processNextPendingRequest();
         }
     }
@@ -143,6 +143,7 @@ public class PopUp {
     /**
      * Updates progress of the progress bar, for example, during the
      * flashing process.
+     *
      * @param val New progress value.
      */
     public static void updateProgressBar(int val) {
@@ -150,7 +151,7 @@ public class PopUp {
         intent.putExtra(PopUpActivity.INTENT_EXTRA_PROGRESS, val);
 
         pendingQueue.add(new PendingRequest(intent, null, null, REQUEST_TYPE_UPDATE_PROGRESS));
-        if (!isCurrentRequestPending) {
+        if(!isCurrentRequestPending) {
             processNextPendingRequest();
         }
     }
@@ -168,7 +169,7 @@ public class PopUp {
 
     public static void showFromService(Context context, String message, String title,
                                        int imageResId, int imageBackgroundResId,
-                                       int animationCode,int type, int okAction) {
+                                       int animationCode, int type, int okAction) {
         Log.d(TAG, "showFromService");
         Intent intent = new Intent("com.samsung.microbit.core.SHOWFROMSERVICE");
         putIntentExtra(intent, message, title, imageResId, imageBackgroundResId, animationCode, type);
@@ -184,7 +185,7 @@ public class PopUp {
         intent.putExtra(PopUpActivity.INTENT_EXTRA_ICON, imageResId);
         intent.putExtra(PopUpActivity.INTENT_EXTRA_ICONBG, imageBackgroundResId);
         intent.putExtra(PopUpActivity.INTENT_GIFF_ANIMATION_CODE, animationCode);
-        switch (type) {
+        switch(type) {
             case TYPE_PROGRESS_NOT_CANCELABLE:
             case TYPE_SPINNER_NOT_CANCELABLE:
                 intent.putExtra(PopUpActivity.INTENT_EXTRA_CANCELABLE, false);
@@ -255,7 +256,7 @@ public class PopUp {
                                                      View.OnClickListener cancelListener) {
         Log.d(TAG, "show START popup type " + type);
 
-        if (!registered) {
+        if(!registered) {
             IntentFilter popupIntentFilter = new IntentFilter();
             popupIntentFilter.addAction(PopUpActivity.INTENT_ACTION_OK_PRESSED);
             popupIntentFilter.addAction(PopUpActivity.INTENT_ACTION_CANCEL_PRESSED);
@@ -271,7 +272,7 @@ public class PopUp {
 
         pendingQueue.add(new PendingRequest(intent, okListener, cancelListener, REQUEST_TYPE_SHOW));
 
-        if (!isCurrentRequestPending) {
+        if(!isCurrentRequestPending) {
             processNextPendingRequest();
         }
 
@@ -286,13 +287,13 @@ public class PopUp {
         Log.d(TAG, "processNextPendingRequest START size = " + pendingQueue.size());
         boolean done = false;
         //keep iterating until we find async. request (HIDE, SHOW) to process
-        while (!pendingQueue.isEmpty() && !done) {
+        while(!pendingQueue.isEmpty() && !done) {
             PendingRequest request = pendingQueue.peek();
 
-            switch (request.type) {
+            switch(request.type) {
                 case REQUEST_TYPE_SHOW: {
                     Log.d(TAG, "processNextPendingRequest REQUEST_TYPE_SHOW");
-                    if (sCurrentType != TYPE_MAX) {
+                    if(sCurrentType != TYPE_MAX) {
                         Log.d(TAG, "processNextPendingRequest Update existing layout instead of hiding");
                         request.intent.setAction(PopUpActivity.INTENT_ACTION_UPDATE_LAYOUT);
                         LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(request.intent);
@@ -310,7 +311,7 @@ public class PopUp {
                     break;
                 }
                 case REQUEST_TYPE_HIDE: {
-                    if (sCurrentType == TYPE_MAX) {
+                    if(sCurrentType == TYPE_MAX) {
                         Log.d(TAG, "processNextPendingRequest Nothing to hide");
                         pendingQueue.poll();
                         continue;

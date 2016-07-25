@@ -37,11 +37,11 @@ public class InformationPlugin implements AbstractPlugin {
     @Override
     public void handleEntry(CmdArg cmd) {
         boolean register = false;
-        if (cmd.getValue() != null) {
+        if(cmd.getValue() != null) {
             register = cmd.getValue().toLowerCase().equals("on");
         }
 
-        switch (cmd.getCMD()) {
+        switch(cmd.getCMD()) {
             case RegistrationIds.REG_SIGNALSTRENGTH:
                 if(register) {
                     Presenter presenter = findPresenterByType(AlertType.TYPE_SIGNAL_STRENGTH);
@@ -186,7 +186,7 @@ public class InformationPlugin implements AbstractPlugin {
 
     @Override
     public void destroy() {
-        for (Presenter presenter : activePresenters) {
+        for(Presenter presenter : activePresenters) {
             presenter.stop();
             presenter.destroy();
         }
@@ -195,7 +195,7 @@ public class InformationPlugin implements AbstractPlugin {
 
     @Retention(RetentionPolicy.RUNTIME)
     @IntDef(value = {TYPE_ORIENTATION, TYPE_SHAKE, TYPE_BATTERY, TYPE_SIGNAL_STRENGTH, TYPE_TEMPERATURE,
-             TYPE_SCREEN_ON_OFF})
+            TYPE_SCREEN_ON_OFF})
     public @interface AlertType {
         int TYPE_ORIENTATION = 0;
         int TYPE_SHAKE = 1;

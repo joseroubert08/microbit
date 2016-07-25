@@ -1,17 +1,10 @@
 package com.samsung.microbit.utils;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.RemoteException;
-import android.util.Log;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.CharacteristicUUIDs;
@@ -22,12 +15,7 @@ import com.samsung.microbit.data.constants.IPCConstants;
 import com.samsung.microbit.data.constants.ServiceIds;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.data.model.NameValuePair;
-import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.IPCService;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Provides additional functionality to work with services,
@@ -43,12 +31,12 @@ public class ServiceUtils {
      * Send some reply message to the ipc.
      *
      * @param mbsService MbsService of reply.
-     * @param cmd Command should be sent, as reply.
+     * @param cmd        Command should be sent, as reply.
      */
     public static void sendReplyCommand(int mbsService, CmdArg cmd) {
         MBApp application = MBApp.getApp();
 
-        if (true) {
+        if(false) {
             Intent intent = new Intent(application, IPCService.class);
             intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.CATEGORY_REPLY);
             intent.putExtra(IPCConstants.INTENT_REPLY_TO, ServiceIds.SERVICE_PLUGIN);
@@ -64,15 +52,15 @@ public class ServiceUtils {
      * @param messageType   Android or microbit message. One of the {@link com.samsung.microbit.data.constants.IPCConstants#MESSAGE_ANDROID},
      *                      {@link com.samsung.microbit.data.constants.IPCConstants#MESSAGE_MICROBIT}
      * @param eventCategory Event category listed in {@link EventCategories}
-     * @param serviceId Identifier of service. Detect where message should be delivered to. Can be one of possible
-     *                  values - {@link ServiceIds#SERVICE_NONE}, {@link ServiceIds#SERVICE_BLE}, and
-     *                  {@link ServiceIds#SERVICE_PLUGIN}
+     * @param serviceId     Identifier of service. Detect where message should be delivered to. Can be one of possible
+     *                      values - {@link ServiceIds#SERVICE_NONE}, {@link ServiceIds#SERVICE_BLE}, and
+     *                      {@link ServiceIds#SERVICE_PLUGIN}
      * @param cmd           Command argument.
      * @param args          Array of data.
      */
     public static Message composeMessage(int messageType, int eventCategory, @ServiceIds int serviceId, CmdArg cmd,
                                          NameValuePair[] args) {
-        if (messageType != IPCConstants.MESSAGE_ANDROID && messageType != IPCConstants.MESSAGE_MICROBIT) {
+        if(messageType != IPCConstants.MESSAGE_ANDROID && messageType != IPCConstants.MESSAGE_MICROBIT) {
             return null;
         }
         Message msg = Message.obtain(null, messageType);
@@ -81,13 +69,13 @@ public class ServiceUtils {
         msg.arg2 = serviceId;
 
         Bundle bundle = new Bundle();
-        if (cmd != null) {
+        if(cmd != null) {
             bundle.putInt(IPCConstants.BUNDLE_DATA, cmd.getCMD());
             bundle.putString(IPCConstants.BUNDLE_VALUE, cmd.getValue());
         }
 
-        if (args != null) {
-            for (NameValuePair arg : args) {
+        if(args != null) {
+            for(NameValuePair arg : args) {
                 bundle.putSerializable(arg.getName(), arg.getValue());
             }
         }
@@ -117,9 +105,9 @@ public class ServiceUtils {
      * Copy values from old message to new one.
      *
      * @param oldMessage Old messages, values should be copied from.
-     * @param serviceId Identifier of service. Detect where message should be delivered to. Can be one of possible
-     *                  values - {@link ServiceIds#SERVICE_NONE}, {@link ServiceIds#SERVICE_BLE}, and
-     *                  {@link ServiceIds#SERVICE_PLUGIN}
+     * @param serviceId  Identifier of service. Detect where message should be delivered to. Can be one of possible
+     *                   values - {@link ServiceIds#SERVICE_NONE}, {@link ServiceIds#SERVICE_BLE}, and
+     *                   {@link ServiceIds#SERVICE_PLUGIN}
      */
     public static Message copyMessageFromOld(Message oldMessage, @ServiceIds int serviceId) {
         Message newMessage = Message.obtain(null, oldMessage.what);
@@ -138,9 +126,12 @@ public class ServiceUtils {
     public static void sendConnectDisconnectMessage(boolean connect) {
         MBApp application = MBApp.getApp();
 
-        if (connect) {
+        if(connect) {
             Intent intent = new Intent(application, IPCService.class);
             intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_BLE_CONNECT);
+            int connectionType = MBApp.getApp().isJustPaired() ? IPCConstants.JUST_PAIRED : IPCConstants
+                     .PAIRED_EARLIER;
+            intent.putExtra(IPCConstants.INTENT_CONNECTION_TYPE, connectionType);
             application.startService(intent);
         } else {
             Intent intent = new Intent(application, IPCService.class);

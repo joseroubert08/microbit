@@ -43,7 +43,7 @@ public abstract class SaveConfigInfoTask extends AsyncTask<String, Void, Result>
     }
 
     public void setEtag(String etag) {
-        if (etag != null) {
+        if(etag != null) {
             Etag = etag;
         } else {
             Etag = "";
@@ -62,7 +62,7 @@ public abstract class SaveConfigInfoTask extends AsyncTask<String, Void, Result>
     @Override
     protected Result doInBackground(String... urls) {
         String version = "0.1.0";
-        if (BuildConfig.DEBUG) {
+        if(BuildConfig.DEBUG) {
             //Hardcoding the version for Debug builds
             version = "1.3.6";
             Log.d(TAG, "Using config file for version :  " + version);
@@ -72,7 +72,7 @@ public abstract class SaveConfigInfoTask extends AsyncTask<String, Void, Result>
             try {
                 info = manager.getPackageInfo(appContext.getPackageName(), 0);
                 version = info.versionName;
-            } catch (PackageManager.NameNotFoundException e) {
+            } catch(PackageManager.NameNotFoundException e) {
                 Log.e(TAG, e.toString());
             }
         }
@@ -87,16 +87,16 @@ public abstract class SaveConfigInfoTask extends AsyncTask<String, Void, Result>
             urlConnection.addRequestProperty("Cache-Control", "max-stale=" + 600);
             urlConnection.setUseCaches(true);
 
-            if (LastQueryTime != 0) {
+            if(LastQueryTime != 0) {
                 urlConnection.setIfModifiedSince(LastQueryTime);
             }
 
-            if (!Etag.equals("")) {
+            if(!Etag.equals("")) {
                 urlConnection.setRequestProperty("If-None-Match", Etag);
             }
 
             urlConnection.connect();
-            if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            if(urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 InputStream stream = urlConnection.getInputStream();
                 //Process the response headers and populate the shared preference
                 SharedPreferences.Editor editor = preferences.edit();
@@ -107,21 +107,21 @@ public abstract class SaveConfigInfoTask extends AsyncTask<String, Void, Result>
                 BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                 String inputLine;
                 StringBuilder response = new StringBuilder();
-                while ((inputLine = in.readLine()) != null) {
+                while((inputLine = in.readLine()) != null) {
                     response.append(inputLine);
                 }
                 in.close();
-                if (!response.toString().isEmpty()) {
+                if(!response.toString().isEmpty()) {
                     readFromJsonAndStore(response.toString());
                 }
 
-            } else if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_MODIFIED) {
+            } else if(urlConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_MODIFIED) {
                 Log.d(TAG, "Content not modified");
             }
-        } catch (IOException e) {
+        } catch(IOException e) {
             Log.e(TAG, e.toString());
         } finally {
-            if (urlConnection != null) {
+            if(urlConnection != null) {
                 urlConnection.disconnect();
             }
         }
@@ -140,7 +140,7 @@ public abstract class SaveConfigInfoTask extends AsyncTask<String, Void, Result>
             readFeedbackInfo(reader, editor);
 
             editor.apply();
-        } catch (JSONException e) {
+        } catch(JSONException e) {
             Log.e(TAG, "readFromJsonAndStore: failed - " + e.toString());
         }
     }
@@ -157,13 +157,13 @@ public abstract class SaveConfigInfoTask extends AsyncTask<String, Void, Result>
             String appStatus = status.getString("appStatus");
             editor.putString(RC_APPSTATUS_KEY, appStatus).commit();
             //Get extended message if needed
-            if (appStatus.equalsIgnoreCase(ConfigInfo.AppStatus.OFF.toString())) {
+            if(appStatus.equalsIgnoreCase(ConfigInfo.AppStatus.OFF.toString())) {
                 String title = status.getString("title");
                 String message = status.getString("message");
                 editor.putString(RC_EXCEPTIONTITLE_KEY, title);
                 editor.putString(RC_EXCEPTIONMSG_KEY, message);
             }
-        } catch (JSONException e) {
+        } catch(JSONException e) {
             Log.e(TAG, "readAppStatus: failed - " + e.toString());
         }
     }
@@ -191,7 +191,7 @@ public abstract class SaveConfigInfoTask extends AsyncTask<String, Void, Result>
             editor.putString(RC_ENDPOINT_DISCOVER, discover);
             editor.putString(RC_APPSTATUS_MYSCRIPTS, myscripts);
 
-        } catch (JSONException e) {
+        } catch(JSONException e) {
             Log.e(TAG, "readEndPoints: failed - " + e.toString());
         }
     }
@@ -207,7 +207,7 @@ public abstract class SaveConfigInfoTask extends AsyncTask<String, Void, Result>
             JSONObject config = reader.getJSONObject("config");
             String email = config.getString("feedbackEmailAddress");
             editor.putString(RC_CONFIG_EMAIL, email);
-        } catch (JSONException e) {
+        } catch(JSONException e) {
             Log.e(TAG, "readFeedbackInfo: failed - " + e.toString());
         }
     }

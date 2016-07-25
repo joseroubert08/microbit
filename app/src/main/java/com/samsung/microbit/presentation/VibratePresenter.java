@@ -20,7 +20,7 @@ public class VibratePresenter implements Presenter {
 
     @Override
     public void start() {
-        if (vibrator != null && vibrator.hasVibrator()) {
+        if(vibrator != null && vibrator.hasVibrator()) {
             startVibration = true;
             vibrator.vibrate(vibrateTimeMillis);
         } else {
@@ -30,7 +30,7 @@ public class VibratePresenter implements Presenter {
 
     @Override
     public void stop() {
-        if (startVibration) {
+        if(startVibration) {
             vibrator.cancel();
         }
     }

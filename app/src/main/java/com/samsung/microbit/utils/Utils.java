@@ -38,8 +38,8 @@ public class Utils {
      * to given parameters. It allows to sort by date or name, for now, and
      * set sort order to ascending or descending.
      *
-     * @param list List to sort.
-     * @param orderBy Defines sorting criteria of a project by which to sort.
+     * @param list      List to sort.
+     * @param orderBy   Defines sorting criteria of a project by which to sort.
      * @param sortOrder Ascending or descending.
      * @return Sorted list.
      */
@@ -49,13 +49,13 @@ public class Utils {
             @Override
             public int compare(Project lhs, Project rhs) {
                 int rc;
-                switch (orderBy) {
+                switch(orderBy) {
 
                     case SORTBY_PROJECT_DATE:
                         // byTimestamp
-                        if (lhs.timestamp < rhs.timestamp) {
+                        if(lhs.timestamp < rhs.timestamp) {
                             rc = 1;
-                        } else if (lhs.timestamp > rhs.timestamp) {
+                        } else if(lhs.timestamp > rhs.timestamp) {
                             rc = -1;
                         } else {
                             rc = lhs.name.toLowerCase().compareTo(rhs.name.toLowerCase());
@@ -68,7 +68,7 @@ public class Utils {
                         break;
                 }
 
-                if (sortOrder != ORDERBY_ASCENDING) {
+                if(sortOrder != ORDERBY_ASCENDING) {
                     rc = 0 - rc;
                 }
 
@@ -94,16 +94,16 @@ public class Utils {
     }
 
     public static void unbindDrawables(View view) {
-        if (view == null) {
+        if(view == null) {
             return;
         }
 
-        if (view.getBackground() != null) {
+        if(view.getBackground() != null) {
             Drawable backgroundDrawable = view.getBackground();
             backgroundDrawable.setCallback(null);
             view.unscheduleDrawable(backgroundDrawable);
 
-            if (backgroundDrawable instanceof GifDrawable) {
+            if(backgroundDrawable instanceof GifDrawable) {
                 ((GifDrawable) backgroundDrawable).recycle();
             }
         }
@@ -113,15 +113,15 @@ public class Utils {
             backgroundDrawable.setCallback(null);
             view.unscheduleDrawable(backgroundDrawable);
 
-            if (backgroundDrawable instanceof GifDrawable) {
+            if(backgroundDrawable instanceof GifDrawable) {
                 ((GifDrawable) backgroundDrawable).recycle();
             }
         }
 
-        if (view instanceof ViewGroup) {
+        if(view instanceof ViewGroup) {
             ViewGroup viewGroup = (ViewGroup) view;
 
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            for(int i = 0; i < viewGroup.getChildCount(); i++) {
                 unbindDrawables(viewGroup.getChildAt(i));
             }
         }
@@ -139,7 +139,7 @@ public class Utils {
                 .MODE_MULTI_PROCESS);
 
         int i = 0;
-        if (prefs != null) {
+        if(prefs != null) {
             i = prefs.getInt(Constants.PREFERENCES_LIST_ORDER, 0);
         }
 

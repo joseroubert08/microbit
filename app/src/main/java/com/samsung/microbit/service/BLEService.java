@@ -1,6 +1,5 @@
 package com.samsung.microbit.service;
 
-import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
@@ -12,7 +11,6 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -75,13 +73,13 @@ public class BLEService extends Service {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if (bleServiceWeakReference.get() != null) {
+            if(bleServiceWeakReference.get() != null) {
                 bleServiceWeakReference.get().handleMessage(msg);
             }
         }
     }
 
-    public static final boolean AUTO_CONNECT = false;
+    public static final boolean AUTO_RECONNECT = false;
 
     private BLEManager bleManager;
 
@@ -107,7 +105,7 @@ public class BLEService extends Service {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        if (bleHandler != null) {
+        if(bleHandler != null) {
             Message disconnectMessage = Message.obtain(null, IPCConstants.MESSAGE_ANDROID);
             disconnectMessage.arg1 = EventCategories.IPC_BLE_DISCONNECT;
             bleHandler.sendMessage(disconnectMessage);
@@ -119,26 +117,26 @@ public class BLEService extends Service {
         inputMessenger = msg.replyTo;
         logi("handleIncomingMessage()");
         Bundle bundle = msg.getData();
-        if (msg.what == IPCConstants.MESSAGE_ANDROID) {
+        if(msg.what == IPCConstants.MESSAGE_ANDROID) {
             logi("IPCMessageManager.MESSAGE_ANDROID msg.arg1 = " + msg.arg1);
             if(msg.arg1 == SIMULATE) {
                 try {
                     Thread.sleep(10000);
-                } catch (InterruptedException e) {
+                } catch(InterruptedException e) {
                     Log.e(TAG, e.toString());
                 }
                 sendMessage(EventCategories.SAMSUNG_REMOTE_CONTROL_ID, 10);
                 return;
             }
 
-            switch (msg.arg1) {
+            switch(msg.arg1) {
                 case EventCategories.IPC_BLE_CONNECT:
                     int justPaired = msg.arg2;
                     if(justPaired == IPCConstants.JUST_PAIRED) {
                         Log.e(TAG, "just paired delay");
                         try {
                             Thread.sleep(Constants.JUST_PAIRED_DELAY_ON_CONNECTION);
-                        } catch (InterruptedException e) {
+                        } catch(InterruptedException e) {
                             Log.e(TAG, e.toString());
                         }
                     } else {
@@ -149,14 +147,14 @@ public class BLEService extends Service {
 
                 case EventCategories.IPC_BLE_DISCONNECT:
                     initBLEManager();
-                    if (reset()) {
+                    if(reset()) {
                         setNotification(false, ERROR_NONE);
                     }
 
                     break;
 
                 case EventCategories.IPC_BLE_RECONNECT:
-                    if (reset()) {
+                    if(reset()) {
                         setupBLE();
                     }
 
@@ -164,9 +162,9 @@ public class BLEService extends Service {
 
                 default:
             }
-        } else if (msg.what == IPCConstants.MESSAGE_MICROBIT) {
+        } else if(msg.what == IPCConstants.MESSAGE_MICROBIT) {
             logi("IPCMessageManager.MESSAGE_MICROBIT msg.arg1 = " + msg.arg1);
-            switch (msg.arg1) {
+            switch(msg.arg1) {
                 case EventCategories.IPC_WRITE_CHARACTERISTIC:
                     String service = (String) bundle.getSerializable(IPCConstants.BUNDLE_SERVICE_GUID);
                     String characteristic = (String) bundle.getSerializable(IPCConstants.BUNDLE_CHARACTERISTIC_GUID);
@@ -186,7 +184,7 @@ public class BLEService extends Service {
      * @param message Message to log.
      */
     private static void logi(String message) {
-        if (DEBUG) {
+        if(DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
@@ -198,10 +196,10 @@ public class BLEService extends Service {
      */
     private boolean reset() {
         boolean rc = false;
-        if (bleManager != null) {
+        if(bleManager != null) {
             disconnectAll();
             rc = bleManager.reset();
-            if (rc) {
+            if(rc) {
                 bleManager = null;
             }
         }
@@ -219,13 +217,13 @@ public class BLEService extends Service {
 
         //Read micro:bit firmware version
         BluetoothGattService deviceInfoService = getService(GattServiceUUIDs.DEVICE_INFORMATION_SERVICE);
-        if (deviceInfoService != null) {
+        if(deviceInfoService != null) {
             BluetoothGattCharacteristic firmwareCharacteristic = deviceInfoService.getCharacteristic
                     (CharacteristicUUIDs.FIRMWARE_REVISION_UUID);
-            if (firmwareCharacteristic != null) {
+            if(firmwareCharacteristic != null) {
                 String firmware = "";
                 BluetoothGattCharacteristic characteristic = readCharacteristic(firmwareCharacteristic);
-                if (characteristic != null && characteristic.getValue() != null && characteristic.getValue().length != 0) {
+                if(characteristic != null && characteristic.getValue() != null && characteristic.getValue().length != 0) {
                     firmware = firmwareCharacteristic.getStringValue(0);
                 }
                 sendMicrobitFirmware(firmware);
@@ -236,7 +234,7 @@ public class BLEService extends Service {
         }
 
         BluetoothGattService eventService = getService(GattServiceUUIDs.EVENT_SERVICE);
-        if (eventService == null) {
+        if(eventService == null) {
             Log.e(TAG, "Not found EventService");
             logi("registerNotifications() :: not found service : Constants.EVENT_SERVICE");
             return false;
@@ -247,15 +245,15 @@ public class BLEService extends Service {
         logi("Constants.ES_CLIENT_EVENT   = " + CharacteristicUUIDs.ES_CLIENT_EVENT.toString());
         logi("Constants.ES_MICROBIT_EVENT   = " + CharacteristicUUIDs.ES_MICROBIT_EVENT.toString());
         logi("Constants.ES_CLIENT_REQUIREMENTS   = " + CharacteristicUUIDs.ES_CLIENT_REQUIREMENTS.toString());
-        if (!registerMicrobitRequirements(eventService, enable)) {
-            if (DEBUG) {
+        if(!registerMicrobitRequirements(eventService, enable)) {
+            if(DEBUG) {
                 logi("***************** Cannot Register Microbit Requirements.. Will continue ************** ");
             }
         }
 
         register_AppRequirement(eventService, enable);
 
-        if (!registerMicroBitEvents(eventService, enable)) {
+        if(!registerMicroBitEvents(eventService, enable)) {
             logi("Failed to registerMicroBitEvents");
             return false;
         }
@@ -264,7 +262,7 @@ public class BLEService extends Service {
     }
 
     private BluetoothGattService getService(UUID uuid) {
-        if (bleManager != null) {
+        if(bleManager != null) {
             return bleManager.getService(uuid);
         }
 
@@ -278,10 +276,10 @@ public class BLEService extends Service {
      * @return Operation result code.
      */
     private BluetoothGattCharacteristic readCharacteristic(BluetoothGattCharacteristic characteristic) {
-        if (bleManager != null) {
+        if(bleManager != null) {
             int rc = bleManager.readCharacteristic(characteristic);
             rc = interpretCode(rc);
-            if (rc == ERROR_NONE) {
+            if(rc == ERROR_NONE) {
                 return bleManager.getLastCharacteristic();
             }
         }
@@ -296,16 +294,16 @@ public class BLEService extends Service {
      * @return New result code number.
      */
     private int interpretCode(int rc) {
-        if (rc > 0) {
-            if ((rc & BLEManager.BLE_ERROR_FAIL) != 0) {
-                if ((rc & BLEManager.BLE_ERROR_TIMEOUT) != 0) {
+        if(rc > 0) {
+            if((rc & BLEManager.BLE_ERROR_FAIL) != 0) {
+                if((rc & BLEManager.BLE_ERROR_TIMEOUT) != 0) {
                     rc = ERROR_TIME_OUT;
                 } else {
                     rc = ERROR_UNKNOWN_1;
                 }
             } else {
                 rc &= 0x0000ffff;
-                if (rc == BLEManager.BLE_DISCONNECTED) {
+                if(rc == BLEManager.BLE_DISCONNECTED) {
                     rc = ERROR_UNKNOWN_2;
                 } else {
                     rc = ERROR_NONE;
@@ -317,7 +315,7 @@ public class BLEService extends Service {
     }
 
     private void sendMicrobitFirmware(String firmware) {
-        if (inputMessenger == null) {
+        if(inputMessenger == null) {
             Log.e(TAG, "wrong inputMessenger");
             return;
         }
@@ -359,27 +357,27 @@ public class BLEService extends Service {
     private boolean registerMicrobitRequirements(BluetoothGattService eventService, boolean enable) {
         BluetoothGattCharacteristic microbit_requirements = eventService.getCharacteristic(CharacteristicUUIDs
                 .ES_MICROBIT_REQUIREMENTS);
-        if (microbit_requirements == null) {
+        if(microbit_requirements == null) {
             logi("register_eventsFromMicrobit() :: ES_MICROBIT_REQUIREMENTS Not found");
             return false;
         }
 
         BluetoothGattDescriptor microbit_requirementsDescriptor = microbit_requirements.getDescriptor(UUIDs
                 .CLIENT_DESCRIPTOR);
-        if (microbit_requirementsDescriptor == null) {
+        if(microbit_requirementsDescriptor == null) {
             logi("register_eventsFromMicrobit() :: CLIENT_DESCRIPTOR Not found");
             return false;
         }
 
         BluetoothGattCharacteristic characteristic = readCharacteristic(microbit_requirements);
-        while (characteristic != null && characteristic.getValue() != null && characteristic.getValue().length != 0) {
+        while(characteristic != null && characteristic.getValue() != null && characteristic.getValue().length != 0) {
             String service = BluetoothUtils.parse(characteristic);
             logi("microbit interested in  = " + service);
-            if (service.equalsIgnoreCase("4F-04-07-00")) //Incoming Call service
+            if(service.equalsIgnoreCase("4F-04-07-00")) //Incoming Call service
             {
                 sendMicroBitNeedsCallNotification();
             }
-            if (service.equalsIgnoreCase("4F-04-08-00")) //Incoming SMS service
+            if(service.equalsIgnoreCase("4F-04-08-00")) //Incoming SMS service
             {
                 sendMicroBitNeedsSmsNotification();
             }
@@ -395,7 +393,7 @@ public class BLEService extends Service {
     }
 
     private void sendMicroBitNeedsCallNotification() {
-        if (inputMessenger == null) {
+        if(inputMessenger == null) {
             Log.e(TAG, "wrong inputMessenger");
             return;
         }
@@ -425,7 +423,7 @@ public class BLEService extends Service {
     }
 
     private void sendMicroBitNeedsSmsNotification() {
-        if (inputMessenger == null) {
+        if(inputMessenger == null) {
             Log.e(TAG, "wrong inputMessenger");
             return;
         }
@@ -460,7 +458,7 @@ public class BLEService extends Service {
      * @param register Register or unregister.
      */
     private void registerForSignalStrength(boolean register) {
-        if (inputMessenger == null) {
+        if(inputMessenger == null) {
             Log.e(TAG, "wrong inputMessenger");
             return;
         }
@@ -471,10 +469,10 @@ public class BLEService extends Service {
         Message message = ServiceUtils.composeMessage(IPCConstants.MESSAGE_MICROBIT, EventCategories
                 .SAMSUNG_SIGNAL_STRENGTH_ID, ServiceIds.SERVICE_PLUGIN, cmd, null);
 
-        if (message != null) {
+        if(message != null) {
             try {
                 inputMessenger.send(message);
-            } catch (RemoteException e) {
+            } catch(RemoteException e) {
                 e.printStackTrace();
             }
         }
@@ -487,7 +485,7 @@ public class BLEService extends Service {
      * @param register Register or unregister.
      */
     private void registerForDeviceInfo(boolean register) {
-        if (inputMessenger == null) {
+        if(inputMessenger == null) {
             Log.e(TAG, "wrong inputMessenger");
             return;
         }
@@ -499,10 +497,10 @@ public class BLEService extends Service {
                 .REG_DEVICEORIENTATION, "Off");
         Message message = ServiceUtils.composeMessage(IPCConstants.MESSAGE_MICROBIT, EventCategories
                 .SAMSUNG_DEVICE_INFO_ID, ServiceIds.SERVICE_PLUGIN, cmd, null);
-        if (message != null) {
+        if(message != null) {
             try {
                 inputMessenger.send(message);
-            } catch (RemoteException e) {
+            } catch(RemoteException e) {
                 e.printStackTrace();
             }
         }
@@ -512,10 +510,10 @@ public class BLEService extends Service {
                 "Off");
         message = ServiceUtils.composeMessage(IPCConstants.MESSAGE_MICROBIT, EventCategories
                 .SAMSUNG_DEVICE_INFO_ID, ServiceIds.SERVICE_PLUGIN, cmd, null);
-        if (message != null) {
+        if(message != null) {
             try {
                 inputMessenger.send(message);
-            } catch (RemoteException e) {
+            } catch(RemoteException e) {
                 e.printStackTrace();
             }
         }
@@ -525,10 +523,10 @@ public class BLEService extends Service {
                 "Off");
         message = ServiceUtils.composeMessage(IPCConstants.MESSAGE_MICROBIT, EventCategories
                 .SAMSUNG_DEVICE_INFO_ID, ServiceIds.SERVICE_PLUGIN, cmd, null);
-        if (message != null) {
+        if(message != null) {
             try {
                 inputMessenger.send(message);
-            } catch (RemoteException e) {
+            } catch(RemoteException e) {
                 e.printStackTrace();
             }
         }
@@ -537,10 +535,10 @@ public class BLEService extends Service {
         cmd = register ? new CmdArg(RegistrationIds.REG_TEMPERATURE, "On") : new CmdArg(RegistrationIds.REG_TEMPERATURE, "Off");
         message = ServiceUtils.composeMessage(IPCConstants.MESSAGE_MICROBIT, EventCategories
                 .SAMSUNG_DEVICE_INFO_ID, ServiceIds.SERVICE_PLUGIN, cmd, null);
-        if (message != null) {
+        if(message != null) {
             try {
                 inputMessenger.send(message);
-            } catch (RemoteException e) {
+            } catch(RemoteException e) {
                 e.printStackTrace();
             }
         }
@@ -549,10 +547,10 @@ public class BLEService extends Service {
         cmd = register ? new CmdArg(RegistrationIds.REG_TELEPHONY, "On") : new CmdArg(RegistrationIds.REG_TELEPHONY, "Off");
         message = ServiceUtils.composeMessage(IPCConstants.MESSAGE_MICROBIT, EventCategories
                 .SAMSUNG_TELEPHONY_ID, ServiceIds.SERVICE_PLUGIN, cmd, null);
-        if (message != null) {
+        if(message != null) {
             try {
                 inputMessenger.send(message);
-            } catch (RemoteException e) {
+            } catch(RemoteException e) {
                 e.printStackTrace();
             }
         }
@@ -561,10 +559,10 @@ public class BLEService extends Service {
         cmd = register ? new CmdArg(RegistrationIds.REG_MESSAGING, "On") : new CmdArg(RegistrationIds.REG_MESSAGING, "Off");
         message = ServiceUtils.composeMessage(IPCConstants.MESSAGE_MICROBIT, EventCategories
                 .SAMSUNG_TELEPHONY_ID, ServiceIds.SERVICE_PLUGIN, cmd, null);
-        if (message != null) {
+        if(message != null) {
             try {
                 inputMessenger.send(message);
-            } catch (RemoteException e) {
+            } catch(RemoteException e) {
                 e.printStackTrace();
             }
         }
@@ -573,10 +571,10 @@ public class BLEService extends Service {
         cmd = register ? new CmdArg(RegistrationIds.REG_DISPLAY, "On") : new CmdArg(RegistrationIds.REG_DISPLAY, "Off");
         message = ServiceUtils.composeMessage(IPCConstants.MESSAGE_MICROBIT, EventCategories
                 .SAMSUNG_TELEPHONY_ID, ServiceIds.SERVICE_PLUGIN, cmd, null);
-        if (message != null) {
+        if(message != null) {
             try {
                 inputMessenger.send(message);
-            } catch (RemoteException e) {
+            } catch(RemoteException e) {
                 e.printStackTrace();
             }
         }
@@ -594,7 +592,7 @@ public class BLEService extends Service {
             descriptor, boolean enable) {
         int rc = ERROR_UNKNOWN_1;
 
-        if (bleManager != null) {
+        if(bleManager != null) {
             rc = bleManager.enableCharacteristicNotification(characteristic, descriptor, enable);
         }
 
@@ -610,12 +608,12 @@ public class BLEService extends Service {
      * @param enable       Enable or disable.
      */
     private void register_AppRequirement(BluetoothGattService eventService, boolean enable) {
-        if (!enable) {
+        if(!enable) {
             return;
         }
 
         BluetoothGattCharacteristic app_requirements = eventService.getCharacteristic(CharacteristicUUIDs.ES_CLIENT_REQUIREMENTS);
-        if (app_requirements != null) {
+        if(app_requirements != null) {
             logi("register_AppRequirement() :: found Constants.ES_CLIENT_REQUIREMENTS ");
             /*
             Registering for everything at the moment
@@ -641,19 +639,19 @@ public class BLEService extends Service {
     }
 
     private void writeCharacteristic(String serviceGuid, String characteristic, int value, int type) {
-        if (!isConnected()) {
+        if(!isConnected()) {
             logi("writeCharacteristic() :: Not connected. Returning");
             return;
         }
 
         BluetoothGattService s = getService(UUID.fromString(serviceGuid));
-        if (s == null) {
+        if(s == null) {
             logi("writeCharacteristic() :: Service not found");
             return;
         }
 
         BluetoothGattCharacteristic c = s.getCharacteristic(UUID.fromString(characteristic));
-        if (c == null) {
+        if(c == null) {
             logi("writeCharacteristic() :: characteristic not found");
             return;
         }
@@ -676,7 +674,7 @@ public class BLEService extends Service {
     private int writeCharacteristic(BluetoothGattCharacteristic characteristic) {
         int rc = ERROR_UNKNOWN_1;
 
-        if (bleManager != null) {
+        if(bleManager != null) {
             rc = bleManager.writeCharacteristic(characteristic);
             rc = interpretCode(rc);
 
@@ -697,13 +695,13 @@ public class BLEService extends Service {
         // Read (or register for notify) on (1) to receive events generated by the micro:bit.
         BluetoothGattCharacteristic microbit_requirements = eventService.getCharacteristic(CharacteristicUUIDs
                 .ES_MICROBIT_EVENT);
-        if (microbit_requirements == null) {
+        if(microbit_requirements == null) {
             logi("register_eventsFromMicrobit() :: ES_MICROBIT_EVENT Not found");
             return false;
         }
         BluetoothGattDescriptor microbit_requirementsDescriptor = microbit_requirements.getDescriptor(UUIDs
                 .CLIENT_DESCRIPTOR);
-        if (microbit_requirementsDescriptor == null) {
+        if(microbit_requirementsDescriptor == null) {
             logi("register_eventsFromMicrobit() :: CLIENT_DESCRIPTOR Not found");
             return false;
         }
@@ -722,7 +720,7 @@ public class BLEService extends Service {
     }
 
     private void initBLEManager() {
-        if (bleManager != null) {
+        if(bleManager != null) {
             return;
         }
 
@@ -731,14 +729,14 @@ public class BLEService extends Service {
         this.deviceAddress = searchDeviceAddress();
         logi("setupBLE() :: deviceAddress = " + deviceAddress);
 
-        if (deviceAddress == null) {
+        if(deviceAddress == null) {
             setNotification(false, ERROR_UNKNOWN_2);
             return;
         }
 
         bluetoothDevice = null;
 
-        if (!initialize()) {
+        if(!initialize()) {
             setNotification(false, ERROR_UNKNOWN_2);
             return;
         }
@@ -750,7 +748,7 @@ public class BLEService extends Service {
                             characteristic) {
                         logi("setupBLE().CharacteristicChangeListener.onCharacteristicChanged()");
 
-                        if (bleManager != null) {
+                        if(bleManager != null) {
                             handleCharacteristicChanged(gatt, characteristic);
                         }
                     }
@@ -761,7 +759,7 @@ public class BLEService extends Service {
                         logi("setupBLE().CharacteristicChangeListener.handleUnexpectedConnectionEvent()"
                                 + event);
 
-                        if (bleManager != null) {
+                        if(bleManager != null) {
                             handleUnexpectedConnectionEvent(event, gattForceClosed);
                         }
                     }
@@ -774,7 +772,7 @@ public class BLEService extends Service {
 
         ConnectedDevice currentDevice = BluetoothUtils.getPairedMicrobit(this);
         String deviceAddress = currentDevice.mAddress;
-        if (deviceAddress == null) {
+        if(deviceAddress == null) {
             setNotification(false, ERROR_UNKNOWN_3);
         }
 
@@ -799,11 +797,11 @@ public class BLEService extends Service {
         args[1] = new NameValuePair(IPCConstants.BUNDLE_DEVICE_ADDRESS, deviceAddress);
         args[2] = new NameValuePair(IPCConstants.BUNDLE_ERROR_MESSAGE, GattError.parse(actual_Error));
 
-        if (!isConnected) {
+        if(!isConnected) {
             logi("setNotification() :: !isConnected");
 
-            if (bluetoothAdapter != null) {
-                if (!bluetoothAdapter.isEnabled()) {
+            if(bluetoothAdapter != null) {
+                if(!bluetoothAdapter.isEnabled()) {
 
                     logi("setNotification() :: !bluetoothAdapter.isEnabled()");
                     reset();
@@ -816,13 +814,13 @@ public class BLEService extends Service {
             notificationString = getString(R.string.tray_notification_failure);
             onGoingNotification = false;
 
-            if (inputMessenger != null) {
+            if(inputMessenger != null) {
                 Message message = ServiceUtils.composeMessage(IPCConstants.MESSAGE_ANDROID, EventCategories
                         .IPC_BLE_NOTIFICATION_GATT_DISCONNECTED, ServiceIds.SERVICE_NONE, null, args);
-                if (message != null) {
+                if(message != null) {
                     try {
                         inputMessenger.send(message);
-                    } catch (RemoteException e) {
+                    } catch(RemoteException e) {
                         Log.e(TAG, e.toString());
                     }
                 }
@@ -831,13 +829,13 @@ public class BLEService extends Service {
             notificationString = getString(R.string.tray_notification_sucsess);
             onGoingNotification = true;
 
-            if (inputMessenger != null) {
+            if(inputMessenger != null) {
                 Message message = ServiceUtils.composeMessage(IPCConstants.MESSAGE_ANDROID, EventCategories
                         .IPC_BLE_NOTIFICATION_GATT_CONNECTED, ServiceIds.SERVICE_NONE, null, args);
-                if (message != null) {
+                if(message != null) {
                     try {
                         inputMessenger.send(message);
-                    } catch (RemoteException e) {
+                    } catch(RemoteException e) {
                         Log.e(TAG, e.toString());
                     }
                 }
@@ -852,12 +850,12 @@ public class BLEService extends Service {
 
         Integer integerValue = characteristic.getIntValue(GattFormats.FORMAT_UINT32, 0);
 
-        if (integerValue == null) {
+        if(integerValue == null) {
             return;
         }
         int value = integerValue;
         int eventSrc = value & 0x0ffff;
-        if (eventSrc < 1001) {
+        if(eventSrc < 1001) {
             return;
         }
         logi("Characteristic UUID = " + UUID);
@@ -870,7 +868,7 @@ public class BLEService extends Service {
     }
 
     private void sendMessage(int eventSrc, int event) {
-        if (inputMessenger == null) {
+        if(inputMessenger == null) {
             Log.e(TAG, "wrong inputMessenger");
             return;
         }
@@ -878,7 +876,7 @@ public class BLEService extends Service {
         logi("Sending eventSrc " + eventSrc + "  event=" + event);
         int msgService;
         CmdArg cmd;
-        switch (eventSrc) {
+        switch(eventSrc) {
             case EventCategories.SAMSUNG_REMOTE_CONTROL_ID:
             case EventCategories.SAMSUNG_ALERTS_ID:
             case EventCategories.SAMSUNG_AUDIO_RECORDER_ID:
@@ -894,10 +892,10 @@ public class BLEService extends Service {
 
         Message message = ServiceUtils.composeMessage(IPCConstants.MESSAGE_MICROBIT,
                 msgService, ServiceIds.SERVICE_PLUGIN, cmd, null);
-        if (message != null) {
+        if(message != null) {
             try {
                 inputMessenger.send(message);
-            } catch (RemoteException e) {
+            } catch(RemoteException e) {
                 e.printStackTrace();
             }
         }
@@ -920,12 +918,12 @@ public class BLEService extends Service {
             return;
         }*/
 
-        if ((event & BLEManager.BLE_CONNECTED) != 0) {
+        if((event & BLEManager.BLE_CONNECTED) != 0) {
             logi("handleUnexpectedConnectionEvent() :: BLE_CONNECTED");
             discoverServices();
             registerNotifications(true);
             setNotification(true, ERROR_NONE);
-        } else if (event == BLEManager.BLE_DISCONNECTED) {
+        } else if(event == BLEManager.BLE_DISCONNECTED) {
             logi("handleUnexpectedConnectionEvent() :: BLE_DISCONNECTED");
             setNotification(false, ERROR_NONE);
         }
@@ -940,8 +938,8 @@ public class BLEService extends Service {
     private int discoverServices() {
         int rc = ERROR_UNKNOWN_1;
 
-        if (bleManager != null) {
-            if (DEBUG) {
+        if(bleManager != null) {
+            if(DEBUG) {
                 logi("discoverServices() :: bleManager != null");
             }
 
@@ -960,10 +958,10 @@ public class BLEService extends Service {
      * @return New result code.
      */
     private int interpretCode(int rc, int goodCode) {
-        if (rc > 0) {
-            if ((rc & BLEManager.BLE_ERROR_FAIL) != 0) {
+        if(rc > 0) {
+            if((rc & BLEManager.BLE_ERROR_FAIL) != 0) {
                 actualError = bleManager.getExtendedError();
-                if ((rc & BLEManager.BLE_ERROR_TIMEOUT) != 0) {
+                if((rc & BLEManager.BLE_ERROR_TIMEOUT) != 0) {
                     rc = ERROR_TIME_OUT;
                 } else {
                     rc = ERROR_UNKNOWN_1;
@@ -971,7 +969,7 @@ public class BLEService extends Service {
             } else {
                 actualError = 0;
                 rc &= 0x0ffff;
-                if ((rc & goodCode) != 0) {
+                if((rc & goodCode) != 0) {
                     rc = ERROR_NONE;
                 } else {
                     rc = ERROR_UNKNOWN_2;
@@ -992,18 +990,18 @@ public class BLEService extends Service {
 
         boolean rc = true;
 
-        if (bluetoothManager == null) {
+        if(bluetoothManager == null) {
             bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             rc = bluetoothManager != null;
         }
 
-        if (rc && (bluetoothAdapter == null)) {
+        if(rc && (bluetoothAdapter == null)) {
             bluetoothAdapter = bluetoothManager.getAdapter();
             rc = bluetoothAdapter != null;
         }
 
-        if (rc && (bluetoothDevice == null)) {
-            if (deviceAddress != null) {
+        if(rc && (bluetoothDevice == null)) {
+            if(deviceAddress != null) {
                 bluetoothDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
                 rc = bluetoothAdapter != null;
             } else {
@@ -1021,13 +1019,13 @@ public class BLEService extends Service {
 
         boolean success = true;
         int rc = connect();
-        if (rc == ERROR_NONE) {
+        if(rc == ERROR_NONE) {
             logi("startupConnection() :: connectMaybeInit() == 0");
             rc = discoverServices();
-            if (rc == ERROR_NONE) {
+            if(rc == ERROR_NONE) {
 
                 logi("startupConnection() :: discoverServices() == 0");
-                if (registerNotifications(true)) {
+                if(registerNotifications(true)) {
                     setNotification(true, 0);
                 } else {
                     rc = ERROR_UNKNOWN_2;
@@ -1042,9 +1040,9 @@ public class BLEService extends Service {
             success = false;
         }
 
-        if (!success) {
+        if(!success) {
             logi("startupConnection() :: Failed ErrorCode = " + rc);
-            if (bleManager != null) {
+            if(bleManager != null) {
                 reset();
                 setNotification(false, rc);
                 Toast.makeText(MBApp.getApp(), R.string.bluetooth_pairing_internal_error, Toast.LENGTH_LONG).show();
@@ -1067,8 +1065,8 @@ public class BLEService extends Service {
     private int connect() {
         int rc = ERROR_UNKNOWN_1;
 
-        if (bleManager != null) {
-            rc = bleManager.connect(AUTO_CONNECT);
+        if(bleManager != null) {
+            rc = bleManager.connect(AUTO_RECONNECT);
             rc = interpretCode(rc, BLEManager.BLE_CONNECTED);
         }
 
@@ -1076,7 +1074,7 @@ public class BLEService extends Service {
     }
 
     private List<BluetoothGattService> getServices() {
-        if (bleManager != null) {
+        if(bleManager != null) {
             return bleManager.getServices();
         }
 

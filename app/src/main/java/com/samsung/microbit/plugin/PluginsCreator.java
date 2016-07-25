@@ -27,19 +27,19 @@ public class PluginsCreator {
      * @return Concrete plugin for managing selected {@code eventCategory}
      */
     public AbstractPlugin createPlugin(int eventCategory, Handler serviceHandler) {
-        if (DEBUG) {
+        if(DEBUG) {
             logi("handleMessage() ##  " + eventCategory);
         }
 
         AbstractPlugin cachedPlugin = cachedPlugins.get(eventCategory);
 
-        if (cachedPlugin != null) {
+        if(cachedPlugin != null) {
             return cachedPlugin;
         }
 
         final AbstractPlugin abstractPlugin;
 
-        switch (eventCategory) {
+        switch(eventCategory) {
             case EventCategories.SAMSUNG_REMOTE_CONTROL_ID:
                 abstractPlugin = new RemoteControlPlugin();
                 break;
@@ -71,7 +71,7 @@ public class PluginsCreator {
                 abstractPlugin = null;
         }
 
-        if (abstractPlugin == null) {
+        if(abstractPlugin == null) {
             Log.e(TAG, "Plugin not initialized");
         } else {
             cachedPlugins.put(eventCategory, abstractPlugin);
@@ -83,7 +83,7 @@ public class PluginsCreator {
      * Free plugin resources.
      */
     public void destroy() {
-        for (int i = 0; i < cachedPlugins.size(); i++) {
+        for(int i = 0; i < cachedPlugins.size(); i++) {
             cachedPlugins.valueAt(i).destroy();
         }
         cachedPlugins.clear();

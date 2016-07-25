@@ -51,8 +51,8 @@ public class ConfigInfo {
          * @return Appropriate app status.
          */
         public static AppStatus byName(String name) {
-            for (AppStatus appStatus : values()) {
-                if (appStatus.toString().equals(name)) {
+            for(AppStatus appStatus : values()) {
+                if(appStatus.toString().equals(name)) {
                     return appStatus;
                 }
             }
@@ -114,63 +114,63 @@ public class ConfigInfo {
     }
 
     public String getAboutURL() {
-        if (aboutURL.isEmpty()) {
+        if(aboutURL.isEmpty()) {
             aboutURL = appContext.getString(R.string.about_url);
         }
         return aboutURL;
     }
 
     public String getTermsOfUseURL() {
-        if (TOUURL.isEmpty()) {
+        if(TOUURL.isEmpty()) {
             TOUURL = appContext.getString(R.string.terms_of_use_url);
         }
         return TOUURL;
     }
 
     public String getPrivacyURL() {
-        if (PPURL.isEmpty()) {
+        if(PPURL.isEmpty()) {
             PPURL = appContext.getString(R.string.privacy_policy_url);
         }
         return PPURL;
     }
 
     public String getSendEmailAddress() {
-        if (sendToEmail.isEmpty()) {
+        if(sendToEmail.isEmpty()) {
             sendToEmail = appContext.getString(R.string.feedback_email_address);
         }
         return sendToEmail;
     }
 
     public String getExceptionTitle() {
-        if (exceptionTitle.isEmpty()) {
+        if(exceptionTitle.isEmpty()) {
             exceptionTitle = appContext.getString(R.string.general_error_title);
         }
         return exceptionTitle;
     }
 
     public String getExceptionMsg() {
-        if (exceptionMsg.isEmpty()) {
+        if(exceptionMsg.isEmpty()) {
             exceptionMsg = appContext.getString(R.string.general_error_msg);
         }
         return exceptionMsg;
     }
 
     public String getCreateCodeURL() {
-        if (createCodeURL.isEmpty()) {
+        if(createCodeURL.isEmpty()) {
             createCodeURL = appContext.getString(R.string.create_code_url);
         }
         return createCodeURL;
     }
 
     public String getDiscoverURL() {
-        if (discoverURL.isEmpty()) {
+        if(discoverURL.isEmpty()) {
             discoverURL = appContext.getString(R.string.discover_url);
         }
         return discoverURL;
     }
 
     public String getMyScriptsURL() {
-        if (myScriptsURL.isEmpty()) {
+        if(myScriptsURL.isEmpty()) {
             myScriptsURL = appContext.getString(R.string.my_scripts_url);
         }
         return myScriptsURL;
@@ -180,7 +180,7 @@ public class ConfigInfo {
         reInit();
         appStatus = AppStatus.byName(preferences.getString(RC_APPSTATUS_KEY, AppStatus.ON.toString()));
 
-        if (appStatus == AppStatus.OFF) {
+        if(appStatus == AppStatus.OFF) {
             Log.e("RemoteConfig", "isAppStatusOn: OFF");
             return false;
         }

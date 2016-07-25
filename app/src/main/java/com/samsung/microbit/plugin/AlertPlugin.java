@@ -55,7 +55,7 @@ public class AlertPlugin implements AbstractPlugin {
 
         int popupAction = PopUp.OK_ACTION_NONE;
 
-        switch (cmd.getCMD()) {
+        switch(cmd.getCMD()) {
             case EventSubCodes.SAMSUNG_ALERT_EVT_DISPLAY_TOAST:
                 message = cmd.getValue();
                 title = "Message from Micro:Bit";
@@ -122,7 +122,7 @@ public class AlertPlugin implements AbstractPlugin {
             showDialogWithAction(title, popupAction);
         }
 
-        for (Presenter presenter : activePresenters) {
+        for(Presenter presenter : activePresenters) {
             presenter.start();
         }
     }
@@ -131,7 +131,7 @@ public class AlertPlugin implements AbstractPlugin {
      * Makes your device to stop ringing.
      */
     private void stopPlaying() {
-        for (Presenter presenter : activePresenters) {
+        for(Presenter presenter : activePresenters) {
             presenter.stop();
         }
     }
@@ -145,7 +145,7 @@ public class AlertPlugin implements AbstractPlugin {
             afd.close();
             mediaPlayer.prepare();
             duration = mediaPlayer.getDuration();
-        } catch (IOException e) {
+        } catch(IOException e) {
             Log.e(TAG, e.toString());
         }
 
@@ -162,7 +162,7 @@ public class AlertPlugin implements AbstractPlugin {
             mediaPlayer.setDataSource(MBApp.getApp(), fileUri);
             mediaPlayer.prepare();
             duration = mediaPlayer.getDuration();
-        } catch (IOException e) {
+        } catch(IOException e) {
             Log.e(TAG, e.toString());
         }
 
@@ -178,7 +178,7 @@ public class AlertPlugin implements AbstractPlugin {
 
         int duration = getDuration(mediaPlayer, ringtoneUri);
 
-        if (MAX_RINGTONE_DURATION > 0 && duration > MAX_RINGTONE_DURATION) {
+        if(MAX_RINGTONE_DURATION > 0 && duration > MAX_RINGTONE_DURATION) {
             duration = MAX_RINGTONE_DURATION;
         }
 
@@ -198,7 +198,7 @@ public class AlertPlugin implements AbstractPlugin {
 
         int duration = getDuration(mediaPlayer, afd);
 
-        if (MAX_RINGTONE_DURATION > 0 && duration > MAX_RINGTONE_DURATION) {
+        if(MAX_RINGTONE_DURATION > 0 && duration > MAX_RINGTONE_DURATION) {
             duration = MAX_RINGTONE_DURATION;
         }
 
@@ -274,7 +274,7 @@ public class AlertPlugin implements AbstractPlugin {
         alarms.moveToPosition(alarmId - 4);
         Uri alarm = ringtoneMgr.getRingtoneUri(alarms.getPosition());
 
-        if (alarm == null) {
+        if(alarm == null) {
             Log.i(TAG, "Cannot play nth Alarm. Playing default");
             alarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         }
@@ -295,11 +295,12 @@ public class AlertPlugin implements AbstractPlugin {
                 0, /* TODO - nothing needs to be done */
                 PopUp.TYPE_ALERT, popupAction);
     }
+
     /**
      * Simplified version to show additional dialog window while alarm.
      *
      * @param message Text message to show.
-     * @param title Title of dialog
+     * @param title   Title of dialog
      */
     private static void showDialog(String message, String title) {
         PopUp.showFromService(MBApp.getApp(), message,
@@ -312,7 +313,7 @@ public class AlertPlugin implements AbstractPlugin {
     @Override
     public void destroy() {
         stopPlaying();
-        for (Presenter presenter : activePresenters) {
+        for(Presenter presenter : activePresenters) {
             presenter.destroy();
         }
         activePresenters.clear();

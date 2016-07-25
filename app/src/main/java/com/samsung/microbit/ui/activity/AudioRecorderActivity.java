@@ -75,7 +75,7 @@ public class AudioRecorderActivity extends Activity {
                 .setContentTitle(getString(R.string.audio_recorder_notification));
 
         Drawable d = getResources().getDrawable(R.drawable.bg);
-        if (d != null) {
+        if(d != null) {
             d.mutate();//prevent affecting all instances of that drawable with color filter
             d.setColorFilter(Color.argb(187, 0, 0, 0), PorterDuff.Mode.SRC_OVER);
             findViewById(R.id.layout).setBackground(d);
@@ -111,7 +111,7 @@ public class AudioRecorderActivity extends Activity {
 
         mLaunchActivity = false;
 
-        if (!showPopup(getIntent().getAction())) {//pass null to use default listener
+        if(!showPopup(getIntent().getAction())) {//pass null to use default listener
             finish();
         }
     }
@@ -121,7 +121,7 @@ public class AudioRecorderActivity extends Activity {
         super.onStop();
         //do not create notification if back pressed (or it is not recording?)
         //or if activity was not launched
-        if (mLaunchActivity && !backPressed) {
+        if(mLaunchActivity && !backPressed) {
             Intent resultIntent = new Intent(this, AudioRecorderActivity.class);
             resultIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//bring existing activity to foreground
 
@@ -133,7 +133,7 @@ public class AudioRecorderActivity extends Activity {
                             PendingIntent.FLAG_UPDATE_CURRENT //update existing notification instead of creating new one
                     );
 
-            if (mIsRecording)
+            if(mIsRecording)
                 mBuilder.setLargeIcon(notificationLargeIconBitmapRecordingOn);
             else
                 mBuilder.setLargeIcon(notificationLargeIconBitmapRecordingOff);
@@ -154,7 +154,7 @@ public class AudioRecorderActivity extends Activity {
         super.onNewIntent(intent);
 
         //process intent only if activity is launched after popup confirmation
-        if (mLaunchActivity)
+        if(mLaunchActivity)
             processIntent(intent.getAction());
         else {
             PopUp.hide();//Needed to fix case when activity is brought to foreground but no showing popup activity anymore
@@ -164,10 +164,10 @@ public class AudioRecorderActivity extends Activity {
     }
 
     private void processIntent(String action) {
-        if (action == null)
+        if(action == null)
             return;
 
-        switch (action) {
+        switch(action) {
             case AudioRecordPlugin.INTENT_ACTION_START_RECORD:
                 startRecording();
                 break;
@@ -175,7 +175,7 @@ public class AudioRecorderActivity extends Activity {
                 stopRecording();
                 break;
             case AudioRecordPlugin.INTENT_ACTION_STOP:
-                if (mIsRecording)
+                if(mIsRecording)
                     stopRecording();
                 finish();
                 backPressed = true;//prevent notification creation
@@ -205,7 +205,7 @@ public class AudioRecorderActivity extends Activity {
     public void onBackPressed() {
         //if recording is active, then stop recording.
         //otherwise exit activity
-        if (mIsRecording) {
+        if(mIsRecording) {
             stopRecording();
         } else {
             super.onBackPressed();
@@ -216,8 +216,8 @@ public class AudioRecorderActivity extends Activity {
     public File getAudioFilename() {
         // Get the directory for the user's public pictures directory.
         File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
-        if (!dir.exists()) {
-            if (!dir.mkdirs()) {
+        if(!dir.exists()) {
+            if(!dir.mkdirs()) {
                 Log.e(TAG, "Failed to create directory");
             }
         }
@@ -244,7 +244,7 @@ public class AudioRecorderActivity extends Activity {
 
         try {
             mRecorder.prepare();
-        } catch (IOException e) {
+        } catch(IOException e) {
             releaseRecorder();
             //TODO: show popup for failure?
             Log.e(TAG, e.toString());
@@ -263,7 +263,7 @@ public class AudioRecorderActivity extends Activity {
     }
 
     private void releaseRecorder() {
-        if (mRecorder != null) {
+        if(mRecorder != null) {
             if(mIsRecording) {
                 mRecorder.stop();
             } else {

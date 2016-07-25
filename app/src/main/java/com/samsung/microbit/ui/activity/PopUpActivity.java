@@ -76,13 +76,13 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
 
         @Override
         public void onReceive(Context context, final Intent intent) {
-            if (intent.getAction().equals(INTENT_ACTION_CLOSE)) {
+            if(intent.getAction().equals(INTENT_ACTION_CLOSE)) {
                 Log.d("PopUpActivity", "BroadcastReceiver.INTENT_ACTION_CLOSE");
                 finish();
-            } else if (intent.getAction().equals(INTENT_ACTION_UPDATE_PROGRESS)) {
-                if (progressBar != null)
+            } else if(intent.getAction().equals(INTENT_ACTION_UPDATE_PROGRESS)) {
+                if(progressBar != null)
                     progressBar.setProgress(intent.getIntExtra(INTENT_EXTRA_PROGRESS, 0));
-            } else if (intent.getAction().equals(INTENT_ACTION_UPDATE_LAYOUT)) {
+            } else if(intent.getAction().equals(INTENT_ACTION_UPDATE_LAYOUT)) {
                 Log.d("PopUpActivity", "BroadcastReceiver.INTENT_ACTION_UPDATE_LAYOUT");
                 isCancelable = intent.getBooleanExtra(INTENT_EXTRA_CANCELABLE, true);
                 runOnUiThread(new Runnable() {
@@ -106,7 +106,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_popup);
         initViews();
         //Check if an intent was passed through a receiver.
-        if (mReceiverIntent == null) {
+        if(mReceiverIntent == null) {
             setLayout(getIntent());
         } else {
             setLayout(mReceiverIntent);
@@ -239,31 +239,31 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     private void setLayout(Intent intent) {
         String title = intent.getStringExtra(INTENT_EXTRA_TITLE);
 
-        if (!title.isEmpty()) {
+        if(!title.isEmpty()) {
             titleTxt.setText(title);
             titleTxt.setVisibility(View.VISIBLE);
         }
 
         String message = intent.getStringExtra(INTENT_EXTRA_MESSAGE);
-        if (!message.isEmpty()) {
+        if(!message.isEmpty()) {
             messageTxt.setText(message);
             messageTxt.setVisibility(View.VISIBLE);
         }
 
         int imageResId = intent.getIntExtra(INTENT_EXTRA_ICON, 0);
         int imageBackgroundResId = intent.getIntExtra(INTENT_EXTRA_ICONBG, 0);
-        if (imageResId != 0) {
+        if(imageResId != 0) {
             imageIcon.setImageResource(imageResId);
         }
-        if (imageBackgroundResId != 0) {
+        if(imageBackgroundResId != 0) {
             imageIcon.setBackgroundResource(imageBackgroundResId);
         }
 
         /* Loading the Giff only if the animation code isn't default 0
          * Default value is 0 (there is no animation ) Case 1 = flash, Case 2 = Error */
         int imageGiffAnimationCode = intent.getIntExtra(INTENT_GIFF_ANIMATION_CODE, 0);
-        if (imageGiffAnimationCode != 0) {
-            switch (imageGiffAnimationCode) {
+        if(imageGiffAnimationCode != 0) {
+            switch(imageGiffAnimationCode) {
                 // Flashing screen
                 case 1:
                     // Asset file
@@ -288,7 +288,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
             gifImageView.setVisibility(View.GONE);
         }
 
-        switch (intent.getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_MAX)) {
+        switch(intent.getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_MAX)) {
             case PopUp.TYPE_CHOICE:
                 layoutBottom.setVisibility(View.VISIBLE);
                 okButton.setVisibility(View.VISIBLE);
@@ -329,7 +329,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     @Override
     public void onBackPressed() {
         Log.d("PopUpActivity", "onBackPressed IsCancelable " + isCancelable);
-        if (!isCancelable)
+        if(!isCancelable)
             return;
 
         //Do not call super.onBackPressed() because we let the calling PopUp code to issue a "hide" call.
@@ -342,7 +342,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         Intent intent = new Intent();
         //       intent.putExtra(INTENT_EXTRA_INPUTTEXT, inputText.getText().toString());
 
-        switch (v.getId()) {
+        switch(v.getId()) {
             case R.id.imageButtonOk:
                 intent.setAction(INTENT_ACTION_OK_PRESSED);
                 break;

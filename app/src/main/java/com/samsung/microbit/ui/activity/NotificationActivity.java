@@ -11,7 +11,7 @@ public class NotificationActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         // If this activity is the root activity of the task, the app is not running
-        if (isTaskRoot()) {
+        if(isTaskRoot()) {
             // Start the app before finishing
             final Intent intent = new Intent(this, HomeActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

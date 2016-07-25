@@ -22,7 +22,7 @@ import pl.droidsonroids.gif.AnimationListener;
  * Represents a loading screen activity.
  * Provides methods to create and manage splash screen animation.
  */
-public class SplashScreenActivity extends Activity implements View.OnClickListener{
+public class SplashScreenActivity extends Activity implements View.OnClickListener {
     private static final String EXTRA_ANIMATION_STARTED = "animation_started";
     private static final int ANIM_STEP_ONE_DURATION = 1000;
     private static final int ANIM_STEP_TWO_DURATION = 800;
@@ -132,7 +132,7 @@ public class SplashScreenActivity extends Activity implements View.OnClickListen
         int halfOfScreen;
 
         //Change size of the gif image.
-        if (isPortrait) {
+        if(isPortrait) {
             final int screenHeight = getResources().getDisplayMetrics().heightPixels;
             halfOfScreen = screenHeight / 2;
             params.height = halfOfScreen;
@@ -159,7 +159,7 @@ public class SplashScreenActivity extends Activity implements View.OnClickListen
 
         final int delay = ANIM_STEP_ONE_DURATION + ANIM_STEP_TWO_DELAY;
 
-        if (isPortrait) {
+        if(isPortrait) {
             final int screenHeight = getResources().getDisplayMetrics().heightPixels;
             halfOfScreen = screenHeight / 2;
             quarterOfScreen = screenHeight / 4;
@@ -211,7 +211,7 @@ public class SplashScreenActivity extends Activity implements View.OnClickListen
             //Position of the screen to center gif image.
             int positionOnScreen;
 
-            if (isPortrait) {
+            if(isPortrait) {
                 final int screenHeight = getResources().getDisplayMetrics().heightPixels;
 
                 //Move logo layout out of the screen.
@@ -265,7 +265,7 @@ public class SplashScreenActivity extends Activity implements View.OnClickListen
     @Override
     protected void onResume() {
         super.onResume();
-        if (!mAnimationStarted) {
+        if(!mAnimationStarted) {
             startAnimation();
         } else {
             startHomeActivity();
@@ -287,7 +287,7 @@ public class SplashScreenActivity extends Activity implements View.OnClickListen
     }
 
     private void removeAnimation() {
-        if (mAnimationStarted) {
+        if(mAnimationStarted) {
             mLastAnimStepHandler.removeCallbacks(mLastAnimStepCallback);
             mGifDrawable.removeAnimationListener(mGifAnimListener);
         }

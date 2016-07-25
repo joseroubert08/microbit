@@ -25,12 +25,12 @@ public class ProjectsHelper {
     public static int getTotalSavedProjects() {
         File sdcardDownloads = HEX_FILE_DIR;
         int totalPrograms = 0;
-        if (sdcardDownloads.exists()) {
+        if(sdcardDownloads.exists()) {
             File files[] = sdcardDownloads.listFiles();
-            if (files != null) {
-                for (File file : files) {
+            if(files != null) {
+                for(File file : files) {
                     String fileName = file.getName();
-                    if (fileName.endsWith(".hex")) {
+                    if(fileName.endsWith(".hex")) {
                         ++totalPrograms;
                     }
                 }
@@ -44,11 +44,11 @@ public class ProjectsHelper {
         Log.d("MicroBit", "Searching files in " + sdcardDownloads.getAbsolutePath());
 
         int totalPrograms = 0;
-        if (sdcardDownloads.exists()) {
+        if(sdcardDownloads.exists()) {
             File files[] = sdcardDownloads.listFiles();
-            for (File file : files) {
+            for(File file : files) {
                 String fileName = file.getName();
-                if (fileName.endsWith(".hex")) {
+                if(fileName.endsWith(".hex")) {
 
                     //Beautify the filename
                     String parsedFileName;
@@ -56,11 +56,11 @@ public class ProjectsHelper {
                     parsedFileName = fileName.substring(0, dot);
                     parsedFileName = parsedFileName.replace('_', ' ');
 
-                    if (prettyFileNameMap != null) {
+                    if(prettyFileNameMap != null) {
                         prettyFileNameMap.put(parsedFileName, fileName);
                     }
 
-                    if (list != null) {
+                    if(list != null) {
                         list.add(new Project(parsedFileName, file.getAbsolutePath(), file.lastModified(),
                                 null, false));
                     }

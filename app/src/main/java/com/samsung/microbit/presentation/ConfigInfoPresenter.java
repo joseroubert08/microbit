@@ -56,7 +56,7 @@ public class ConfigInfoPresenter implements Presenter {
 
     @Override
     public void start() {
-        if (appContext == null) {
+        if(appContext == null) {
             Log.d("RemoteConfig", "Context is null. cannot get the config");
             return;
         }
@@ -65,19 +65,19 @@ public class ConfigInfoPresenter implements Presenter {
             File httpCacheDir = new File(MBApp.getApp().getCacheDir(), "https");
             long httpCacheSize = 3 * 1024 * 1024; // 3 MiB
             HttpResponseCache.install(httpCacheDir, httpCacheSize);
-        } catch (IOException e) {
+        } catch(IOException e) {
             Log.i("RemoteConfig", "HTTP response cache installation failed:" + e);
         }
 
         HttpResponseCache cache = HttpResponseCache.getInstalled();
-        if (cache != null) {
+        if(cache != null) {
             //   If cache is present, flush it to the filesystem.
             cache.flush();
         }
 
         //Check if we should get new config file
-        if (shouldRefreshValue()) {
-            if (reInitConfigInfoTask != null) {
+        if(shouldRefreshValue()) {
+            if(reInitConfigInfoTask != null) {
                 reInitConfigInfoTask.cancel(true);
             }
 
@@ -88,7 +88,7 @@ public class ConfigInfoPresenter implements Presenter {
     }
 
     private boolean shouldRefreshValue() {
-        if (configInfo.getLastQueryTime() + configInfo.getMaxAge() * 1000 < System.currentTimeMillis()) {
+        if(configInfo.getLastQueryTime() + configInfo.getMaxAge() * 1000 < System.currentTimeMillis()) {
             return true;
         }
         return true;
@@ -96,7 +96,7 @@ public class ConfigInfoPresenter implements Presenter {
 
     @Override
     public void stop() {
-        if (reInitConfigInfoTask != null && reInitConfigInfoTask.getStatus() == AsyncTask.Status.RUNNING) {
+        if(reInitConfigInfoTask != null && reInitConfigInfoTask.getStatus() == AsyncTask.Status.RUNNING) {
             reInitConfigInfoTask.cancel(true);
             reInitConfigInfoTask = null;
         }
@@ -104,13 +104,13 @@ public class ConfigInfoPresenter implements Presenter {
 
     @Override
     public void destroy() {
-       stop();
+        stop();
 
         HttpResponseCache cache = HttpResponseCache.getInstalled();
-        if (cache != null) {
+        if(cache != null) {
             try {
                 cache.close();
-            } catch (IOException e) {
+            } catch(IOException e) {
                 Log.i("RemoteConfig", "HTTP response cache close failed:" + e);
             }
         }

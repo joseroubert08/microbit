@@ -22,9 +22,13 @@ public class ServiceConnector {
 
     private static final int COUNT_SERVICES_FOR_BINDING = 3;
 
-    /** Messenger for sending messages to the service. */
+    /**
+     * Messenger for sending messages to the service.
+     */
     Map<String, Messenger> mServiceMessengers = new HashMap<>(COUNT_SERVICES_FOR_BINDING);
-    /** Messenger for receiving messages from the service. */
+    /**
+     * Messenger for receiving messages from the service.
+     */
     Messenger mClientMessenger = null;
 
     /**
@@ -55,10 +59,14 @@ public class ServiceConnector {
         }
     }
 
-    /** Flag indicating whether we have called bind on the service. */
+    /**
+     * Flag indicating whether we have called bind on the service.
+     */
     boolean mBound;
 
-    /** Context of the activity from which this connector was launched */
+    /**
+     * Context of the activity from which this connector was launched
+     */
     private Context mCtx;
 
     private IncomingHandler handler;
@@ -68,7 +76,7 @@ public class ServiceConnector {
      */
     private ServiceUtils.IMessengerFinder mConnection = new ServiceUtils.IMessengerFinder() {
 
-        private int countBindedServices = 0;
+        private int countBoundServices = 0;
 
         public void onServiceConnected(ComponentName className, IBinder service) {
             // This is called when the connection with the service has been
@@ -80,12 +88,7 @@ public class ServiceConnector {
 
             mServiceMessengers.put(className.getClassName(), mServiceMessenger);
 
-            if(++countBindedServices == COUNT_SERVICES_FOR_BINDING) {
-                //TODO remove
-                Intent intentSimulate = new Intent(mCtx, IPCService.class);
-                intentSimulate.putExtra(IPCConstants.INTENT_TYPE, EventCategories.CATEGORY_SIMULATE);
-                mCtx.startService(intentSimulate);
-
+            if(++countBoundServices == COUNT_SERVICES_FOR_BINDING) {
                 ConnectedDevice connectedDevice = BluetoothUtils.getPairedMicrobit(mCtx);
 
                 if(connectedDevice.mStatus) {
@@ -143,7 +146,7 @@ public class ServiceConnector {
     }
 
     public void unbindServices() {
-        if (mBound) {
+        if(mBound) {
             mCtx.getApplicationContext().unbindService(mConnection);
             mBound = false;
 

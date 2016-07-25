@@ -36,7 +36,7 @@ public class RemoteControlPlugin implements AbstractPlugin {
 
     @Override
     public void handleEntry(CmdArg cmd) {
-        if (DEBUG) {
+        if(DEBUG) {
             logi("pluginEntry() ##  " + cmd.getCMD());
         }
 
@@ -44,7 +44,7 @@ public class RemoteControlPlugin implements AbstractPlugin {
             timer = new Timer();
         }
 
-        switch (cmd.getCMD()) {
+        switch(cmd.getCMD()) {
             case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_PLAY:
                 play();
                 break;
@@ -153,8 +153,8 @@ public class RemoteControlPlugin implements AbstractPlugin {
         AudioManager audio = (AudioManager) MBApp.getApp().getSystemService(Context.AUDIO_SERVICE);
         audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
                 AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
-		/*
-		scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_VOLUME_UP, 0);
+        /*
+        scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_VOLUME_UP, 0);
         scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_VOLUME_UP, 100);
         */
     }
