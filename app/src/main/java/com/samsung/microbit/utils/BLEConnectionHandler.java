@@ -87,6 +87,11 @@ public class BLEConnectionHandler {
                                 R.drawable.error_face, R.drawable.red_btn,
                                 PopUp.GIFF_ANIMATION_ERROR,
                                 PopUp.TYPE_ALERT, null, null);
+                    } else {
+                        //If All success, change indicator to "not just paired"
+                        if(MBApp.getApp().isJustPaired()) {
+                            MBApp.getApp().setJustPaired(false);
+                        }
                     }
                 }
             }

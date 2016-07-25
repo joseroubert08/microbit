@@ -135,17 +135,17 @@
             android:name=".service.PluginService"
             android:enabled="true"
             android:exported="false"
-            android:process=":PluginService" />
+            android:process=":PluginService"/>
         <service
             android:name=".service.BLEService"
-            android:exported="false"
             android:enabled="true"
-            android:process=":BLEService" />
+            android:exported="false"
+            android:process=":BLEService"/>
 
         <service
             android:name=".service.IPCService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"/>
 
         <activity
             android:name=".ui.activity.SplashScreenActivity"

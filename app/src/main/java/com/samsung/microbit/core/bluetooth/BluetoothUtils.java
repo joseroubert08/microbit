@@ -112,11 +112,10 @@ public class BluetoothUtils {
         }
     }
 
-    public static BluetoothDevice getPairedDeviceMicrobit(Context context) {
+    public static BluetoothDevice getPairedDeviceMicroBit(Context context) {
         SharedPreferences pairedDevicePref = context.getApplicationContext().getSharedPreferences(PREFERENCES_KEY,
                 Context.MODE_MULTI_PROCESS);
         if(pairedDevicePref.contains(PREFERENCES_PAIREDDEV_KEY)) {
-            boolean pairedMicrobitInSystemList = false;
             String pairedDeviceString = pairedDevicePref.getString(PREFERENCES_PAIREDDEV_KEY, null);
             Gson gson = new Gson();
             sConnectedDevice = gson.fromJson(pairedDeviceString, ConnectedDevice.class);
