@@ -295,6 +295,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
                 cancelButton.setVisibility(View.VISIBLE);
                 break;
             case PopUp.TYPE_ALERT:
+            case PopUp.TYPE_ALERT_LIGHT:
                 layoutBottom.setVisibility(View.VISIBLE);
                 affirmationOKButton.setVisibility(View.VISIBLE);
                 break;
