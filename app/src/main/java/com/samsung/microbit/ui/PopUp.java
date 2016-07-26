@@ -34,7 +34,8 @@ public class PopUp {
     public static final int TYPE_PROGRESS_NOT_CANCELABLE = 6;//0 button progress.xml bar type not cancelable
     // (backpress disabled)
     public static final int TYPE_SPINNER_NOT_CANCELABLE = 7;//0 button type spinner not cancelable (backpress disabled)
-    public static final int TYPE_MAX = 8;
+    public static final int TYPE_ALERT_LIGHT = 8;//Shows only once and do not leaves any history and cannot be recreated
+    public static final int TYPE_NONE = 9;
 
 
     // Constants for giff animation options
@@ -55,8 +56,10 @@ public class PopUp {
     private static final short REQUEST_TYPE_UPDATE_PROGRESS = 2;
     private static final short REQUEST_TYPE_MAX = 3;
 
+    private static final String ACTION_FROM_SERVICE = "com.samsung.microbit.core.SHOWFROMSERVICE";
 
-    private static int sCurrentType = TYPE_MAX; //current type of displayed popup  (TYPE_CHOICE, ...)
+
+    private static int sCurrentType = TYPE_NONE; //current type of displayed popup  (TYPE_CHOICE, ...)
 
     private static final Context ctx = MBApp.getApp();
 
@@ -89,22 +92,22 @@ public class PopUp {
     private static BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(PopUpActivity.INTENT_ACTION_OK_PRESSED)) {
-                if (okPressListener != null)
+            if(intent.getAction().equals(PopUpActivity.INTENT_ACTION_OK_PRESSED)) {
+                if(okPressListener != null)
                     okPressListener.onClick(null);
-            } else if (intent.getAction().equals(PopUpActivity.INTENT_ACTION_CANCEL_PRESSED)) {
-                if (cancelPressListener != null)
+            } else if(intent.getAction().equals(PopUpActivity.INTENT_ACTION_CANCEL_PRESSED)) {
+                if(cancelPressListener != null)
                     cancelPressListener.onClick(null);
-            } else if (intent.getAction().equals(PopUpActivity.INTENT_ACTION_DESTROYED)) {
+            } else if(intent.getAction().equals(PopUpActivity.INTENT_ACTION_DESTROYED)) {
                 Log.d(TAG, "INTENT_ACTION_DESTROYED size queue = " + pendingQueue.size());
                 pendingQueue.poll();
                 isCurrentRequestPending = false;
-                sCurrentType = TYPE_MAX;
+                sCurrentType = TYPE_NONE;
                 processNextPendingRequest();
-            } else if (intent.getAction().equals(PopUpActivity.INTENT_ACTION_CREATED)) {
+            } else if(intent.getAction().equals(PopUpActivity.INTENT_ACTION_CREATED)) {
                 Log.d(TAG, "INTENT_ACTION_CREATED size queue = " + pendingQueue.size());
                 PendingRequest request = pendingQueue.poll();
-                if (request != null) {
+                if(request != null) {
                     sCurrentType = request.intent.getIntExtra(PopUpActivity.INTENT_EXTRA_TYPE, 0);
                     okPressListener = request.okListener;
                     cancelPressListener = request.cancelListener;
@@ -135,7 +138,7 @@ public class PopUp {
         pendingQueue.add(new PendingRequest(new Intent(PopUpActivity.INTENT_ACTION_CLOSE),
                 null, null, REQUEST_TYPE_HIDE));
 
-        if (!isCurrentRequestPending) {
+        if(!isCurrentRequestPending) {
             processNextPendingRequest();
         }
     }
@@ -143,6 +146,7 @@ public class PopUp {
     /**
      * Updates progress of the progress bar, for example, during the
      * flashing process.
+     *
      * @param val New progress value.
      */
     public static void updateProgressBar(int val) {
@@ -150,7 +154,7 @@ public class PopUp {
         intent.putExtra(PopUpActivity.INTENT_EXTRA_PROGRESS, val);
 
         pendingQueue.add(new PendingRequest(intent, null, null, REQUEST_TYPE_UPDATE_PROGRESS));
-        if (!isCurrentRequestPending) {
+        if(!isCurrentRequestPending) {
             processNextPendingRequest();
         }
     }
@@ -161,16 +165,16 @@ public class PopUp {
                                        int imageResId, int imageBackgroundResId,
                                        int animationCode, int type) {
         Log.d(TAG, "showFromService");
-        Intent intent = new Intent("com.samsung.microbit.core.SHOWFROMSERVICE");
+        Intent intent = new Intent(ACTION_FROM_SERVICE);
         putIntentExtra(intent, message, title, imageResId, imageBackgroundResId, animationCode, type);
         context.sendBroadcast(intent);
     }
 
     public static void showFromService(Context context, String message, String title,
                                        int imageResId, int imageBackgroundResId,
-                                       int animationCode,int type, int okAction) {
+                                       int animationCode, int type, int okAction) {
         Log.d(TAG, "showFromService");
-        Intent intent = new Intent("com.samsung.microbit.core.SHOWFROMSERVICE");
+        Intent intent = new Intent(ACTION_FROM_SERVICE);
         putIntentExtra(intent, message, title, imageResId, imageBackgroundResId, animationCode, type);
         intent.putExtra(INTENT_EXTRA_OK_ACTION, okAction);
         context.sendBroadcast(intent);
@@ -184,7 +188,7 @@ public class PopUp {
         intent.putExtra(PopUpActivity.INTENT_EXTRA_ICON, imageResId);
         intent.putExtra(PopUpActivity.INTENT_EXTRA_ICONBG, imageBackgroundResId);
         intent.putExtra(PopUpActivity.INTENT_GIFF_ANIMATION_CODE, animationCode);
-        switch (type) {
+        switch(type) {
             case TYPE_PROGRESS_NOT_CANCELABLE:
             case TYPE_SPINNER_NOT_CANCELABLE:
                 intent.putExtra(PopUpActivity.INTENT_EXTRA_CANCELABLE, false);
@@ -255,7 +259,7 @@ public class PopUp {
                                                      View.OnClickListener cancelListener) {
         Log.d(TAG, "show START popup type " + type);
 
-        if (!registered) {
+        if(!registered) {
             IntentFilter popupIntentFilter = new IntentFilter();
             popupIntentFilter.addAction(PopUpActivity.INTENT_ACTION_OK_PRESSED);
             popupIntentFilter.addAction(PopUpActivity.INTENT_ACTION_CANCEL_PRESSED);
@@ -271,7 +275,7 @@ public class PopUp {
 
         pendingQueue.add(new PendingRequest(intent, okListener, cancelListener, REQUEST_TYPE_SHOW));
 
-        if (!isCurrentRequestPending) {
+        if(!isCurrentRequestPending) {
             processNextPendingRequest();
         }
 
@@ -286,13 +290,13 @@ public class PopUp {
         Log.d(TAG, "processNextPendingRequest START size = " + pendingQueue.size());
         boolean done = false;
         //keep iterating until we find async. request (HIDE, SHOW) to process
-        while (!pendingQueue.isEmpty() && !done) {
+        while(!pendingQueue.isEmpty() && !done) {
             PendingRequest request = pendingQueue.peek();
 
-            switch (request.type) {
+            switch(request.type) {
                 case REQUEST_TYPE_SHOW: {
                     Log.d(TAG, "processNextPendingRequest REQUEST_TYPE_SHOW");
-                    if (sCurrentType != TYPE_MAX) {
+                    if(sCurrentType != TYPE_NONE) {
                         Log.d(TAG, "processNextPendingRequest Update existing layout instead of hiding");
                         request.intent.setAction(PopUpActivity.INTENT_ACTION_UPDATE_LAYOUT);
                         LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(request.intent);
@@ -306,11 +310,18 @@ public class PopUp {
                     done = true;
                     isCurrentRequestPending = true;
                     request.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    ctx.startActivity(request.intent);
+
+                    //Add additional flags to not be able to recreate the window.
+                    if(request.intent.getIntExtra(PopUpActivity.INTENT_EXTRA_TYPE, 0) == TYPE_ALERT_LIGHT) {
+                        request.intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY
+                                | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                    }
+
+                        ctx.startActivity(request.intent);
                     break;
                 }
                 case REQUEST_TYPE_HIDE: {
-                    if (sCurrentType == TYPE_MAX) {
+                    if(sCurrentType == TYPE_NONE) {
                         Log.d(TAG, "processNextPendingRequest Nothing to hide");
                         pendingQueue.poll();
                         continue;

@@ -57,7 +57,7 @@ public class PlayAudioPresenter implements Presenter {
             mediaplayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
             afd.close();
             mediaplayer.prepare();
-        } catch (IOException e) {
+        } catch(IOException e) {
             e.printStackTrace();
             Log.e(TAG, e.toString());
             mediaplayer.release();
@@ -69,7 +69,7 @@ public class PlayAudioPresenter implements Presenter {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 restoreAudioMode();
-                if (callBack != null) {
+                if(callBack != null) {
                     callBack.onCompletion(mp);
                 }
                 mediaplayer.release();
@@ -86,7 +86,7 @@ public class PlayAudioPresenter implements Presenter {
         originalRingerMode = audioManager.getRingerMode();
         originalRingerVolume = audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
 
-        if (originalRingerMode != AudioManager.RINGER_MODE_NORMAL) {
+        if(originalRingerMode != AudioManager.RINGER_MODE_NORMAL) {
             audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
         }
         audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, audioManager.getStreamMaxVolume
@@ -100,13 +100,13 @@ public class PlayAudioPresenter implements Presenter {
 
     @Override
     public void stop() {
-        if (mediaplayer != null) {
+        if(mediaplayer != null) {
             try {
-                if (mediaplayer.isPlaying()) {
+                if(mediaplayer.isPlaying()) {
                     mediaplayer.stop();
                     restoreAudioMode();
                 }
-            } catch (IllegalStateException e) {
+            } catch(IllegalStateException e) {
                 Log.e(TAG, e.toString());
             }
         }

@@ -29,7 +29,7 @@ public class IOUtils {
 
         int count;
 
-        while ((count = src.read(buffer)) > 0) {
+        while((count = src.read(buffer)) > 0) {
             dest.write(buffer, 0, count);
             countBytes += count;
         }

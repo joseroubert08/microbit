@@ -38,7 +38,7 @@ public class DownloadManager {
             objectSize = IOUtils.copy(is, os);
             os.close();
             is.close();
-        } catch (IOException ex) {
+        } catch(IOException ex) {
             Log.e(TAG, ex.toString());
         }
 

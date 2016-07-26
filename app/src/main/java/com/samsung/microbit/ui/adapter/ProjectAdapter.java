@@ -47,8 +47,8 @@ public class ProjectAdapter extends BaseAdapter {
     private InputFilter renameFilter = new InputFilter() {
         public CharSequence filter(CharSequence source, int start, int end,
                                    Spanned dest, int dstart, int dend) {
-            for (int i = start; i < end; i++) {
-                if (!Character.isLetterOrDigit(source.charAt(i)) && !isAdditionalAllowedSymbol(source.charAt(i))) {
+            for(int i = start; i < end; i++) {
+                if(!Character.isLetterOrDigit(source.charAt(i)) && !isAdditionalAllowedSymbol(source.charAt(i))) {
                     return "";
                 }
             }
@@ -67,7 +67,7 @@ public class ProjectAdapter extends BaseAdapter {
      * @param message Message to log.
      */
     protected void logi(String message) {
-        if (DEBUG) {
+        if(DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
@@ -88,9 +88,9 @@ public class ProjectAdapter extends BaseAdapter {
             project.inEditMode = false;
             currentEditableRow = -1;
 
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
+            if(actionId == EditorInfo.IME_ACTION_DONE) {
                 dismissKeyBoard(v, true, true);
-            } else if (actionId == -1) {
+            } else if(actionId == -1) {
                 dismissKeyBoard(v, true, false);
             }
 
@@ -112,12 +112,12 @@ public class ProjectAdapter extends BaseAdapter {
 
             expandProjectItem = mProjectActivity.getResources().getBoolean(R.bool.expandProjectItem);
 
-            if (expandProjectItem) {
+            if(expandProjectItem) {
                 changeActionBar(v);
             } else {
-                if (currentEditableRow != -1) {
+                if(currentEditableRow != -1) {
                     int i = (Integer) v.getTag(R.id.positionId);
-                    if (i != currentEditableRow) {
+                    if(i != currentEditableRow) {
                         renameProject(v);
                     }
                 } else {
@@ -180,17 +180,17 @@ public class ProjectAdapter extends BaseAdapter {
         InputMethodManager imm = (InputMethodManager) mProjectActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
 
-        if (hide) {
+        if(hide) {
             hideEditTextView(v);
         }
 
-        if (done) {
+        if(done) {
             EditText ed = (EditText) v;
             pos = (int) ed.getTag(R.id.positionId);
             String newName = ed.getText().toString();
             Project p = mProjects.get(pos);
-            if (newName.length() > 0) {
-                if (p.name.compareToIgnoreCase(newName) != 0) {
+            if(newName.length() > 0) {
+                if(p.name.compareToIgnoreCase(newName) != 0) {
                     mProjectActivity.renameFile(p.filePath, newName);
                 }
             }
@@ -241,7 +241,7 @@ public class ProjectAdapter extends BaseAdapter {
 
         Project project = mProjects.get(pos);
         project.actionBarExpanded = !project.actionBarExpanded;
-        if (currentEditableRow != -1) {
+        if(currentEditableRow != -1) {
             project = mProjects.get(currentEditableRow);
             project.inEditMode = false;
             currentEditableRow = -1;
@@ -264,7 +264,7 @@ public class ProjectAdapter extends BaseAdapter {
         logi("renameProject() :: pos = " + pos + " currentEditableRow=" + currentEditableRow);
 
         Project project;
-        if (currentEditableRow != -1) {
+        if(currentEditableRow != -1) {
             project = mProjects.get(currentEditableRow);
             project.inEditMode = false;
             currentEditableRow = -1;
@@ -304,7 +304,7 @@ public class ProjectAdapter extends BaseAdapter {
 
             MBApp application = MBApp.getApp();
 
-            if (application.getEchoClientManager().getEcho() != null) {
+            if(application.getEchoClientManager().getEcho() != null) {
                 application.getEchoClientManager().getEcho().userActionEvent("click", "DeleteProject", null);
             }
             PopUp.show(application.getString(R.string.delete_project_message),
@@ -317,7 +317,7 @@ public class ProjectAdapter extends BaseAdapter {
                         public void onClick(View v) {
                             PopUp.hide();
                             Project proj = mProjects.get(pos);
-                            if (FileUtils.deleteFile(proj.filePath)) {
+                            if(FileUtils.deleteFile(proj.filePath)) {
                                 mProjects.remove(pos);
                                 notifyDataSetChanged();
                                 mProjectActivity.updateProjectsListSortOrder(true);
@@ -351,7 +351,7 @@ public class ProjectAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         Project project = mProjects.get(position);
-        if (convertView == null) {
+        if(convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(MBApp.getApp());
             convertView = inflater.inflate(R.layout.project_items, null);
         }
@@ -363,8 +363,8 @@ public class ProjectAdapter extends BaseAdapter {
         appNameEdit.setTypeface(MBApp.getApp().getRobotoTypeface());
 
         LinearLayout actionBarLayout = (LinearLayout) convertView.findViewById(R.id.actionBarForProgram);
-        if (actionBarLayout != null) {
-            if (project.actionBarExpanded) {
+        if(actionBarLayout != null) {
+            if(project.actionBarExpanded) {
                 actionBarLayout.setVisibility(View.VISIBLE);
                 appNameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(MBApp.getApp()
                         , R.drawable.ic_arrow_down), null);
@@ -384,9 +384,9 @@ public class ProjectAdapter extends BaseAdapter {
         appNameEdit.setTag(R.id.positionId, position);
         appNameEdit.setTag(R.id.editbutton, appNameButton);
         appNameEdit.setOnEditorActionListener(editorOnActionListener);
-        appNameEdit.setFilters(new InputFilter[] { renameFilter });
+        appNameEdit.setFilters(new InputFilter[]{renameFilter});
 
-        if (project.inEditMode) {
+        if(project.inEditMode) {
             appNameEdit.setVisibility(View.VISIBLE);
 
             appNameEdit.setText(project.name);
@@ -415,7 +415,7 @@ public class ProjectAdapter extends BaseAdapter {
 
 
         Drawable myIcon;
-        if (project.runStatus) {
+        if(project.runStatus) {
             flashBtnText.setText("");
             myIcon = convertView.getResources().getDrawable(R.drawable.green_btn);
         } else {

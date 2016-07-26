@@ -1,23 +1,20 @@
 package com.samsung.microbit.presentation;
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
-import android.util.Log;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.EventSubCodes;
+import com.samsung.microbit.data.constants.IPCConstants;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.plugin.InformationPlugin;
-import com.samsung.microbit.service.BLEService;
+import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.service.PluginService;
-import com.samsung.microbit.utils.ServiceUtils;
 import com.samsung.microbit.utils.Utils;
 
 public class ShakePresenter implements Presenter {
@@ -43,7 +40,7 @@ public class ShakePresenter implements Presenter {
             long currentTime = System.currentTimeMillis();
             long deltaTime = currentTime - lastTime;
 
-            if (deltaTime > SWING_EVENT_INTERVAL) {
+            if(deltaTime > SWING_EVENT_INTERVAL) {
                 lastTime = currentTime;
 
                 x = event.values[0];
@@ -52,33 +49,23 @@ public class ShakePresenter implements Presenter {
 
                 speed = Math.abs(x + y + z - lastX - lastY - lastZ) / deltaTime * 10000;
 
-                if (speed > SPEED_THRESHOLD) {
+                if(speed > SPEED_THRESHOLD) {
                     mSwingCount++;
-                    if (mSwingCount >= THRESHOLD_SWING_COUNT) {
-                        if (informationPlugin != null) {
+                    if(mSwingCount >= THRESHOLD_SWING_COUNT) {
+                        if(informationPlugin != null) {
                             //notify BLE client
                             CmdArg cmd = new CmdArg(InformationPlugin.AlertType.TYPE_SHAKE, "Device Shaked");
                             informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
                         }
 
-                        ServiceUtils.IMessengerFinder messengerFinder = MBApp.getApp().getMessengerFinder();
+                        MBApp application = MBApp.getApp();
 
-                        if (messengerFinder != null) {
-                            Messenger bleMessenger = messengerFinder.getMessengerForService(BLEService.class.getName());
-
-                            if (bleMessenger != null) {
-                                Message message = ServiceUtils.composeBLECharacteristicMessage(Utils
-                                        .makeMicroBitValue(EventCategories.SAMSUNG_DEVICE_INFO_ID,
-                                                EventSubCodes.SAMSUNG_DEVICE_GESTURE_DEVICE_SHAKEN));
-                                if (message != null) {
-                                    try {
-                                        bleMessenger.send(message);
-                                    } catch (RemoteException e) {
-                                        Log.e(TAG, e.toString());
-                                    }
-                                }
-                            }
-                        }
+                        Intent intent = new Intent(application, IPCService.class);
+                        intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED);
+                        intent.putExtra(IPCConstants.INTENT_CHARACTERISTIC_MESSAGE, Utils
+                                .makeMicroBitValue(EventCategories.SAMSUNG_DEVICE_INFO_ID,
+                                        EventSubCodes.SAMSUNG_DEVICE_GESTURE_DEVICE_SHAKEN));
+                        application.startService(intent);
 
                         mSwingCount = 0;
                     }
@@ -112,12 +99,12 @@ public class ShakePresenter implements Presenter {
 
     @Override
     public void start() {
-        if (!isRegistered) {
+        if(!isRegistered) {
             isRegistered = true;
             sensorManager.registerListener(shakeEventListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                     SensorManager.SENSOR_DELAY_NORMAL);
 
-            if (informationPlugin != null) {
+            if(informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Registered Shake.");
                 informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
             }
@@ -126,10 +113,10 @@ public class ShakePresenter implements Presenter {
 
     @Override
     public void stop() {
-        if (isRegistered) {
+        if(isRegistered) {
             sensorManager.unregisterListener(shakeEventListener);
 
-            if (informationPlugin != null) {
+            if(informationPlugin != null) {
                 CmdArg cmd = new CmdArg(0, "Unregistered Shake.");
                 informationPlugin.sendReplyCommand(PluginService.INFORMATION, cmd);
             }

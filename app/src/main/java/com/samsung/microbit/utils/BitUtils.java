@@ -18,7 +18,7 @@ public class BitUtils {
     // multiple bit positions to value mask
     public static int getBitMask(int[] x) {
         int rc = 0;
-        for (int xVal : x) {
+        for(int xVal : x) {
             rc |= getBitMask(xVal);
         }
 

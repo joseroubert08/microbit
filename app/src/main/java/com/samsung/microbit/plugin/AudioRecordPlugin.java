@@ -28,7 +28,7 @@ public class AudioRecordPlugin implements AbstractPlugin {
     public void handleEntry(CmdArg cmd) {
         final String audioRecordAction;
 
-        switch (cmd.getCMD()) {
+        switch(cmd.getCMD()) {
             case EventSubCodes.SAMSUNG_AUDIO_RECORDER_EVT_START_CAPTURE:
                 audioRecordAction = INTENT_ACTION_START_RECORD;
                 break;

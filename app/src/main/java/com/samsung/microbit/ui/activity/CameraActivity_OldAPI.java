@@ -77,7 +77,7 @@ public class CameraActivity_OldAPI extends Activity {
     private int mCameraIdx;
     private boolean mFrontCamera;
 
-    private boolean mVideo;
+    private boolean mVideo = false;
     private boolean mIsRecording;
     private MediaRecorder mMediaRecorder;
     private File mVideoFile;
@@ -104,7 +104,7 @@ public class CameraActivity_OldAPI extends Activity {
     private MediaRecorder.OnInfoListener m_MediaInfoListener = new MediaRecorder.OnInfoListener() {
         @Override
         public void onInfo(MediaRecorder mr, int what, int extra) {
-            switch (what) {
+            switch(what) {
                 case MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED:
                 case MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED:
                     playAudioPresenter.setInternalPathForPlay(InternalPaths.MAX_VIDEO_RECORDED);
@@ -125,7 +125,7 @@ public class CameraActivity_OldAPI extends Activity {
      * @param message Message to log.
      */
     void logi(String message) {
-        if (debug) {
+        if(debug) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
@@ -138,12 +138,12 @@ public class CameraActivity_OldAPI extends Activity {
     private int getCurrentCamera() {
         Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
         int cameraCount = Camera.getNumberOfCameras();
-        for (int camIdx = 0; camIdx < cameraCount; camIdx++) {
+        for(int camIdx = 0; camIdx < cameraCount; camIdx++) {
             Camera.getCameraInfo(camIdx, cameraInfo);
-            if (mFrontCamera && cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            if(mFrontCamera && cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
                 logi("returning front camera");
                 return camIdx;
-            } else if (!mFrontCamera && cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
+            } else if(!mFrontCamera && cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
                 logi("returning back camera");
                 return camIdx;
             }
@@ -232,7 +232,7 @@ public class CameraActivity_OldAPI extends Activity {
      * Changes camera rotation to a current rotation.
      */
     private void updateCameraRotation() {
-        if (mCamera != null) {
+        if(mCamera != null) {
             Camera.Parameters parameters = mCamera.getParameters();
             parameters.setRotation(getRotationCameraCorrection(mCurrentRotation)); //set rotation to save the picture
             mCamera.setParameters(parameters);
@@ -249,31 +249,31 @@ public class CameraActivity_OldAPI extends Activity {
         rotation = (rotation + mOrientationOffset) % 360;
         int quant_rotation = 0;
         boolean buttonPortraitVisible = true;
-        if (rotation == OrientationEventListener.ORIENTATION_UNKNOWN)
+        if(rotation == OrientationEventListener.ORIENTATION_UNKNOWN)
             return;
-        if (rotation < 45 || rotation >= 315) {
+        if(rotation < 45 || rotation >= 315) {
             buttonPortraitVisible = true;
             quant_rotation = 0;
             mCurrentIconIndex = 0;
-        } else if ((rotation >= 135 && rotation < 225)) {
+        } else if((rotation >= 135 && rotation < 225)) {
             buttonPortraitVisible = true;
             quant_rotation = 180;
             //mCurrentIconIndex = 2;
             mCurrentIconIndex = 0; //This way only 2 configurations are allowed
-        } else if ((rotation >= 45 && rotation < 135)) {
+        } else if((rotation >= 45 && rotation < 135)) {
             buttonPortraitVisible = false;
             quant_rotation = 270;
             //mCurrentIconIndex = 1;
             mCurrentIconIndex = 3; //This way only 2 configurations are allowed
-        } else if ((rotation >= 225 && rotation < 315)) {
+        } else if((rotation >= 225 && rotation < 315)) {
             buttonPortraitVisible = false;
             quant_rotation = 90;
             mCurrentIconIndex = 3;
         }
-        if (quant_rotation != mCurrentRotation) {
+        if(quant_rotation != mCurrentRotation) {
             mCurrentRotation = quant_rotation;
 
-            if (buttonPortraitVisible) {
+            if(buttonPortraitVisible) {
                 mButtonBack_landscape.setVisibility(View.INVISIBLE);
                 mButtonBack_portrait.setVisibility(View.VISIBLE);
                 mButtonBack_portrait.bringToFront();
@@ -301,7 +301,7 @@ public class CameraActivity_OldAPI extends Activity {
             public void onClick(View v) {
                 try {
                     mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
-                } catch (final Exception ex) {
+                } catch(final Exception ex) {
                     sendCameraError();
                     Log.e(TAG, "Error during take picture", ex);
                 }
@@ -366,11 +366,11 @@ public class CameraActivity_OldAPI extends Activity {
         updateButtonClickIcon();
         mButtonClick.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                if (mIsRecording) {
+                if(mIsRecording) {
                     // stop recording and release mCamera
                     stopRecording();
                 } else {
-                    if (!prepareMediaRecorder()) {
+                    if(!prepareMediaRecorder()) {
                         sendCameraError();
                         Log.e(TAG, "Error preparing mediaRecorder");
                         finish();
@@ -386,7 +386,7 @@ public class CameraActivity_OldAPI extends Activity {
                         public void run() {
                             try {
                                 mMediaRecorder.start();
-                            } catch (final Exception ex) {
+                            } catch(final Exception ex) {
                                 sendCameraError();
                                 Log.e(TAG, "Error during video recording", ex);
                                 finish();
@@ -401,7 +401,7 @@ public class CameraActivity_OldAPI extends Activity {
 
     private void indicateVideoRecording() {
         logi("indicateVideoRecording");
-        if (mParameters == null && mCamera != null) {
+        if(mParameters == null && mCamera != null) {
             setParameters();
 
         }
@@ -411,8 +411,8 @@ public class CameraActivity_OldAPI extends Activity {
             public void onTick(long millisUntilFinished) {
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        if (mIsRecording && mCamera != null) {
-                            if (flashON) {
+                        if(mIsRecording && mCamera != null) {
+                            if(flashON) {
                                 logi("turning flash ON");
                                 mParameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
 
@@ -441,7 +441,7 @@ public class CameraActivity_OldAPI extends Activity {
         mParameters = mCamera.getParameters();
 
         List<String> flashModes = mParameters.getSupportedFlashModes();
-        for (String flashmode : flashModes) {
+        for(String flashmode : flashModes) {
             logi("Supported flash mode : " + flashmode);
         }
         mCamera.setParameters(mParameters);
@@ -458,20 +458,20 @@ public class CameraActivity_OldAPI extends Activity {
         int result;
         String model = Build.MODEL;
 
-        if (model.contains("Nexus 5X")) {
+        if(model.contains("Nexus 5X")) {
             //Workaround for Nexus 5X camera issue
             //TODO: Use Camera API 2 to fix this correctly
             result = (mOrientationOffset + degree) % 360;
 
-            if (!mFrontCamera) {
-                if (result == 0)
+            if(!mFrontCamera) {
+                if(result == 0)
                     result += 180;
-                else if (result == 180)
+                else if(result == 180)
                     result = 0;
             }
 
         } else {
-            if (mFrontCamera) {
+            if(mFrontCamera) {
                 result = (mOrientationOffset + degree) % 360;
             } else { // back-facing
                 result = (mOrientationOffset - degree + 360) % 360;
@@ -498,8 +498,8 @@ public class CameraActivity_OldAPI extends Activity {
         logi("Display size " + screenSize.x + "x" + screenSize.y);
 
         //Checking if it's a tablet
-        if (rotation == 0 || rotation == 2) {
-            if (screenSize.x > screenSize.y) {
+        if(rotation == 0 || rotation == 2) {
+            if(screenSize.x > screenSize.y) {
                 //Tablet
                 mOrientationOffset = 270;
                 logi("Tablet");
@@ -509,7 +509,7 @@ public class CameraActivity_OldAPI extends Activity {
                 logi("Phone");
             }
         } else {
-            if (screenSize.x > screenSize.y) {
+            if(screenSize.x > screenSize.y) {
                 //Phone
                 mOrientationOffset = 0;
                 logi("Phone");
@@ -529,7 +529,7 @@ public class CameraActivity_OldAPI extends Activity {
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        if (savedInstanceState == null) {
+        if(savedInstanceState == null) {
             mFrontCamera = true;
         }
 
@@ -553,11 +553,19 @@ public class CameraActivity_OldAPI extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_camera_old_api);
-        Intent intent = getIntent();
-        if (intent.getAction().equals(CameraPlugin.OPEN_FOR_PIC_ACTION)) {
-            mVideo = false;
-        } else if (intent.getAction().equals(CameraPlugin.OPEN_FOR_VIDEO_ACTION)) {
-            mVideo = true;
+        String action = getIntent().getAction();
+
+        //When user finished with camera, so there is nothing to do here.
+        if (action != null) {
+            if (action.equals(CameraPlugin.OPEN_FOR_PIC_ACTION)) {
+                mVideo = false;
+            } else if (action.equals(CameraPlugin.OPEN_FOR_VIDEO_ACTION)) {
+                mVideo = true;
+            }
+        } else {
+            //Return to Home screen
+            goBackAction();
+            return;
         }
 
         SurfaceView mSurfaceView = new SurfaceView(this);
@@ -572,7 +580,7 @@ public class CameraActivity_OldAPI extends Activity {
 
         setButtonForBackAction();
 
-        if (mVideo) {
+        if(mVideo) {
             //Setup specific to OPEN_FOR_VIDEO
             setButtonForVideo();
             setPreviewForVideo();
@@ -588,22 +596,22 @@ public class CameraActivity_OldAPI extends Activity {
 
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals("CLOSE")) {
+                if(intent.getAction().equals("CLOSE")) {
                     finish();
-                } else if (!mVideo && intent.getAction().equals("TAKE_PIC")) {
+                } else if(!mVideo && intent.getAction().equals("TAKE_PIC")) {
                     mFrontCamera = true;
                     takePic();
-                } else if (intent.getAction().equals("TOGGLE_CAMERA")) {
+                } else if(intent.getAction().equals("TOGGLE_CAMERA")) {
                     toggleCamera();
-                } else if (mVideo && !mIsRecording && intent.getAction().equals("START_VIDEO")) {
+                } else if(mVideo && !mIsRecording && intent.getAction().equals("START_VIDEO")) {
                     mFrontCamera = true;
-                    if (isActivityInBackground) {
+                    if(isActivityInBackground) {
                         bringActivityToFront();
                         isRecordingVideoOnResume = true;
                     } else {
                         recordVideo();
                     }
-                } else if (mVideo && mIsRecording && intent.getAction().equals("STOP_VIDEO")) {
+                } else if(mVideo && mIsRecording && intent.getAction().equals("STOP_VIDEO")) {
                     mButtonClick.callOnClick();
                 } else {
                     //Wrong sequence of commands
@@ -616,7 +624,7 @@ public class CameraActivity_OldAPI extends Activity {
 
         this.registerReceiver(mMessageReceiver, new IntentFilter("CLOSE"));
 
-        if (mVideo) {
+        if(mVideo) {
             this.registerReceiver(mMessageReceiver, new IntentFilter("START_VIDEO"));
             this.registerReceiver(mMessageReceiver, new IntentFilter("STOP_VIDEO"));
             this.registerReceiver(mMessageReceiver, new IntentFilter("TOGGLE_CAMERA"));
@@ -639,7 +647,7 @@ public class CameraActivity_OldAPI extends Activity {
      */
     private void toggleCamera() {
         mFrontCamera = !mFrontCamera;
-        if (isActivityInBackground) {
+        if(isActivityInBackground) {
             bringActivityToFront();
         } else {
             recreate();
@@ -651,7 +659,7 @@ public class CameraActivity_OldAPI extends Activity {
      * else start taking a picture.
      */
     private void takePic() {
-        if (isActivityInBackground) {
+        if(isActivityInBackground) {
             bringActivityToFront();
             isMakingPicOnResume = true;
         } else {
@@ -679,7 +687,7 @@ public class CameraActivity_OldAPI extends Activity {
             public void onTick(long millisUntilFinished) {
                 int count = (int) millisUntilFinished / Constants.PIC_COUNTER_INTERVAL_MILLIS;
                 toast.setText("Ready in... " + count);
-                if (count % 2 != 0)
+                if(count % 2 != 0)
                     toast.show();
             }
 
@@ -706,7 +714,7 @@ public class CameraActivity_OldAPI extends Activity {
         isActivityInBackground = false;
         //This intent filter has to be set even if no camera is found otherwise the unregisterReceiver()
         //fails during the onPause()
-        if (myOrientationEventListener.canDetectOrientation()) {
+        if(myOrientationEventListener.canDetectOrientation()) {
             logi("DetectOrientation Enabled");
             myOrientationEventListener.enable();
         } else {
@@ -717,7 +725,7 @@ public class CameraActivity_OldAPI extends Activity {
         logi("mCameraIdx = " + mCameraIdx);
         try {
             mCamera = Camera.open(mCameraIdx);
-            if (mCamera == null) {
+            if(mCamera == null) {
                 logi("Couldn't open the camera");
             }
             logi("Step 2");
@@ -730,15 +738,15 @@ public class CameraActivity_OldAPI extends Activity {
             updateCameraRotation();
             logi("onCreate() :: onResume # ");
 
-            if (isMakingPicOnResume) {
+            if(isMakingPicOnResume) {
                 isMakingPicOnResume = false;
                 startTakePicCounter();
-            } else if (isRecordingVideoOnResume) {
+            } else if(isRecordingVideoOnResume) {
                 isRecordingVideoOnResume = false;
                 recordVideo();
             }
 
-        } catch (RuntimeException ex) {
+        } catch(RuntimeException ex) {
             Log.e(TAG, ex.toString());
             Toast.makeText(this, getString(R.string.camera_not_found), Toast.LENGTH_LONG).show();
             sendCameraError();
@@ -766,16 +774,16 @@ public class CameraActivity_OldAPI extends Activity {
 
         logi("onCreate() :: onPause");
 
-        if (mIsRecording) {
+        if(mIsRecording) {
             stopRecording();
         }
 
-        if (myOrientationEventListener.canDetectOrientation()) {
+        if(myOrientationEventListener.canDetectOrientation()) {
             logi("DetectOrientation Disabled");
             myOrientationEventListener.disable();
         }
 
-        if (mCamera != null) {
+        if(mCamera != null) {
             mCamera.stopPreview();
             mPreview.setCamera(null, -1);
             mCamera.release();
@@ -803,7 +811,7 @@ public class CameraActivity_OldAPI extends Activity {
             });
             parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
             mCamera.setParameters(parameters);
-        } catch (RuntimeException e) {
+        } catch(RuntimeException e) {
             Log.e(TAG, e.toString());
         }
     }
@@ -910,7 +918,7 @@ public class CameraActivity_OldAPI extends Activity {
             try {
                 File dir = FileConstants.MEDIA_OUTPUT_FOLDER;
 
-                if (!dir.exists()) {
+                if(!dir.exists()) {
                     dir.mkdirs();
                 }
 
@@ -925,7 +933,7 @@ public class CameraActivity_OldAPI extends Activity {
                 outStream.close();
 
                 return outFile;
-            } catch (IOException e) {
+            } catch(IOException e) {
                 Log.e(TAG, e.toString());
             }
             return null;
@@ -933,7 +941,7 @@ public class CameraActivity_OldAPI extends Activity {
     }
 
     private void releaseMediaRecorder() {
-        if (mMediaRecorder != null) {
+        if(mMediaRecorder != null) {
             mMediaRecorder.reset(); // clear recorder configuration
             mMediaRecorder.release(); // release the recorder object
             mMediaRecorder = null;
@@ -944,7 +952,7 @@ public class CameraActivity_OldAPI extends Activity {
 
     private boolean prepareMediaRecorder() {
 
-        if (mCameraIdx < 0 || mCamera == null)
+        if(mCameraIdx < 0 || mCamera == null)
             return false;
 
         mMediaRecorder = new MediaRecorder();
@@ -960,9 +968,9 @@ public class CameraActivity_OldAPI extends Activity {
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
         //TODO Check because depending on the quality on some devices the MediaRecorder doesn't work
-        if (CamcorderProfile.hasProfile(mCameraIdx, CamcorderProfile.QUALITY_TIME_LAPSE_HIGH))
+        if(CamcorderProfile.hasProfile(mCameraIdx, CamcorderProfile.QUALITY_TIME_LAPSE_HIGH))
             mMediaRecorder.setProfile(CamcorderProfile.get(mCameraIdx, CamcorderProfile.QUALITY_TIME_LAPSE_HIGH));
-        else if (CamcorderProfile.hasProfile(mCameraIdx, CamcorderProfile.QUALITY_TIME_LAPSE_LOW))
+        else if(CamcorderProfile.hasProfile(mCameraIdx, CamcorderProfile.QUALITY_TIME_LAPSE_LOW))
             mMediaRecorder.setProfile(CamcorderProfile.get(mCameraIdx, CamcorderProfile.QUALITY_TIME_LAPSE_LOW));
         else {
             releaseMediaRecorder();
@@ -972,7 +980,7 @@ public class CameraActivity_OldAPI extends Activity {
 
         //Setting output file
         File dir = FileConstants.MEDIA_OUTPUT_FOLDER;
-        if (!dir.exists()) {
+        if(!dir.exists()) {
             dir.mkdirs();
         }
         String fileName = String.format(Locale.getDefault(), "%d.mp4", System.currentTimeMillis());
@@ -988,7 +996,7 @@ public class CameraActivity_OldAPI extends Activity {
 
         try {
             mMediaRecorder.prepare();
-        } catch (IOException e) {
+        } catch(IOException e) {
             releaseMediaRecorder();
             Log.e(TAG, e.toString());
             return false;

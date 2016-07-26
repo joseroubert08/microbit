@@ -46,7 +46,7 @@ public class CameraPlugin implements AbstractPlugin {
     public void handleEntry(CmdArg cmd) {
         Context ctx = MBApp.getApp();
 
-        if (mPowerManager == null) {
+        if(mPowerManager == null) {
             mPowerManager = (PowerManager) ctx.getApplicationContext().getSystemService(Context.POWER_SERVICE);
             mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, TAG);
         }
@@ -62,7 +62,7 @@ public class CameraPlugin implements AbstractPlugin {
 
         mWakeLock.acquire(5 * 1000);
 
-        switch (cmd.getCMD()) {
+        switch(cmd.getCMD()) {
             case EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE:
                 m_CurrentState = EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE;
                 m_NextState = EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE;
@@ -130,7 +130,7 @@ public class CameraPlugin implements AbstractPlugin {
      */
     private void performOnEnd() {
         Log.d(TAG, "Next state - " + m_NextState);
-        switch (m_NextState) {
+        switch(m_NextState) {
             case EventSubCodes.SAMSUNG_CAMERA_EVT_LAUNCH_PHOTO_MODE:
                 launchCamera(true);
                 break;

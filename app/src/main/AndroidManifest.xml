@@ -133,22 +133,19 @@
 
         <service
             android:name=".service.PluginService"
+            android:enabled="true"
             android:exported="false"
-            android:process=":PluginService">
-
-            <intent-filter>
-                <action android:name="com.samsung.microbit.service.PluginService"/>
-            </intent-filter>
-        </service>
+            android:process=":PluginService"/>
         <service
             android:name=".service.BLEService"
+            android:enabled="true"
             android:exported="false"
-            android:process=":BLEService">
-            <intent-filter>
-                <action android:name="com.samsung.microbit.service.BLEService"/>
-            </intent-filter>
-        </service>
+            android:process=":BLEService"/>
 
+        <service
+            android:name=".service.IPCService"
+            android:enabled="true"
+            android:exported="false"/>
 
         <activity
             android:name=".ui.activity.SplashScreenActivity"

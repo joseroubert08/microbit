@@ -50,7 +50,7 @@ public class HelpWebView extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (webView.canGoBack()) {
+        if(webView.canGoBack()) {
             webView.goBack();
         } else {
             super.onBackPressed();
@@ -58,7 +58,7 @@ public class HelpWebView extends Activity {
     }
 
     public void onClick(final View v) {
-        if (v.getId() == R.id.backBtn) {
+        if(v.getId() == R.id.backBtn) {
             finish();
         }
     }

@@ -36,29 +36,29 @@ public class BLEConnectionHandler {
 
                 bleConnectionManager.preUpdateUi();
                 //setConnectedDeviceText();
-                if (firmware != null && !firmware.isEmpty()) {
+                if(firmware != null && !firmware.isEmpty()) {
                     BluetoothUtils.updateFirmwareMicrobit(context, firmware);
                     return;
                 }
 
                 int mActivityState = bleConnectionManager.getActivityState();
 
-                if (mActivityState == BaseActivityState.STATE_CONNECTING || mActivityState == BaseActivityState
+                if(mActivityState == BaseActivityState.STATE_CONNECTING || mActivityState == BaseActivityState
                         .STATE_DISCONNECTING) {
 
-                    if (getNotification == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL ||
+                    if(getNotification == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_CALL ||
                             getNotification == EventCategories.IPC_BLE_NOTIFICATION_INCOMING_SMS) {
                         bleConnectionManager.logi("micro:bit application needs more permissions");
                         bleConnectionManager.addPermissionRequest(getNotification);
                         return;
                     }
                     ConnectedDevice device = BluetoothUtils.getPairedMicrobit(context);
-                    if (mActivityState == BaseActivityState.STATE_CONNECTING) {
-                        if (error == 0) {
+                    if(mActivityState == BaseActivityState.STATE_CONNECTING) {
+                        if(error == 0) {
                             MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.ConnectionState.SUCCESS, device.mfirmware_version, null);
                             BluetoothUtils.updateConnectionStartTime(context, System.currentTimeMillis());
                             //Check if more permissions were needed and request in the Application
-                            if (!bleConnectionManager.arePermissionsGranted()) {
+                            if(!bleConnectionManager.arePermissionsGranted()) {
                                 bleConnectionManager.setActivityState(BaseActivityState.STATE_IDLE);
                                 PopUp.hide();
                                 bleConnectionManager.checkTelephonyPermissions();
@@ -68,7 +68,7 @@ public class BLEConnectionHandler {
                             MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.ConnectionState.FAIL, null, null);
                         }
                     }
-                    if (error == 0 && mActivityState == BaseActivityState.STATE_DISCONNECTING) {
+                    if(error == 0 && mActivityState == BaseActivityState.STATE_DISCONNECTING) {
                         long now = System.currentTimeMillis();
                         long connectionTime = (now - device.mlast_connection_time) / 1000; //Time in seconds
                         MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.ConnectionState.DISCONNECT, device.mfirmware_version, Long.toString(connectionTime));
@@ -77,7 +77,7 @@ public class BLEConnectionHandler {
                     bleConnectionManager.setActivityState(BaseActivityState.STATE_IDLE);
                     PopUp.hide();
 
-                    if (error != 0) {
+                    if(error != 0) {
                         String message = intent.getStringExtra(IPCConstants.BUNDLE_ERROR_MESSAGE);
                         bleConnectionManager.logi("localBroadcastReceiver Error message = " + message);
                         MBApp application = MBApp.getApp();
@@ -87,6 +87,11 @@ public class BLEConnectionHandler {
                                 R.drawable.error_face, R.drawable.red_btn,
                                 PopUp.GIFF_ANIMATION_ERROR,
                                 PopUp.TYPE_ALERT, null, null);
+                    } else {
+                        //If All success, change indicator to "not just paired"
+                        if(MBApp.getApp().isJustPaired()) {
+                            MBApp.getApp().setJustPaired(false);
+                        }
                     }
                 }
             }

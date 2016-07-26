@@ -21,7 +21,7 @@ public class BluetoothChecker {
     private BluetoothAdapter mBluetoothAdapter = null;
 
     private BluetoothChecker() {
-        if (mBluetoothAdapter == null) {
+        if(mBluetoothAdapter == null) {
             final BluetoothManager bluetoothManager = (BluetoothManager) MBApp.getApp().getSystemService(Context
                     .BLUETOOTH_SERVICE);
             mBluetoothAdapter = bluetoothManager.getAdapter();
@@ -29,7 +29,7 @@ public class BluetoothChecker {
     }
 
     public static BluetoothChecker getInstance() {
-        if (instance == null) {
+        if(instance == null) {
             instance = new BluetoothChecker();
         }
         return instance;
@@ -46,7 +46,7 @@ public class BluetoothChecker {
      * @return True - if bluetooth is already on.
      */
     public boolean checkBluetoothAndStart() {
-        if (!mBluetoothAdapter.isEnabled()) {
+        if(!mBluetoothAdapter.isEnabled()) {
             MBApp application = MBApp.getApp();
 
             PopUp.show(application.getString(R.string.bluetooth_turn_on_guide),

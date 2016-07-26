@@ -8,17 +8,17 @@ public class FilePlugin implements AbstractPlugin {
     //File plugin action
     public static final int DOWNLOAD = 0;
 
-	@Override
+    @Override
     public void handleEntry(CmdArg cmd) {
-        switch (cmd.getCMD()) {
+        switch(cmd.getCMD()) {
             case DOWNLOAD:
                 //TODO CALL THE DOWNLOAD FUNCTION HERE
                 break;
         }
     }
 
-	@Override
-	public void destroy() {
+    @Override
+    public void destroy() {
 
-	}
+    }
 }

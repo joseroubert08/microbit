@@ -21,7 +21,7 @@ public class ExtendedEditText extends EditText {
      * @param message Message to log.
      */
     protected void logi(final String message) {
-        if (DEBUG) {
+        if(DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
@@ -43,7 +43,7 @@ public class ExtendedEditText extends EditText {
 
     @Override
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+        if(event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
             onEditorAction(-1);
             dispatchKeyEvent(event);
 

@@ -12,7 +12,7 @@ import com.samsung.microbit.plugin.AlertPlugin;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class PlayRingtonePresenter implements Presenter{
+public class PlayRingtonePresenter implements Presenter {
     private static final String TAG = PlayRingtonePresenter.class.getSimpleName();
 
     private MediaPlayer mediaPlayer;
@@ -38,15 +38,15 @@ public class PlayRingtonePresenter implements Presenter{
     public void start() {
         int duration = AlertPlugin.getDuration(mediaPlayer, ringtoneUri);
 
-        if (maxDuration > 0 && duration > maxDuration) {
+        if(maxDuration > 0 && duration > maxDuration) {
             duration = maxDuration;
         }
 
-        if (ringtone != null && ringtone.isPlaying()) {
+        if(ringtone != null && ringtone.isPlaying()) {
             ringtone.stop();
         }
 
-        if (timer != null) {
+        if(timer != null) {
             //After this operation the timer cannot be used anymore
             timer.cancel();
         }
@@ -55,7 +55,7 @@ public class PlayRingtonePresenter implements Presenter{
 
         ringtone = RingtoneManager.getRingtone(MBApp.getApp(), ringtoneUri);
 
-        if (isAlarm) {
+        if(isAlarm) {
             ringtone.setStreamType(AudioManager.STREAM_ALARM);
         }
 
@@ -73,7 +73,7 @@ public class PlayRingtonePresenter implements Presenter{
 
     @Override
     public void stop() {
-        if (ringtone != null && ringtone.isPlaying()) {
+        if(ringtone != null && ringtone.isPlaying()) {
             ringtone.stop();
             ringtone = null;
 
