@@ -199,13 +199,13 @@ public class CameraActivity_OldAPI extends Activity {
     private void setButtonForBackAction() {
         mButtonBack_portrait.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                goBackAction();
+                startHomeActivity();
             }
         });
 
         mButtonBack_landscape.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                goBackAction();
+                startHomeActivity();
             }
         });
     }
@@ -213,7 +213,7 @@ public class CameraActivity_OldAPI extends Activity {
     /**
      * Action that occurs when a back button is pressed.
      */
-    private void goBackAction() {
+    private void startHomeActivity() {
         Intent intent = new Intent(this, HomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -564,7 +564,7 @@ public class CameraActivity_OldAPI extends Activity {
             }
         } else {
             //Return to Home screen
-            goBackAction();
+            startHomeActivity();
             return;
         }
 
