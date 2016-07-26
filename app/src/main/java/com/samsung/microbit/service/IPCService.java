@@ -146,13 +146,16 @@ public class IPCService extends Service {
                 }
             }
         } else {
-            if(message.arg1 == EventCategories.IPC_BLE_NOTIFICATION_GATT_CONNECTED ||
-                    message.arg1 == EventCategories.IPC_BLE_NOTIFICATION_GATT_DISCONNECTED) {
+            if(message.what == IPCConstants.MESSAGE_ANDROID) {
                 Context appContext = getApplicationContext();
 
-                ConnectedDevice cd = BluetoothUtils.getPairedMicrobit(appContext);
-                cd.mStatus = (message.arg1 == EventCategories.IPC_BLE_NOTIFICATION_GATT_CONNECTED);
-                BluetoothUtils.setPairedMicroBit(appContext, cd);
+                if (message.arg1 == EventCategories.IPC_BLE_NOTIFICATION_GATT_CONNECTED ||
+                        message.arg1 == EventCategories.IPC_BLE_NOTIFICATION_GATT_DISCONNECTED) {
+
+                    ConnectedDevice cd = BluetoothUtils.getPairedMicrobit(appContext);
+                    cd.mStatus = (message.arg1 == EventCategories.IPC_BLE_NOTIFICATION_GATT_CONNECTED);
+                    BluetoothUtils.setPairedMicroBit(appContext, cd);
+                }
 
                 Bundle messageData = message.getData();
 
@@ -175,6 +178,10 @@ public class IPCService extends Service {
                 intent.putExtra(IPCConstants.BUNDLE_MICROBIT_REQUESTS, microbitRequest);
 
                 LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+
+            } else if(message.what == IPCConstants.MESSAGE_MICROBIT) {
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent(IPCConstants
+                         .INTENT_MICRO_BIT_NOTIFICATION));
             }
         }
     }
