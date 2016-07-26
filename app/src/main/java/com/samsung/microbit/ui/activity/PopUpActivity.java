@@ -173,7 +173,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d("PopUpActivity", "onCreate() popuptype = " + getIntent().getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_MAX));
+        Log.d("PopUpActivity", "onCreate() popuptype = " + getIntent().getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_NONE));
         setContentView(R.layout.activity_popup);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -288,7 +288,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
             gifImageView.setVisibility(View.GONE);
         }
 
-        switch(intent.getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_MAX)) {
+        switch(intent.getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_NONE)) {
             case PopUp.TYPE_CHOICE:
                 layoutBottom.setVisibility(View.VISIBLE);
                 okButton.setVisibility(View.VISIBLE);

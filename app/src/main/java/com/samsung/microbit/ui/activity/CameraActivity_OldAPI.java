@@ -77,7 +77,7 @@ public class CameraActivity_OldAPI extends Activity {
     private int mCameraIdx;
     private boolean mFrontCamera;
 
-    private boolean mVideo;
+    private boolean mVideo = false;
     private boolean mIsRecording;
     private MediaRecorder mMediaRecorder;
     private File mVideoFile;
@@ -553,11 +553,19 @@ public class CameraActivity_OldAPI extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_camera_old_api);
-        Intent intent = getIntent();
-        if(intent.getAction().equals(CameraPlugin.OPEN_FOR_PIC_ACTION)) {
-            mVideo = false;
-        } else if(intent.getAction().equals(CameraPlugin.OPEN_FOR_VIDEO_ACTION)) {
-            mVideo = true;
+        String action = getIntent().getAction();
+
+        //When user finished with camera, so there is nothing to do here.
+        if (action != null) {
+            if (action.equals(CameraPlugin.OPEN_FOR_PIC_ACTION)) {
+                mVideo = false;
+            } else if (action.equals(CameraPlugin.OPEN_FOR_VIDEO_ACTION)) {
+                mVideo = true;
+            }
+        } else {
+            //Return to Home screen
+            startActivity(new Intent(this, HomeActivity.class));
+            finish();
         }
 
         SurfaceView mSurfaceView = new SurfaceView(this);

@@ -35,7 +35,7 @@ public class PopUp {
     // (backpress disabled)
     public static final int TYPE_SPINNER_NOT_CANCELABLE = 7;//0 button type spinner not cancelable (backpress disabled)
     public static final int TYPE_ALERT_LIGHT = 8;//Shows only once and do not leaves any history and cannot be recreated
-    public static final int TYPE_MAX = 9;
+    public static final int TYPE_NONE = 9;
 
 
     // Constants for giff animation options
@@ -59,7 +59,7 @@ public class PopUp {
     private static final String ACTION_FROM_SERVICE = "com.samsung.microbit.core.SHOWFROMSERVICE";
 
 
-    private static int sCurrentType = TYPE_MAX; //current type of displayed popup  (TYPE_CHOICE, ...)
+    private static int sCurrentType = TYPE_NONE; //current type of displayed popup  (TYPE_CHOICE, ...)
 
     private static final Context ctx = MBApp.getApp();
 
@@ -102,7 +102,7 @@ public class PopUp {
                 Log.d(TAG, "INTENT_ACTION_DESTROYED size queue = " + pendingQueue.size());
                 pendingQueue.poll();
                 isCurrentRequestPending = false;
-                sCurrentType = TYPE_MAX;
+                sCurrentType = TYPE_NONE;
                 processNextPendingRequest();
             } else if(intent.getAction().equals(PopUpActivity.INTENT_ACTION_CREATED)) {
                 Log.d(TAG, "INTENT_ACTION_CREATED size queue = " + pendingQueue.size());
@@ -296,7 +296,7 @@ public class PopUp {
             switch(request.type) {
                 case REQUEST_TYPE_SHOW: {
                     Log.d(TAG, "processNextPendingRequest REQUEST_TYPE_SHOW");
-                    if(sCurrentType != TYPE_MAX) {
+                    if(sCurrentType != TYPE_NONE) {
                         Log.d(TAG, "processNextPendingRequest Update existing layout instead of hiding");
                         request.intent.setAction(PopUpActivity.INTENT_ACTION_UPDATE_LAYOUT);
                         LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(request.intent);
@@ -321,7 +321,7 @@ public class PopUp {
                     break;
                 }
                 case REQUEST_TYPE_HIDE: {
-                    if(sCurrentType == TYPE_MAX) {
+                    if(sCurrentType == TYPE_NONE) {
                         Log.d(TAG, "processNextPendingRequest Nothing to hide");
                         pendingQueue.poll();
                         continue;
