@@ -34,7 +34,8 @@ public class PopUp {
     public static final int TYPE_PROGRESS_NOT_CANCELABLE = 6;//0 button progress.xml bar type not cancelable
     // (backpress disabled)
     public static final int TYPE_SPINNER_NOT_CANCELABLE = 7;//0 button type spinner not cancelable (backpress disabled)
-    public static final int TYPE_MAX = 8;
+    public static final int TYPE_ALERT_LIGHT = 8;//Shows only once and do not leaves any history and cannot be recreated
+    public static final int TYPE_MAX = 9;
 
 
     // Constants for giff animation options
@@ -54,6 +55,8 @@ public class PopUp {
     private static final short REQUEST_TYPE_HIDE = 1;
     private static final short REQUEST_TYPE_UPDATE_PROGRESS = 2;
     private static final short REQUEST_TYPE_MAX = 3;
+
+    private static final String ACTION_FROM_SERVICE = "com.samsung.microbit.core.SHOWFROMSERVICE";
 
 
     private static int sCurrentType = TYPE_MAX; //current type of displayed popup  (TYPE_CHOICE, ...)
@@ -162,7 +165,7 @@ public class PopUp {
                                        int imageResId, int imageBackgroundResId,
                                        int animationCode, int type) {
         Log.d(TAG, "showFromService");
-        Intent intent = new Intent("com.samsung.microbit.core.SHOWFROMSERVICE");
+        Intent intent = new Intent(ACTION_FROM_SERVICE);
         putIntentExtra(intent, message, title, imageResId, imageBackgroundResId, animationCode, type);
         context.sendBroadcast(intent);
     }
@@ -171,7 +174,7 @@ public class PopUp {
                                        int imageResId, int imageBackgroundResId,
                                        int animationCode, int type, int okAction) {
         Log.d(TAG, "showFromService");
-        Intent intent = new Intent("com.samsung.microbit.core.SHOWFROMSERVICE");
+        Intent intent = new Intent(ACTION_FROM_SERVICE);
         putIntentExtra(intent, message, title, imageResId, imageBackgroundResId, animationCode, type);
         intent.putExtra(INTENT_EXTRA_OK_ACTION, okAction);
         context.sendBroadcast(intent);
@@ -307,7 +310,14 @@ public class PopUp {
                     done = true;
                     isCurrentRequestPending = true;
                     request.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    ctx.startActivity(request.intent);
+
+                    //Add additional flags to not be able to recreate the window.
+                    if(request.intent.getIntExtra(PopUpActivity.INTENT_EXTRA_TYPE, 0) == TYPE_ALERT_LIGHT) {
+                        request.intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY
+                                | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                    }
+
+                        ctx.startActivity(request.intent);
                     break;
                 }
                 case REQUEST_TYPE_HIDE: {
