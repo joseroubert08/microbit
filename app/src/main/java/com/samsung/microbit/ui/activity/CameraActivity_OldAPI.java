@@ -564,8 +564,8 @@ public class CameraActivity_OldAPI extends Activity {
             }
         } else {
             //Return to Home screen
-            startActivity(new Intent(this, HomeActivity.class));
-            finish();
+            goBackAction();
+            return;
         }
 
         SurfaceView mSurfaceView = new SurfaceView(this);
