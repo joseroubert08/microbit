@@ -293,7 +293,7 @@ public class AlertPlugin implements AbstractPlugin {
                 textMsg,
                 R.drawable.message_face, R.drawable.blue_btn,
                 0, /* TODO - nothing needs to be done */
-                PopUp.TYPE_ALERT, popupAction);
+                PopUp.TYPE_ALERT_LIGHT, popupAction);
     }
 
     /**
@@ -307,7 +307,7 @@ public class AlertPlugin implements AbstractPlugin {
                 title,
                 R.drawable.message_face, R.drawable.blue_btn,
                 0, /* TODO - nothing needs to be done */
-                PopUp.TYPE_ALERT);
+                PopUp.TYPE_ALERT_LIGHT);
     }
 
     @Override
