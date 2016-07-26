@@ -1,7 +1,5 @@
 package com.samsung.microbit.service;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +9,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -19,14 +16,12 @@ import android.util.Log;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.IPCConstants;
-import com.samsung.microbit.data.constants.RequestCodes;
 import com.samsung.microbit.data.constants.ServiceIds;
 import com.samsung.microbit.data.model.CmdArg;
 import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.utils.ServiceUtils;
 
 import java.lang.ref.WeakReference;
-import java.util.concurrent.TimeUnit;
 
 public class IPCService extends Service {
 
@@ -70,29 +65,6 @@ public class IPCService extends Service {
     }
 
     @Override
-    public void onTaskRemoved(Intent rootIntent) {
-        super.onTaskRemoved(rootIntent);
-
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-
-        Intent intent = new Intent(this, IPCService.class);
-        intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_START_PROCESS);
-
-        PendingIntent pi = PendingIntent.getService(getApplicationContext(), RequestCodes.REQUEST_RESTART_SERVICES,
-                intent, PendingIntent.FLAG_ONE_SHOT);
-
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TimeUnit.MILLISECONDS
-                .toMillis(400), pi);
-
-        /*
-        //TODO check why service is not recreating by system itself on real devices. Why do we need to use AlarmManager?
-        if(serviceConnector != null) {
-            Log.i(TAG, "Unbind services");
-            serviceConnector.unbindServices();
-        }*/
-    }
-
-    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         int category = intent.getIntExtra(IPCConstants.INTENT_TYPE, EventCategories.CATEGORY_UNKNOWN);
 
@@ -102,10 +74,6 @@ public class IPCService extends Service {
         }
 
         switch(category) {
-            case EventCategories.IPC_START_PROCESS: {
-                Log.i(TAG, "Process started");
-                break;
-            }
             case EventCategories.IPC_BLE_CONNECT: {
                 Message message = ServiceUtils.composeMessage(IPCConstants.MESSAGE_ANDROID, EventCategories
                         .IPC_BLE_CONNECT, ServiceIds.SERVICE_BLE, null, null);
@@ -137,7 +105,6 @@ public class IPCService extends Service {
             }
             case EventCategories.IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED: {
                 Message message = ServiceUtils.composeBLECharacteristicMessage(intent.getIntExtra(IPCConstants.INTENT_CHARACTERISTIC_MESSAGE, 0));
-                message.arg2 = ServiceIds.SERVICE_PLUGIN;
                 handleMessage(message);
                 break;
             }

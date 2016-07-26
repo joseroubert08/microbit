@@ -98,7 +98,7 @@ public class ServiceUtils {
         args[3] = new NameValuePair(IPCConstants.BUNDLE_CHARACTERISTIC_TYPE, GattFormats.FORMAT_UINT32);
 
         return composeMessage(IPCConstants.MESSAGE_MICROBIT, EventCategories.IPC_WRITE_CHARACTERISTIC,
-                ServiceIds.SERVICE_NONE, null, args);
+                ServiceIds.SERVICE_BLE, null, args);
     }
 
     /**

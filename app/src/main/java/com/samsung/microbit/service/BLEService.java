@@ -9,8 +9,10 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -94,6 +96,26 @@ public class BLEService extends Service {
     private Messenger inputMessenger;
 
     private BLEHandler bleHandler;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        ServiceConnection connection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        };
+
+        //TODO This is HACK for android not allow to kill IPCService
+        bindService(new Intent(this, IPCService.class), connection, BIND_IMPORTANT);
+    }
 
     @Nullable
     @Override

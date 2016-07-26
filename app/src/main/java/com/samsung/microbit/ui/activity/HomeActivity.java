@@ -31,8 +31,6 @@ import android.widget.TextView;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.common.ConfigInfo;
-import com.samsung.microbit.data.constants.EventCategories;
-import com.samsung.microbit.data.constants.IPCConstants;
 import com.samsung.microbit.data.constants.PermissionCodes;
 import com.samsung.microbit.presentation.ConfigInfoPresenter;
 import com.samsung.microbit.service.IPCService;
@@ -110,15 +108,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         setContentView(R.layout.activity_home);
 
-        if(savedInstanceState == null) {
-            Intent intent = new Intent(this, IPCService.class);
-            intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_START_PROCESS);
-            startService(intent);
-        }
-
         configInfoPresenter = new ConfigInfoPresenter();
 
         configInfoPresenter.start();
+
+        if(savedInstanceState == null) {
+            startService(new Intent(this, IPCService.class));
+        }
 
         setupDrawer();
         setupButtonsFontStyle();

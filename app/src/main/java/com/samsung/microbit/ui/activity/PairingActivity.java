@@ -561,9 +561,13 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         }
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && leScanner == null) {
-            leScanner = bluetoothAdapter.getBluetoothLeScanner();
-            if(leScanner == null)
+            if(bluetoothAdapter == null) {
                 retvalue = false;
+            } else {
+                leScanner = bluetoothAdapter.getBluetoothLeScanner();
+                if(leScanner == null)
+                    retvalue = false;
+            }
         }
         return retvalue;
     }
