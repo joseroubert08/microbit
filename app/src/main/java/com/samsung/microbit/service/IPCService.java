@@ -97,7 +97,10 @@ public class IPCService extends Service {
                 break;
             }
             case EventCategories.CATEGORY_REPLY: {
-                sendReplyCommand(intent.getIntExtra(IPCConstants.INTENT_MBS_SERVICE, 0), intent.getIntExtra(IPCConstants.INTENT_REPLY_TO, ServiceIds.SERVICE_NONE), (CmdArg) intent.getParcelableExtra(IPCConstants.INTENT_CMD_ARG));
+                //TODO need to implement reply
+                //sendReplyCommand(intent.getIntExtra(IPCConstants.INTENT_MBS_SERVICE, 0), intent.getIntExtra
+                //        (IPCConstants.INTENT_REPLY_TO, ServiceIds.SERVICE_NONE), (CmdArg) intent.getParcelableExtra
+                //        (IPCConstants.INTENT_CMD_ARG));
                 break;
             }
             case EventCategories.IPC_PLUGIN_STOP_PLAYING: {
