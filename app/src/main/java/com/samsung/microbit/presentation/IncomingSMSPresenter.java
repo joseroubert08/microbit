@@ -21,15 +21,15 @@ public class IncomingSMSPresenter implements Presenter {
 
     private static class IncomingSMSListener extends BroadcastReceiver {
         @Override
-        public void onReceive(Context context, Intent intent1) {
-            if(intent1.getAction().equals(Telephony.Sms.Intents.SMS_RECEIVED_ACTION)) {
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(Telephony.Sms.Intents.SMS_RECEIVED_ACTION)) {
                 MBApp application = MBApp.getApp();
 
-                Intent intent = new Intent(application, IPCService.class);
-                intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED);
-                intent.putExtra(IPCConstants.INTENT_CHARACTERISTIC_MESSAGE, Utils.makeMicroBitValue
+                Intent charChangedIntent = new Intent(application, IPCService.class);
+                charChangedIntent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED);
+                charChangedIntent.putExtra(IPCConstants.INTENT_CHARACTERISTIC_MESSAGE, Utils.makeMicroBitValue
                         (EventCategories.SAMSUNG_DEVICE_INFO_ID, EventSubCodes.SAMSUNG_INCOMING_SMS));
-                application.startService(intent);
+                application.startService(charChangedIntent);
             }
         }
     }

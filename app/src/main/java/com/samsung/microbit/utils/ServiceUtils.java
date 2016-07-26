@@ -36,14 +36,12 @@ public class ServiceUtils {
     public static void sendReplyCommand(int mbsService, CmdArg cmd) {
         MBApp application = MBApp.getApp();
 
-        if(false) {
-            Intent intent = new Intent(application, IPCService.class);
-            intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.CATEGORY_REPLY);
-            intent.putExtra(IPCConstants.INTENT_REPLY_TO, ServiceIds.SERVICE_PLUGIN);
-            intent.putExtra(IPCConstants.INTENT_MBS_SERVICE, mbsService);
-            intent.putExtra(IPCConstants.INTENT_CMD_ARG, cmd);
-            application.startService(intent);
-        }
+        Intent intent = new Intent(application, IPCService.class);
+        intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.CATEGORY_REPLY);
+        intent.putExtra(IPCConstants.INTENT_REPLY_TO, ServiceIds.SERVICE_PLUGIN);
+        intent.putExtra(IPCConstants.INTENT_MBS_SERVICE, mbsService);
+        intent.putExtra(IPCConstants.INTENT_CMD_ARG, cmd);
+        application.startService(intent);
     }
 
     /**
@@ -130,7 +128,7 @@ public class ServiceUtils {
             Intent intent = new Intent(application, IPCService.class);
             intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_BLE_CONNECT);
             int connectionType = MBApp.getApp().isJustPaired() ? IPCConstants.JUST_PAIRED : IPCConstants
-                     .PAIRED_EARLIER;
+                    .PAIRED_EARLIER;
             intent.putExtra(IPCConstants.INTENT_CONNECTION_TYPE, connectionType);
             application.startService(intent);
         } else {

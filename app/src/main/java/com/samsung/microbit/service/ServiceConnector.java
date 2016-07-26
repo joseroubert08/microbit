@@ -18,6 +18,9 @@ import com.samsung.microbit.utils.ServiceUtils;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class is used to make connection between {@link IPCService} and other services, will be used in IPC interaction.
+ */
 public class ServiceConnector {
 
     private static final int COUNT_SERVICES_FOR_BINDING = 3;

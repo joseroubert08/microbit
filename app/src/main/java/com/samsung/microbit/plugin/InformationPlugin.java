@@ -12,6 +12,7 @@ import com.samsung.microbit.presentation.ScreenOnOffPresenter;
 import com.samsung.microbit.presentation.ShakePresenter;
 import com.samsung.microbit.presentation.SignalStrengthPresenter;
 import com.samsung.microbit.presentation.TemperaturePresenter;
+import com.samsung.microbit.utils.ServiceUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -171,7 +172,7 @@ public class InformationPlugin implements AbstractPlugin {
 
     public void sendReplyCommand(int mbsService, CmdArg cmd) {
         // TODO not needed ??? remove
-        //ServiceUtils.sendReplyCommand(mbsService, cmd);
+        ServiceUtils.sendReplyCommand(mbsService, cmd);
     }
 
     private Presenter findPresenterByType(@AlertType int alertType) {

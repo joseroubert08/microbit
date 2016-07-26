@@ -342,26 +342,16 @@ public class BLEService extends Service {
             return;
         }
 
-        /*
-        //TODO is that service must handle that event, or it's empty body?
         NameValuePair[] args = new NameValuePair[2];
-        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE, firmware);
+        args[0] = new NameValuePair(IPCConstants.BUNDLE_ERROR_CODE, 0);
+        args[1] = new NameValuePair(IPCConstants.BUNDLE_MICROBIT_FIRMWARE, firmware);
 
-        bleHandler.sendMessage(ServiceUtils.composeMessage(IPCMessageManager.MESSAGE_ANDROID, EventCategories
-                .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, ServiceIds.SERVICE_NONE, null, args));*/
-
-        //TODO check cause ipc handle message as "connection changing event"
-
-        /**
-         * TODO make it work with {@link inputMessenger}
-         */
-        /*logi("sendMicrobitFirmware() :: firmware = " + firmware);
-        NameValuePair[] args = new NameValuePair[2];
-        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE, firmware);
-        ServiceUtils.sendToIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
-                .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);*/
+        try {
+            inputMessenger.send(ServiceUtils.composeMessage(IPCConstants.MESSAGE_ANDROID, EventCategories
+                    .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, ServiceIds.SERVICE_NONE, null, args));
+        } catch(RemoteException e) {
+            Log.e(TAG, e.toString());
+        }
     }
 
     /**
@@ -420,28 +410,17 @@ public class BLEService extends Service {
             return;
         }
 
-        /*
-        //TODO is that service must handle that event, or it's empty body?
         NameValuePair[] args = new NameValuePair[2];
-        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, EventCategories
+        args[0] = new NameValuePair(IPCConstants.BUNDLE_ERROR_CODE, 0);
+        args[1] = new NameValuePair(IPCConstants.BUNDLE_MICROBIT_REQUESTS, EventCategories
                 .IPC_BLE_NOTIFICATION_INCOMING_CALL);
 
-        bleHandler.sendMessage(ServiceUtils.composeMessage(IPCMessageManager.MESSAGE_ANDROID, EventCategories
-                .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, ServiceIds.SERVICE_NONE, null, args));*/
-
-        //TODO check cause ipc handle message as "connection changing event"
-
-        /**
-         * TODO make it work with {@link inputMessenger}
-         */
-        /*logi("sendMicroBitNeedsCallNotification()");
-        NameValuePair[] args = new NameValuePair[2];
-        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, EventCategories
-                .IPC_BLE_NOTIFICATION_INCOMING_CALL);
-        ServiceUtils.sendToIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
-                .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);*/
+        try {
+            inputMessenger.send(ServiceUtils.composeMessage(IPCConstants.MESSAGE_ANDROID, EventCategories
+                    .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, ServiceIds.SERVICE_NONE, null, args));
+        } catch(RemoteException e) {
+            Log.e(TAG, e.toString());
+        }
     }
 
     private void sendMicroBitNeedsSmsNotification() {
@@ -450,28 +429,18 @@ public class BLEService extends Service {
             return;
         }
 
-        /*
-        //TODO is that service must handle that event, or it's empty body?
+
         NameValuePair[] args = new NameValuePair[2];
-        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, EventCategories
+        args[0] = new NameValuePair(IPCConstants.BUNDLE_ERROR_CODE, 0);
+        args[1] = new NameValuePair(IPCConstants.BUNDLE_MICROBIT_REQUESTS, EventCategories
                 .IPC_BLE_NOTIFICATION_INCOMING_SMS);
 
-        bleHandler.sendMessage(ServiceUtils.composeMessage(IPCMessageManager.MESSAGE_ANDROID, EventCategories
-                .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, ServiceIds.SERVICE_NONE, null, args));*/
-
-        //TODO check cause ipc handle message as "connection changing event"
-
-        /**
-         * TODO make it work with {@link inputMessenger}
-         */
-        /*logi("sendMicroBitNeedsSmsNotification()");
-        NameValuePair[] args = new NameValuePair[2];
-        args[0] = new NameValuePair(IPCMessageManager.BUNDLE_ERROR_CODE, 0);
-        args[1] = new NameValuePair(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, EventCategories
-                .IPC_BLE_NOTIFICATION_INCOMING_SMS);
-        ServiceUtils.sendToIPCService(BLEService.class, IPCMessageManager.MESSAGE_ANDROID, EventCategories
-                .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, null, args);*/
+        try {
+            inputMessenger.send(ServiceUtils.composeMessage(IPCConstants.MESSAGE_ANDROID, EventCategories
+                    .IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED, ServiceIds.SERVICE_NONE, null, args));
+        } catch(RemoteException e) {
+            Log.e(TAG, e.toString());
+        }
     }
 
     /**

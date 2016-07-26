@@ -18,23 +18,23 @@ public class ScreenOnOffPresenter implements Presenter {
 
     private BroadcastReceiver screenReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent1) {
-            if(intent1.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
                 MBApp application = MBApp.getApp();
 
-                Intent intent = new Intent(application, IPCService.class);
-                intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED);
-                intent.putExtra(IPCConstants.INTENT_CHARACTERISTIC_MESSAGE, Utils.makeMicroBitValue
+                Intent charChangedIntent = new Intent(application, IPCService.class);
+                charChangedIntent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED);
+                charChangedIntent.putExtra(IPCConstants.INTENT_CHARACTERISTIC_MESSAGE, Utils.makeMicroBitValue
                         (EventCategories.SAMSUNG_DEVICE_INFO_ID, EventSubCodes.SAMSUNG_DEVICE_DISPLAY_OFF));
-                application.startService(intent);
-            } else if(intent1.getAction().equals(Intent.ACTION_SCREEN_ON)) {
+                application.startService(charChangedIntent);
+            } else if(intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
                 MBApp application = MBApp.getApp();
 
-                Intent intent = new Intent(application, IPCService.class);
-                intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED);
-                intent.putExtra(IPCConstants.INTENT_CHARACTERISTIC_MESSAGE, Utils.makeMicroBitValue
+                Intent charChangedIntent = new Intent(application, IPCService.class);
+                charChangedIntent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED);
+                charChangedIntent.putExtra(IPCConstants.INTENT_CHARACTERISTIC_MESSAGE, Utils.makeMicroBitValue
                         (EventCategories.SAMSUNG_DEVICE_INFO_ID, EventSubCodes.SAMSUNG_DEVICE_DISPLAY_ON));
-                application.startService(intent);
+                application.startService(charChangedIntent);
             }
         }
     };

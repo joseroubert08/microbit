@@ -23,6 +23,9 @@ import com.samsung.microbit.utils.ServiceUtils;
 
 import java.lang.ref.WeakReference;
 
+/**
+ * Used for managing connection between services. Also handle some intents by itself.
+ */
 public class IPCService extends Service {
 
     private static final String TAG = IPCService.class.getSimpleName();

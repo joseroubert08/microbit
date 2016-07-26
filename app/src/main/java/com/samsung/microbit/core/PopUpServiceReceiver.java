@@ -44,9 +44,9 @@ public class PopUpServiceReceiver extends BroadcastReceiver {
 
                     MBApp application = MBApp.getApp();
 
-                    Intent intent1 = new Intent(application, IPCService.class);
-                    intent1.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_PLUGIN_STOP_PLAYING);
-                    application.startService(intent1);
+                    Intent intent = new Intent(application, IPCService.class);
+                    intent.putExtra(IPCConstants.INTENT_TYPE, EventCategories.IPC_PLUGIN_STOP_PLAYING);
+                    application.startService(intent);
                     PopUp.hide();
                 }
             };

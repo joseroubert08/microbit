@@ -16,6 +16,9 @@ import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.utils.Utils;
 
 public class OrientationChangedPresenter implements Presenter {
+
+    private static final float Y_DELTA_FOR_DETECT_LANDSCAPE = 6.5f;
+
     private static final String TAG = OrientationChangedPresenter.class.getSimpleName();
 
     private SensorEventListener orientationListener = new SensorEventListener() {
@@ -23,7 +26,7 @@ public class OrientationChangedPresenter implements Presenter {
 
         @Override
         public void onSensorChanged(SensorEvent event) {
-            if(event.values[1] < 6.5 && event.values[1] > -6.5) {
+            if(Math.abs(event.values[1]) < Y_DELTA_FOR_DETECT_LANDSCAPE) {
                 if(orientation != EventSubCodes.SAMSUNG_DEVICE_ORIENTATION_LANDSCAPE) {
                     Log.d(TAG, "Landscape");
                 }
