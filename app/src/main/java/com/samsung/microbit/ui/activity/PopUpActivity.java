@@ -76,7 +76,7 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
 
         @Override
         public void onReceive(Context context, final Intent intent) {
-            if(intent.getAction().equals(INTENT_ACTION_CLOSE) || intent.getAction().equals(INTENT_ACTION_CANCEL_PRESSED)) {
+            if(intent.getAction().equals(INTENT_ACTION_CLOSE)) {
                 Log.d("PopUpActivity", "BroadcastReceiver.INTENT_ACTION_CLOSE");
                 finish();
             } else if(intent.getAction().equals(INTENT_ACTION_UPDATE_PROGRESS)) {
@@ -190,7 +190,6 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
         popupActivityFilter.addAction(INTENT_ACTION_CLOSE);
         popupActivityFilter.addAction(INTENT_ACTION_UPDATE_PROGRESS);
         popupActivityFilter.addAction(INTENT_ACTION_UPDATE_LAYOUT);
-        popupActivityFilter.addAction(INTENT_ACTION_CANCEL_PRESSED);
 
         //listen for close or update progress.xml request
         localBroadcastManager.registerReceiver(broadcastReceiver, popupActivityFilter);
