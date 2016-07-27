@@ -93,6 +93,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
     private boolean notAValidFlashHexFile;
 
+    private boolean minimumPermissionsGranted;
+
     private final Runnable tryToConnectAgain = new Runnable() {
 
         @Override
@@ -343,6 +345,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         initViews();
         setupFontStyle();
 
+        minimumPermissionsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PermissionChecker.PERMISSION_GRANTED && (ContextCompat.checkSelfPermission(this, Manifest
+                .permission.WRITE_EXTERNAL_STORAGE) == PermissionChecker.PERMISSION_GRANTED);
+
         checkMinimumPermissionsForThisScreen();
         setConnectedDeviceText();
         String fullPathOfFile = null;
@@ -360,6 +366,14 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
             } else {
                 adviceOnMicrobitState();
             }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(minimumPermissionsGranted) {
+            updateProjectsListSortOrder(true);
         }
     }
 
@@ -438,6 +452,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
             case PermissionCodes.APP_STORAGE_PERMISSIONS_REQUESTED: {
                 if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    minimumPermissionsGranted = true;
                     updateProjectsListSortOrder(true);
                 } else {
                     showMorePermissionsNeededWindow();
@@ -494,10 +509,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
      * shows a dialog windows to request them otherwise.
      */
     private void checkMinimumPermissionsForThisScreen() {
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PermissionChecker.PERMISSION_GRANTED ||
-                (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PermissionChecker.PERMISSION_GRANTED)) {
+        if(!minimumPermissionsGranted) {
             PopUp.show(getString(R.string.storage_permission_for_programs),
                     getString(R.string.permissions_needed_title),
                     R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
