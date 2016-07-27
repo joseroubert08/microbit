@@ -763,7 +763,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                 intent.setData(Uri.parse(url));
                 startActivity(intent);
             }
-            finish();
             break;
 
             case R.id.backBtn:
