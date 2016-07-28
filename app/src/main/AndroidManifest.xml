@@ -69,18 +69,47 @@
 
                 <data
                     android:host="microbit.co.uk"
+                    android:mimeType="*/*"
+                    android:pathPattern=".*\\.hex"
                     android:scheme="http"/>
+
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
                 <data
                     android:host="microbit.co.uk"
+                    android:mimeType="*/*"
+
+                    android:pathPattern=".*\\.hex"
                     android:scheme="https"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
                 <data
                     android:host="*"
+                    android:mimeType="*/*"
+                    android:pathPattern=".*\\.hex"
                     android:scheme="content"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
                 <data
                     android:host="*"
+                    android:mimeType="*/*"
+                    android:pathPattern=".*\\.hex"
                     android:scheme="file"/>
-                <data android:mimeType="*/*"/>
-                <data android:pathPattern=".*\\.hex"/>
             </intent-filter>
         </activity>
         <activity
