@@ -23,7 +23,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.RECEIVE_SMS"/>
@@ -69,8 +69,12 @@
 
                 <data
                     android:host="microbit.co.uk"
-                    android:mimeType="*/*"
-                    android:pathPattern=".*\\.hex"
+                    android:pathPattern=".*\\.hex.*"
+                    android:scheme="http"/>
+
+                <data
+                    android:host="www.microbit.co.uk"
+                    android:pathPattern=".*\\.hex.*"
                     android:scheme="http"/>
 
             </intent-filter>
@@ -82,9 +86,12 @@
 
                 <data
                     android:host="microbit.co.uk"
-                    android:mimeType="*/*"
-
                     android:pathPattern=".*\\.hex"
+                    android:scheme="https"/>
+
+                <data
+                    android:host="www.microbit.co.uk"
+                    android:pathPattern=".*\\.hex.*"
                     android:scheme="https"/>
             </intent-filter>
             <intent-filter>
@@ -97,7 +104,8 @@
                     android:host="*"
                     android:mimeType="*/*"
                     android:pathPattern=".*\\.hex"
-                    android:scheme="content"/>
+                    android:scheme="file"/>
+
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
@@ -106,10 +114,9 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
 
                 <data
-                    android:host="*"
-                    android:mimeType="*/*"
+                    android:mimeType="application/octet-stream"
                     android:pathPattern=".*\\.hex"
-                    android:scheme="file"/>
+                    android:scheme="content"/>
             </intent-filter>
         </activity>
         <activity
