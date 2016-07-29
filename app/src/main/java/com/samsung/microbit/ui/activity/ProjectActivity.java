@@ -671,7 +671,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                 emptyText.setVisibility(View.VISIBLE);
             }
         }
-        mProjectListView.setAdapter(projectAdapter);
+        if(mProjectListView != null) {
+            mProjectListView.setAdapter(projectAdapter);
+        }
     }
 
     @Override
