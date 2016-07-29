@@ -97,11 +97,13 @@ public class BLEService extends Service {
 
     private BLEHandler bleHandler;
 
+    private ServiceConnection connection;
+
     @Override
     public void onCreate() {
         super.onCreate();
 
-        ServiceConnection connection = new ServiceConnection() {
+        connection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
 
@@ -115,6 +117,14 @@ public class BLEService extends Service {
 
         //TODO This is HACK for android not allow to kill IPCService
         bindService(new Intent(this, IPCService.class), connection, BIND_IMPORTANT);
+    }
+
+    @Override
+    public void onDestroy() {
+        if(connection != null) {
+            unbindService(connection);
+        }
+        super.onDestroy();
     }
 
     @Nullable
