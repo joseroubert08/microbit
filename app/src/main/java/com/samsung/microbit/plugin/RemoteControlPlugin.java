@@ -6,146 +6,174 @@ import android.media.AudioManager;
 import android.util.Log;
 import android.view.KeyEvent;
 
-import com.samsung.microbit.BuildConfig;
-import com.samsung.microbit.model.CmdArg;
-import com.samsung.microbit.model.Constants;
+import com.samsung.microbit.MBApp;
+import com.samsung.microbit.data.constants.EventSubCodes;
+import com.samsung.microbit.data.model.CmdArg;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class RemoteControlPlugin {
+import static com.samsung.microbit.BuildConfig.DEBUG;
 
-	private static Context context = null;
+/**
+ * Provides remote control of a media player.
+ * For example, it can start a music player on your phone and control playback
+ * using keys on a micro:bit board.
+ */
+public class RemoteControlPlugin implements AbstractPlugin {
+    private static final String TAG = RemoteControlPlugin.class.getSimpleName();
 
-	static final String TAG = "RemoteControlPlugin";
-	private static boolean debug = BuildConfig.DEBUG;
+    /**
+     * Simplified method to log informational messages.
+     *
+     * @param message Message to log.
+     */
+    private static void logi(String message) {
+        Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
+    }
 
-	static void logi(String message) {
-		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
-	}
+    private Timer timer;
 
-	public static void pluginEntry(Context ctx, CmdArg cmd) {
-		context = ctx;
-		switch (cmd.getCMD()) {
-			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_PLAY:
-				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_PLAY");
-				Play();
-				break;
+    @Override
+    public void handleEntry(CmdArg cmd) {
+        if(DEBUG) {
+            logi("pluginEntry() ##  " + cmd.getCMD());
+        }
 
-			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE:
-				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_PAUSE");
-				Pause();
-				break;
+        if(timer == null) {
+            timer = new Timer();
+        }
 
-			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_STOP:
-				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_STOP");
-				Stop();
-				break;
+        switch(cmd.getCMD()) {
+            case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_PLAY:
+                play();
+                break;
 
-			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK:
-				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK");
-				NextTrack();
-				break;
+            case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_PAUSE:
+                pause();
+                break;
 
-			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_PREVTRACK:
-				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_PREVTRACK");
-				PrevTrack();
-				break;
+            case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_STOP:
+                stopPlaying();
+                break;
 
-			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_FORWARD:
-				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_FORWARD");
-				Forward();
-				break;
+            case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_NEXTTRACK:
+                nextTrack();
+                break;
 
-			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_REWIND:
-				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_REWIND");
-				Rewind();
-				break;
+            case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_PREVTRACK:
+                previousTrack();
+                break;
 
-			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEUP:
-				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEUP");
-				VolumeUp();
-				break;
+            case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_FORWARD:
+                forward();
+                break;
 
-			case Constants.SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN:
-				if (debug) logi("pluginEntry() ##  SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN");
-				VolumeDown();
-				break;
+            case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_REWIND:
+                rewind();
+                break;
 
-			default:
-				break;
-		}
-	}
+            case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEUP:
+                volumeUp();
+                break;
 
-	private static final void sendMediaKeyEvent(final int action, final int code) {
-		Intent mediaEvent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-		KeyEvent event = new KeyEvent(action, code);
-		mediaEvent.putExtra(Intent.EXTRA_KEY_EVENT, event);
-		context.sendOrderedBroadcast(mediaEvent, null);
-	}
+            case EventSubCodes.SAMSUNG_REMOTE_CONTROL_EVT_VOLUMEDOWN:
+                volumeDown();
+                break;
+            default:
+                Log.e(TAG, "Unknown Event subCode : " + cmd.getCMD());
+        }
+    }
 
-	private static final void scheduleMediaKeyEvent(final int action, final int code, final int duration) {
-		new Timer().schedule(new TimerTask() {
-			@Override
-			public void run() {
-				sendMediaKeyEvent(action, code);
-			}
-		}, duration);
-	}
+    /**
+     * General method to send media key event with provides event code and action to perform.
+     *
+     * @param action Key event action.
+     * @param code   Event code.
+     */
+    private void sendMediaKeyEvent(final int action, final int code) {
+        Intent mediaEvent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+        KeyEvent event = new KeyEvent(action, code);
+        mediaEvent.putExtra(Intent.EXTRA_KEY_EVENT, event);
+        MBApp.getApp().sendOrderedBroadcast(mediaEvent, null);
+    }
 
-	private static void Play() {
-		scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY, 0);
-		scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY, 100);
-	}
+    /**
+     * Provides schedule to send media key event.
+     *
+     * @param action Event action.
+     * @param code   Event code.
+     * @param delay  Schedule delay.
+     */
+    private void scheduleMediaKeyEvent(final int action, final int code, final int delay) {
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                sendMediaKeyEvent(action, code);
+            }
+        }, delay);
+    }
 
-	private static void Pause() {
-		scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE, 0);
-		scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE, 100);
-	}
+    private void play() {
+        scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY, 0);
+        scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY, 100);
+    }
 
-	private static void Stop() {
-		scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_STOP, 0);
-		scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_STOP, 100);
-	}
+    private void pause() {
+        scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE, 0);
+        scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE, 100);
+    }
 
-	private static void NextTrack() {
-		scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT, 0);
-		scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_NEXT, 100);
-	}
+    private void stopPlaying() {
+        scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_STOP, 0);
+        scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_STOP, 100);
+    }
 
-	private static void PrevTrack() {
-		scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS, 0);
-		scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PREVIOUS, 100);
-	}
+    private void nextTrack() {
+        scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT, 0);
+        scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_NEXT, 100);
+    }
 
-	private static void Forward() {
-		scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, 0);
-		scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, 100);
-	}
+    private void previousTrack() {
+        scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS, 0);
+        scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PREVIOUS, 100);
+    }
 
-	private static void Rewind() {
-		scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_REWIND, 0);
-		scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_REWIND, 100);
-	}
+    private void forward() {
+        scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, 0);
+        scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, 100);
+    }
 
-	private static void VolumeUp() {
-		AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-		audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
-			AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
-		/*
-		scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_VOLUME_UP, 0);
+    private void rewind() {
+        scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_REWIND, 0);
+        scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_REWIND, 100);
+    }
+
+    private void volumeUp() {
+        AudioManager audio = (AudioManager) MBApp.getApp().getSystemService(Context.AUDIO_SERVICE);
+        audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+        /*
+        scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_VOLUME_UP, 0);
         scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_VOLUME_UP, 100);
         */
-	}
+    }
 
-	private static void VolumeDown() {
-		AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-		audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
-			AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
+    private void volumeDown() {
+        AudioManager audio = (AudioManager) MBApp.getApp().getSystemService(Context.AUDIO_SERVICE);
+        audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
 		/*
         scheduleMediaKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_VOLUME_DOWN, 0);
         scheduleMediaKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_VOLUME_DOWN, 100);
         */
-	}
+    }
 
+    @Override
+    public void destroy() {
+        if(timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+    }
 }

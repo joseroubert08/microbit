@@ -1,24 +1,24 @@
 package com.samsung.microbit.plugin;
 
-import android.content.Context;
+import com.samsung.microbit.data.model.CmdArg;
 
-import com.samsung.microbit.model.CmdArg;
+//TODO: consider to use somewhere or remove
+public class FilePlugin implements AbstractPlugin {
 
-public class FilePlugin {
+    //File plugin action
+    public static final int DOWNLOAD = 0;
 
-	private static Context mContext = null;
+    @Override
+    public void handleEntry(CmdArg cmd) {
+        switch(cmd.getCMD()) {
+            case DOWNLOAD:
+                //TODO CALL THE DOWNLOAD FUNCTION HERE
+                break;
+        }
+    }
 
-	//File plugin action
-	public static final int DOWNLOAD = 0;
+    @Override
+    public void destroy() {
 
-	public static void pluginEntry(Context ctx, CmdArg cmd) {
-		mContext = ctx;
-		switch (cmd.getCMD()) {
-			case DOWNLOAD:
-				//TODO CALL THE DOWNLOAD FUNCTION HERE
-				break;
-		}
-	}
-
-
+    }
 }

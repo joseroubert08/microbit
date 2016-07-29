@@ -14,33 +14,33 @@
   limitations under the License.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.samsung.microbit"
-    android:versionCode="5"
-    android:versionName="1.5.1">
+          package="com.samsung.microbit"
+          android:versionCode="5"
+          android:versionName="1.5.1">
 
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
-    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
-    <uses-permission android:name="android.permission.FLASHLIGHT" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS"/>
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL"/>
+    <uses-permission android:name="android.permission.FLASHLIGHT"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
 
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
-    <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
-    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera.flash" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
 
 
     <application
@@ -53,65 +53,65 @@
             android:name=".ui.activity.HomeActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/home_activity_name"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"/>
         <activity
             android:name=".ui.activity.ProjectActivity"
-            android:parentActivityName=".ui.activity.HomeActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName=".ui.activity.HomeActivity"
             android:windowSoftInputMode="adjustResize">
 
             <!-- Register for the HEX file -->
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.VIEW"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
 
                 <data
                     android:host="microbit.co.uk"
-                    android:scheme="http" />
+                    android:scheme="http"/>
                 <data
                     android:host="microbit.co.uk"
-                    android:scheme="https" />
+                    android:scheme="https"/>
                 <data
                     android:host="*"
-                    android:scheme="content" />
+                    android:scheme="content"/>
                 <data
                     android:host="*"
-                    android:scheme="file" />
-                <data android:mimeType="*/*" />
-                <data android:pathPattern=".*\\.hex" />
+                    android:scheme="file"/>
+                <data android:mimeType="*/*"/>
+                <data android:pathPattern=".*\\.hex"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.activity.NotificationActivity"
             android:label="@string/device_details"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.activity.PairingActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_connect"
             android:launchMode="singleTop"
-            android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName=".ui.activity.HomeActivity"
-            android:windowSoftInputMode="stateHidden|adjustPan" />
+            android:windowSoftInputMode="stateHidden|adjustPan"/>
         <activity
             android:name=".ui.activity.PopUpActivity"
-            android:launchMode="singleTask"
             android:configChanges="orientation|screenSize|keyboardHidden"
+            android:launchMode="singleTask"
             android:theme="@style/PopUpTheme"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".ui.activity.AudioRecorderActivity"
             android:configChanges="orientation|screenSize"
             android:label="Audio Recorder"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.activity.CameraActivity_OldAPI"
             android:label="Camera Microbit"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
         <activity
             android:name=".ui.activity.HelpWebView"
             android:configChanges="orientation|screenSize"
@@ -129,39 +129,39 @@
 
         <service
             android:name=".service.DfuService"
-            android:enabled="true" />
+            android:enabled="true"/>
+
         <service
             android:name=".service.PluginService"
-            android:process=":PluginService">
-            <intent-filter>
-                <action android:name="com.samsung.microbit.service.PluginService" />
-            </intent-filter>
-        </service>
+            android:enabled="true"
+            android:exported="false"
+            android:process=":PluginService"/>
         <service
             android:name=".service.BLEService"
-            android:process=":BLEService">
-            <intent-filter>
-                <action android:name="com.samsung.microbit.service.BLEService" />
-            </intent-filter>
-        </service>
-        <service android:name=".service.IPCService">
-            <intent-filter>
-                <action android:name="com.samsung.microbit.service.IPCService" />
-            </intent-filter>
-        </service>
+            android:enabled="true"
+            android:exported="false"
+            android:process=":BLEService"/>
+
+        <service
+            android:name=".service.IPCService"
+            android:enabled="true"
+            android:exported="false"/>
+
         <activity
             android:name=".ui.activity.SplashScreenActivity"
+            android:screenOrientation="locked"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
-        <receiver android:name=".core.PopUpServiceReceiver">
+        <receiver android:name=".core.PopUpServiceReceiver"
+                  android:exported="false">
             <intent-filter>
-                <action android:name="com.samsung.microbit.core.SHOWFROMSERVICE" />
+                <action android:name="com.samsung.microbit.core.SHOWFROMSERVICE"/>
             </intent-filter>
         </receiver>
     </application>

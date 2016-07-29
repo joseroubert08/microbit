@@ -28,8 +28,7 @@
             android:foregroundGravity="center"
             android:labelFor="@drawable/bbc_microbit_vertical"
             android:nextFocusDown="@+id/connect_device_btn"
-            android:scrollbars="none"
-            android:src="@drawable/hello_emoji_animation"/>
+            android:scrollbars="none"/>
 
     </RelativeLayout>
     <!-- Connections -->
@@ -65,5 +64,6 @@
         style="@style/main_activity_button_style"
         android:contentDescription="@string/desc_discover"
         android:drawableEnd="@drawable/ic_discover"
+        android:layout_marginBottom="0dp"
         android:text="@string/discover" />
 </LinearLayout>

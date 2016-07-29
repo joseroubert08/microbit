@@ -4,14 +4,19 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.samsung.microbit.R;
 
+/**
+ * Displays a help screen to provide some instructions and Q&A for using the app.
+ */
 public class HelpWebView extends Activity {
 
-    WebView webView = null ;
+    private WebView webView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,21 +25,23 @@ public class HelpWebView extends Activity {
         webView = (WebView) findViewById(R.id.generalView);
 
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setBuiltInZoomControls(true);
-        webView.getSettings().setDisplayZoomControls(false);
 
+        WebSettings webSettings = webView.getSettings();
+
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setBuiltInZoomControls(true);
+        webSettings.setDisplayZoomControls(false);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 return false;
-
             }
         });
+
         //Check parameters Before load
         Intent intent = getIntent();
         String url = intent.getStringExtra("url");
@@ -43,7 +50,7 @@ public class HelpWebView extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (webView.canGoBack()) {
+        if(webView.canGoBack()) {
             webView.goBack();
         } else {
             super.onBackPressed();
@@ -51,7 +58,7 @@ public class HelpWebView extends Activity {
     }
 
     public void onClick(final View v) {
-        if(v.getId() == R.id.backBtn){
+        if(v.getId() == R.id.backBtn) {
             finish();
         }
     }

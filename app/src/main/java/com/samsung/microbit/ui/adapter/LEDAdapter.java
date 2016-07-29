@@ -9,31 +9,41 @@ import android.widget.ImageView;
 
 import com.samsung.microbit.R;
 
+/**
+ * Represents an adapter for a pattern grid.
+ * Provides methods to create and manage grid cells.
+ */
 public class LEDAdapter extends BaseAdapter {
     private Context mContext;
-    private String mDeviceCodeArray[];
+    private int mDeviceCodeArray[];
 
-    public LEDAdapter(Context c, String deviceCodeArray[]) {
+    public LEDAdapter(Context c, int deviceCodeArray[]) {
         mContext = c;
         mDeviceCodeArray = deviceCodeArray;
     }
 
+    @Override
     public int getCount() {
         return 25;
     }
 
+    @Override
     public Object getItem(int position) {
         return null;
     }
 
+    @Override
     public long getItemId(int position) {
         return position;
     }
 
-    // create a new ImageView for each item referenced by the Adapter
+    /**
+     * Creates a new ImageView for each item referenced by the Adapter.
+     */
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView;
-        if (convertView == null) {
+        if(convertView == null) {
             // if it's not recycled, initialize some attributes
             imageView = new ImageView(mContext);
             final float scale = mContext.getResources().getDisplayMetrics().density;
@@ -44,15 +54,14 @@ public class LEDAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        if (mDeviceCodeArray[position].equals("1")) {
+        if(mDeviceCodeArray[position] == 1) {
             imageView.setBackground(mContext.getResources().getDrawable(R.drawable.red_white_led_btn));
-
         } else {
             imageView.setBackground(mContext.getResources().getDrawable(R.drawable.white_red_led_btn));
 
             int startIndex = position - 5;
-            while (startIndex >= 0) {
-                if (mDeviceCodeArray[startIndex].equals("1")) {
+            while(startIndex >= 0) {
+                if(mDeviceCodeArray[startIndex] == 1) {
                     imageView.setBackground(mContext.getResources().getDrawable(R.drawable.red_white_led_btn));
                 }
                 startIndex -= 5;
@@ -68,20 +77,23 @@ public class LEDAdapter extends BaseAdapter {
         return imageView;
     }
 
-    // Function to add 1 to the position in the array to correctly read out the LED position
+    /**
+     * Increments by 1 position in the array to correctly read out the LED position.
+     *
+     * @param position Position of the cell to increment.
+     * @return New incremented position.
+     */
     private int calculateLEDPosition(int position) {
         return ++position;
     }
 
-    // To read out the status of the currently selected LED at a given position
+    /**
+     * To read out the status of the currently selected LED at a given position.
+     *
+     * @param position Position of the led.
+     * @return Status of the led at given position.
+     */
     private String getLEDStatus(int position) {
-        String statusRead;
-
-        if (mDeviceCodeArray[position].equals("1")) {
-            statusRead = "on";
-        } else {
-            statusRead = "off";
-        }
-        return statusRead;
+        return mDeviceCodeArray[position] == 1 ? "on" : "off";
     }
 }

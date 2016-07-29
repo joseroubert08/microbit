@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -12,21 +13,23 @@ import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.EchoClientManager;
 
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 import pl.droidsonroids.gif.AnimationListener;
 
-public class SplashScreenActivity extends Activity {
+/**
+ * Represents a loading screen activity.
+ * Provides methods to create and manage splash screen animation.
+ */
+public class SplashScreenActivity extends Activity implements View.OnClickListener {
+    private static final String EXTRA_ANIMATION_STARTED = "animation_started";
     private static final int ANIM_STEP_ONE_DURATION = 1000;
     private static final int ANIM_STEP_TWO_DURATION = 800;
     private static final int ANIM_STEP_TWO_DELAY = 600;
     private static final int ANIM_STEP_THREE_DELAY = 600;
     private static final int ANIM_STEP_THREE_DURATION = 800;
     private static final int ANIM_FADE_OUT_GIF_FIRST_FRAME_DURATION = 400;
-
-    private boolean mAnimationStarted = false;
 
     private ViewGroup mLogoLayout;
     private TextView mDevByText;
@@ -37,16 +40,16 @@ public class SplashScreenActivity extends Activity {
     private GifDrawable mGifDrawable;
     private Handler mLastAnimStepHandler;
 
+    private boolean mAnimationStarted;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_splash_screen);
-
-        MBApp.setContext(this);
-
         initViews();
 
-        EchoClientManager.getInstance().sendAppStats();
+        MBApp.getApp().getEchoClientManager().sendAppStats();
     }
 
     private void initViews() {
@@ -57,6 +60,8 @@ public class SplashScreenActivity extends Activity {
         mGifImageFirstFrame = (ImageView) findViewById(R.id.splash_screen_gif_image_first_frame);
         mGifImage = (GifImageView) findViewById(R.id.splash_screen_gif_image);
         mLastAnimStepHandler = new Handler();
+
+        findViewById(R.id.splash_screen_layout).setOnClickListener(this);
     }
 
     /**
@@ -127,7 +132,7 @@ public class SplashScreenActivity extends Activity {
         int halfOfScreen;
 
         //Change size of the gif image.
-        if (isPortrait) {
+        if(isPortrait) {
             final int screenHeight = getResources().getDisplayMetrics().heightPixels;
             halfOfScreen = screenHeight / 2;
             params.height = halfOfScreen;
@@ -154,7 +159,7 @@ public class SplashScreenActivity extends Activity {
 
         final int delay = ANIM_STEP_ONE_DURATION + ANIM_STEP_TWO_DELAY;
 
-        if (isPortrait) {
+        if(isPortrait) {
             final int screenHeight = getResources().getDisplayMetrics().heightPixels;
             halfOfScreen = screenHeight / 2;
             quarterOfScreen = screenHeight / 4;
@@ -206,7 +211,7 @@ public class SplashScreenActivity extends Activity {
             //Position of the screen to center gif image.
             int positionOnScreen;
 
-            if (isPortrait) {
+            if(isPortrait) {
                 final int screenHeight = getResources().getDisplayMetrics().heightPixels;
 
                 //Move logo layout out of the screen.
@@ -260,14 +265,16 @@ public class SplashScreenActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (!mAnimationStarted) {
+        if(!mAnimationStarted) {
             startAnimation();
         } else {
             startHomeActivity();
         }
-
     }
 
+    /**
+     * Ends a splash screen and starts Home activity.
+     */
     private void startHomeActivity() {
         startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
         finish();
@@ -276,13 +283,25 @@ public class SplashScreenActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        mLastAnimStepHandler.removeCallbacks(mLastAnimStepCallback);
-        mGifDrawable.removeAnimationListener(mGifAnimListener);
+        removeAnimation();
+    }
+
+    private void removeAnimation() {
+        if(mAnimationStarted) {
+            mLastAnimStepHandler.removeCallbacks(mLastAnimStepCallback);
+            mGifDrawable.removeAnimationListener(mGifAnimListener);
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        removeAnimation();
         releaseViews();
+    }
+
+    @Override
+    public void onClick(View v) {
+        startHomeActivity();
     }
 }

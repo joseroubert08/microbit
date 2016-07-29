@@ -101,7 +101,7 @@
     <dimen name="custom_button_start_margin">8dp</dimen>
     <dimen name="custom_button_end_margin">16dp</dimen>
     <dimen name="custom_button_image_margin">25dp</dimen>
-    <dimen name="custom_button_margin">32dp</dimen>
+    <dimen name="custom_button_height">68dp</dimen>
     <dimen name="delete_button_width_padding">26dp</dimen>
     <dimen name="delete_button_height_padding">21dp</dimen>
     <dimen name="project_items_image_padding">0dp</dimen>
@@ -115,13 +115,14 @@
     <dimen name="pairing_connection_header_margin_bottom">16dp</dimen>
     <dimen name="description_and_smile_layout_padding">40dp</dimen>
     <dimen name="connection_having_problem_text_size">20sp</dimen>
+    <dimen name="connect_button_height">68dp</dimen>
 
 
     <!-- Pairing step screens -->
-    <dimen name="pairing_step_button_height">72dp</dimen>
+    <dimen name="pairing_step_button_height">68dp</dimen>
     <dimen name="pairing_step_buttons_space_margin">9dp</dimen>
     <dimen name="pairing_step_button_padding">20dp</dimen>
-    <dimen name="pairing_step_button_text_size">24sp</dimen>
+    <dimen name="pairing_step_button_text_size">22sp</dimen>
     <dimen name="pairing_step_header_text_size">28sp</dimen>
     <dimen name="pairing_step_buttons_layout_margin">17dp</dimen>
     <dimen name="white_header_text_margin_bottom">16dp</dimen>
@@ -140,5 +141,7 @@
 
     <!-- Popup screens -->
     <dimen name="popup_gif_size">200dp</dimen>
+
+    <dimen name="pairing_searching_step_cycle_progress_bar_size">100dp</dimen>
 
 </resources>

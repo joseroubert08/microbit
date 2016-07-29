@@ -5,7 +5,6 @@
     style="@style/custom_button_layout"
     android:layout_width="0dp"
     android:layout_weight="@integer/project_my_scripts_button_weight"
-    android:layout_height="@dimen/project_custom_button_height"
     android:layout_margin="@dimen/custom_button_margin"
     android:background="@drawable/yellow_btn"
     android:onClick="onClick"
