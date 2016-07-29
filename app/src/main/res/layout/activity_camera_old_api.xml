@@ -27,7 +27,7 @@
                 android:layout_gravity="left|top"
                 android:layout_margin="10dp"
                 android:background="#33FFFFFF"
-                android:src="@drawable/back"/>
+                android:src="@drawable/ic_back_arrow"/>
 
             <ImageButton
                 android:id="@+id/back_landscape"
@@ -37,7 +37,7 @@
                 android:rotation="90"
                 android:layout_margin="10dp"
                 android:background="#33FFFFFF"
-                android:src="@drawable/back"/>
+                android:src="@drawable/ic_back_arrow"/>
 
         <!--</FrameLayout>-->
 

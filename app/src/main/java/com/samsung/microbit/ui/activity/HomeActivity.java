@@ -1,16 +1,15 @@
 package com.samsung.microbit.ui.activity;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
@@ -18,63 +17,65 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.samsung.microbit.BuildConfig;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.core.EchoClientManager;
-import com.samsung.microbit.core.RemoteConfig;
-import com.samsung.microbit.core.Utils;
-import com.samsung.microbit.model.Constants;
-import com.samsung.microbit.service.BLEService;
+import com.samsung.microbit.common.ConfigInfo;
+import com.samsung.microbit.data.constants.PermissionCodes;
+import com.samsung.microbit.presentation.ConfigInfoPresenter;
 import com.samsung.microbit.service.IPCService;
-import com.samsung.microbit.service.PluginService;
 import com.samsung.microbit.ui.PopUp;
-
-import java.util.HashMap;
-import java.util.List;
+import com.samsung.microbit.utils.FileUtils;
+import com.samsung.microbit.utils.Utils;
 
 import pl.droidsonroids.gif.GifImageView;
 
+import static com.samsung.microbit.BuildConfig.DEBUG;
+
+/**
+ * Represents a home screen. Allows to navigate to all functionality
+ * that the app provides.
+ */
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String TAG = HomeActivity.class.getSimpleName();
+
+    public static final String FIRST_RUN = "firstrun";
 
     // share stats checkbox
     private CheckBox mShareStatsCheckBox;
 
     SharedPreferences mPrefs = null;
-    StableArrayAdapter adapter = null;
-    private AppCompatDelegate delegate;
+
     // Hello animation
     private GifImageView gifAnimationHelloEmoji;
-    boolean connectionInitiated = false;
 
-    private MBApp app = null;
-    protected String TAG = "HomeActivity";
-    protected boolean debug = BuildConfig.DEBUG;
+    private DrawerLayout mDrawer;
 
     /* Debug code*/
-    private String urlToOpen = null;
+    private String urlToOpen;
     /* Debug code ends*/
 
+    private String emailBodyString;
 
-    private String emailBodyString = null;
+    private ConfigInfoPresenter configInfoPresenter;
 
-    protected void logi(String message) {
-        if (debug) {
+    /**
+     * Provides simplified way to log informational messages.
+     *
+     * @param message Message to log.
+     */
+    private void logi(String message) {
+        if(DEBUG) {
             Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
         }
     }
@@ -82,54 +83,59 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         //handle orientation change to prevent re-creation of activity.
-        //i.e. while recording we need to preserve state of recorder
         super.onConfigurationChanged(newConfig);
+
+        unbindDrawables();
+
+        setContentView(R.layout.activity_home);
+        setupDrawer();
+        setupButtonsFontStyle();
+        initGifImage();
+    }
+
+    /**
+     * Initializes the gif image and sets a resource.
+     */
+    private void initGifImage() {
+        gifAnimationHelloEmoji = (GifImageView) findViewById(R.id.homeHelloAnimationGifView);
+        gifAnimationHelloEmoji.setImageResource(R.drawable.hello_emoji_animation);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logi("onCreate() :: ");
-        MBApp.setContext(this);
-
-        RemoteConfig.getInstance().init();
 
         setContentView(R.layout.activity_home);
+
+        configInfoPresenter = new ConfigInfoPresenter();
+
+        configInfoPresenter.start();
+
+        if(savedInstanceState == null) {
+            startService(new Intent(this, IPCService.class));
+        }
+
         setupDrawer();
-
-        if (app == null)
-            app = (MBApp) MBApp.getApp().getApplicationContext();
-
-        //LinearLayout connectBarView = (LinearLayout) findViewById(R.id.connectBarView);
-        //connectBarView.getBackground().setAlpha(128);
-
-        // Font Style for buttons
-        Button connectButton = (Button) findViewById(R.id.connect_device_btn);
-        connectButton.setTypeface(MBApp.getApp().getTypeface());
-        Button flashButton = (Button) findViewById(R.id.flash_microbit_btn);
-        flashButton.setTypeface(MBApp.getApp().getTypeface());
-        Button createCodeButton = (Button) findViewById(R.id.create_code_btn);
-        createCodeButton.setTypeface(MBApp.getApp().getTypeface());
-        Button discoverButton = (Button) findViewById(R.id.discover_btn);
-        discoverButton.setTypeface(MBApp.getApp().getTypeface());
+        setupButtonsFontStyle();
 
         checkMinimumPermissionsForThisScreen();
-        startOtherServices();
 
-        EchoClientManager.getInstance().sendViewEventStats("homeactivity");
+        MBApp.getApp().getEchoClientManager().sendViewEventStats("homeactivity");
 
         /* Debug code*/
         MenuItem item = (MenuItem) findViewById(R.id.live);
-        if (item != null) {
+        if(item != null) {
             item.setChecked(true);
         }
 
-        if (!RemoteConfig.getInstance().isAppStatusOn()) {
+        ConfigInfo configInfo = MBApp.getApp().getConfigInfo();
+
+        if(!configInfo.isAppStatusOn()) {
             finish();
             //Cannot proceed with the application. Shutdown NOW
-            PopUp.show(MBApp.getContext(),
-                    RemoteConfig.getInstance().getExceptionMsg(),
-                    RemoteConfig.getInstance().getExceptionTitle(),
+            PopUp.show(configInfo.getExceptionMsg(),
+                    configInfo.getExceptionTitle(),
                     R.drawable.error_face,//image icon res id
                     R.drawable.red_btn,
                     PopUp.GIFF_ANIMATION_ERROR,
@@ -138,53 +144,59 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     null);
 
         }
-        // animation for loading hello .giff
-        gifAnimationHelloEmoji = (GifImageView) findViewById(R.id.homeHelloAnimationGifView);
+
+        initGifImage();
     }
 
-    private void startOtherServices() {
-        // IPC service to communicate between the services
-        Intent ipcIntent = new Intent(this, IPCService.class);
-        startService(ipcIntent);
+    /**
+     * Sets buttons font style by setting an appropriate typeface.
+     */
+    private void setupButtonsFontStyle() {
+        Typeface typeface = MBApp.getApp().getTypeface();
 
-        // BLE service to Handle all BLE communications
-        Intent bleIntent = new Intent(this, BLEService.class);
-        startService(bleIntent);
-
-        // Plugin service to handle incoming requests
-        final Intent intent = new Intent(this, PluginService.class);
-        startService(intent);
+        Button connectButton = (Button) findViewById(R.id.connect_device_btn);
+        connectButton.setTypeface(typeface);
+        Button flashButton = (Button) findViewById(R.id.flash_microbit_btn);
+        flashButton.setTypeface(typeface);
+        Button createCodeButton = (Button) findViewById(R.id.create_code_btn);
+        createCodeButton.setTypeface(typeface);
+        Button discoverButton = (Button) findViewById(R.id.discover_btn);
+        discoverButton.setTypeface(typeface);
     }
 
+    /**
+     * Creates and setups side navigation menu.
+     */
     private void setupDrawer() {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationContentDescription(R.string.content_description_toolbar_home);
         ImageView imgToolbarLogo = (ImageView) findViewById(R.id.img_toolbar_bbc_logo);
         imgToolbarLogo.setContentDescription("BBC Micro:bit");
-        //toolbar.setLogo(R.drawable.bbc_microbit_app_bar_logo);
-        // toolbar.setNavigationIcon(R.drawable.white_red_led_btn);
-        //  toolbar.setLogoDescription(R.string.content_description_toolbar_logo);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.setDrawerTitle(GravityCompat.START, "Menu"); // TODO - Accessibility for touching the drawer
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        final boolean previousDrawerState = mDrawer != null && mDrawer.isDrawerOpen(GravityCompat.START);
 
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawer.setDrawerTitle(GravityCompat.START, "Menu"); // TODO - Accessibility for touching the drawer
+
+        if(previousDrawerState) {
+            mDrawer.openDrawer(GravityCompat.START);
+        }
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
         boolean shareStats = false;
         mPrefs = getSharedPreferences("com.samsung.microbit", MODE_PRIVATE);
-        if (mPrefs != null) {
+        if(mPrefs != null) {
             shareStats = mPrefs.getBoolean(getString(R.string.prefs_share_stats_status), true);
-            EchoClientManager.getInstance().setSharingStats(shareStats);
+            MBApp.getApp().getEchoClientManager().setShareStatistic(shareStats);
         }
         //TODO focusable view
-        drawer.setDrawerListener(toggle);
+        mDrawer.setDrawerListener(toggle);
 
         toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         /* Todo [Hack]:
         * NavigationView items for selection by user using
@@ -209,103 +221,93 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         termsNavBtn.setTypeface(MBApp.getApp().getTypeface());
         findViewById(R.id.btn_terms_conditions).setOnClickListener(this);
 
-        Button sendFeedbackNavbtn = (Button) findViewById(R.id.btn_send_feedback);
-        sendFeedbackNavbtn.setTypeface(MBApp.getApp().getTypeface());
+        Button sendFeedbackNavBtn = (Button) findViewById(R.id.btn_send_feedback);
+        sendFeedbackNavBtn.setTypeface(MBApp.getApp().getTypeface());
         findViewById(R.id.btn_send_feedback).setOnClickListener(this);
 
         // Share stats checkbox
         TextView shareStatsCheckTitle = (TextView) findViewById(R.id.share_statistics_title);
         shareStatsCheckTitle.setTypeface(MBApp.getApp().getTypeface());
         TextView shareStatsDescription = (TextView) findViewById(R.id.share_statistics_description);
-        shareStatsDescription.setTypeface(MBApp.getApp().getTypeface());
+        shareStatsDescription.setTypeface(MBApp.getApp().getRobotoTypeface());
         mShareStatsCheckBox = (CheckBox) findViewById(R.id.share_statistics_status);
         mShareStatsCheckBox.setOnClickListener(this);
         mShareStatsCheckBox.setChecked(shareStats);
     }
 
+    /**
+     * Creates email body to send statistics. Adds information about a device.
+     *
+     * @return Email body with device information.
+     */
     private String prepareEmailBody() {
-        if (emailBodyString != null) {
+        if(emailBodyString != null) {
             return emailBodyString;
         }
         String emailBody = getString(R.string.email_body);
         String version = "0.1.0";
-        PackageManager manager = MBApp.getContext().getPackageManager();
-        PackageInfo info = null;
         try {
-            info = manager.getPackageInfo(MBApp.getContext().getPackageName(), 0);
-            version = info.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            version = MBApp.getApp().getPackageManager()
+                    .getPackageInfo(MBApp.getApp().getPackageName(), 0).versionName;
+        } catch(PackageManager.NameNotFoundException e) {
+            Log.e(TAG, e.toString());
         }
         emailBodyString = String.format(emailBody,
                 version,
                 Build.MODEL,
                 Build.VERSION.RELEASE,
-                RemoteConfig.getInstance().getPrivacyURL());
+                MBApp.getApp().getConfigInfo().getPrivacyURL());
         return emailBodyString;
     }
 
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if(drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        RemoteConfig.getInstance().destroy();
-        unbindDrawables(gifAnimationHelloEmoji);
-        unbindDrawables(findViewById(R.id.connect_device_btn));
-        unbindDrawables(findViewById(R.id.flash_microbit_btn));
-        unbindDrawables(findViewById(R.id.create_code_btn));
-        unbindDrawables(findViewById(R.id.discover_btn));
+        configInfoPresenter.destroy();
 
-        unbindDrawables(findViewById(R.id.img_toolbar_bbc_logo));
-        unbindDrawables(findViewById(R.id.toolbar));
-        unbindDrawables(findViewById(R.id.nav_view));
-        unbindDrawables(findViewById(R.id.drawer_layout));
-        unbindDrawables(findViewById(R.id.btn_nav_menu));
-        unbindDrawables(findViewById(R.id.btn_about));
-        unbindDrawables(findViewById(R.id.btn_help));
-        unbindDrawables(findViewById(R.id.btn_privacy_cookies));
-        unbindDrawables(findViewById(R.id.btn_terms_conditions));
-        unbindDrawables(findViewById(R.id.btn_send_feedback));
-        unbindDrawables(findViewById(R.id.share_statistics_title));
-        unbindDrawables(findViewById(R.id.share_statistics_description));
-        unbindDrawables(findViewById(R.id.share_statistics_status));
-
-        System.gc();
+        unbindDrawables();
     }
 
-    private void unbindDrawables(View view) {
-        if(view == null)
-            return;
+    private void unbindDrawables() {
+        Utils.unbindDrawables(gifAnimationHelloEmoji);
+        Utils.unbindDrawables(findViewById(R.id.connect_device_btn));
+        Utils.unbindDrawables(findViewById(R.id.flash_microbit_btn));
+        Utils.unbindDrawables(findViewById(R.id.create_code_btn));
+        Utils.unbindDrawables(findViewById(R.id.discover_btn));
 
-        if (view.getBackground() != null) {
-            view.getBackground().setCallback(null);
-        }
-        if (view instanceof ViewGroup) {
-            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-                unbindDrawables(((ViewGroup) view).getChildAt(i));
-            }
-            ((ViewGroup) view).removeAllViews();
-            view.setBackgroundResource(0);
-        }
+        Utils.unbindDrawables(findViewById(R.id.img_toolbar_bbc_logo));
+        Utils.unbindDrawables(findViewById(R.id.toolbar));
+        Utils.unbindDrawables(findViewById(R.id.nav_view));
+        Utils.unbindDrawables(findViewById(R.id.drawer_layout));
+        Utils.unbindDrawables(findViewById(R.id.btn_nav_menu));
+        Utils.unbindDrawables(findViewById(R.id.btn_about));
+        Utils.unbindDrawables(findViewById(R.id.btn_help));
+        Utils.unbindDrawables(findViewById(R.id.btn_privacy_cookies));
+        Utils.unbindDrawables(findViewById(R.id.btn_terms_conditions));
+        Utils.unbindDrawables(findViewById(R.id.btn_send_feedback));
+        Utils.unbindDrawables(findViewById(R.id.share_statistics_title));
+        Utils.unbindDrawables(findViewById(R.id.share_statistics_description));
+        Utils.unbindDrawables(findViewById(R.id.share_statistics_status));
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        urlToOpen = RemoteConfig.getInstance().getCreateCodeURL();
-        switch (id) {
+        urlToOpen = MBApp.getApp().getConfigInfo().getCreateCodeURL();
+        switch(id) {
             case R.id.live:
                 item.setChecked(true);
                 break;
@@ -326,42 +328,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-
-    private class StableArrayAdapter extends ArrayAdapter<String> {
-
-        HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
-
-        public StableArrayAdapter(Context context, int textViewResourceId,
-                                  List<String> objects) {
-            super(context, textViewResourceId, objects);
-            for (int i = 0; i < objects.size(); ++i) {
-                mIdMap.put(objects.get(i), i);
-            }
-        }
-
-        @Override
-        public long getItemId(int position) {
-            String item = getItem(position);
-            return mIdMap.get(item);
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
         // Pause animation
@@ -375,12 +341,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(final View v) {
-        if (debug) logi("onBtnClicked() :: ");
+        if(DEBUG) logi("onBtnClicked() :: ");
 
         // Drawer closes only after certain items are selected from the Navigation View
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        switch (v.getId()) {
+        switch(v.getId()) {
 //            case R.id.addDevice:
             case R.id.connect_device_btn: {
                 Intent intent = new Intent(this, PairingActivity.class);
@@ -389,10 +355,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             break;
             case R.id.create_code_btn: {
                 //Update Stats
-                EchoClientManager.getInstance().sendNavigationStats("home", "create-code");
-                if (urlToOpen == null) {
-                    urlToOpen = RemoteConfig.getInstance().getCreateCodeURL();
+                MBApp.getApp().getEchoClientManager().sendNavigationStats("home", "create-code");
+                if(urlToOpen == null) {
+                    urlToOpen = MBApp.getApp().getConfigInfo().getCreateCodeURL();
                 }
+
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(urlToOpen));
 
@@ -400,14 +367,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.flash_microbit_btn:
-                EchoClientManager.getInstance().sendNavigationStats("home", "flash");
+                MBApp.getApp().getEchoClientManager().sendNavigationStats("home", "flash");
                 Intent i = new Intent(this, ProjectActivity.class);
                 startActivity(i);
                 break;
             case R.id.discover_btn:
-                EchoClientManager.getInstance().sendNavigationStats("home", "discover");
+                MBApp.getApp().getEchoClientManager().sendNavigationStats("home", "discover");
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(RemoteConfig.getInstance().getDiscoverURL()));
+                intent.setData(Uri.parse(MBApp.getApp().getConfigInfo().getDiscoverURL()));
                 startActivity(intent);
                 break;
 
@@ -419,7 +386,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.btn_about: {
-                String url = RemoteConfig.getInstance().getAboutURL();
+                String url = MBApp.getApp().getConfigInfo().getAboutURL();
                 Intent aboutIntent = new Intent(Intent.ACTION_VIEW);
                 aboutIntent.setData(Uri.parse(url));
                 startActivity(aboutIntent);
@@ -433,33 +400,33 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(launchHelpIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
-                EchoClientManager.getInstance().sendNavigationStats("overflow-menu", "help");
+                MBApp.getApp().getEchoClientManager().sendNavigationStats("overflow-menu", "help");
             }
             break;
             case R.id.btn_privacy_cookies: {
-                String url = RemoteConfig.getInstance().getPrivacyURL();
+                String url = MBApp.getApp().getConfigInfo().getPrivacyURL();
                 Intent privacyIntent = new Intent(Intent.ACTION_VIEW);
                 privacyIntent.setData(Uri.parse(url));
                 startActivity(privacyIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
-                EchoClientManager.getInstance().sendNavigationStats("overflow-menu", "privacy-policy");
+                MBApp.getApp().getEchoClientManager().sendNavigationStats("overflow-menu", "privacy-policy");
             }
             break;
             case R.id.btn_terms_conditions: {
-                String url = RemoteConfig.getInstance().getTermsOfUseURL();
+                String url = MBApp.getApp().getConfigInfo().getTermsOfUseURL();
                 Intent termsIntent = new Intent(Intent.ACTION_VIEW);
                 termsIntent.setData(Uri.parse(url));
                 startActivity(termsIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
-                EchoClientManager.getInstance().sendNavigationStats("overflow-menu", "ts-and-cs");
+                MBApp.getApp().getEchoClientManager().sendNavigationStats("overflow-menu", "ts-and-cs");
 
             }
             break;
 
             case R.id.btn_send_feedback: {
-                String emailAddress = RemoteConfig.getInstance().getSendEmailAddress();
+                String emailAddress = MBApp.getApp().getConfigInfo().getSendEmailAddress();
                 Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
                 feedbackIntent.setType("message/rfc822");
                 feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{emailAddress});
@@ -470,7 +437,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 Intent mailer = Intent.createChooser(feedbackIntent, null);
                 startActivity(mailer);
                 // Close drawer
-                if (drawer != null) {
+                if(drawer != null) {
                     drawer.closeDrawer(GravityCompat.START);
                 }
             }
@@ -483,35 +450,39 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }//Switch Ends
     }
 
-
+    /**
+     * Allows to turn on/off sharing statistics ability.
+     */
     private void toggleShareStatistics() {
-        if (mShareStatsCheckBox == null) {
+        if(mShareStatsCheckBox == null) {
             return;
         }
-        boolean shareStatistics = false;
+        boolean shareStatistics;
         shareStatistics = mShareStatsCheckBox.isChecked();
         mPrefs.edit().putBoolean(getString(R.string.prefs_share_stats_status), shareStatistics).apply();
         logi("shareStatistics = " + shareStatistics);
-        EchoClientManager.getInstance().setSharingStats(shareStatistics);
-        EchoClientManager.getInstance().sendStatSharing(shareStatistics);
+        MBApp.getApp().getEchoClientManager().setShareStatistic(shareStatistics);
+        MBApp.getApp().getEchoClientManager().sendStatSharing(shareStatistics);
     }
 
-
+    /**
+     * Loads standard samples provided by Samsung. The samples can be used to
+     * flash on a micro:bit board.
+     */
     private void installSamples() {
-        if (mPrefs.getBoolean("firstrun", true)) {
-            mPrefs.edit().putBoolean("firstrun", false).commit();
+        if(mPrefs.getBoolean(FIRST_RUN, true)) {
+            mPrefs.edit().putBoolean(FIRST_RUN, false).apply();
             //First Run. Install the Sample applications
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    PopUp.show(MBApp.getContext(),
-                            "Samples will now be copied to your device. You can check them out in the Flash section.",
+                    PopUp.show(getString(R.string.samples_are_about_to_be_copied),
                             "Thank you",
                             R.drawable.message_face, R.drawable.blue_btn,
                             PopUp.GIFF_ANIMATION_NONE,
                             PopUp.TYPE_ALERT,
                             null, null);
-                    Utils.installSamples();
+                    FileUtils.installSamples();
 
                 }
             }).start();
@@ -519,16 +490,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode)
-        {
-            case Constants.APP_STORAGE_PERMISSIONS_REQUESTED: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        switch(requestCode) {
+            case PermissionCodes.APP_STORAGE_PERMISSIONS_REQUESTED: {
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     installSamples();
                 } else {
-                    if (mPrefs!= null) mPrefs.edit().putBoolean("firstrun", false).commit();
-                    PopUp.show(MBApp.getContext(),
-                            getString(R.string.storage_permission_for_samples_error),
+                    if(mPrefs != null) mPrefs.edit().putBoolean(FIRST_RUN, false).apply();
+                    PopUp.show(getString(R.string.storage_permission_for_samples_error),
                             "",
                             R.drawable.error_face, R.drawable.red_btn,
                             PopUp.GIFF_ANIMATION_ERROR,
@@ -541,57 +512,69 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void requetPermission(String[] permissions, final int requestCode) {
+    private void requestPermission(String[] permissions, final int requestCode) {
         ActivityCompat.requestPermissions(this, permissions, requestCode);
     }
 
+    /**
+     * Requests required external storage permissions.
+     */
     View.OnClickListener diskStoragePermissionOKHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             logi("diskStoragePermissionOKHandler");
             PopUp.hide();
-            String[] permissionsNeeded = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-            requetPermission(permissionsNeeded, Constants.APP_STORAGE_PERMISSIONS_REQUESTED);
+            String[] permissionsNeeded = {
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            };
+            requestPermission(permissionsNeeded, PermissionCodes.APP_STORAGE_PERMISSIONS_REQUESTED);
         }
     };
 
+    /**
+     * Provides action if a user canceled storage permission granting.
+     */
     View.OnClickListener diskStoragePermissionCancelHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             logi("diskStoragePermissionCancelHandler");
             PopUp.hide();
-            PopUp.show(MBApp.getContext(),
-                    getString(R.string.storage_permission_for_samples_error),
+            PopUp.show(getString(R.string.storage_permission_for_samples_error),
                     "",
                     R.drawable.error_face, R.drawable.red_btn,
                     PopUp.GIFF_ANIMATION_ERROR,
                     PopUp.TYPE_ALERT,
                     null, null);
-            if (mPrefs!= null) mPrefs.edit().putBoolean("firstrun", false).commit();
+            if(mPrefs != null) mPrefs.edit().putBoolean(FIRST_RUN, false).apply();
         }
     };
 
-
+    /**
+     * Checks and requests for external storage permissions
+     * if the app is started at the first time.
+     */
     private void checkMinimumPermissionsForThisScreen() {
-        //Check reading perminssions & writing permission to populate the HEX files & show program list
-        if (mPrefs.getBoolean("firstrun", true)) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PermissionChecker.PERMISSION_GRANTED ||
-                    (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PermissionChecker.PERMISSION_GRANTED)) {
-                PopUp.show(MBApp.getContext(),
-                        getString(R.string.storage_permission_for_samples),
+        //Check reading permissions & writing permission to populate the HEX files & show program list
+        if(mPrefs.getBoolean(FIRST_RUN, true)) {
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PermissionChecker.PERMISSION_GRANTED ||
+                    (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            != PermissionChecker.PERMISSION_GRANTED)) {
+                PopUp.show(getString(R.string.storage_permission_for_samples),
                         getString(R.string.permissions_needed_title),
                         R.drawable.message_face, R.drawable.blue_btn, PopUp.GIFF_ANIMATION_NONE,
                         PopUp.TYPE_CHOICE,
                         diskStoragePermissionOKHandler,
                         diskStoragePermissionCancelHandler);
             } else {
-                if (mPrefs.getBoolean("firstrun", true)) {
-                    mPrefs.edit().putBoolean("firstrun", false).commit();
+                if(mPrefs.getBoolean(FIRST_RUN, true)) {
+                    mPrefs.edit().putBoolean(FIRST_RUN, false).apply();
                     //First Run. Install the Sample applications
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            Utils.installSamples();
+                            FileUtils.installSamples();
                         }
                     }).start();
                 }
@@ -601,9 +584,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onResume() {
-        if (debug) logi("onResume() :: ");
+        if(DEBUG) logi("onResume() :: ");
         super.onResume();
-        MBApp.setContext(this);
-        findViewById(R.id.homeHelloAnimationGifView).animate();
+        if(gifAnimationHelloEmoji != null) {
+            gifAnimationHelloEmoji.animate();
+        }
     }
 }

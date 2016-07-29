@@ -6,7 +6,7 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <android.support.design.widget.AppBarLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -16,18 +16,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/main_gray_color"
-            android:elevation="4dp"
             android:importantForAccessibility="yes"
-            app:popupTheme="@style/AppTheme.PopupOverlay">
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-            <ImageView
-                android:id="@+id/img_toolbar_bbc_logo"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:logoDescription="@string/content_description_toolbar_logo"
-                android:src="@drawable/bbc_microbit_app_bar_logo" />
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
+        <ImageView
+            android:id="@+id/img_toolbar_bbc_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:contentDescription="@string/content_description_toolbar_logo"
+            android:src="@drawable/bbc_microbit_app_bar_logo" />
+    </RelativeLayout>
 
     <include layout="@layout/activity_main" />
 </LinearLayout>

@@ -1,208 +1,216 @@
 package com.samsung.microbit.service;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.samsung.microbit.BuildConfig;
-import com.samsung.microbit.core.IPCMessageManager;
-import com.samsung.microbit.core.Utils;
-import com.samsung.microbit.model.CmdArg;
-import com.samsung.microbit.model.ConnectedDevice;
-import com.samsung.microbit.model.NameValuePair;
+import com.samsung.microbit.core.bluetooth.BluetoothUtils;
+import com.samsung.microbit.data.constants.EventCategories;
+import com.samsung.microbit.data.constants.IPCConstants;
+import com.samsung.microbit.data.constants.ServiceIds;
+import com.samsung.microbit.data.model.CmdArg;
+import com.samsung.microbit.data.model.ConnectedDevice;
+import com.samsung.microbit.utils.ServiceUtils;
 
-import java.util.UUID;
+import java.lang.ref.WeakReference;
 
+/**
+ * Used for managing connection between services. Also handle some intents by itself.
+ */
 public class IPCService extends Service {
 
-	private static IPCService instance;
+    private static final String TAG = IPCService.class.getSimpleName();
 
-	public static final String INTENT_MICROBIT_BUTTON_NOTIFICATION = "com.samsung.microbit.service.IPCService.INTENT_MICROBIT_BUTTON_NOTIFICATION";
+    private ServiceConnector serviceConnector;
 
-	public static final String INTENT_BLE_NOTIFICATION = "com.samsung.microbit.service.IPCService.INTENT_BLE_NOTIFICATION";
-	public static final String INTENT_MICROBIT_NOTIFICATION = "com.samsung.microbit.service.IPCService.INTENT_MICROBIT_NOTIFICATION";
+    private int justPaired;
 
-	public static final String NOTIFICATION_CAUSE = "com.samsung.microbit.service.IPCService.CAUSE";
+    private static final class IPCHandler extends Handler {
+        private WeakReference<IPCService> ipcServiceWeakReference;
 
-	static final String TAG = "IPCService";
-	private boolean debug = BuildConfig.DEBUG;
+        private IPCHandler(IPCService bleService) {
+            super();
+            ipcServiceWeakReference = new WeakReference<>(bleService);
+        }
 
-	void logi(String message) {
-		Log.i(TAG, "### " + Thread.currentThread().getId() + " # " + message);
-	}
-
-	public IPCService() {
-		instance = this;
-		startIPCListener();
-	}
-
-	public static IPCService getInstance() {
-		return instance;
-	}
-
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		if (debug) logi("onStartCommand()");
-		return START_STICKY;
-	}
-
-	/*
-	 * Business method
-	 */
-
-	public void bleDisconnect() {
-		sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_DISCONNECT, null, null);
-	}
-
-	public void bleConnect() {
-		sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CONNECT, null, null);
-	}
-
-	public void bleReconnect() {
-		sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_RECONNECT, null, null);
-	}
-
-	public void writeCharacteristic(UUID service, UUID characteristic, int value, int type) {
-
-		NameValuePair[] args = new NameValuePair[4];
-		args[0] = new NameValuePair(IPCMessageManager.BUNDLE_SERVICE_GUID, service.toString());
-		args[1] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_GUID, characteristic.toString());
-		args[2] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_VALUE, value);
-		args[3] = new NameValuePair(IPCMessageManager.BUNDLE_CHARACTERISTIC_TYPE, type);
-		sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_WRITE_CHARACTERISTIC, null, args);
-	}
-
-	/*
-	 * setup IPCMessageManager
-	 */
-	@Override
-	public IBinder onBind(Intent intent) {
-
-		return IPCMessageManager.getInstance().getClientMessenger().getBinder();
-	}
-
-	public void startIPCListener() {
-
-		if (debug) logi("startIPCListener()");
-		if (IPCMessageManager.getInstance() == null) {
-			if (debug) logi("startIPCListener() :: IPCMessageManager.getInstance() == null");
-			IPCMessageManager inst = IPCMessageManager.getInstance("IPCServiceListener", new android.os.Handler() {
-				@Override
-				public void handleMessage(Message msg) {
-					super.handleMessage(msg);
-					handleIncomingMessage(msg);
-				}
-			});
-
-			/*
-			 * Make the initial connection to other processes
-			 */
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-
-					try {
-						Thread.sleep(IPCMessageManager.STARTUP_DELAY);
-						sendtoBLEService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
-						sendtoPluginService(IPCMessageManager.ANDROID_MESSAGE, IPCMessageManager.IPC_FUNCTION_CODE_INIT, null, null);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}).start();
-		}
-	}
-
-	public void sendtoBLEService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-
-		if (debug) logi("sendtoBLEService() --> " + functionCode);
-		Class destService = BLEService.class;
-		sendIPCMessge(destService, mbsService, functionCode, cmd, args);
-	}
-
-	public void sendtoPluginService(int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-		if (debug) logi("sendtoPluginService()");
-		Class destService = PluginService.class;
-		sendIPCMessge(destService, mbsService, functionCode, cmd, args);
-	}
-
-	public void sendIPCMessge(Class destService, int mbsService, int functionCode, CmdArg cmd, NameValuePair[] args) {
-
-		IPCMessageManager inst = IPCMessageManager.getInstance();
-		if (!inst.isConnected(destService)) {
-			inst.configureServerConnection(destService, this);
-		}
-
-		if (mbsService != IPCMessageManager.ANDROID_MESSAGE && mbsService != IPCMessageManager.MICROBIT_MESSAGE) {
-			return;
-		}
-
-		Message msg = Message.obtain(null, mbsService);
-		msg.arg1 = functionCode;
-		Bundle bundle = new Bundle();
-		if (cmd != null) {
-			bundle.putInt(IPCMessageManager.BUNDLE_DATA, cmd.getCMD());
-			bundle.putString(IPCMessageManager.BUNDLE_VALUE, cmd.getValue());
-		}
-
-		if (args != null) {
-			for (int i = 0; i < args.length; i++) {
-				bundle.putSerializable(args[i].getName(), args[i].getValue());
-			}
-		}
-
-		msg.setData(bundle);
-		try {
-			inst.sendMessage(destService, msg);
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void handleIncomingMessage(Message msg) {
-		if (debug) logi("handleIncomingMessage() :: Start BLEService");
-		if (msg.what == IPCMessageManager.ANDROID_MESSAGE) {
-			if (debug) logi("handleIncomingMessage() :: IPCMessageManager.ANDROID_MESSAGE msg.arg1 = " + msg.arg1);
-
-
-			if (msg.arg1 == IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED ||
-				msg.arg1 == IPCMessageManager.IPC_NOTIFICATION_GATT_DISCONNECTED) {
-
-				ConnectedDevice cd = Utils.getPairedMicrobit(this);
-				cd.mStatus = (msg.arg1 == IPCMessageManager.IPC_NOTIFICATION_GATT_CONNECTED);
-				Utils.setPairedMicrobit(this, cd);
-			}
-
-
-			int errorCode = (int) msg.getData().getSerializable(IPCMessageManager.BUNDLE_ERROR_CODE);
-
-            String error_message = (String) msg.getData().getSerializable(IPCMessageManager.BUNDLE_ERROR_MESSAGE);
-
-			String firmware = (String) msg.getData().getSerializable(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE);
-
-            int microbitRequest = -1 ;
-            if (msg.getData().getSerializable(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS) != null) {
-                microbitRequest = (int) msg.getData().getSerializable(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS);
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if(ipcServiceWeakReference.get() != null) {
+                ipcServiceWeakReference.get().handleMessage(msg);
             }
+        }
+    }
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        serviceConnector = new ServiceConnector(this);
+        serviceConnector.bindServices();
+    }
 
-			Intent intent = new Intent(INTENT_BLE_NOTIFICATION);
-			intent.putExtra(NOTIFICATION_CAUSE, msg.arg1);
-			intent.putExtra(IPCMessageManager.BUNDLE_ERROR_CODE, errorCode);
-            intent.putExtra(IPCMessageManager.BUNDLE_ERROR_MESSAGE, error_message);
-            intent.putExtra(IPCMessageManager.BUNDLE_MICROBIT_FIRMWARE, firmware);
-            intent.putExtra(IPCMessageManager.BUNDLE_MICROBIT_REQUESTS, microbitRequest);
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        IPCHandler ipcHandler = new IPCHandler(this);
+        serviceConnector.setClientHandler(ipcHandler);
 
-			LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-		} else if (msg.what == IPCMessageManager.MICROBIT_MESSAGE) {
-			if (debug) logi("handleIncomingMessage() :: IPCMessageManager.MICROBIT_MESSAGE msg.arg1 = " + msg.arg1);
-			Intent intent = new Intent(INTENT_MICROBIT_NOTIFICATION);
-			LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-		}
-	}
+        return serviceConnector.mClientMessenger.getBinder();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        int category = intent.getIntExtra(IPCConstants.INTENT_TYPE, EventCategories.CATEGORY_UNKNOWN);
+
+        if(category == EventCategories.CATEGORY_UNKNOWN) {
+            Log.e(TAG, "Unknown category");
+            return START_REDELIVER_INTENT;
+        }
+
+        switch(category) {
+            case EventCategories.IPC_BLE_CONNECT: {
+                Message message = ServiceUtils.composeMessage(IPCConstants.MESSAGE_ANDROID, EventCategories
+                        .IPC_BLE_CONNECT, ServiceIds.SERVICE_BLE, null, null);
+
+                if(message != null) {
+                    justPaired = intent.getIntExtra(IPCConstants.INTENT_CONNECTION_TYPE, 0);
+                    handleMessage(message);
+                }
+                break;
+            }
+            case EventCategories.IPC_BLE_DISCONNECT: {
+                Message message = ServiceUtils.composeMessage(IPCConstants.MESSAGE_ANDROID, EventCategories
+                        .IPC_BLE_DISCONNECT, ServiceIds.SERVICE_BLE, null, null);
+
+                if(message != null) {
+                    handleMessage(message);
+                }
+                break;
+            }
+            case EventCategories.CATEGORY_REPLY: {
+                //TODO need to implement reply
+                //sendReplyCommand(intent.getIntExtra(IPCConstants.INTENT_MBS_SERVICE, 0), intent.getIntExtra
+                //        (IPCConstants.INTENT_REPLY_TO, ServiceIds.SERVICE_NONE), (CmdArg) intent.getParcelableExtra
+                //        (IPCConstants.INTENT_CMD_ARG));
+                break;
+            }
+            case EventCategories.IPC_PLUGIN_STOP_PLAYING: {
+                Message message = ServiceUtils.composeMessage(IPCConstants.MESSAGE_ANDROID,
+                        EventCategories.IPC_PLUGIN_STOP_PLAYING, ServiceIds.SERVICE_PLUGIN, null, null);
+                handleMessage(message);
+                break;
+            }
+            case EventCategories.IPC_BLE_NOTIFICATION_CHARACTERISTIC_CHANGED: {
+                Message message = ServiceUtils.composeBLECharacteristicMessage(intent.getIntExtra(IPCConstants.INTENT_CHARACTERISTIC_MESSAGE, 0));
+                handleMessage(message);
+                break;
+            }
+            default:
+                Log.e(TAG, "Unknown category");
+        }
+
+        return START_REDELIVER_INTENT;
+    }
+
+    private void handleMessage(Message message) {
+        String replyToServiceName = null;
+        switch(message.arg2) {
+            case ServiceIds.SERVICE_PLUGIN:
+                replyToServiceName = PluginService.class.getName();
+                break;
+            case ServiceIds.SERVICE_BLE:
+                replyToServiceName = BLEService.class.getName();
+                break;
+        }
+
+        if(replyToServiceName != null) {
+            ServiceUtils.IMessengerFinder messengerFinder = serviceConnector.getConnection();
+
+            if(messengerFinder != null) {
+                Messenger messenger = messengerFinder.getMessengerForService(replyToServiceName);
+                if(messenger != null) {
+                    Message newMessage = ServiceUtils.copyMessageFromOld(message, ServiceIds.SERVICE_NONE);
+                    newMessage.replyTo = serviceConnector.mClientMessenger;
+                    if(justPaired != 0) {
+                        newMessage.arg2 = justPaired;
+                        justPaired = 0;
+                    }
+                    try {
+                        messenger.send(newMessage);
+                    } catch(RemoteException e) {
+                        Log.e(TAG, e.toString());
+                    }
+                }
+            }
+        } else {
+            if(message.what == IPCConstants.MESSAGE_ANDROID) {
+                Context appContext = getApplicationContext();
+
+                if (message.arg1 == EventCategories.IPC_BLE_NOTIFICATION_GATT_CONNECTED ||
+                        message.arg1 == EventCategories.IPC_BLE_NOTIFICATION_GATT_DISCONNECTED) {
+
+                    ConnectedDevice cd = BluetoothUtils.getPairedMicrobit(appContext);
+                    cd.mStatus = (message.arg1 == EventCategories.IPC_BLE_NOTIFICATION_GATT_CONNECTED);
+                    BluetoothUtils.setPairedMicroBit(appContext, cd);
+                }
+
+                Bundle messageData = message.getData();
+
+                int errorCode = (int) messageData.getSerializable(IPCConstants.BUNDLE_ERROR_CODE);
+
+                String error_message = (String) messageData.getSerializable(IPCConstants.BUNDLE_ERROR_MESSAGE);
+
+                String firmware = (String) messageData.getSerializable(IPCConstants.BUNDLE_MICROBIT_FIRMWARE);
+
+                int microbitRequest = -1;
+                if(messageData.getSerializable(IPCConstants.BUNDLE_MICROBIT_REQUESTS) != null) {
+                    microbitRequest = (int) messageData.getSerializable(IPCConstants.BUNDLE_MICROBIT_REQUESTS);
+                }
+
+                Intent intent = new Intent(IPCConstants.INTENT_BLE_NOTIFICATION);
+                intent.putExtra(IPCConstants.NOTIFICATION_CAUSE, message.arg1);
+                intent.putExtra(IPCConstants.BUNDLE_ERROR_CODE, errorCode);
+                intent.putExtra(IPCConstants.BUNDLE_ERROR_MESSAGE, error_message);
+                intent.putExtra(IPCConstants.BUNDLE_MICROBIT_FIRMWARE, firmware);
+                intent.putExtra(IPCConstants.BUNDLE_MICROBIT_REQUESTS, microbitRequest);
+
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+
+            } else if(message.what == IPCConstants.MESSAGE_MICROBIT) {
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent(IPCConstants
+                         .INTENT_MICRO_BIT_NOTIFICATION));
+            }
+        }
+    }
+
+    /**
+     * Send some reply message to the ipc.
+     *
+     * @param mbsService MbsService of reply.
+     * @param cmd        Command should be sent, as reply.
+     */
+    private void sendReplyCommand(int mbsService, int replyTo, CmdArg cmd) {
+        Message msg = Message.obtain(null, mbsService);
+        Bundle bundle = new Bundle();
+        bundle.putInt("cmd", cmd.getCMD());
+        bundle.putString("value", cmd.getValue());
+        msg.setData(bundle);
+        msg.arg2 = replyTo;
+        handleMessage(msg);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        serviceConnector.unbindServices();
+    }
 }

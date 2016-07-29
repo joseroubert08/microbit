@@ -1,47 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?><!--  instructions -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/searching_tip_step_3_view"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    style="@style/pairing_step_tip_layout_style"
     tools:showIn="@layout/view_pairing_searching">
 
-    <TextView
-        android:id="@+id/searching_microbit_step"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:lines="3"
-        android:maxLines="3"
-        android:paddingBottom="16dp"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp"
-        android:text="@string/searching_tip_step_text"
-        android:textAppearance="?android:textAppearanceMedium"
-        android:textColor="@color/white_color" />
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/searching_microbit_step_instructions"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/searching_emoji"
-        android:contentDescription="@string/desc_searching_tip_text"
-        android:lines="2"
-        android:maxLines="2"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp"
-        android:text="@string/searching_tip_text_instructions"
-        android:textAppearance="?android:textAppearanceMedium"
-        android:textColor="@color/white_color" />
+        <TextView
+            android:id="@+id/searching_microbit_step"
+            style="@style/pairing_step_tip_text_style"
+            android:paddingEnd="@dimen/pairing_step_searching_tip_text_padding_end"
+            android:text="@string/searching_tip_step_text" />
+
+        <TextView
+            android:id="@+id/searching_microbit_step_instructions"
+            style="@style/pairing_step_tip_text_style"
+            android:contentDescription="@string/desc_searching_tip_text"
+            android:text="@string/searching_tip_text_instructions" />
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/searching_emoji"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:paddingBottom="16dp"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp"
-        android:src="@drawable/ooh_pretty_emoji"
-        android:visibility="invisible" />
-</RelativeLayout>
+        style="@style/pairing_step_image_layout_style"
+        android:src="@drawable/ic_where_are_you" />
+</LinearLayout>

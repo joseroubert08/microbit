@@ -12,53 +12,36 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/project_items_layout_margin_top"
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <ListView
-            android:id="@+id/projectListView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="@dimen/widget_margin" />
+        <include layout="@layout/project_list" />
 
         <TextView
-            android:id="@android:id/empty"
+            android:id="@+id/project_list_empty"
             style="@style/h1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:backgroundTintMode="screen"
             android:gravity="center"
-            android:text="@string/no_projects" />
+            android:text="@string/no_projects"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
     <!-- View my scripts -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:alpha="0.5"
-        android:background="@color/gray_color" />
+    <include layout="@layout/view_divider" />
 
-    <Button
-        android:id="@+id/createProject"
-        style="@style/p1"
+    <!-- My Scripts button -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:background="@drawable/yellow_btn"
-        android:contentDescription="@string/txt_my_scripts_btn"
-        android:drawableEnd="@drawable/my_scripts"
-        android:gravity="center_vertical|start"
-        android:onClick="onClick"
-        android:text="@string/my_scripts"
-        android:textAppearance="?android:textAppearance"
-        android:textColor="@color/black_color" />
+        android:background="@color/main_gray_transparent_60_opacity_color"
+        android:gravity="center_horizontal"
+        android:weightSum="2">
+
+        <include layout="@layout/custom_projects_button" />
+    </LinearLayout>
 </LinearLayout>
