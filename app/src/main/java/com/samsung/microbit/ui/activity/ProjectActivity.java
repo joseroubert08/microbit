@@ -364,6 +364,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
             String scheme = uri.getScheme();
             if(scheme.equals("file")) {
                 fileName = fileNameForFlashing(fullPathOfFile);
+                if(fileName == null) {
+                    return;
+                }
             } else if(scheme.equals("content")) {
                 fullPathOfFile = URLDecoder.decode(fullPathOfFile);
                 if(fullPathOfFile.startsWith("/")) {
@@ -386,6 +389,10 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                 }
 
                 fileName = fileNameForFlashing(fullPathOfFile);
+
+                if(fileName == null) {
+                    return;
+                }
             } else {
                 Log.e(TAG, "Unknown schema: " + scheme);
                 return;
@@ -405,7 +412,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     private String fileNameForFlashing(String fullPathOfFile) {
         String path[] = fullPathOfFile.split("/");
         setActivityState(FlashActivityState.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST);
-        return path[path.length - 1];
+        if(path[path.length - 1].endsWith(".hex")) {
+            return path[path.length - 1];
+        } else {
+            return null;
+        }
     }
 
     @Override
