@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -46,10 +47,14 @@ import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.adapter.ProjectAdapter;
 import com.samsung.microbit.utils.BLEConnectionHandler;
 import com.samsung.microbit.utils.FileUtils;
+import com.samsung.microbit.utils.IOUtils;
 import com.samsung.microbit.utils.ProjectsHelper;
 import com.samsung.microbit.utils.ServiceUtils;
 import com.samsung.microbit.utils.Utils;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -355,10 +360,38 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         String fileName = null;
         if(getIntent() != null && getIntent().getData() != null && getIntent().getData().getEncodedPath() != null) {
             fullPathOfFile = getIntent().getData().getEncodedPath();
-            String path[] = fullPathOfFile.split("/");
-            fileName = path[path.length - 1];
-            setActivityState(FlashActivityState.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST);
+            Uri uri = getIntent().getData();
+            String scheme = uri.getScheme();
+            if(scheme.equals("file")) {
+                fileName = fileNameForFlashing(fullPathOfFile);
+            } else if(scheme.equals("content")) {
+                fullPathOfFile = URLDecoder.decode(fullPathOfFile);
+                if(fullPathOfFile.startsWith("/")) {
+                    fullPathOfFile = fullPathOfFile.substring(1);
+                }
+
+                fullPathOfFile = fullPathOfFile.trim();
+
+                if(!fullPathOfFile.endsWith(".hex")) {
+                    fullPathOfFile = fullPathOfFile + ".hex";
+                }
+
+                fullPathOfFile = new File(Environment.getExternalStoragePublicDirectory(Environment
+                         .DIRECTORY_DOWNLOADS), fullPathOfFile).getAbsolutePath();
+
+                try {
+                    IOUtils.copy(getContentResolver().openInputStream(uri), new FileOutputStream(fullPathOfFile));
+                } catch(Exception e) {
+                    Log.e(TAG, e.toString());
+                }
+
+                fileName = fileNameForFlashing(fullPathOfFile);
+            } else {
+                Log.e(TAG, "Unknown schema: " + scheme);
+                return;
+            }
         }
+
         if(fullPathOfFile != null) {
             mProgramToSend = new Project(fileName, fullPathOfFile, 0, null, false);
             if(!BluetoothChecker.getInstance().isBluetoothON()) {
@@ -367,6 +400,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                 adviceOnMicrobitState();
             }
         }
+    }
+
+    private String fileNameForFlashing(String fullPathOfFile) {
+        String path[] = fullPathOfFile.split("/");
+        setActivityState(FlashActivityState.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST);
+        return path[path.length - 1];
     }
 
     @Override
