@@ -34,6 +34,10 @@ public class IOUtils {
             countBytes += count;
         }
 
+        src.close();
+        dest.flush();
+        dest.close();
+
         return countBytes;
     }
 }
