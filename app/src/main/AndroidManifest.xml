@@ -78,7 +78,6 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
 
                 <data android:mimeType="application/octet-stream"
-                      android:pathPattern=".*\\.hex"
                       android:scheme="content"/>
             </intent-filter>
 
@@ -92,7 +91,7 @@
                 <data
                     android:host="microbit.co.uk"
                     android:mimeType="application/x-microbit-hex"
-                    android:pathPattern="/file/d/.*"/>
+                    android:pathPattern=".*\\.hex"/>
 
                 <data android:scheme="http"/>
                 <data android:scheme="https"/>
