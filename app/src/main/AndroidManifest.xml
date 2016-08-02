@@ -59,7 +59,10 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName=".ui.activity.HomeActivity"
             android:windowSoftInputMode="adjustResize">
+            <!-- Intent filters for open micro:bit app, accord to user request -->
 
+
+            <!-- This filter works, when request - open file from File Manager -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
 
@@ -71,6 +74,19 @@
                       android:pathPattern=".*\\.hex"
                       android:scheme="file"/>
             </intent-filter>
+
+            <!-- This filter works, when request - open download from Internet Browser list (Android 6.0) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data android:mimeType="application/x-microbit-hex"
+                      android:scheme="content"/>
+            </intent-filter>
+
+            <!-- This filter works, when request - open file from File Share app. (Google Drive, DropBox, etc.) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
 
@@ -81,7 +97,7 @@
                       android:scheme="content"/>
             </intent-filter>
 
-            <!-- Register for the HEX file -->
+            <!-- This filter works, when request - open URL (Get request) from other application -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
 
@@ -96,6 +112,9 @@
                 <data android:scheme="http"/>
                 <data android:scheme="https"/>
             </intent-filter>
+
+            <!-- This filter same, as previous. By android requirements, URLs with "www." prefix aren't handled by
+            previous filter -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
 

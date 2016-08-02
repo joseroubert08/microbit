@@ -54,6 +54,7 @@ import com.samsung.microbit.utils.Utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -358,44 +359,86 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         setConnectedDeviceText();
         String fullPathOfFile = null;
         String fileName = null;
-        if(getIntent() != null && getIntent().getData() != null && getIntent().getData().getEncodedPath() != null) {
-            fullPathOfFile = getIntent().getData().getEncodedPath();
-            Uri uri = getIntent().getData();
-            String scheme = uri.getScheme();
-            if(scheme.equals("file")) {
-                fileName = fileNameForFlashing(fullPathOfFile);
-                if(fileName == null) {
+        if(getIntent() != null) {
+            Intent intent = getIntent();
+
+            if(intent.getData() != null && intent.getData().getEncodedPath() != null) {
+                Uri uri = intent.getData();
+                fullPathOfFile = uri.getEncodedPath();
+
+                String scheme = uri.getScheme();
+                if(scheme.equals("file")) {
+                    fileName = fileNameForFlashing(fullPathOfFile);
+                    if(fileName == null) {
+                        return;
+                    }
+                } else if(scheme.equals("content")) {
+                    String mimeType = intent.resolveType(this);
+
+                    if(mimeType.equals(Constants.MICROBIT_HEX_MIME_TYPE)) {
+                        File downloadDirectory = Environment.getExternalStoragePublicDirectory(Environment
+                                .DIRECTORY_DOWNLOADS);
+
+                        FilenameFilter hexFilenameFilter = new FilenameFilter() {
+                            @Override
+                            public boolean accept(File dir, String filename) {
+                                return filename.endsWith(".hex");
+                            }
+                        };
+
+                        File nowDownloadedFile = null;
+
+                        for(File file : downloadDirectory.listFiles(hexFilenameFilter)) {
+                            if(nowDownloadedFile == null) {
+                                nowDownloadedFile = file;
+                            } else if(file.lastModified() > nowDownloadedFile.lastModified()) {
+                                nowDownloadedFile = file;
+                            }
+                        }
+
+                        if(nowDownloadedFile == null) {
+                            Log.e(TAG, "Cann't find file");
+                            return;
+                        } else {
+                            fullPathOfFile = nowDownloadedFile.getAbsolutePath();
+                            fileName = fileNameForFlashing(fullPathOfFile);
+
+                            if(fileName == null) {
+                                return;
+                            }
+                        }
+                    } else {
+                        fullPathOfFile = URLDecoder.decode(fullPathOfFile);
+
+                        if(fullPathOfFile.startsWith("/")) {
+                            fullPathOfFile = fullPathOfFile.substring(1);
+                        }
+
+                        fullPathOfFile = fullPathOfFile.trim();
+
+                        if(!fullPathOfFile.endsWith(".hex")) {
+                            fullPathOfFile = fullPathOfFile + ".hex";
+                        }
+
+                        fullPathOfFile = new File(Environment.getExternalStoragePublicDirectory(Environment
+                                .DIRECTORY_DOWNLOADS), fullPathOfFile).getAbsolutePath();
+
+                        try {
+                            IOUtils.copy(getContentResolver().openInputStream(uri), new FileOutputStream(fullPathOfFile));
+                        } catch(Exception e) {
+                            Log.e(TAG, e.toString());
+                        }
+
+                        fileName = fileNameForFlashing(fullPathOfFile);
+
+                        if(fileName == null) {
+                            return;
+                        }
+                    }
+                } else {
+                    Log.e(TAG, "Unknown schema: " + scheme);
                     return;
                 }
-            } else if(scheme.equals("content")) {
-                fullPathOfFile = URLDecoder.decode(fullPathOfFile);
-                if(fullPathOfFile.startsWith("/")) {
-                    fullPathOfFile = fullPathOfFile.substring(1);
-                }
-
-                fullPathOfFile = fullPathOfFile.trim();
-
-                if(!fullPathOfFile.endsWith(".hex")) {
-                    fullPathOfFile = fullPathOfFile + ".hex";
-                }
-
-                fullPathOfFile = new File(Environment.getExternalStoragePublicDirectory(Environment
-                         .DIRECTORY_DOWNLOADS), fullPathOfFile).getAbsolutePath();
-
-                try {
-                    IOUtils.copy(getContentResolver().openInputStream(uri), new FileOutputStream(fullPathOfFile));
-                } catch(Exception e) {
-                    Log.e(TAG, e.toString());
-                }
-
-                fileName = fileNameForFlashing(fullPathOfFile);
-
-                if(fileName == null) {
-                    return;
-                }
-            } else {
-                Log.e(TAG, "Unknown schema: " + scheme);
-                return;
             }
         }
 

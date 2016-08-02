@@ -34,4 +34,6 @@ public class Constants {
     }
 
     public static final long JUST_PAIRED_DELAY_ON_CONNECTION = 11000;
+
+    public static final String MICROBIT_HEX_MIME_TYPE = "application/x-microbit-hex";
 }
