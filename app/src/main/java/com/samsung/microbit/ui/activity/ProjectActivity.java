@@ -11,10 +11,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.DocumentsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -364,10 +366,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
             if(intent.getData() != null && intent.getData().getEncodedPath() != null) {
                 Uri uri = intent.getData();
-                fullPathOfFile = uri.getEncodedPath();
+                String encodedPath = uri.getEncodedPath();
 
                 String scheme = uri.getScheme();
                 if(scheme.equals("file")) {
+                    fullPathOfFile = URLDecoder.decode(encodedPath);
                     fileName = fileNameForFlashing(fullPathOfFile);
                     if(fileName == null) {
                         return;
@@ -408,32 +411,55 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                             }
                         }
                     } else {
-                        fullPathOfFile = URLDecoder.decode(fullPathOfFile);
+                        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
 
-                        if(fullPathOfFile.startsWith("/")) {
-                            fullPathOfFile = fullPathOfFile.substring(1);
-                        }
+                        final String selectedFileName;
+                        boolean copyFile = false;
 
-                        fullPathOfFile = fullPathOfFile.trim();
+                        if(cursor != null && cursor.moveToFirst()) {
+                            selectedFileName = cursor.getString(cursor.getColumnIndex(DocumentsContract.Document
+                                    .COLUMN_DISPLAY_NAME));
+                            boolean isShareableApp = cursor.getColumnIndex(DocumentsContract.Document
+                                    .COLUMN_DOCUMENT_ID) != -1;
 
-                        if(!fullPathOfFile.endsWith(".hex")) {
-                            fullPathOfFile = fullPathOfFile + ".hex";
+                            if(isShareableApp) {
+                                copyFile = true;
+                            }
+                        } else {
+                            String paths[] = encodedPath.split("/");
+                            String startFileName = paths[paths.length - 1];
+                            startFileName = URLDecoder.decode(startFileName);
+
+                            if(startFileName.startsWith("/")) {
+                                startFileName = startFileName.substring(1);
+                            }
+
+                            startFileName = startFileName.trim();
+
+                            if(!startFileName.endsWith(".hex")) {
+                                startFileName = startFileName + ".hex";
+                            }
+
+                            selectedFileName = startFileName;
+                            copyFile = true;
                         }
 
                         fullPathOfFile = new File(Environment.getExternalStoragePublicDirectory(Environment
-                                .DIRECTORY_DOWNLOADS), fullPathOfFile).getAbsolutePath();
+                                .DIRECTORY_DOWNLOADS), selectedFileName).getAbsolutePath();
 
-                        try {
-                            IOUtils.copy(getContentResolver().openInputStream(uri), new FileOutputStream(fullPathOfFile));
-                        } catch(Exception e) {
-                            Log.e(TAG, e.toString());
+                        if(copyFile) {
+                            try {
+                                IOUtils.copy(getContentResolver().openInputStream(uri), new FileOutputStream(fullPathOfFile));
+                            } catch(Exception e) {
+                                Log.e(TAG, e.toString());
+                            }
                         }
+                    }
 
-                        fileName = fileNameForFlashing(fullPathOfFile);
+                    fileName = fileNameForFlashing(fullPathOfFile);
 
-                        if(fileName == null) {
-                            return;
-                        }
+                    if(fileName == null) {
+                        return;
                     }
                 } else {
                     Log.e(TAG, "Unknown schema: " + scheme);
@@ -1322,6 +1348,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                 }
             }
         }
+
     }
 
     private void removeReconnectionRunnable() {
