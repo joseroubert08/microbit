@@ -444,6 +444,11 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                             copyFile = true;
                         }
 
+                        if(!selectedFileName.endsWith(".hex")) {
+                            Log.e(TAG, "Selected wrong file");
+                            return;
+                        }
+
                         fullPathOfFile = new File(Environment.getExternalStoragePublicDirectory(Environment
                                 .DIRECTORY_DOWNLOADS), selectedFileName).getAbsolutePath();
 
