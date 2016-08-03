@@ -54,8 +54,11 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/home_activity_name"
             android:launchMode="singleTop"/>
+
+        <!-- label was changed(removed colon), because some file managers (e.g. Total Commander) cannot open the activity.-->
         <activity
             android:name=".ui.activity.ProjectActivity"
+            android:label="@string/app_name_without_colon"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName=".ui.activity.HomeActivity"
             android:windowSoftInputMode="adjustResize">
@@ -97,38 +100,6 @@
                       android:scheme="content"/>
             </intent-filter>
 
-            <!-- This filter works, when request - open URL (Get request) from other application -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-
-                <data
-                    android:host="microbit.co.uk"
-                    android:mimeType="application/x-microbit-hex"
-                    android:pathPattern=".*\\.hex"/>
-
-                <data android:scheme="http"/>
-                <data android:scheme="https"/>
-            </intent-filter>
-
-            <!-- This filter same, as previous. By android requirements, URLs with "www." prefix aren't handled by
-            previous filter -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-
-                <data
-                    android:host="www.microbit.co.uk"
-                    android:mimeType="application/x-microbit-hex"
-                    android:pathPattern=".*\\.hex"/>
-
-                <data android:scheme="http"/>
-                <data android:scheme="https"/>
-            </intent-filter>
         </activity>
         <activity
             android:name=".ui.activity.NotificationActivity"
