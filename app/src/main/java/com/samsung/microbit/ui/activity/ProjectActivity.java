@@ -10,11 +10,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.DocumentsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -27,6 +30,7 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
@@ -54,6 +58,8 @@ import com.samsung.microbit.utils.Utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -358,57 +364,138 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         setConnectedDeviceText();
         String fullPathOfFile = null;
         String fileName = null;
-        if(getIntent() != null && getIntent().getData() != null && getIntent().getData().getEncodedPath() != null) {
-            fullPathOfFile = getIntent().getData().getEncodedPath();
-            Uri uri = getIntent().getData();
-            String scheme = uri.getScheme();
-            if(scheme.equals("file")) {
-                fileName = fileNameForFlashing(fullPathOfFile);
-                if(fileName == null) {
+        boolean isOpenByOtherApp = false;
+        if(getIntent() != null) {
+            Intent intent = getIntent();
+
+            if(intent.getData() != null && intent.getData().getEncodedPath() != null) {
+                isOpenByOtherApp = true;
+
+                Uri uri = intent.getData();
+                String encodedPath = uri.getEncodedPath();
+
+                String scheme = uri.getScheme();
+                if (scheme.equals("file")) {
+                    fullPathOfFile = URLDecoder.decode(encodedPath);
+                    fileName = fileNameForFlashing(fullPathOfFile);
+                    mProgramToSend = fileName == null ? null : new Project(fileName, fullPathOfFile, 0, null, false);
+                } else if(scheme.equals("content")) {
+
+                    Cursor cursor = null;
+
+                    try {
+                        cursor = getContentResolver().query(uri, null, null, null, null);
+
+                        if (cursor != null && cursor.moveToFirst()) {
+                            String selectedFileName = cursor.getString(cursor.getColumnIndex(DocumentsContract.Document
+                                    .COLUMN_DISPLAY_NAME));
+
+                            // If application is opened from My Files (Android 6.0), cursor don't contains
+                            // COLUMN_DOCUMENT_ID, and stream not needed to copy to Download directory. It is already
+                            // there
+                            boolean isShareableApp = cursor.getColumnIndex(DocumentsContract.Document
+                                    .COLUMN_DOCUMENT_ID) != -1;
+
+                            fullPathOfFile = new File(Environment.getExternalStoragePublicDirectory(Environment
+                                    .DIRECTORY_DOWNLOADS), selectedFileName).getAbsolutePath();
+
+                            if (isShareableApp) {
+                                try {
+                                    IOUtils.copy(getContentResolver().openInputStream(uri), new FileOutputStream(fullPathOfFile));
+                                } catch (Exception e) {
+                                    Log.e(TAG, e.toString());
+                                }
+                            }
+
+                            fileName = fileNameForFlashing(fullPathOfFile);
+
+                            mProgramToSend = fileName == null ? null : new Project(fileName, fullPathOfFile, 0, null, false);
+                        } else {
+                            try {
+                                AssetFileDescriptor fileDescriptor = getContentResolver().openAssetFileDescriptor(uri, "r");
+
+                                if(fileDescriptor != null) {
+                                    long length = fileDescriptor.getLength();
+
+                                    fileDescriptor.close();
+
+                                    mProgramToSend = getLatestProjectFromFolder(length);
+                                }
+                            } catch(IOException e) {
+                                Log.e(TAG, e.toString());
+                            }
+                        }
+                    } finally {
+                        if (cursor != null) {
+                            cursor.close();
+                        }
+                    }
+
+                } else {
+                    Log.e(TAG, "Unknown schema: " + scheme);
                     return;
                 }
-            } else if(scheme.equals("content")) {
-                fullPathOfFile = URLDecoder.decode(fullPathOfFile);
-                if(fullPathOfFile.startsWith("/")) {
-                    fullPathOfFile = fullPathOfFile.substring(1);
-                }
-
-                fullPathOfFile = fullPathOfFile.trim();
-
-                if(!fullPathOfFile.endsWith(".hex")) {
-                    fullPathOfFile = fullPathOfFile + ".hex";
-                }
-
-                fullPathOfFile = new File(Environment.getExternalStoragePublicDirectory(Environment
-                         .DIRECTORY_DOWNLOADS), fullPathOfFile).getAbsolutePath();
-
-                try {
-                    IOUtils.copy(getContentResolver().openInputStream(uri), new FileOutputStream(fullPathOfFile));
-                } catch(Exception e) {
-                    Log.e(TAG, e.toString());
-                }
-
-                fileName = fileNameForFlashing(fullPathOfFile);
-
-                if(fileName == null) {
-                    return;
-                }
-            } else {
-                Log.e(TAG, "Unknown schema: " + scheme);
-                return;
             }
         }
 
-        if(fullPathOfFile != null) {
-            mProgramToSend = new Project(fileName, fullPathOfFile, 0, null, false);
+        if (mProgramToSend != null) {
             if(!BluetoothChecker.getInstance().isBluetoothON()) {
                 startBluetooth();
             } else {
                 adviceOnMicrobitState();
             }
+        } else {
+            if (isOpenByOtherApp) {
+                Toast.makeText(this, "Not a micro:bit HEX file", Toast.LENGTH_LONG).show();
+                finish();
+            }
         }
     }
 
+    private Project getLatestProjectFromFolder(long lengthOfSearchingFile) {
+        File downloadDirectory = Environment.getExternalStoragePublicDirectory(Environment
+                .DIRECTORY_DOWNLOADS);
+
+        FilenameFilter hexFilenameFilter = new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String filename) {
+                return filename.endsWith(".hex");
+            }
+        };
+
+        File nowDownloadedFile = null;
+
+        File downloadFiles[] = downloadDirectory.listFiles(hexFilenameFilter);
+
+        if(downloadFiles != null) {
+            for(File file : downloadFiles) {
+                if(nowDownloadedFile == null) {
+                    if(file.length() == lengthOfSearchingFile) {
+                        nowDownloadedFile = file;
+                    }
+                } else if(file.length() == lengthOfSearchingFile && file.lastModified() > nowDownloadedFile.lastModified
+                        ()) {
+                    nowDownloadedFile = file;
+                }
+            }
+        }
+
+        String fullPathOfFile;
+        if(nowDownloadedFile == null) {
+            Log.e(TAG, "Can't find file");
+            return null;
+        } else {
+            fullPathOfFile = nowDownloadedFile.getAbsolutePath();
+            return new Project(fileNameForFlashing(fullPathOfFile), fullPathOfFile, 0, null, false);
+        }
+    }
+
+    /**
+     * Check file path. If file ends with .hex, then just return it name, else return {@code null}
+     *
+     * @param fullPathOfFile Path to file, that checks
+     * @return
+     */
     private String fileNameForFlashing(String fullPathOfFile) {
         String path[] = fullPathOfFile.split("/");
         setActivityState(FlashActivityState.STATE_ENABLE_BT_EXTERNAL_FLASH_REQUEST);
@@ -1279,6 +1366,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                 }
             }
         }
+
     }
 
     private void removeReconnectionRunnable() {

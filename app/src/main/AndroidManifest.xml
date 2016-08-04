@@ -23,7 +23,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.RECEIVE_SMS"/>
@@ -54,70 +54,52 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/home_activity_name"
             android:launchMode="singleTop"/>
+
+        <!-- label was changed(removed colon), because some file managers (e.g. Total Commander) cannot open the activity.-->
         <activity
             android:name=".ui.activity.ProjectActivity"
+            android:label="@string/app_name_without_colon"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName=".ui.activity.HomeActivity"
             android:windowSoftInputMode="adjustResize">
+            <!-- Intent filters for open micro:bit app, accord to user request -->
 
-            <!-- Register for the HEX file -->
+
+            <!-- This filter works, when request - open file from File Manager -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
 
-                <data
-                    android:host="microbit.co.uk"
-                    android:pathPattern=".*\\.hex"
-                    android:scheme="http"/>
-
-                <data
-                    android:host="www.microbit.co.uk"
-                    android:pathPattern=".*\\.hex"
-                    android:scheme="http"/>
-
+                <data android:host="*"
+                      android:mimeType="*/*"
+                      android:pathPattern=".*\\.hex"
+                      android:scheme="file"/>
             </intent-filter>
+
+            <!-- This filter works, when request - open download from Internet Browser list (Android 6.0) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
 
-                <data
-                    android:host="microbit.co.uk"
-                    android:pathPattern=".*\\.hex"
-                    android:scheme="https"/>
-
-                <data
-                    android:host="www.microbit.co.uk"
-                    android:pathPattern=".*\\.hex"
-                    android:scheme="https"/>
+                <data android:mimeType="application/x-microbit-hex"
+                      android:scheme="content"/>
             </intent-filter>
+
+            <!-- This filter works, when request - open file from File Share app. (Google Drive, DropBox, etc.) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
 
-                <data
-                    android:host="*"
-                    android:mimeType="*/*"
-                    android:pathPattern=".*\\.hex"
-                    android:scheme="file"/>
-
+                <data android:mimeType="application/octet-stream"
+                      android:scheme="content"/>
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-
-                <data
-                    android:mimeType="application/octet-stream"
-                    android:pathPattern=".*\\.hex"
-                    android:scheme="content"/>
-            </intent-filter>
         </activity>
         <activity
             android:name=".ui.activity.NotificationActivity"
