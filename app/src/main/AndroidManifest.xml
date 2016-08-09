@@ -60,8 +60,8 @@
             android:name=".ui.activity.ProjectActivity"
             android:label="@string/app_name_without_colon"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName=".ui.activity.HomeActivity"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:launchMode="singleTask">
             <!-- Intent filters for open micro:bit app, accord to user request -->
 
 
@@ -110,7 +110,6 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_connect"
             android:launchMode="singleTop"
-            android:parentActivityName=".ui.activity.HomeActivity"
             android:windowSoftInputMode="stateHidden|adjustPan"/>
         <activity
             android:name=".ui.activity.PopUpActivity"
@@ -135,7 +134,6 @@
             android:configChanges="orientation|screenSize"
             android:label="Help Webview"
             android:launchMode="singleTask"
-            android:parentActivityName=".ui.activity.HomeActivity"
             android:screenOrientation="portrait">
             >
         </activity>
