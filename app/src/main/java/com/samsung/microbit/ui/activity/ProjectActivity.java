@@ -80,6 +80,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     private List<Project> mOldProjectList = new ArrayList<>();
     private ListView mProjectListView;
     private ListView mProjectListViewRight;
+    private TextView mEmptyText;
     private HashMap<String, String> mPrettyFileNameMap = new HashMap<>();
 
     private Project mProgramToSend;
@@ -307,10 +308,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         // Create projects
         TextView createProjectText = (TextView) findViewById(R.id.custom_button_text);
         createProjectText.setTypeface(MBApp.getApp().getRobotoTypeface());
+
+        mEmptyText.setTypeface(MBApp.getApp().getTypeface());
     }
 
     private void initViews() {
         mProjectListView = (ListView) findViewById(R.id.projectListView);
+        mEmptyText = (TextView) findViewById(R.id.project_list_empty);
         //Initializes additional list of projects for a landscape orientation.
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             mProjectListViewRight = (ListView) findViewById(R.id.projectListViewRight);
@@ -320,6 +324,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     private void releaseViews() {
         mProjectListView = null;
         mProjectListViewRight = null;
+        mEmptyText = null;
     }
 
     @Override
@@ -578,7 +583,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         public void onClick(View v) {
             logi("okMorePermissionNeededHandler");
             PopUp.hide();
-            updateProjectsListSortOrder(false);
+            mEmptyText.setVisibility(View.VISIBLE);
         }
     };
 
@@ -798,8 +803,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
      */
     private void setupListAdapter() {
         ProjectAdapter projectAdapter;
-        TextView emptyText = (TextView) findViewById(R.id.project_list_empty);
-        emptyText.setVisibility(View.GONE);
+        mEmptyText.setVisibility(View.GONE);
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             List<Project> leftList = new ArrayList<>();
             List<Project> rightList = new ArrayList<>();
@@ -814,12 +818,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
             ProjectAdapter projectAdapterRight = new ProjectAdapter(this, rightList);
             mProjectListViewRight.setAdapter(projectAdapterRight);
             if(projectAdapter.isEmpty() && projectAdapterRight.isEmpty()) {
-                emptyText.setVisibility(View.VISIBLE);
+                mEmptyText.setVisibility(View.VISIBLE);
             }
         } else {
             projectAdapter = new ProjectAdapter(this, mProjectList);
             if(projectAdapter.isEmpty()) {
-                emptyText.setVisibility(View.VISIBLE);
+                mEmptyText.setVisibility(View.VISIBLE);
             }
         }
         if(mProjectListView != null) {
