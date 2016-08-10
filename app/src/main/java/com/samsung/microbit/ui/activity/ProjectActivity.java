@@ -923,6 +923,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
             break;
 
             case R.id.backBtn:
+                Intent intentHomeActivity = new Intent(this, HomeActivity.class);
+                intentHomeActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intentHomeActivity);
                 finish();
                 break;
 
