@@ -11,7 +11,12 @@
     <color name="light_gray_color">#dcdcdc</color>
     <color name="darkgray_color">#414141</color>
     <color name="main_gray_color">#383838</color>
+    <color name="main_gray_transparent_color">#e6383838</color>
+    <color name="main_gray_transparent_60_opacity_color">#9a383838</color>
+    <color name="main_gray_trans_20_opacity_container_color">#33383838</color>
     <color name="grey_highlight">#424242</color>
+    <color name="grey_transparent_highlight">#d0424242</color>
+    <color name="grey_trans_20_opacity_container_highlight">#33424242</color>
     <color name="ok_button_up">#00EC00</color>
     <color name="ok_button_down">#3A871F</color>
 
@@ -30,4 +35,6 @@
     <color name="accent_material_light_1">#d7dbdb</color>
     <color name="gray_green">#394535</color>
 
+    <color name="custom_button_text">#525252</color>
+    <color name="splash_screen_text_color">#14289f</color>
 </resources>
