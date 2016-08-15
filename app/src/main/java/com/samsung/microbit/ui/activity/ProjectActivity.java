@@ -80,6 +80,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     private List<Project> mOldProjectList = new ArrayList<>();
     private ListView mProjectListView;
     private ListView mProjectListViewRight;
+    private TextView mEmptyText;
     private HashMap<String, String> mPrettyFileNameMap = new HashMap<>();
 
     private Project mProgramToSend;
@@ -307,10 +308,13 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         // Create projects
         TextView createProjectText = (TextView) findViewById(R.id.custom_button_text);
         createProjectText.setTypeface(MBApp.getApp().getRobotoTypeface());
+
+        mEmptyText.setTypeface(MBApp.getApp().getTypeface());
     }
 
     private void initViews() {
         mProjectListView = (ListView) findViewById(R.id.projectListView);
+        mEmptyText = (TextView) findViewById(R.id.project_list_empty);
         //Initializes additional list of projects for a landscape orientation.
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             mProjectListViewRight = (ListView) findViewById(R.id.projectListViewRight);
@@ -320,6 +324,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     private void releaseViews() {
         mProjectListView = null;
         mProjectListViewRight = null;
+        mEmptyText = null;
     }
 
     @Override
@@ -362,79 +367,91 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
         checkMinimumPermissionsForThisScreen();
         setConnectedDeviceText();
-        String fullPathOfFile = null;
-        String fileName = null;
+
+        if(savedInstanceState == null && getIntent() != null) {
+            handleIncomingIntent(getIntent());
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if(intent != null) {
+            handleIncomingIntent(intent);
+        }
+    }
+
+    private void handleIncomingIntent(Intent intent) {
         boolean isOpenByOtherApp = false;
-        if(getIntent() != null) {
-            Intent intent = getIntent();
+        String fullPathOfFile;
+        String fileName;
 
-            if(intent.getData() != null && intent.getData().getEncodedPath() != null) {
-                isOpenByOtherApp = true;
+        if(intent.getData() != null && intent.getData().getEncodedPath() != null) {
+            isOpenByOtherApp = true;
 
-                Uri uri = intent.getData();
-                String encodedPath = uri.getEncodedPath();
+            Uri uri = intent.getData();
+            String encodedPath = uri.getEncodedPath();
 
-                String scheme = uri.getScheme();
-                if (scheme.equals("file")) {
-                    fullPathOfFile = URLDecoder.decode(encodedPath);
-                    fileName = fileNameForFlashing(fullPathOfFile);
-                    mProgramToSend = fileName == null ? null : new Project(fileName, fullPathOfFile, 0, null, false);
-                } else if(scheme.equals("content")) {
+            String scheme = uri.getScheme();
+            if (scheme.equals("file")) {
+                fullPathOfFile = URLDecoder.decode(encodedPath);
+                fileName = fileNameForFlashing(fullPathOfFile);
+                mProgramToSend = fileName == null ? null : new Project(fileName, fullPathOfFile, 0, null, false);
+            } else if(scheme.equals("content")) {
 
-                    Cursor cursor = null;
+                Cursor cursor = null;
 
-                    try {
-                        cursor = getContentResolver().query(uri, null, null, null, null);
+                try {
+                    cursor = getContentResolver().query(uri, null, null, null, null);
 
-                        if (cursor != null && cursor.moveToFirst()) {
-                            String selectedFileName = cursor.getString(cursor.getColumnIndex(DocumentsContract.Document
-                                    .COLUMN_DISPLAY_NAME));
+                    if (cursor != null && cursor.moveToFirst()) {
+                        String selectedFileName = cursor.getString(cursor.getColumnIndex(DocumentsContract.Document
+                                .COLUMN_DISPLAY_NAME));
 
-                            // If application is opened from My Files (Android 6.0), cursor don't contains
-                            // COLUMN_DOCUMENT_ID, and stream not needed to copy to Download directory. It is already
-                            // there
-                            boolean isShareableApp = cursor.getColumnIndex(DocumentsContract.Document
-                                    .COLUMN_DOCUMENT_ID) != -1;
+                        // If application is opened from My Files (Android 6.0), cursor don't contains
+                        // COLUMN_DOCUMENT_ID, and stream not needed to copy to Download directory. It is already
+                        // there
+                        boolean isShareableApp = cursor.getColumnIndex(DocumentsContract.Document
+                                .COLUMN_DOCUMENT_ID) != -1;
 
-                            fullPathOfFile = new File(Environment.getExternalStoragePublicDirectory(Environment
-                                    .DIRECTORY_DOWNLOADS), selectedFileName).getAbsolutePath();
+                        fullPathOfFile = new File(Environment.getExternalStoragePublicDirectory(Environment
+                                .DIRECTORY_DOWNLOADS), selectedFileName).getAbsolutePath();
 
-                            if (isShareableApp) {
-                                try {
-                                    IOUtils.copy(getContentResolver().openInputStream(uri), new FileOutputStream(fullPathOfFile));
-                                } catch (Exception e) {
-                                    Log.e(TAG, e.toString());
-                                }
-                            }
-
-                            fileName = fileNameForFlashing(fullPathOfFile);
-
-                            mProgramToSend = fileName == null ? null : new Project(fileName, fullPathOfFile, 0, null, false);
-                        } else {
+                        if (isShareableApp) {
                             try {
-                                AssetFileDescriptor fileDescriptor = getContentResolver().openAssetFileDescriptor(uri, "r");
-
-                                if(fileDescriptor != null) {
-                                    long length = fileDescriptor.getLength();
-
-                                    fileDescriptor.close();
-
-                                    mProgramToSend = getLatestProjectFromFolder(length);
-                                }
-                            } catch(IOException e) {
+                                IOUtils.copy(getContentResolver().openInputStream(uri), new FileOutputStream(fullPathOfFile));
+                            } catch (Exception e) {
                                 Log.e(TAG, e.toString());
                             }
                         }
-                    } finally {
-                        if (cursor != null) {
-                            cursor.close();
+
+                        fileName = fileNameForFlashing(fullPathOfFile);
+
+                        mProgramToSend = fileName == null ? null : new Project(fileName, fullPathOfFile, 0, null, false);
+                    } else {
+                        try {
+                            AssetFileDescriptor fileDescriptor = getContentResolver().openAssetFileDescriptor(uri, "r");
+
+                            if(fileDescriptor != null) {
+                                long length = fileDescriptor.getLength();
+
+                                fileDescriptor.close();
+
+                                mProgramToSend = getLatestProjectFromFolder(length);
+                            }
+                        } catch(IOException e) {
+                            Log.e(TAG, e.toString());
                         }
                     }
-
-                } else {
-                    Log.e(TAG, "Unknown schema: " + scheme);
-                    return;
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
+                    }
                 }
+
+            } else {
+                Log.e(TAG, "Unknown schema: " + scheme);
+                return;
             }
         }
 
@@ -516,7 +533,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
     @Override
     protected void onDestroy() {
-        configInfoPresenter.destroy();
+        if(configInfoPresenter != null) {
+            configInfoPresenter.destroy();
+        }
 
         handler.removeCallbacks(tryToConnectAgain);
 
@@ -564,7 +583,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         public void onClick(View v) {
             logi("okMorePermissionNeededHandler");
             PopUp.hide();
-            updateProjectsListSortOrder(false);
+            mEmptyText.setVisibility(View.VISIBLE);
         }
     };
 
@@ -784,8 +803,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
      */
     private void setupListAdapter() {
         ProjectAdapter projectAdapter;
-        TextView emptyText = (TextView) findViewById(R.id.project_list_empty);
-        emptyText.setVisibility(View.GONE);
+        mEmptyText.setVisibility(View.GONE);
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             List<Project> leftList = new ArrayList<>();
             List<Project> rightList = new ArrayList<>();
@@ -800,12 +818,12 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
             ProjectAdapter projectAdapterRight = new ProjectAdapter(this, rightList);
             mProjectListViewRight.setAdapter(projectAdapterRight);
             if(projectAdapter.isEmpty() && projectAdapterRight.isEmpty()) {
-                emptyText.setVisibility(View.VISIBLE);
+                mEmptyText.setVisibility(View.VISIBLE);
             }
         } else {
             projectAdapter = new ProjectAdapter(this, mProjectList);
             if(projectAdapter.isEmpty()) {
-                emptyText.setVisibility(View.VISIBLE);
+                mEmptyText.setVisibility(View.VISIBLE);
             }
         }
         if(mProjectListView != null) {
@@ -905,6 +923,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
             break;
 
             case R.id.backBtn:
+                Intent intentHomeActivity = new Intent(this, HomeActivity.class);
+                intentHomeActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intentHomeActivity);
                 finish();
                 break;
 
