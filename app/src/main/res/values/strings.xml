@@ -91,7 +91,7 @@
     <string name="flashing_aborted_title">Aborted</string>
     <string name="flashing_failed_title">Flashing unsuccessful</string>
     <string name="flashing_progress_message">Please do not interact with micro:bit before flashing process is complete</string>
-    <string name="flashing_success_message">You have successfully downloaded program to BBC micro:bit</string>
+    <string name="flashing_success_message">You have successfully downloaded program to micro:bit</string>
     <string name="flashing_success_title">Flashing successful</string>
     <string name="flashing_error">Error</string>
     <string name="flashing_failed_no_microbit">At least one micro:bit must be paired before flashing </string>
@@ -288,7 +288,7 @@
     </string>
     <string name="prefs_share_stats_status">share_stats</string>
     <string name="content_description_toolbar_home">Open Menu</string>
-    <string name="content_description_toolbar_logo">BBC Micro:bit</string>
+    <string name="content_description_toolbar_logo">Micro:bit</string>
     <string name="manage_microbit_txt">To remove a paired micro:bit, \ngo to the bluetooth section \nin your device settings</string>
     <string name="manage_microbit_txt_one_line">To remove a paired micro:bit, go to the bluetooth section in your device settings</string>
     <string name="desc_manage_microbit_txt">To remove a paired micro:bit, go to the bluetooth section in your device settings</string>
@@ -319,7 +319,7 @@
     <string name="nav_draw_share_statistics">Share Statistics</string>
     <string name="txt_my_scripts_btn">My Scripts</string>
     <string name="desc_nav_drawer_menu">Close Menu</string>
-    <string name="desc_share_statistics_description">The BBC will only use this information to analyse and improve the services offered through this app. For information, see our privacy policy </string>
+    <string name="desc_share_statistics_description">This information will only be used to analyse and improve the services offered through this app. For information, see our privacy policy </string>
     <string name="txt_pair_btn">Pair</string>
     <string name="txt_how_to_pair_next_btn">Next</string>
     <string name="txt_cancel_btn">Cancel</string>
@@ -342,8 +342,6 @@
     <string name="popup_title">Title</string>
     <string name="pop_up_subtitle_text">Message A B C D E F G H I J K L M N O P Q R S T U V W X Y Z Message</string>
 
-    <!-- Stats -->
-    <string name="stats_view_name" formatted="false" translatable="false">kl.education.microbit.%s.page</string>
     <string name="cancel_searching_btn_txt">Cancel</string>
 
 

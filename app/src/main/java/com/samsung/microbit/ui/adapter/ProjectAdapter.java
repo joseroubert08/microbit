@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.GoogleAnalyticsManager;
 import com.samsung.microbit.data.model.Project;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.ui.activity.ProjectActivity;
@@ -302,13 +303,11 @@ public class ProjectAdapter extends BaseAdapter {
             final int pos = (int) v.getTag();
             //Update Stats
 
-            MBApp application = MBApp.getApp();
+            GoogleAnalyticsManager.getInstance()
+                    .sendNavigationStats(ProjectActivity.class.getSimpleName(), "DeleteProject");
 
-            if(application.getEchoClientManager().getEcho() != null) {
-                application.getEchoClientManager().getEcho().userActionEvent("click", "DeleteProject", null);
-            }
-            PopUp.show(application.getString(R.string.delete_project_message),
-                    application.getString(R.string.delete_project_title),
+            PopUp.show(mProjectActivity.getString(R.string.delete_project_message),
+                    mProjectActivity.getString(R.string.delete_project_title),
                     R.drawable.ic_trash, R.drawable.red_btn,
                     PopUp.GIFF_ANIMATION_NONE,
                     PopUp.TYPE_CHOICE,

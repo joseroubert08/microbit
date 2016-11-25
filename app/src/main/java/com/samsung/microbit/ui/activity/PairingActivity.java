@@ -45,6 +45,7 @@ import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.GoogleAnalyticsManager;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.data.constants.EventCategories;
 import com.samsung.microbit.data.constants.IPCConstants;
@@ -220,7 +221,8 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
                     }
                 } else if(state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDING) {
                     stopScanning();
-                    MBApp.getApp().getEchoClientManager().sendPairingStats(false, null);
+                    GoogleAnalyticsManager.getInstance()
+                            .sendPairingStats(PairingActivity.class.getSimpleName(),false, null);
                     PopUp.show(getString(R.string.pairing_failed_message), //message
                             getString(R.string.pairing_failed_title), //title
                             R.drawable.error_face, //image icon res id
@@ -483,6 +485,18 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleAnalyticsManager.activityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GoogleAnalyticsManager.activityStop(this);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         updatePairedDeviceCard();
@@ -531,7 +545,7 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
         }
 
         // Make sure to call this before any other userActionEvent is sent
-        application.getEchoClientManager().sendViewEventStats("pairingactivity");
+        GoogleAnalyticsManager.getInstance().sendViewEventStats(PairingActivity.class.getSimpleName());
 
         setupBleController();
 
@@ -1179,7 +1193,8 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
      */
     private void handlePairingFailed() {
         logi("handlePairingFailed() :: Start");
-        MBApp.getApp().getEchoClientManager().sendPairingStats(false, null);
+        GoogleAnalyticsManager.getInstance()
+                .sendPairingStats(PairingActivity.class.getSimpleName(),false, null);
         PopUp.show(getString(R.string.pairingErrorMessage), //message
                 getString(R.string.timeOut), //title
                 R.drawable.error_face, //image icon res id
@@ -1198,7 +1213,8 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
      */
     private void handlePairingSuccessful(final ConnectedDevice newDev) {
         logi("handlePairingSuccessful()");
-        MBApp.getApp().getEchoClientManager().sendPairingStats(true, newDev.mfirmware_version);
+        GoogleAnalyticsManager.getInstance()
+                .sendPairingStats(PairingActivity.class.getSimpleName(),true, newDev.mfirmware_version);
         BluetoothUtils.setPairedMicroBit(MBApp.getApp(), newDev);
         updatePairedDeviceCard();
         // Pop up to show pairing successful

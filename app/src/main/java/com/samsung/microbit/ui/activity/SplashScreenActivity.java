@@ -11,8 +11,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.samsung.microbit.MBApp;
+
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.GoogleAnalyticsManager;
 
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
@@ -49,7 +50,7 @@ public class SplashScreenActivity extends Activity implements View.OnClickListen
         setContentView(R.layout.activity_splash_screen);
         initViews();
 
-        MBApp.getApp().getEchoClientManager().sendAppStats();
+        GoogleAnalyticsManager.getInstance().sendAppStats(SplashScreenActivity.class.getSimpleName());
     }
 
     private void initViews() {
@@ -278,6 +279,18 @@ public class SplashScreenActivity extends Activity implements View.OnClickListen
     private void startHomeActivity() {
         startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
         finish();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleAnalyticsManager.activityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GoogleAnalyticsManager.activityStop(this);
     }
 
     @Override

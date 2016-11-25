@@ -26,7 +26,6 @@
             android:layout_margin="@dimen/main_activity_gif_image_margin"
             android:contentDescription="@string/desc_homescreen_logo_img"
             android:foregroundGravity="center"
-            android:labelFor="@drawable/bbc_microbit_vertical"
             android:nextFocusDown="@+id/connect_device_btn"
             android:scrollbars="none"/>
 

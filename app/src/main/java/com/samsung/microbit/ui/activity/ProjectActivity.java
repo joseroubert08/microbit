@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.GoogleAnalyticsManager;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.data.constants.Constants;
 import com.samsung.microbit.data.constants.EventCategories;
@@ -220,6 +221,18 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     };
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleAnalyticsManager.activityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GoogleAnalyticsManager.activityStop(this);
+    }
+
+    @Override
     public void setActivityState(int baseActivityState) {
         mActivityState = baseActivityState;
         runOnUiThread(new Runnable() {
@@ -352,7 +365,7 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         logi("onCreate() :: ");
 
         // Make sure to call this before any other userActionEvent is sent
-        application.getEchoClientManager().sendViewEventStats("projectactivity");
+        GoogleAnalyticsManager.getInstance().sendViewEventStats(ProjectActivity.class.getSimpleName());
 
         //Remove title bar
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -914,7 +927,8 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
     public void onClick(final View v) {
         switch(v.getId()) {
             case R.id.createProject: {
-                MBApp.getApp().getEchoClientManager().sendNavigationStats("home", "my-scripts");
+                GoogleAnalyticsManager.getInstance()
+                        .sendNavigationStats(ProjectActivity.class.getSimpleName(), "my-scripts");
                 String url = MBApp.getApp().getConfigInfo().getMyScriptsURL();
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(url));
@@ -1167,7 +1181,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                                 LocalBroadcastManager.getInstance(application).unregisterReceiver(dfuResultReceiver);
                                 dfuResultReceiver = null;
                                 //Update Stats
-                                application.getEchoClientManager().sendFlashStats(true, mProgramToSend.name,
+                                GoogleAnalyticsManager.getInstance().sendFlashStats(
+                                        ProjectActivity.class.getSimpleName(),
+                                        true, mProgramToSend.name,
                                         m_HexFileSizeStats,
                                         m_BinSizeStats, m_MicroBitFirmware);
                                 PopUp.show(getString(R.string.flashing_success_message), //message
@@ -1258,7 +1274,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                             MBApp application = MBApp.getApp();
 
                             //Update Stats
-                            application.getEchoClientManager().sendFlashStats(false, mProgramToSend.name,
+                            GoogleAnalyticsManager.getInstance().sendFlashStats(
+                                    ProjectActivity.class.getSimpleName(),
+                                    false, mProgramToSend.name,
                                     m_HexFileSizeStats,
                                     m_BinSizeStats, m_MicroBitFirmware);
                             PopUp.show(getString(R.string.flashing_verifcation_failed), //message
@@ -1278,7 +1296,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                             application = MBApp.getApp();
 
                             //Update Stats
-                            application.getEchoClientManager().sendFlashStats(false, mProgramToSend.name,
+                            GoogleAnalyticsManager.getInstance().sendFlashStats(
+                                    ProjectActivity.class.getSimpleName(),
+                                    false, mProgramToSend.name,
                                     m_HexFileSizeStats,
                                     m_BinSizeStats, m_MicroBitFirmware);
                             PopUp.show(getString(R.string.flashing_aborted), //message
@@ -1300,7 +1320,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                             application = MBApp.getApp();
 
                             //Update Stats
-                            application.getEchoClientManager().sendFlashStats(false, mProgramToSend.name,
+                            GoogleAnalyticsManager.getInstance().sendFlashStats(
+                                    ProjectActivity.class.getSimpleName(),
+                                    false, mProgramToSend.name,
                                     m_HexFileSizeStats,
                                     m_BinSizeStats, m_MicroBitFirmware);
                             PopUp.show(getString(R.string.flashing_aborted), //message
@@ -1360,7 +1382,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
                 LocalBroadcastManager.getInstance(application).unregisterReceiver(dfuResultReceiver);
                 dfuResultReceiver = null;
                 //Update Stats
-                application.getEchoClientManager().sendFlashStats(false, mProgramToSend.name, m_HexFileSizeStats,
+                GoogleAnalyticsManager.getInstance().sendFlashStats(
+                        ProjectActivity.class.getSimpleName(),
+                        false, mProgramToSend.name, m_HexFileSizeStats,
                         m_BinSizeStats, m_MicroBitFirmware);
                 PopUp.show(error_message, //message
                         getString(R.string.flashing_failed_title), //title

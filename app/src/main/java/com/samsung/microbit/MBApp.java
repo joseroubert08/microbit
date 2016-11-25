@@ -2,12 +2,10 @@ package com.samsung.microbit;
 
 import android.app.Application;
 import android.graphics.Typeface;
-import android.os.Messenger;
 import android.util.Log;
 
 import com.samsung.microbit.common.ConfigInfo;
-import com.samsung.microbit.core.EchoClientManager;
-import com.samsung.microbit.utils.ServiceUtils;
+import com.samsung.microbit.core.GoogleAnalyticsManager;
 
 /**
  * Represents a custom class of the app.
@@ -22,8 +20,6 @@ public class MBApp extends Application {
     private Typeface mBoldTypeface;
     private Typeface mRobotoTypeface;
 
-    private EchoClientManager echoClientManager;
-
     private ConfigInfo configInfo;
 
     private boolean justPaired;
@@ -33,7 +29,7 @@ public class MBApp extends Application {
         super.onCreate();
         app = this;
         initTypefaces();
-        echoClientManager = EchoClientManager.getInstance(this);
+        GoogleAnalyticsManager.createInstance(this);
 
         configInfo = new ConfigInfo(this);
         Log.d("MBApp", "App Created");
@@ -70,10 +66,6 @@ public class MBApp extends Application {
 
     public static MBApp getApp() {
         return app;
-    }
-
-    public EchoClientManager getEchoClientManager() {
-        return echoClientManager;
     }
 
     public ConfigInfo getConfigInfo() {

@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.samsung.microbit.core.GoogleAnalyticsManager;
+
 public class NotificationActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        GoogleAnalyticsManager.getInstance().sendViewEventStats(NotificationActivity.class.getSimpleName());
 
         // If this activity is the root activity of the task, the app is not running
         if(isTaskRoot()) {
@@ -22,4 +25,17 @@ public class NotificationActivity extends Activity {
         // Now finish, which will drop you to the activity at which you were at the top of the task stack
         finish();
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleAnalyticsManager.activityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GoogleAnalyticsManager.activityStop(this);
+    }
+
 }

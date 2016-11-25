@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.GoogleAnalyticsManager;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.utils.Utils;
 
@@ -173,6 +174,8 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        GoogleAnalyticsManager.getInstance().sendViewEventStats(PopUpActivity.class.getSimpleName());
+
         Log.d("PopUpActivity", "onCreate() popuptype = " + getIntent().getIntExtra(INTENT_EXTRA_TYPE, PopUp.TYPE_NONE));
         setContentView(R.layout.activity_popup);
 
@@ -196,6 +199,18 @@ public class PopUpActivity extends Activity implements View.OnClickListener {
 
         //notify creation of activity to calling code PopUp class
         localBroadcastManager.sendBroadcast(new Intent(INTENT_ACTION_CREATED));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleAnalyticsManager.activityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GoogleAnalyticsManager.activityStop(this);
     }
 
     @Override

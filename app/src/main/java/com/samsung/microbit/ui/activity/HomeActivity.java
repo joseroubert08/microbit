@@ -31,6 +31,7 @@ import android.widget.TextView;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.common.ConfigInfo;
+import com.samsung.microbit.core.GoogleAnalyticsManager;
 import com.samsung.microbit.data.constants.PermissionCodes;
 import com.samsung.microbit.presentation.ConfigInfoPresenter;
 import com.samsung.microbit.service.IPCService;
@@ -102,6 +103,18 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleAnalyticsManager.activityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GoogleAnalyticsManager.activityStop(this);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logi("onCreate() :: ");
@@ -121,7 +134,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         checkMinimumPermissionsForThisScreen();
 
-        MBApp.getApp().getEchoClientManager().sendViewEventStats("homeactivity");
+        GoogleAnalyticsManager.getInstance().sendViewEventStats(HomeActivity.class.getSimpleName());
 
         /* Debug code*/
         MenuItem item = (MenuItem) findViewById(R.id.live);
@@ -191,7 +204,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mPrefs = getSharedPreferences("com.samsung.microbit", MODE_PRIVATE);
         if(mPrefs != null) {
             shareStats = mPrefs.getBoolean(getString(R.string.prefs_share_stats_status), true);
-            MBApp.getApp().getEchoClientManager().setShareStatistic(shareStats);
+            GoogleAnalyticsManager.getInstance().setShareStatistic(shareStats);
         }
         //TODO focusable view
         mDrawer.setDrawerListener(toggle);
@@ -355,7 +368,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             break;
             case R.id.create_code_btn: {
                 //Update Stats
-                MBApp.getApp().getEchoClientManager().sendNavigationStats("home", "create-code");
+                GoogleAnalyticsManager.getInstance()
+                        .sendNavigationStats(HomeActivity.class.getSimpleName(), "create-code");
                 if(urlToOpen == null) {
                     urlToOpen = MBApp.getApp().getConfigInfo().getCreateCodeURL();
                 }
@@ -367,12 +381,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.flash_microbit_btn:
-                MBApp.getApp().getEchoClientManager().sendNavigationStats("home", "flash");
+                GoogleAnalyticsManager.getInstance()
+                        .sendNavigationStats(HomeActivity.class.getSimpleName(), "flash");
                 Intent i = new Intent(this, ProjectActivity.class);
                 startActivity(i);
                 break;
             case R.id.discover_btn:
-                MBApp.getApp().getEchoClientManager().sendNavigationStats("home", "discover");
+                GoogleAnalyticsManager.getInstance()
+                        .sendNavigationStats(HomeActivity.class.getSimpleName(), "discover");
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(MBApp.getApp().getConfigInfo().getDiscoverURL()));
                 startActivity(intent);
@@ -395,33 +411,35 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.btn_help: {
+                GoogleAnalyticsManager.getInstance()
+                        .sendNavigationStats(HomeActivity.class.getSimpleName() + ", overflow-menu", "help");
                 Intent launchHelpIntent = new Intent(this, HelpWebView.class);
                 launchHelpIntent.putExtra("url", "file:///android_asset/htmls/help/index.html");
                 startActivity(launchHelpIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
-                MBApp.getApp().getEchoClientManager().sendNavigationStats("overflow-menu", "help");
             }
             break;
             case R.id.btn_privacy_cookies: {
+                GoogleAnalyticsManager.getInstance()
+                        .sendNavigationStats(HomeActivity.class.getSimpleName() + ", overflow-menu", "privacy-policy");
                 String url = MBApp.getApp().getConfigInfo().getPrivacyURL();
                 Intent privacyIntent = new Intent(Intent.ACTION_VIEW);
                 privacyIntent.setData(Uri.parse(url));
                 startActivity(privacyIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
-                MBApp.getApp().getEchoClientManager().sendNavigationStats("overflow-menu", "privacy-policy");
             }
             break;
             case R.id.btn_terms_conditions: {
+                GoogleAnalyticsManager.getInstance()
+                        .sendNavigationStats(HomeActivity.class.getSimpleName() + ", overflow-menu", "ts-and-cs");
                 String url = MBApp.getApp().getConfigInfo().getTermsOfUseURL();
                 Intent termsIntent = new Intent(Intent.ACTION_VIEW);
                 termsIntent.setData(Uri.parse(url));
                 startActivity(termsIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
-                MBApp.getApp().getEchoClientManager().sendNavigationStats("overflow-menu", "ts-and-cs");
-
             }
             break;
 
@@ -447,6 +465,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
 
+            default:
+                break;
+
         }//Switch Ends
     }
 
@@ -461,8 +482,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         shareStatistics = mShareStatsCheckBox.isChecked();
         mPrefs.edit().putBoolean(getString(R.string.prefs_share_stats_status), shareStatistics).apply();
         logi("shareStatistics = " + shareStatistics);
-        MBApp.getApp().getEchoClientManager().setShareStatistic(shareStatistics);
-        MBApp.getApp().getEchoClientManager().sendStatSharing(shareStatistics);
+        GoogleAnalyticsManager.getInstance().setShareStatistic(shareStatistics);
+        GoogleAnalyticsManager.getInstance().
+                sendStatSharing(HomeActivity.class.getSimpleName(), shareStatistics);
     }
 
     /**

@@ -6,6 +6,7 @@ import android.content.Intent;
 
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.GoogleAnalyticsManager;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.data.constants.Constants;
 import com.samsung.microbit.data.constants.EventCategories;
@@ -55,7 +56,9 @@ public class BLEConnectionHandler {
                     ConnectedDevice device = BluetoothUtils.getPairedMicrobit(context);
                     if(mActivityState == BaseActivityState.STATE_CONNECTING) {
                         if(error == 0) {
-                            MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.ConnectionState.SUCCESS, device.mfirmware_version, null);
+                            GoogleAnalyticsManager.getInstance().sendConnectStats(
+                                    BLEConnectionHandler.class.getSimpleName(),
+                                    Constants.ConnectionState.SUCCESS, device.mfirmware_version, null);
                             BluetoothUtils.updateConnectionStartTime(context, System.currentTimeMillis());
                             //Check if more permissions were needed and request in the Application
                             if(!bleConnectionManager.arePermissionsGranted()) {
@@ -65,13 +68,17 @@ public class BLEConnectionHandler {
                                 return;
                             }
                         } else {
-                            MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.ConnectionState.FAIL, null, null);
+                            GoogleAnalyticsManager.getInstance().sendConnectStats(
+                                    BLEConnectionHandler.class.getSimpleName(),
+                                    Constants.ConnectionState.FAIL, null, null);
                         }
                     }
                     if(error == 0 && mActivityState == BaseActivityState.STATE_DISCONNECTING) {
                         long now = System.currentTimeMillis();
                         long connectionTime = (now - device.mlast_connection_time) / 1000; //Time in seconds
-                        MBApp.getApp().getEchoClientManager().sendConnectStats(Constants.ConnectionState.DISCONNECT, device.mfirmware_version, Long.toString(connectionTime));
+                        GoogleAnalyticsManager.getInstance().sendConnectStats(
+                                BLEConnectionHandler.class.getSimpleName(),
+                                Constants.ConnectionState.DISCONNECT, device.mfirmware_version, Long.toString(connectionTime));
                     }
 
                     bleConnectionManager.setActivityState(BaseActivityState.STATE_IDLE);

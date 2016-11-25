@@ -9,6 +9,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.GoogleAnalyticsManager;
 
 /**
  * Displays a help screen to provide some instructions and Q&A for using the app.
@@ -18,8 +19,22 @@ public class HelpWebView extends Activity {
     private WebView webView;
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleAnalyticsManager.activityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GoogleAnalyticsManager.activityStop(this);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        GoogleAnalyticsManager.getInstance().sendViewEventStats(HelpWebView.class.getSimpleName());
 
         setContentView(R.layout.activity_help_web_view);
         webView = (WebView) findViewById(R.id.generalView);

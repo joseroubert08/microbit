@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.samsung.microbit.R;
+import com.samsung.microbit.core.GoogleAnalyticsManager;
 import com.samsung.microbit.core.bluetooth.BluetoothUtils;
 import com.samsung.microbit.data.constants.PermissionCodes;
 import com.samsung.microbit.plugin.CameraPlugin;
@@ -50,6 +51,9 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        GoogleAnalyticsManager.getInstance().sendViewEventStats(CameraActivityPermissionChecker.class.getSimpleName());
+
         setContentView(R.layout.activity_camera_activity_permission_checker);
         Intent intent = getIntent(); //Store this for later use
 
@@ -61,6 +65,18 @@ public class CameraActivityPermissionChecker extends AppCompatActivity {
             mRequestedState = REQUEST_STATE.LAUNCH_CAMERA_FOR_VIDEO;
         }
         checkPermissionsForCamera();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleAnalyticsManager.activityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GoogleAnalyticsManager.activityStop(this);
     }
 
     /**
