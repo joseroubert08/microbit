@@ -4,7 +4,6 @@ import android.app.Application;
 import android.graphics.Typeface;
 import android.util.Log;
 
-import com.samsung.microbit.common.ConfigInfo;
 import com.samsung.microbit.core.GoogleAnalyticsManager;
 
 /**
@@ -20,8 +19,6 @@ public class MBApp extends Application {
     private Typeface mBoldTypeface;
     private Typeface mRobotoTypeface;
 
-    private ConfigInfo configInfo;
-
     private boolean justPaired;
 
     @Override
@@ -31,7 +28,6 @@ public class MBApp extends Application {
         initTypefaces();
         GoogleAnalyticsManager.createInstance(this);
 
-        configInfo = new ConfigInfo(this);
         Log.d("MBApp", "App Created");
     }
 
@@ -68,7 +64,4 @@ public class MBApp extends Application {
         return app;
     }
 
-    public ConfigInfo getConfigInfo() {
-        return configInfo;
-    }
 }

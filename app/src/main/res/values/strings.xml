@@ -32,8 +32,6 @@
     <string name="about_url" translatable="false">http://microbit.org/about</string>
     <string name="feedback_email_address" translatable="false">rohit.ail@samsung.com</string>
 
-    <string name="remote_config_url" translatable="false">https://files.microbit.co.uk/appconfig/microbit/android/%s/config.json</string>
-
 
     <string name="user_agent" translatable="false">SamsungBrowser/microbit Profile/OTA-DFU1.0</string>
 

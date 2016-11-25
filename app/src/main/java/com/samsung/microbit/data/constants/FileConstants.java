@@ -12,7 +12,7 @@ public class FileConstants {
     }
 
     public static final File MEDIA_OUTPUT_FOLDER = Environment.getExternalStoragePublicDirectory(Environment
-            .DIRECTORY_DCIM + "/bbc-microbit");
+            .DIRECTORY_DCIM + "/microbit");
 
     public static final String ZIP_INTERNAL_NAME = "raw/samples";
 }

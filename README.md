@@ -1,4 +1,4 @@
-![BBC micro:bit Android application](/img/banner.png)
+![micro:bit Android application](/img/banner.png)
 
 
 # Overview

@@ -44,7 +44,6 @@ import com.samsung.microbit.data.constants.RequestCodes;
 import com.samsung.microbit.data.model.ConnectedDevice;
 import com.samsung.microbit.data.model.Project;
 import com.samsung.microbit.data.model.ui.FlashActivityState;
-import com.samsung.microbit.presentation.ConfigInfoPresenter;
 import com.samsung.microbit.service.BLEService;
 import com.samsung.microbit.service.DfuService;
 import com.samsung.microbit.ui.BluetoothChecker;
@@ -291,8 +290,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
         return mRequestPermissions.isEmpty();
     }
 
-    private ConfigInfoPresenter configInfoPresenter;
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -348,10 +345,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
         if(savedInstanceState == null) {
             mActivityState = FlashActivityState.STATE_IDLE;
-
-            configInfoPresenter = new ConfigInfoPresenter();
-
-            configInfoPresenter.start();
 
             LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(application);
 
@@ -546,9 +539,6 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
 
     @Override
     protected void onDestroy() {
-        if(configInfoPresenter != null) {
-            configInfoPresenter.destroy();
-        }
 
         handler.removeCallbacks(tryToConnectAgain);
 
@@ -929,9 +919,9 @@ public class ProjectActivity extends Activity implements View.OnClickListener, B
             case R.id.createProject: {
                 GoogleAnalyticsManager.getInstance()
                         .sendNavigationStats(ProjectActivity.class.getSimpleName(), "my-scripts");
-                String url = MBApp.getApp().getConfigInfo().getMyScriptsURL();
+
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(url));
+                intent.setData(Uri.parse(getString(R.string.my_scripts_url)));
                 startActivity(intent);
             }
             break;

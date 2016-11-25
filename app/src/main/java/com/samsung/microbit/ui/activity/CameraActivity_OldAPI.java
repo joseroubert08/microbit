@@ -971,7 +971,7 @@ public class CameraActivity_OldAPI extends Activity {
         mCamera.unlock();
         mMediaRecorder.setCamera(mCamera);
 
-        //Rohit - Removed the audio source as BBC doesn't want sound in the recording
+        //Rohit - Removed the audio source
         //mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
 
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);

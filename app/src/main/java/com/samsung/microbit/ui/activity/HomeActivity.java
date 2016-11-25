@@ -31,10 +31,8 @@ import android.widget.TextView;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
-import com.samsung.microbit.common.ConfigInfo;
 import com.samsung.microbit.core.GoogleAnalyticsManager;
 import com.samsung.microbit.data.constants.PermissionCodes;
-import com.samsung.microbit.presentation.ConfigInfoPresenter;
 import com.samsung.microbit.service.IPCService;
 import com.samsung.microbit.ui.PopUp;
 import com.samsung.microbit.utils.FileUtils;
@@ -68,8 +66,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     /* Debug code ends*/
 
     private String emailBodyString;
-
-    private ConfigInfoPresenter configInfoPresenter;
 
     /**
      * Provides simplified way to log informational messages.
@@ -122,10 +118,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         setContentView(R.layout.activity_home);
 
-        configInfoPresenter = new ConfigInfoPresenter();
-
-        configInfoPresenter.start();
-
         if(savedInstanceState == null) {
             startService(new Intent(this, IPCService.class));
         }
@@ -141,22 +133,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         MenuItem item = (MenuItem) findViewById(R.id.live);
         if(item != null) {
             item.setChecked(true);
-        }
-
-        ConfigInfo configInfo = MBApp.getApp().getConfigInfo();
-
-        if(!configInfo.isAppStatusOn()) {
-            finish();
-            //Cannot proceed with the application. Shutdown NOW
-            PopUp.show(configInfo.getExceptionMsg(),
-                    configInfo.getExceptionTitle(),
-                    R.drawable.error_face,//image icon res id
-                    R.drawable.red_btn,
-                    PopUp.GIFF_ANIMATION_ERROR,
-                    PopUp.TYPE_ALERT, //type of popup.
-                    null,
-                    null);
-
         }
 
         initGifImage();
@@ -186,7 +162,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationContentDescription(R.string.content_description_toolbar_home);
         ImageView imgToolbarLogo = (ImageView) findViewById(R.id.img_toolbar_logo);
-        imgToolbarLogo.setContentDescription("BBC Micro:bit");
+        imgToolbarLogo.setContentDescription("Micro:bit");
         setSupportActionBar(toolbar);
 
         final boolean previousDrawerState = mDrawer != null && mDrawer.isDrawerOpen(GravityCompat.START);
@@ -270,7 +246,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 version,
                 Build.MODEL,
                 Build.VERSION.RELEASE,
-                MBApp.getApp().getConfigInfo().getPrivacyURL());
+                getString(R.string.privacy_policy_url));
         return emailBodyString;
     }
 
@@ -287,7 +263,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        configInfoPresenter.destroy();
 
         unbindDrawables();
     }
@@ -320,7 +295,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        urlToOpen = MBApp.getApp().getConfigInfo().getCreateCodeURL();
+        urlToOpen = getString(R.string.create_code_url);
         switch(id) {
             case R.id.live:
                 item.setChecked(true);
@@ -372,7 +347,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 GoogleAnalyticsManager.getInstance()
                         .sendNavigationStats(HomeActivity.class.getSimpleName(), "create-code");
                 if(urlToOpen == null) {
-                    urlToOpen = MBApp.getApp().getConfigInfo().getCreateCodeURL();
+                    urlToOpen = getString(R.string.create_code_url);
                 }
 
                 Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -391,7 +366,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 GoogleAnalyticsManager.getInstance()
                         .sendNavigationStats(HomeActivity.class.getSimpleName(), "discover");
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(MBApp.getApp().getConfigInfo().getDiscoverURL()));
+                intent.setData(Uri.parse(getString(R.string.discover_url)));
                 startActivity(intent);
                 break;
 
@@ -403,9 +378,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.btn_about: {
-                String url = MBApp.getApp().getConfigInfo().getAboutURL();
                 Intent aboutIntent = new Intent(Intent.ACTION_VIEW);
-                aboutIntent.setData(Uri.parse(url));
+                aboutIntent.setData(Uri.parse(getString(R.string.about_url)));
                 startActivity(aboutIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
@@ -424,9 +398,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_privacy_cookies: {
                 GoogleAnalyticsManager.getInstance()
                         .sendNavigationStats(HomeActivity.class.getSimpleName() + ", overflow-menu", "privacy-policy");
-                String url = MBApp.getApp().getConfigInfo().getPrivacyURL();
+
                 Intent privacyIntent = new Intent(Intent.ACTION_VIEW);
-                privacyIntent.setData(Uri.parse(url));
+                privacyIntent.setData(Uri.parse(getString(R.string.privacy_policy_url)));
                 startActivity(privacyIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
@@ -435,9 +409,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_terms_conditions: {
                 GoogleAnalyticsManager.getInstance()
                         .sendNavigationStats(HomeActivity.class.getSimpleName() + ", overflow-menu", "ts-and-cs");
-                String url = MBApp.getApp().getConfigInfo().getTermsOfUseURL();
+
                 Intent termsIntent = new Intent(Intent.ACTION_VIEW);
-                termsIntent.setData(Uri.parse(url));
+                termsIntent.setData(Uri.parse(getString(R.string.terms_of_use_url)));
                 startActivity(termsIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
@@ -445,10 +419,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             break;
 
             case R.id.btn_send_feedback: {
-                String emailAddress = MBApp.getApp().getConfigInfo().getSendEmailAddress();
                 Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
                 feedbackIntent.setType("message/rfc822");
-                feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{emailAddress});
+                feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{getString(R.string.feedback_email_address)});
                 feedbackIntent.putExtra(Intent.EXTRA_SUBJECT, "[User feedback] ");
                 //Prepare the body of email
                 String body = prepareEmailBody();
