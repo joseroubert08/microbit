@@ -116,6 +116,8 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
     private int activityState;
 
+    private String PAIRING_STATE_KEY = "PAIRING_STATE_KEY";
+
     private PAIRING_STATE pairingState;
     private String newDeviceName = "";
     private String newDeviceCode = "";
@@ -523,25 +525,24 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
         MBApp application = MBApp.getApp();
 
+        registerReceiver(pairReceiver, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
+
+        handler = new Handler(Looper.getMainLooper());;
+
         if(savedInstanceState == null) {
             activityState = PairingActivityState.STATE_IDLE;
             pairingState = PAIRING_STATE.PAIRING_STATE_CONNECT_BUTTON;
             justPaired = false;
 
-            //Register receiver
-            IntentFilter intent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-            registerReceiver(pairReceiver, intent);
-
             LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(application);
-
 
             IntentFilter broadcastIntentFilter = new IntentFilter(IPCConstants.INTENT_BLE_NOTIFICATION);
             localBroadcastManager.registerReceiver(connectionChangedReceiver, broadcastIntentFilter);
 
             localBroadcastManager.registerReceiver(gattForceClosedReceiver, new IntentFilter(BLEService
                     .GATT_FORCE_CLOSED));
-
-            handler = new Handler(Looper.getMainLooper());
+        } else {
+            pairingState = (PAIRING_STATE) savedInstanceState.getSerializable(PAIRING_STATE_KEY);
         }
 
         // Make sure to call this before any other userActionEvent is sent
@@ -563,6 +564,12 @@ public class PairingActivity extends Activity implements View.OnClickListener, B
 
         // pin view
         displayScreen(pairingState);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(PAIRING_STATE_KEY, pairingState);
     }
 
     boolean setupBleController() {
