@@ -72,12 +72,16 @@ public class GoogleAnalyticsManager {
         this.mShareStatistic = shareStatistic;
     }
 
-    public static void activityStart(Activity activity) {
-        GoogleAnalytics.getInstance(activity).reportActivityStart(activity);
+    public void activityStart(Activity activity) {
+        if (mShareStatistic) {
+            GoogleAnalytics.getInstance(activity).reportActivityStart(activity);
+        }
     }
 
-    public static void activityStop(Activity activity) {
-        GoogleAnalytics.getInstance(activity).reportActivityStop(activity);
+    public void activityStop(Activity activity) {
+        if(mShareStatistic) {
+            GoogleAnalytics.getInstance(activity).reportActivityStop(activity);
+        }
     }
 
     private void sendEvent(final String screenName, final String category, final String action, final HashMap<Integer, String> dimensionsMap) {

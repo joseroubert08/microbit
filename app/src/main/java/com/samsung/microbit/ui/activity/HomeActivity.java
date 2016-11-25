@@ -28,6 +28,7 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.samsung.microbit.MBApp;
 import com.samsung.microbit.R;
 import com.samsung.microbit.common.ConfigInfo;
@@ -105,13 +106,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onStart() {
         super.onStart();
-        GoogleAnalyticsManager.activityStart(this);
+        GoogleAnalyticsManager.getInstance().activityStart(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        GoogleAnalyticsManager.activityStop(this);
+        GoogleAnalyticsManager.getInstance().activityStop(this);
     }
 
     @Override
@@ -184,7 +185,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationContentDescription(R.string.content_description_toolbar_home);
-        ImageView imgToolbarLogo = (ImageView) findViewById(R.id.img_toolbar_bbc_logo);
+        ImageView imgToolbarLogo = (ImageView) findViewById(R.id.img_toolbar_logo);
         imgToolbarLogo.setContentDescription("BBC Micro:bit");
         setSupportActionBar(toolbar);
 
@@ -298,7 +299,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         Utils.unbindDrawables(findViewById(R.id.create_code_btn));
         Utils.unbindDrawables(findViewById(R.id.discover_btn));
 
-        Utils.unbindDrawables(findViewById(R.id.img_toolbar_bbc_logo));
+        Utils.unbindDrawables(findViewById(R.id.img_toolbar_logo));
         Utils.unbindDrawables(findViewById(R.id.toolbar));
         Utils.unbindDrawables(findViewById(R.id.nav_view));
         Utils.unbindDrawables(findViewById(R.id.drawer_layout));
@@ -478,8 +479,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if(mShareStatsCheckBox == null) {
             return;
         }
-        boolean shareStatistics;
-        shareStatistics = mShareStatsCheckBox.isChecked();
+        boolean shareStatistics = mShareStatsCheckBox.isChecked();
+
+        if(shareStatistics) {
+            GoogleAnalytics.getInstance(this).reportActivityStart(this);
+        } else {
+            GoogleAnalytics.getInstance(this).reportActivityStop(this);
+        }
+
         mPrefs.edit().putBoolean(getString(R.string.prefs_share_stats_status), shareStatistics).apply();
         logi("shareStatistics = " + shareStatistics);
         GoogleAnalyticsManager.getInstance().setShareStatistic(shareStatistics);

@@ -284,13 +284,13 @@ public class SplashScreenActivity extends Activity implements View.OnClickListen
     @Override
     protected void onStart() {
         super.onStart();
-        GoogleAnalyticsManager.activityStart(this);
+        GoogleAnalyticsManager.getInstance().activityStart(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        GoogleAnalyticsManager.activityStop(this);
+        GoogleAnalyticsManager.getInstance().activityStop(this);
     }
 
     @Override

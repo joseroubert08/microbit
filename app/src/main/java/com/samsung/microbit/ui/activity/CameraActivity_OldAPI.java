@@ -876,13 +876,13 @@ public class CameraActivity_OldAPI extends Activity {
         CmdArg cmd = new CmdArg(0, "Camera on");
         ServiceUtils.sendReplyCommand(PluginService.CAMERA, cmd);
         super.onStart();
-        GoogleAnalyticsManager.activityStart(this);
+        GoogleAnalyticsManager.getInstance().activityStart(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        GoogleAnalyticsManager.activityStop(this);
+        GoogleAnalyticsManager.getInstance().activityStop(this);
     }
 
     @Override
