@@ -129,7 +129,7 @@ public class HexInputStream extends FilterInputStream {
                         if (binSize > 0 && newULBA != (lastBaseAddress >> 16) + 1)
                             return binSize;
                         lastBaseAddress = newULBA << 16;
-                        in.skip(2 /* check sum */);
+						skip(in, 2 /* check sum */);
                         break;
                     }
                     case 0x02: {
@@ -138,7 +138,7 @@ public class HexInputStream extends FilterInputStream {
                         if (binSize > 0 && (newSBA >> 16) != (lastBaseAddress >> 16) + 1)
                             return binSize;
                         lastBaseAddress = newSBA;
-                        in.skip(2 /* check sum */);
+                        skip(in, 2 /* check sum */);
                         break;
                     }
                     case 0x00:
@@ -151,7 +151,7 @@ public class HexInputStream extends FilterInputStream {
                         }
                         // no break!
                     default:
-                        in.skip(lineSize * 2 /* 2 hex per one byte */+ 2 /* check sum */);
+                        skip(in, lineSize * 2 /* 2 hex per one byte */+ 2 /* check sum */);
                         break;
                 }
                 // skip end of line
@@ -198,7 +198,7 @@ public class HexInputStream extends FilterInputStream {
 					if (binSize > 0 && newULBA != (lastBaseAddress >> 16) + 1)
 						return binSize;
 					lastBaseAddress = newULBA << 16;
-					in.skip(2 /* check sum */);
+					skip(in, 2 /* check sum */);
 					break;
 				}
 				case 0x02: {
@@ -207,7 +207,7 @@ public class HexInputStream extends FilterInputStream {
 					if (binSize > 0 && (newSBA >> 16) != (lastBaseAddress >> 16) + 1)
 						return binSize;
 					lastBaseAddress = newSBA;
-					in.skip(2 /* check sum */);
+					skip(in, 2 /* check sum */);
 					break;
 				}
 				case 0x00:
@@ -217,7 +217,7 @@ public class HexInputStream extends FilterInputStream {
 						binSize += lineSize;
 					// no break!
 				default:
-					in.skip(lineSize * 2 /* 2 hex per one byte */+ 2 /* check sum */);
+					skip(in, lineSize * 2 /* 2 hex per one byte */ + 2 /* check sum */);
 					break;
 				}
 				// skip end of line
@@ -233,6 +233,17 @@ public class HexInputStream extends FilterInputStream {
 			in.reset();
 		}
 	}
+
+    private long skip(final InputStream in, final long offset) throws IOException {
+        long skipped = in.skip(offset);
+		int attempts = 10;
+        // try to skip 10 times as skip(..) method does not guarantee to skip exactly given number of bytes
+        while (skipped < offset && attempts > 0) {
+			skipped += in.skip(offset - skipped);
+			attempts--;
+		}
+        return skipped;
+    }
 
 	@Override
 	public int available() {
@@ -351,13 +362,13 @@ public class HexInputStream extends FilterInputStream {
                     int fullAddress = lastAddress + offset ;
                     if (fullAddress < DfuSettingsConstants.APP_CODE_BASE_START || fullAddress >= DfuSettingsConstants.APP_CODE_BASE_END){ //Skip Non Fota
                         type = -1; // some other than 0
-                        pos += in.skip(lineSize * 2 /* 2 hex per one byte */ + 2 /* check sum */);
+                        pos += skip(in, lineSize * 2 /* 2 hex per one byte */ + 2 /* check sum */);
                     }
 
                 } else {
                     if (lastAddress + offset < MBRSize) { // skip MBR
                         type = -1; // some other than 0
-                        pos += in.skip(lineSize * 2 /* 2 hex per one byte */ + 2 /* check sum */);
+                        pos += skip(in, lineSize * 2 /* 2 hex per one byte */ + 2 /* check sum */);
                     }
                 }
 				break;
@@ -372,7 +383,7 @@ public class HexInputStream extends FilterInputStream {
 				if (bytesRead > 0 && (address >> 16) != (lastAddress >> 16) + 1)
 					return 0;
 				lastAddress = address;
-				pos += in.skip(2 /* check sum */);
+				pos += skip(in, 2 /* check sum */);
 				break;
 			}
 			case 0x04: {
@@ -382,11 +393,11 @@ public class HexInputStream extends FilterInputStream {
 				if (bytesRead > 0 && address != (lastAddress >> 16) + 1)
 					return 0;
 				lastAddress = address << 16;
-				pos += in.skip(2 /* check sum */);
+				pos += skip(in, 2 /* check sum */);
 				break;
 			}
 			default:
-				pos += in.skip(lineSize * 2 /* 2 hex per one byte */+ 2 /* check sum */);
+				pos += skip(in, lineSize * 2 /* 2 hex per one byte */ + 2 /* check sum */);
 				break;
 			}
 		} while (type != 0);
@@ -397,7 +408,7 @@ public class HexInputStream extends FilterInputStream {
 			pos += 2;
 			localBuf[i] = (byte) b;
 		}
-		pos += in.skip(2); // skip the checksum
+		pos += skip(in, 2); // skip the checksum
 		localPos = 0;
 
 		return lineSize;
