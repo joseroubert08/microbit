@@ -1,27 +1,20 @@
-![micro:bit Android application](/img/banner.png)
+micro:bit Android application
+=============================
+
+**Build instructions**
+
+* Install needed tools to build the project:
+    
+    * [Android SDK](http://developer.android.com/sdk/index.html)
+    
+    * [Gradle](https://gradle.org/gradle-download/) (Minimum version [2.14.1+](https://developer.android.com/studio/releases/gradle-plugin.html#updating-gradle))
+
+* Go to root directory and run `gradle build`. After build is finished, apk file can be found under `~/app/build/outputs/apk/app-debug.apk`
+
+* Or run `gradle installDebug` to build and install app on plugged android device
 
 
-# Overview
+## Libraries
 
-The Android application will be  available on Google Playstore at <a href="https://play.google.com/store/search?q=microbit&c=apps&hl=en" target="_blank">dummy link</a> and will support any Android device running 4.4 onwards.
-
-
-# Feature highlights
-
-* Connecting to micro:bit over Bluetooth Smart (BLE)
-
-* Extend phone sensors and apis as service to the micro:bit over BLE
-
-* BLE FOTA flashing
-
-* Offline storage for compiled HEX files
-
-* Integrated link to TouchDevelop coding environment
-
-
-
-## Thirdparty source code
- 
-
-
-</big>
+ * [Android-DFU-Library](https://github.com/NordicSemiconductor/Android-DFU-Library)
+ * [android-gif-drawable](https://github.com/koral--/android-gif-drawable)
