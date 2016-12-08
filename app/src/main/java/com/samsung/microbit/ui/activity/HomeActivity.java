@@ -389,7 +389,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 GoogleAnalyticsManager.getInstance()
                         .sendNavigationStats(HomeActivity.class.getSimpleName() + ", overflow-menu", "help");
                 Intent launchHelpIntent = new Intent(this, HelpWebView.class);
-                launchHelpIntent.putExtra("url", "file:///android_asset/htmls/help/index.html");
+                launchHelpIntent.putExtra("url", "file:///android_asset/help.html");
                 startActivity(launchHelpIntent);
                 // Close drawer
                 drawer.closeDrawer(GravityCompat.START);
